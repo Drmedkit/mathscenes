@@ -1,0 +1,41 @@
+{
+ "_doc": "Optional music bed for the ratio example (calm, instrumental, loopable). python audio/gen_music.py examples/ratio --variants A B, listen, then --keep A (-> media/bed.mp3). Without a bed, mix.py mixes voice + sfx only.",
+ "bpm": 100,
+ "styles": [
+  "calm curious study music",
+  "soft marimba and warm pads",
+  "light plucked strings",
+  "gentle, unobtrusive, background",
+  "100 BPM"
+ ],
+ "negative": [
+  "drums",
+  "heavy bass",
+  "dramatic",
+  "vocals"
+ ],
+ "variants": {
+  "A": [],
+  "B": [
+   "soft felt piano lead"
+  ]
+ },
+ "chunks": [
+  {
+   "bars": 4,
+   "text": "[Intro]\n{soft and sparse}",
+   "styles": [
+    "sparse intro"
+   ]
+  },
+  {
+   "bars": 16,
+   "text": "[Loop]\n{steady, calm, loopable, no build-up}"
+  },
+  {
+   "bars": 4,
+   "text": "[Outro]\n{settles back to the intro texture so the loop point is smooth}"
+  }
+ ],
+ "instrumental": true
+}

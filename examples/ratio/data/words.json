@@ -1,0 +1,3115 @@
+{
+ "lines": [
+  {
+   "i": 0,
+   "section": "hook",
+   "speaker": "narrator",
+   "text": "A phone. A laptop. A cinema screen.",
+   "start": 1.6,
+   "end": 4.015,
+   "words": [
+    {
+     "w": "A",
+     "start": 1.6,
+     "end": 1.693
+    },
+    {
+     "w": "phone.",
+     "start": 1.739,
+     "end": 2.041
+    },
+    {
+     "w": "A",
+     "start": 2.064,
+     "end": 2.088
+    },
+    {
+     "w": "laptop.",
+     "start": 2.146,
+     "end": 2.645
+    },
+    {
+     "w": "A",
+     "start": 2.668,
+     "end": 2.703
+    },
+    {
+     "w": "cinema",
+     "start": 2.749,
+     "end": 3.028
+    },
+    {
+     "w": "screen.",
+     "start": 3.074,
+     "end": 4.015
+    }
+   ]
+  },
+  {
+   "i": 1,
+   "section": "hook",
+   "speaker": "narrator",
+   "text": "Completely different sizes. But look at their shape. It's the same.",
+   "start": 4.515,
+   "end": 9.67,
+   "words": [
+    {
+     "w": "Completely",
+     "start": 4.515,
+     "end": 4.979
+    },
+    {
+     "w": "different",
+     "start": 5.014,
+     "end": 5.281
+    },
+    {
+     "w": "sizes.",
+     "start": 5.316,
+     "end": 5.978
+    },
+    {
+     "w": "But",
+     "start": 6.709,
+     "end": 6.86
+    },
+    {
+     "w": "look",
+     "start": 6.895,
+     "end": 7.034
+    },
+    {
+     "w": "at",
+     "start": 7.069,
+     "end": 7.116
+    },
+    {
+     "w": "their",
+     "start": 7.15,
+     "end": 7.301
+    },
+    {
+     "w": "shape.",
+     "start": 7.371,
+     "end": 7.917
+    },
+    {
+     "w": "It's",
+     "start": 8.381,
+     "end": 8.567
+    },
+    {
+     "w": "the",
+     "start": 8.625,
+     "end": 8.706
+    },
+    {
+     "w": "same.",
+     "start": 8.764,
+     "end": 9.67
+    }
+   ]
+  },
+  {
+   "i": 2,
+   "section": "hook",
+   "speaker": "narrator",
+   "text": "That's not a coincidence. They all share one thing: a ratio. And once you really see what a ratio is, you'll start spotting them everywhere.",
+   "start": 10.27,
+   "end": 19.744,
+   "words": [
+    {
+     "w": "That's",
+     "start": 10.27,
+     "end": 10.479
+    },
+    {
+     "w": "not",
+     "start": 10.514,
+     "end": 10.607
+    },
+    {
+     "w": "a",
+     "start": 10.642,
+     "end": 10.665
+    },
+    {
+     "w": "coincidence.",
+     "start": 10.711,
+     "end": 11.419
+    },
+    {
+     "w": "They",
+     "start": 12.151,
+     "end": 12.302
+    },
+    {
+     "w": "all",
+     "start": 12.337,
+     "end": 12.441
+    },
+    {
+     "w": "share",
+     "start": 12.499,
+     "end": 12.72
+    },
+    {
+     "w": "one",
+     "start": 12.789,
+     "end": 12.952
+    },
+    {
+     "w": "thing:",
+     "start": 12.987,
+     "end": 13.335
+    },
+    {
+     "w": "a",
+     "start": 13.521,
+     "end": 13.59
+    },
+    {
+     "w": "ratio.",
+     "start": 13.718,
+     "end": 14.426
+    },
+    {
+     "w": "And",
+     "start": 14.891,
+     "end": 15.03
+    },
+    {
+     "w": "once",
+     "start": 15.065,
+     "end": 15.204
+    },
+    {
+     "w": "you",
+     "start": 15.227,
+     "end": 15.309
+    },
+    {
+     "w": "really",
+     "start": 15.436,
+     "end": 15.669
+    },
+    {
+     "w": "see",
+     "start": 15.727,
+     "end": 15.866
+    },
+    {
+     "w": "what",
+     "start": 15.889,
+     "end": 15.994
+    },
+    {
+     "w": "a",
+     "start": 16.029,
+     "end": 16.052
+    },
+    {
+     "w": "ratio",
+     "start": 16.121,
+     "end": 16.47
+    },
+    {
+     "w": "is,",
+     "start": 16.539,
+     "end": 16.888
+    },
+    {
+     "w": "you'll",
+     "start": 17.143,
+     "end": 17.34
+    },
+    {
+     "w": "start",
+     "start": 17.375,
+     "end": 17.584
+    },
+    {
+     "w": "spotting",
+     "start": 17.619,
+     "end": 17.979
+    },
+    {
+     "w": "them",
+     "start": 18.014,
+     "end": 18.13
+    },
+    {
+     "w": "everywhere.",
+     "start": 18.292,
+     "end": 19.744
+    }
+   ]
+  },
+  {
+   "i": 3,
+   "section": "every",
+   "speaker": "narrator",
+   "text": "Let's start small. Here are some tiles. Two orange. Three green.",
+   "start": 20.943,
+   "end": 26.098,
+   "words": [
+    {
+     "w": "Let's",
+     "start": 20.943,
+     "end": 21.152
+    },
+    {
+     "w": "start",
+     "start": 21.175,
+     "end": 21.373
+    },
+    {
+     "w": "small.",
+     "start": 21.419,
+     "end": 21.86
+    },
+    {
+     "w": "Here",
+     "start": 22.394,
+     "end": 22.557
+    },
+    {
+     "w": "are",
+     "start": 22.58,
+     "end": 22.65
+    },
+    {
+     "w": "some",
+     "start": 22.673,
+     "end": 22.801
+    },
+    {
+     "w": "tiles.",
+     "start": 22.824,
+     "end": 23.323
+    },
+    {
+     "w": "Two",
+     "start": 23.729,
+     "end": 23.962
+    },
+    {
+     "w": "orange.",
+     "start": 24.054,
+     "end": 24.589
+    },
+    {
+     "w": "Three",
+     "start": 24.809,
+     "end": 25.076
+    },
+    {
+     "w": "green.",
+     "start": 25.123,
+     "end": 26.098
+    }
+   ]
+  },
+  {
+   "i": 4,
+   "section": "every",
+   "speaker": "narrator",
+   "text": "A ratio is a rule that links two amounts. This one says: for every two orange tiles, there are three green tiles.",
+   "start": 26.598,
+   "end": 35.468,
+   "words": [
+    {
+     "w": "A",
+     "start": 26.598,
+     "end": 26.691
+    },
+    {
+     "w": "ratio",
+     "start": 26.772,
+     "end": 27.086
+    },
+    {
+     "w": "is",
+     "start": 27.144,
+     "end": 27.225
+    },
+    {
+     "w": "a",
+     "start": 27.283,
+     "end": 27.318
+    },
+    {
+     "w": "rule",
+     "start": 27.376,
+     "end": 27.666
+    },
+    {
+     "w": "that",
+     "start": 27.713,
+     "end": 27.875
+    },
+    {
+     "w": "links",
+     "start": 27.922,
+     "end": 28.142
+    },
+    {
+     "w": "two",
+     "start": 28.2,
+     "end": 28.339
+    },
+    {
+     "w": "amounts.",
+     "start": 28.398,
+     "end": 28.966
+    },
+    {
+     "w": "This",
+     "start": 29.431,
+     "end": 29.617
+    },
+    {
+     "w": "one",
+     "start": 29.663,
+     "end": 29.791
+    },
+    {
+     "w": "says:",
+     "start": 29.826,
+     "end": 30.29
+    },
+    {
+     "w": "for",
+     "start": 30.824,
+     "end": 30.975
+    },
+    {
+     "w": "every",
+     "start": 31.033,
+     "end": 31.265
+    },
+    {
+     "w": "two",
+     "start": 31.323,
+     "end": 31.544
+    },
+    {
+     "w": "orange",
+     "start": 31.672,
+     "end": 32.055
+    },
+    {
+     "w": "tiles,",
+     "start": 32.09,
+     "end": 32.682
+    },
+    {
+     "w": "there",
+     "start": 32.867,
+     "end": 33.042
+    },
+    {
+     "w": "are",
+     "start": 33.076,
+     "end": 33.192
+    },
+    {
+     "w": "three",
+     "start": 33.239,
+     "end": 33.599
+    },
+    {
+     "w": "green",
+     "start": 33.727,
+     "end": 34.028
+    },
+    {
+     "w": "tiles.",
+     "start": 34.086,
+     "end": 35.468
+    }
+   ]
+  },
+  {
+   "i": 5,
+   "section": "every",
+   "speaker": "narrator",
+   "text": "We write it like this. Two to three.",
+   "start": 35.968,
+   "end": 39.497,
+   "words": [
+    {
+     "w": "We",
+     "start": 35.968,
+     "end": 36.154
+    },
+    {
+     "w": "write",
+     "start": 36.212,
+     "end": 36.398
+    },
+    {
+     "w": "it",
+     "start": 36.421,
+     "end": 36.479
+    },
+    {
+     "w": "like",
+     "start": 36.514,
+     "end": 36.653
+    },
+    {
+     "w": "this.",
+     "start": 36.688,
+     "end": 37.129
+    },
+    {
+     "w": "Two",
+     "start": 37.593,
+     "end": 37.895
+    },
+    {
+     "w": "to",
+     "start": 38.023,
+     "end": 38.127
+    },
+    {
+     "w": "three.",
+     "start": 38.255,
+     "end": 39.497
+    }
+   ]
+  },
+  {
+   "i": 6,
+   "section": "every",
+   "speaker": "narrator",
+   "text": "Notice what a ratio doesn't tell you. It doesn't say how many tiles there are. It only says how the two amounts belong together.",
+   "start": 40.098,
+   "end": 47.853,
+   "words": [
+    {
+     "w": "Notice",
+     "start": 40.098,
+     "end": 40.4
+    },
+    {
+     "w": "what",
+     "start": 40.423,
+     "end": 40.528
+    },
+    {
+     "w": "a",
+     "start": 40.562,
+     "end": 40.586
+    },
+    {
+     "w": "ratio",
+     "start": 40.713,
+     "end": 41.131
+    },
+    {
+     "w": "doesn't",
+     "start": 41.189,
+     "end": 41.468
+    },
+    {
+     "w": "tell",
+     "start": 41.503,
+     "end": 41.7
+    },
+    {
+     "w": "you.",
+     "start": 41.77,
+     "end": 42.072
+    },
+    {
+     "w": "It",
+     "start": 42.536,
+     "end": 42.641
+    },
+    {
+     "w": "doesn't",
+     "start": 42.675,
+     "end": 42.908
+    },
+    {
+     "w": "say",
+     "start": 42.942,
+     "end": 43.059
+    },
+    {
+     "w": "how",
+     "start": 43.105,
+     "end": 43.175
+    },
+    {
+     "w": "many",
+     "start": 43.209,
+     "end": 43.337
+    },
+    {
+     "w": "tiles",
+     "start": 43.395,
+     "end": 43.72
+    },
+    {
+     "w": "there",
+     "start": 43.755,
+     "end": 43.906
+    },
+    {
+     "w": "are.",
+     "start": 43.941,
+     "end": 44.231
+    },
+    {
+     "w": "It",
+     "start": 44.696,
+     "end": 44.812
+    },
+    {
+     "w": "only",
+     "start": 44.846,
+     "end": 44.997
+    },
+    {
+     "w": "says",
+     "start": 45.044,
+     "end": 45.218
+    },
+    {
+     "w": "how",
+     "start": 45.276,
+     "end": 45.357
+    },
+    {
+     "w": "the",
+     "start": 45.415,
+     "end": 45.485
+    },
+    {
+     "w": "two",
+     "start": 45.566,
+     "end": 45.752
+    },
+    {
+     "w": "amounts",
+     "start": 45.81,
+     "end": 46.135
+    },
+    {
+     "w": "belong",
+     "start": 46.193,
+     "end": 46.483
+    },
+    {
+     "w": "together.",
+     "start": 46.542,
+     "end": 47.853
+    }
+   ]
+  },
+  {
+   "i": 7,
+   "section": "scale",
+   "speaker": "narrator",
+   "text": "So let's treat those five tiles as one group. Now copy the group.",
+   "start": 49.053,
+   "end": 54.069,
+   "words": [
+    {
+     "w": "So",
+     "start": 49.053,
+     "end": 49.308
+    },
+    {
+     "w": "let's",
+     "start": 49.773,
+     "end": 49.993
+    },
+    {
+     "w": "treat",
+     "start": 50.028,
+     "end": 50.191
+    },
+    {
+     "w": "those",
+     "start": 50.226,
+     "end": 50.4
+    },
+    {
+     "w": "five",
+     "start": 50.446,
+     "end": 50.702
+    },
+    {
+     "w": "tiles",
+     "start": 50.736,
+     "end": 51.073
+    },
+    {
+     "w": "as",
+     "start": 51.12,
+     "end": 51.201
+    },
+    {
+     "w": "one",
+     "start": 51.329,
+     "end": 51.491
+    },
+    {
+     "w": "group.",
+     "start": 51.526,
+     "end": 51.897
+    },
+    {
+     "w": "Now",
+     "start": 52.629,
+     "end": 52.791
+    },
+    {
+     "w": "copy",
+     "start": 52.873,
+     "end": 53.163
+    },
+    {
+     "w": "the",
+     "start": 53.198,
+     "end": 53.267
+    },
+    {
+     "w": "group.",
+     "start": 53.302,
+     "end": 54.069
+    }
+   ]
+  },
+  {
+   "i": 8,
+   "section": "scale",
+   "speaker": "narrator",
+   "text": "Four orange, six green. Still two orange for every three green. Again. Six and nine. Eight and twelve.",
+   "start": 54.569,
+   "end": 65.807,
+   "words": [
+    {
+     "w": "Four",
+     "start": 54.569,
+     "end": 54.906
+    },
+    {
+     "w": "orange,",
+     "start": 54.975,
+     "end": 55.509
+    },
+    {
+     "w": "six",
+     "start": 55.695,
+     "end": 55.962
+    },
+    {
+     "w": "green.",
+     "start": 56.032,
+     "end": 56.612
+    },
+    {
+     "w": "Still",
+     "start": 57.344,
+     "end": 57.646
+    },
+    {
+     "w": "two",
+     "start": 57.715,
+     "end": 57.889
+    },
+    {
+     "w": "orange",
+     "start": 57.959,
+     "end": 58.296
+    },
+    {
+     "w": "for",
+     "start": 58.342,
+     "end": 58.447
+    },
+    {
+     "w": "every",
+     "start": 58.493,
+     "end": 58.667
+    },
+    {
+     "w": "three",
+     "start": 58.714,
+     "end": 58.923
+    },
+    {
+     "w": "green.",
+     "start": 58.969,
+     "end": 59.434
+    },
+    {
+     "w": "Again.",
+     "start": 60.165,
+     "end": 60.711
+    },
+    {
+     "w": "Six",
+     "start": 61.442,
+     "end": 61.837
+    },
+    {
+     "w": "and",
+     "start": 62.057,
+     "end": 62.278
+    },
+    {
+     "w": "nine.",
+     "start": 62.348,
+     "end": 62.835
+    },
+    {
+     "w": "Eight",
+     "start": 63.567,
+     "end": 63.869
+    },
+    {
+     "w": "and",
+     "start": 64.054,
+     "end": 64.275
+    },
+    {
+     "w": "twelve.",
+     "start": 64.333,
+     "end": 65.807
+    }
+   ]
+  },
+  {
+   "i": 9,
+   "section": "scale",
+   "speaker": "narrator",
+   "text": "Put them in a table, and a pattern appears. To get from one row to another, both numbers are multiplied by the same number.",
+   "start": 66.407,
+   "end": 73.419,
+   "words": [
+    {
+     "w": "Put",
+     "start": 66.407,
+     "end": 66.616
+    },
+    {
+     "w": "them",
+     "start": 66.651,
+     "end": 66.755
+    },
+    {
+     "w": "in",
+     "start": 66.79,
+     "end": 66.837
+    },
+    {
+     "w": "a",
+     "start": 66.883,
+     "end": 66.906
+    },
+    {
+     "w": "table,",
+     "start": 66.953,
+     "end": 67.301
+    },
+    {
+     "w": "and",
+     "start": 67.336,
+     "end": 67.464
+    },
+    {
+     "w": "a",
+     "start": 67.522,
+     "end": 67.545
+    },
+    {
+     "w": "pattern",
+     "start": 67.591,
+     "end": 67.893
+    },
+    {
+     "w": "appears.",
+     "start": 67.916,
+     "end": 68.543
+    },
+    {
+     "w": "To",
+     "start": 68.88,
+     "end": 68.973
+    },
+    {
+     "w": "get",
+     "start": 69.031,
+     "end": 69.135
+    },
+    {
+     "w": "from",
+     "start": 69.17,
+     "end": 69.298
+    },
+    {
+     "w": "one",
+     "start": 69.391,
+     "end": 69.553
+    },
+    {
+     "w": "row",
+     "start": 69.6,
+     "end": 69.751
+    },
+    {
+     "w": "to",
+     "start": 69.809,
+     "end": 69.878
+    },
+    {
+     "w": "another,",
+     "start": 69.948,
+     "end": 70.401
+    },
+    {
+     "w": "both",
+     "start": 70.691,
+     "end": 70.958
+    },
+    {
+     "w": "numbers",
+     "start": 71.028,
+     "end": 71.295
+    },
+    {
+     "w": "are",
+     "start": 71.33,
+     "end": 71.434
+    },
+    {
+     "w": "multiplied",
+     "start": 71.481,
+     "end": 72.003
+    },
+    {
+     "w": "by",
+     "start": 72.038,
+     "end": 72.119
+    },
+    {
+     "w": "the",
+     "start": 72.166,
+     "end": 72.235
+    },
+    {
+     "w": "same",
+     "start": 72.293,
+     "end": 72.537
+    },
+    {
+     "w": "number.",
+     "start": 72.572,
+     "end": 73.419
+    }
+   ]
+  },
+  {
+   "i": 10,
+   "section": "scale",
+   "speaker": "narrator",
+   "text": "These are all the same ratio. We call them equivalent ratios.",
+   "start": 73.92,
+   "end": 78.146,
+   "words": [
+    {
+     "w": "These",
+     "start": 73.92,
+     "end": 74.141
+    },
+    {
+     "w": "are",
+     "start": 74.164,
+     "end": 74.268
+    },
+    {
+     "w": "all",
+     "start": 74.292,
+     "end": 74.396
+    },
+    {
+     "w": "the",
+     "start": 74.454,
+     "end": 74.524
+    },
+    {
+     "w": "same",
+     "start": 74.559,
+     "end": 74.768
+    },
+    {
+     "w": "ratio.",
+     "start": 74.814,
+     "end": 75.313
+    },
+    {
+     "w": "We",
+     "start": 75.603,
+     "end": 75.708
+    },
+    {
+     "w": "call",
+     "start": 75.754,
+     "end": 75.894
+    },
+    {
+     "w": "them",
+     "start": 75.94,
+     "end": 76.068
+    },
+    {
+     "w": "equivalent",
+     "start": 76.254,
+     "end": 76.741
+    },
+    {
+     "w": "ratios.",
+     "start": 76.788,
+     "end": 78.146
+    }
+   ]
+  },
+  {
+   "i": 11,
+   "section": "add",
+   "speaker": "narrator",
+   "text": "But here's a question that trips up almost everyone. Why multiply? Why not add the same amount to both? Two plus two, three plus two. Four to five. That feels fair.",
+   "start": 79.346,
+   "end": 91.049,
+   "words": [
+    {
+     "w": "But",
+     "start": 79.346,
+     "end": 79.532
+    },
+    {
+     "w": "here's",
+     "start": 79.567,
+     "end": 79.741
+    },
+    {
+     "w": "a",
+     "start": 79.776,
+     "end": 79.799
+    },
+    {
+     "w": "question",
+     "start": 79.845,
+     "end": 80.135
+    },
+    {
+     "w": "that",
+     "start": 80.17,
+     "end": 80.286
+    },
+    {
+     "w": "trips",
+     "start": 80.31,
+     "end": 80.553
+    },
+    {
+     "w": "up",
+     "start": 80.6,
+     "end": 80.681
+    },
+    {
+     "w": "almost",
+     "start": 80.751,
+     "end": 81.041
+    },
+    {
+     "w": "everyone.",
+     "start": 81.099,
+     "end": 81.61
+    },
+    {
+     "w": "Why",
+     "start": 82.016,
+     "end": 82.202
+    },
+    {
+     "w": "multiply?",
+     "start": 82.283,
+     "end": 82.91
+    },
+    {
+     "w": "Why",
+     "start": 83.317,
+     "end": 83.514
+    },
+    {
+     "w": "not",
+     "start": 83.584,
+     "end": 83.7
+    },
+    {
+     "w": "add",
+     "start": 83.746,
+     "end": 83.897
+    },
+    {
+     "w": "the",
+     "start": 83.932,
+     "end": 84.002
+    },
+    {
+     "w": "same",
+     "start": 84.048,
+     "end": 84.245
+    },
+    {
+     "w": "amount",
+     "start": 84.269,
+     "end": 84.489
+    },
+    {
+     "w": "to",
+     "start": 84.524,
+     "end": 84.594
+    },
+    {
+     "w": "both?",
+     "start": 84.663,
+     "end": 85.186
+    },
+    {
+     "w": "Two",
+     "start": 85.72,
+     "end": 85.894
+    },
+    {
+     "w": "plus",
+     "start": 85.952,
+     "end": 86.173
+    },
+    {
+     "w": "two,",
+     "start": 86.231,
+     "end": 86.521
+    },
+    {
+     "w": "three",
+     "start": 86.556,
+     "end": 86.776
+    },
+    {
+     "w": "plus",
+     "start": 86.811,
+     "end": 87.032
+    },
+    {
+     "w": "two.",
+     "start": 87.09,
+     "end": 87.496
+    },
+    {
+     "w": "Four",
+     "start": 87.717,
+     "end": 87.961
+    },
+    {
+     "w": "to",
+     "start": 88.007,
+     "end": 88.053
+    },
+    {
+     "w": "five.",
+     "start": 88.112,
+     "end": 88.622
+    },
+    {
+     "w": "That",
+     "start": 89.261,
+     "end": 89.493
+    },
+    {
+     "w": "feels",
+     "start": 89.563,
+     "end": 89.807
+    },
+    {
+     "w": "fair.",
+     "start": 89.865,
+     "end": 91.049
+    }
+   ]
+  },
+  {
+   "i": 12,
+   "section": "add",
+   "speaker": "narrator",
+   "text": "Let's check, with shapes. Draw a rectangle, two wide and three tall.",
+   "start": 91.849,
+   "end": 96.818,
+   "words": [
+    {
+     "w": "Let's",
+     "start": 91.849,
+     "end": 92.081
+    },
+    {
+     "w": "check,",
+     "start": 92.128,
+     "end": 92.429
+    },
+    {
+     "w": "with",
+     "start": 92.453,
+     "end": 92.615
+    },
+    {
+     "w": "shapes.",
+     "start": 92.662,
+     "end": 93.207
+    },
+    {
+     "w": "Draw",
+     "start": 93.939,
+     "end": 94.183
+    },
+    {
+     "w": "a",
+     "start": 94.217,
+     "end": 94.241
+    },
+    {
+     "w": "rectangle,",
+     "start": 94.287,
+     "end": 94.81
+    },
+    {
+     "w": "two",
+     "start": 94.856,
+     "end": 95.042
+    },
+    {
+     "w": "wide",
+     "start": 95.1,
+     "end": 95.332
+    },
+    {
+     "w": "and",
+     "start": 95.355,
+     "end": 95.425
+    },
+    {
+     "w": "three",
+     "start": 95.483,
+     "end": 95.68
+    },
+    {
+     "w": "tall.",
+     "start": 95.715,
+     "end": 96.818
+    }
+   ]
+  },
+  {
+   "i": 13,
+   "section": "add",
+   "speaker": "narrator",
+   "text": "Double both sides. Four by six. It's bigger, but it's exactly the same shape.",
+   "start": 97.318,
+   "end": 102.705,
+   "words": [
+    {
+     "w": "Double",
+     "start": 97.318,
+     "end": 97.631
+    },
+    {
+     "w": "both",
+     "start": 97.666,
+     "end": 97.84
+    },
+    {
+     "w": "sides.",
+     "start": 97.875,
+     "end": 98.247
+    },
+    {
+     "w": "Four",
+     "start": 98.375,
+     "end": 98.56
+    },
+    {
+     "w": "by",
+     "start": 98.607,
+     "end": 98.688
+    },
+    {
+     "w": "six.",
+     "start": 98.758,
+     "end": 99.257
+    },
+    {
+     "w": "It's",
+     "start": 99.721,
+     "end": 99.907
+    },
+    {
+     "w": "bigger,",
+     "start": 99.953,
+     "end": 100.371
+    },
+    {
+     "w": "but",
+     "start": 100.557,
+     "end": 100.685
+    },
+    {
+     "w": "it's",
+     "start": 100.708,
+     "end": 100.824
+    },
+    {
+     "w": "exactly",
+     "start": 100.871,
+     "end": 101.486
+    },
+    {
+     "w": "the",
+     "start": 101.532,
+     "end": 101.602
+    },
+    {
+     "w": "same",
+     "start": 101.637,
+     "end": 101.834
+    },
+    {
+     "w": "shape.",
+     "start": 101.858,
+     "end": 102.705
+    }
+   ]
+  },
+  {
+   "i": 14,
+   "section": "add",
+   "speaker": "narrator",
+   "text": "Now add two to both sides instead. Four by five. Look. It's squarer. The shape has changed.",
+   "start": 103.305,
+   "end": 109.946,
+   "words": [
+    {
+     "w": "Now",
+     "start": 103.305,
+     "end": 103.502
+    },
+    {
+     "w": "add",
+     "start": 103.549,
+     "end": 103.711
+    },
+    {
+     "w": "two",
+     "start": 103.735,
+     "end": 103.897
+    },
+    {
+     "w": "to",
+     "start": 103.955,
+     "end": 104.013
+    },
+    {
+     "w": "both",
+     "start": 104.083,
+     "end": 104.269
+    },
+    {
+     "w": "sides",
+     "start": 104.303,
+     "end": 104.582
+    },
+    {
+     "w": "instead.",
+     "start": 104.617,
+     "end": 105.081
+    },
+    {
+     "w": "Four",
+     "start": 105.488,
+     "end": 105.697
+    },
+    {
+     "w": "by",
+     "start": 105.755,
+     "end": 105.848
+    },
+    {
+     "w": "five.",
+     "start": 105.917,
+     "end": 106.324
+    },
+    {
+     "w": "Look.",
+     "start": 106.37,
+     "end": 106.765
+    },
+    {
+     "w": "It's",
+     "start": 107.171,
+     "end": 107.368
+    },
+    {
+     "w": "squarer.",
+     "start": 107.403,
+     "end": 107.995
+    },
+    {
+     "w": "The",
+     "start": 108.402,
+     "end": 108.518
+    },
+    {
+     "w": "shape",
+     "start": 108.564,
+     "end": 108.785
+    },
+    {
+     "w": "has",
+     "start": 108.808,
+     "end": 108.913
+    },
+    {
+     "w": "changed.",
+     "start": 108.971,
+     "end": 109.946
+    }
+   ]
+  },
+  {
+   "i": 15,
+   "section": "add",
+   "speaker": "narrator",
+   "text": "Adding keeps the difference the same. But a ratio isn't about the difference. It's about how many times bigger one amount is than the other.",
+   "start": 110.546,
+   "end": 120.763,
+   "words": [
+    {
+     "w": "Adding",
+     "start": 110.546,
+     "end": 110.976
+    },
+    {
+     "w": "keeps",
+     "start": 111.034,
+     "end": 111.289
+    },
+    {
+     "w": "the",
+     "start": 111.324,
+     "end": 111.394
+    },
+    {
+     "w": "difference",
+     "start": 111.428,
+     "end": 111.788
+    },
+    {
+     "w": "the",
+     "start": 111.823,
+     "end": 111.928
+    },
+    {
+     "w": "same.",
+     "start": 111.986,
+     "end": 112.485
+    },
+    {
+     "w": "But",
+     "start": 112.949,
+     "end": 113.251
+    },
+    {
+     "w": "a",
+     "start": 113.437,
+     "end": 113.565
+    },
+    {
+     "w": "ratio",
+     "start": 113.704,
+     "end": 114.168
+    },
+    {
+     "w": "isn't",
+     "start": 114.424,
+     "end": 114.795
+    },
+    {
+     "w": "about",
+     "start": 114.888,
+     "end": 115.248
+    },
+    {
+     "w": "the",
+     "start": 115.294,
+     "end": 115.364
+    },
+    {
+     "w": "difference.",
+     "start": 115.411,
+     "end": 116.049
+    },
+    {
+     "w": "It's",
+     "start": 116.514,
+     "end": 116.699
+    },
+    {
+     "w": "about",
+     "start": 116.734,
+     "end": 116.931
+    },
+    {
+     "w": "how",
+     "start": 116.978,
+     "end": 117.082
+    },
+    {
+     "w": "many",
+     "start": 117.129,
+     "end": 117.28
+    },
+    {
+     "w": "times",
+     "start": 117.338,
+     "end": 117.675
+    },
+    {
+     "w": "bigger",
+     "start": 117.767,
+     "end": 118.046
+    },
+    {
+     "w": "one",
+     "start": 118.127,
+     "end": 118.255
+    },
+    {
+     "w": "amount",
+     "start": 118.278,
+     "end": 118.568
+    },
+    {
+     "w": "is",
+     "start": 118.638,
+     "end": 118.766
+    },
+    {
+     "w": "than",
+     "start": 118.836,
+     "end": 118.975
+    },
+    {
+     "w": "the",
+     "start": 119.021,
+     "end": 119.103
+    },
+    {
+     "w": "other.",
+     "start": 119.172,
+     "end": 120.763
+    }
+   ]
+  },
+  {
+   "i": 16,
+   "section": "line",
+   "speaker": "narrator",
+   "text": "Here's the clearest way to see it. Put the orange amount across, and the green amount up. Two and three is this point. Four and six. Six and nine. Eight and twelve.",
+   "start": 121.962,
+   "end": 137.984,
+   "words": [
+    {
+     "w": "Here's",
+     "start": 121.962,
+     "end": 122.252
+    },
+    {
+     "w": "the",
+     "start": 122.287,
+     "end": 122.357
+    },
+    {
+     "w": "clearest",
+     "start": 122.415,
+     "end": 122.763
+    },
+    {
+     "w": "way",
+     "start": 122.81,
+     "end": 122.926
+    },
+    {
+     "w": "to",
+     "start": 122.96,
+     "end": 123.007
+    },
+    {
+     "w": "see",
+     "start": 123.065,
+     "end": 123.204
+    },
+    {
+     "w": "it.",
+     "start": 123.251,
+     "end": 123.506
+    },
+    {
+     "w": "Put",
+     "start": 124.04,
+     "end": 124.214
+    },
+    {
+     "w": "the",
+     "start": 124.249,
+     "end": 124.319
+    },
+    {
+     "w": "orange",
+     "start": 124.377,
+     "end": 124.609
+    },
+    {
+     "w": "amount",
+     "start": 124.632,
+     "end": 124.853
+    },
+    {
+     "w": "across,",
+     "start": 124.888,
+     "end": 125.608
+    },
+    {
+     "w": "and",
+     "start": 125.793,
+     "end": 125.933
+    },
+    {
+     "w": "the",
+     "start": 125.979,
+     "end": 126.049
+    },
+    {
+     "w": "green",
+     "start": 126.107,
+     "end": 126.362
+    },
+    {
+     "w": "amount",
+     "start": 126.409,
+     "end": 126.687
+    },
+    {
+     "w": "up.",
+     "start": 126.757,
+     "end": 127.198
+    },
+    {
+     "w": "Two",
+     "start": 127.837,
+     "end": 128.034
+    },
+    {
+     "w": "and",
+     "start": 128.115,
+     "end": 128.185
+    },
+    {
+     "w": "three",
+     "start": 128.231,
+     "end": 128.452
+    },
+    {
+     "w": "is",
+     "start": 128.487,
+     "end": 128.568
+    },
+    {
+     "w": "this",
+     "start": 128.615,
+     "end": 128.754
+    },
+    {
+     "w": "point.",
+     "start": 128.823,
+     "end": 129.241
+    },
+    {
+     "w": "Four",
+     "start": 130.101,
+     "end": 130.495
+    },
+    {
+     "w": "and",
+     "start": 130.832,
+     "end": 131.064
+    },
+    {
+     "w": "six.",
+     "start": 131.192,
+     "end": 131.819
+    },
+    {
+     "w": "Six",
+     "start": 132.678,
+     "end": 133.073
+    },
+    {
+     "w": "and",
+     "start": 133.479,
+     "end": 133.711
+    },
+    {
+     "w": "nine.",
+     "start": 133.793,
+     "end": 134.327
+    },
+    {
+     "w": "Eight",
+     "start": 135.325,
+     "end": 135.615
+    },
+    {
+     "w": "and",
+     "start": 135.836,
+     "end": 136.103
+    },
+    {
+     "w": "twelve.",
+     "start": 136.161,
+     "end": 137.984
+    }
+   ]
+  },
+  {
+   "i": 17,
+   "section": "line",
+   "speaker": "narrator",
+   "text": "They all sit on one straight line. And that line runs through zero.",
+   "start": 138.584,
+   "end": 142.439,
+   "words": [
+    {
+     "w": "They",
+     "start": 138.584,
+     "end": 138.758
+    },
+    {
+     "w": "all",
+     "start": 138.793,
+     "end": 138.897
+    },
+    {
+     "w": "sit",
+     "start": 138.956,
+     "end": 139.095
+    },
+    {
+     "w": "on",
+     "start": 139.13,
+     "end": 139.199
+    },
+    {
+     "w": "one",
+     "start": 139.281,
+     "end": 139.455
+    },
+    {
+     "w": "straight",
+     "start": 139.501,
+     "end": 139.791
+    },
+    {
+     "w": "line.",
+     "start": 139.826,
+     "end": 140.151
+    },
+    {
+     "w": "And",
+     "start": 140.337,
+     "end": 140.465
+    },
+    {
+     "w": "that",
+     "start": 140.511,
+     "end": 140.651
+    },
+    {
+     "w": "line",
+     "start": 140.72,
+     "end": 140.929
+    },
+    {
+     "w": "runs",
+     "start": 140.952,
+     "end": 141.138
+    },
+    {
+     "w": "through",
+     "start": 141.185,
+     "end": 141.405
+    },
+    {
+     "w": "zero.",
+     "start": 141.463,
+     "end": 142.439
+    }
+   ]
+  },
+  {
+   "i": 18,
+   "section": "line",
+   "speaker": "narrator",
+   "text": "Every point on this line is the same ratio. A ratio is really a direction.",
+   "start": 143.039,
+   "end": 147.311,
+   "words": [
+    {
+     "w": "Every",
+     "start": 143.039,
+     "end": 143.294
+    },
+    {
+     "w": "point",
+     "start": 143.364,
+     "end": 143.585
+    },
+    {
+     "w": "on",
+     "start": 143.631,
+     "end": 143.678
+    },
+    {
+     "w": "this",
+     "start": 143.712,
+     "end": 143.817
+    },
+    {
+     "w": "line",
+     "start": 143.875,
+     "end": 144.107
+    },
+    {
+     "w": "is",
+     "start": 144.142,
+     "end": 144.2
+    },
+    {
+     "w": "the",
+     "start": 144.246,
+     "end": 144.316
+    },
+    {
+     "w": "same",
+     "start": 144.363,
+     "end": 144.583
+    },
+    {
+     "w": "ratio.",
+     "start": 144.618,
+     "end": 145.094
+    },
+    {
+     "w": "A",
+     "start": 145.558,
+     "end": 145.64
+    },
+    {
+     "w": "ratio",
+     "start": 145.733,
+     "end": 146.011
+    },
+    {
+     "w": "is",
+     "start": 146.046,
+     "end": 146.116
+    },
+    {
+     "w": "really",
+     "start": 146.197,
+     "end": 146.394
+    },
+    {
+     "w": "a",
+     "start": 146.441,
+     "end": 146.464
+    },
+    {
+     "w": "direction.",
+     "start": 146.522,
+     "end": 147.311
+    }
+   ]
+  },
+  {
+   "i": 19,
+   "section": "line",
+   "speaker": "narrator",
+   "text": "And four to five? It's off the line. Adding pushed it in a different direction.",
+   "start": 147.911,
+   "end": 153.484,
+   "words": [
+    {
+     "w": "And",
+     "start": 147.911,
+     "end": 148.283
+    },
+    {
+     "w": "four",
+     "start": 148.689,
+     "end": 148.886
+    },
+    {
+     "w": "to",
+     "start": 148.933,
+     "end": 148.979
+    },
+    {
+     "w": "five?",
+     "start": 149.037,
+     "end": 149.49
+    },
+    {
+     "w": "It's",
+     "start": 149.711,
+     "end": 149.896
+    },
+    {
+     "w": "off",
+     "start": 149.931,
+     "end": 150.059
+    },
+    {
+     "w": "the",
+     "start": 150.105,
+     "end": 150.175
+    },
+    {
+     "w": "line.",
+     "start": 150.221,
+     "end": 150.581
+    },
+    {
+     "w": "Adding",
+     "start": 150.918,
+     "end": 151.266
+    },
+    {
+     "w": "pushed",
+     "start": 151.324,
+     "end": 151.58
+    },
+    {
+     "w": "it",
+     "start": 151.626,
+     "end": 151.684
+    },
+    {
+     "w": "in",
+     "start": 151.742,
+     "end": 151.824
+    },
+    {
+     "w": "a",
+     "start": 151.893,
+     "end": 151.916
+    },
+    {
+     "w": "different",
+     "start": 151.963,
+     "end": 152.218
+    },
+    {
+     "w": "direction.",
+     "start": 152.242,
+     "end": 153.484
+    }
+   ]
+  },
+  {
+   "i": 20,
+   "section": "unit",
+   "speaker": "narrator",
+   "text": "Now walk back along the line, all the way to one orange tile. There, you get one and a half green.",
+   "start": 154.684,
+   "end": 160.025,
+   "words": [
+    {
+     "w": "Now",
+     "start": 154.684,
+     "end": 154.881
+    },
+    {
+     "w": "walk",
+     "start": 154.951,
+     "end": 155.114
+    },
+    {
+     "w": "back",
+     "start": 155.172,
+     "end": 155.311
+    },
+    {
+     "w": "along",
+     "start": 155.357,
+     "end": 155.543
+    },
+    {
+     "w": "the",
+     "start": 155.578,
+     "end": 155.648
+    },
+    {
+     "w": "line,",
+     "start": 155.682,
+     "end": 155.973
+    },
+    {
+     "w": "all",
+     "start": 156.008,
+     "end": 156.17
+    },
+    {
+     "w": "the",
+     "start": 156.217,
+     "end": 156.286
+    },
+    {
+     "w": "way",
+     "start": 156.321,
+     "end": 156.402
+    },
+    {
+     "w": "to",
+     "start": 156.449,
+     "end": 156.507
+    },
+    {
+     "w": "one",
+     "start": 156.669,
+     "end": 156.82
+    },
+    {
+     "w": "orange",
+     "start": 156.843,
+     "end": 157.087
+    },
+    {
+     "w": "tile.",
+     "start": 157.122,
+     "end": 157.575
+    },
+    {
+     "w": "There,",
+     "start": 157.981,
+     "end": 158.411
+    },
+    {
+     "w": "you",
+     "start": 158.631,
+     "end": 158.713
+    },
+    {
+     "w": "get",
+     "start": 158.771,
+     "end": 158.864
+    },
+    {
+     "w": "one",
+     "start": 158.922,
+     "end": 159.038
+    },
+    {
+     "w": "and",
+     "start": 159.073,
+     "end": 159.142
+    },
+    {
+     "w": "a",
+     "start": 159.177,
+     "end": 159.2
+    },
+    {
+     "w": "half",
+     "start": 159.258,
+     "end": 159.398
+    },
+    {
+     "w": "green.",
+     "start": 159.467,
+     "end": 160.025
+    }
+   ]
+  },
+  {
+   "i": 21,
+   "section": "unit",
+   "speaker": "narrator",
+   "text": "That's the unit rate. For every one, one and a half. With it, you can reach any point on the line. Five orange? Five times one and a half. Seven and a half green.",
+   "start": 160.525,
+   "end": 171.299,
+   "words": [
+    {
+     "w": "That's",
+     "start": 160.525,
+     "end": 160.804
+    },
+    {
+     "w": "the",
+     "start": 160.862,
+     "end": 160.931
+    },
+    {
+     "w": "unit",
+     "start": 161.001,
+     "end": 161.187
+    },
+    {
+     "w": "rate.",
+     "start": 161.222,
+     "end": 161.582
+    },
+    {
+     "w": "For",
+     "start": 162.046,
+     "end": 162.174
+    },
+    {
+     "w": "every",
+     "start": 162.208,
+     "end": 162.359
+    },
+    {
+     "w": "one,",
+     "start": 162.406,
+     "end": 162.603
+    },
+    {
+     "w": "one",
+     "start": 162.661,
+     "end": 162.824
+    },
+    {
+     "w": "and",
+     "start": 162.859,
+     "end": 162.928
+    },
+    {
+     "w": "a",
+     "start": 162.963,
+     "end": 162.986
+    },
+    {
+     "w": "half.",
+     "start": 163.044,
+     "end": 163.474
+    },
+    {
+     "w": "With",
+     "start": 164.112,
+     "end": 164.321
+    },
+    {
+     "w": "it,",
+     "start": 164.368,
+     "end": 164.449
+    },
+    {
+     "w": "you",
+     "start": 164.472,
+     "end": 164.542
+    },
+    {
+     "w": "can",
+     "start": 164.577,
+     "end": 164.681
+    },
+    {
+     "w": "reach",
+     "start": 164.728,
+     "end": 164.914
+    },
+    {
+     "w": "any",
+     "start": 164.995,
+     "end": 165.192
+    },
+    {
+     "w": "point",
+     "start": 165.262,
+     "end": 165.482
+    },
+    {
+     "w": "on",
+     "start": 165.529,
+     "end": 165.587
+    },
+    {
+     "w": "the",
+     "start": 165.622,
+     "end": 165.691
+    },
+    {
+     "w": "line.",
+     "start": 165.738,
+     "end": 166.005
+    },
+    {
+     "w": "Five",
+     "start": 166.04,
+     "end": 166.284
+    },
+    {
+     "w": "orange?",
+     "start": 166.318,
+     "end": 166.806
+    },
+    {
+     "w": "Five",
+     "start": 167.445,
+     "end": 167.746
+    },
+    {
+     "w": "times",
+     "start": 167.781,
+     "end": 168.037
+    },
+    {
+     "w": "one",
+     "start": 168.095,
+     "end": 168.222
+    },
+    {
+     "w": "and",
+     "start": 168.257,
+     "end": 168.327
+    },
+    {
+     "w": "a",
+     "start": 168.362,
+     "end": 168.385
+    },
+    {
+     "w": "half.",
+     "start": 168.431,
+     "end": 168.826
+    },
+    {
+     "w": "Seven",
+     "start": 169.558,
+     "end": 169.836
+    },
+    {
+     "w": "and",
+     "start": 169.883,
+     "end": 169.952
+    },
+    {
+     "w": "a",
+     "start": 169.987,
+     "end": 170.01
+    },
+    {
+     "w": "half",
+     "start": 170.068,
+     "end": 170.208
+    },
+    {
+     "w": "green.",
+     "start": 170.266,
+     "end": 171.299
+    }
+   ]
+  },
+  {
+   "i": 22,
+   "section": "whole",
+   "speaker": "narrator",
+   "text": "A ratio also hides the whole. Two to three means that out of every five tiles, two are orange, and three are green.",
+   "start": 172.499,
+   "end": 179.093,
+   "words": [
+    {
+     "w": "A",
+     "start": 172.499,
+     "end": 172.592
+    },
+    {
+     "w": "ratio",
+     "start": 172.662,
+     "end": 172.917
+    },
+    {
+     "w": "also",
+     "start": 172.963,
+     "end": 173.196
+    },
+    {
+     "w": "hides",
+     "start": 173.254,
+     "end": 173.463
+    },
+    {
+     "w": "the",
+     "start": 173.497,
+     "end": 173.567
+    },
+    {
+     "w": "whole.",
+     "start": 173.614,
+     "end": 173.962
+    },
+    {
+     "w": "Two",
+     "start": 174.426,
+     "end": 174.6
+    },
+    {
+     "w": "to",
+     "start": 174.647,
+     "end": 174.693
+    },
+    {
+     "w": "three",
+     "start": 174.74,
+     "end": 174.937
+    },
+    {
+     "w": "means",
+     "start": 174.984,
+     "end": 175.204
+    },
+    {
+     "w": "that",
+     "start": 175.251,
+     "end": 175.413
+    },
+    {
+     "w": "out",
+     "start": 175.483,
+     "end": 175.599
+    },
+    {
+     "w": "of",
+     "start": 175.634,
+     "end": 175.68
+    },
+    {
+     "w": "every",
+     "start": 175.727,
+     "end": 175.901
+    },
+    {
+     "w": "five",
+     "start": 175.959,
+     "end": 176.214
+    },
+    {
+     "w": "tiles,",
+     "start": 176.249,
+     "end": 176.597
+    },
+    {
+     "w": "two",
+     "start": 176.621,
+     "end": 176.806
+    },
+    {
+     "w": "are",
+     "start": 176.876,
+     "end": 176.98
+    },
+    {
+     "w": "orange,",
+     "start": 177.027,
+     "end": 177.515
+    },
+    {
+     "w": "and",
+     "start": 177.654,
+     "end": 177.805
+    },
+    {
+     "w": "three",
+     "start": 177.863,
+     "end": 178.06
+    },
+    {
+     "w": "are",
+     "start": 178.095,
+     "end": 178.176
+    },
+    {
+     "w": "green.",
+     "start": 178.211,
+     "end": 179.093
+    }
+   ]
+  },
+  {
+   "i": 23,
+   "section": "whole",
+   "speaker": "narrator",
+   "text": "So be careful. Two to three does not mean two thirds of the tiles are orange. It's two out of five.",
+   "start": 179.593,
+   "end": 186.559,
+   "words": [
+    {
+     "w": "So",
+     "start": 179.593,
+     "end": 179.767
+    },
+    {
+     "w": "be",
+     "start": 179.825,
+     "end": 179.895
+    },
+    {
+     "w": "careful.",
+     "start": 179.93,
+     "end": 180.429
+    },
+    {
+     "w": "Two",
+     "start": 180.893,
+     "end": 181.079
+    },
+    {
+     "w": "to",
+     "start": 181.137,
+     "end": 181.184
+    },
+    {
+     "w": "three",
+     "start": 181.242,
+     "end": 181.439
+    },
+    {
+     "w": "does",
+     "start": 181.485,
+     "end": 181.636
+    },
+    {
+     "w": "not",
+     "start": 181.694,
+     "end": 181.822
+    },
+    {
+     "w": "mean",
+     "start": 181.869,
+     "end": 182.031
+    },
+    {
+     "w": "two",
+     "start": 182.101,
+     "end": 182.275
+    },
+    {
+     "w": "thirds",
+     "start": 182.356,
+     "end": 182.612
+    },
+    {
+     "w": "of",
+     "start": 182.646,
+     "end": 182.693
+    },
+    {
+     "w": "the",
+     "start": 182.739,
+     "end": 182.809
+    },
+    {
+     "w": "tiles",
+     "start": 182.844,
+     "end": 183.157
+    },
+    {
+     "w": "are",
+     "start": 183.192,
+     "end": 183.297
+    },
+    {
+     "w": "orange.",
+     "start": 183.343,
+     "end": 183.854
+    },
+    {
+     "w": "It's",
+     "start": 184.191,
+     "end": 184.388
+    },
+    {
+     "w": "two",
+     "start": 184.469,
+     "end": 184.794
+    },
+    {
+     "w": "out",
+     "start": 184.98,
+     "end": 185.143
+    },
+    {
+     "w": "of",
+     "start": 185.189,
+     "end": 185.235
+    },
+    {
+     "w": "five.",
+     "start": 185.293,
+     "end": 186.559
+    }
+   ]
+  },
+  {
+   "i": 24,
+   "section": "recap",
+   "speaker": "narrator",
+   "text": "So. A ratio is a rule for how two amounts belong together. Equivalent ratios come from multiplying both amounts by the same number, not adding. And on a graph, they all lie on one line through zero.",
+   "start": 187.759,
+   "end": 201.691,
+   "words": [
+    {
+     "w": "So.",
+     "start": 187.759,
+     "end": 188.235
+    },
+    {
+     "w": "A",
+     "start": 188.769,
+     "end": 188.839
+    },
+    {
+     "w": "ratio",
+     "start": 188.932,
+     "end": 189.233
+    },
+    {
+     "w": "is",
+     "start": 189.303,
+     "end": 189.373
+    },
+    {
+     "w": "a",
+     "start": 189.431,
+     "end": 189.454
+    },
+    {
+     "w": "rule",
+     "start": 189.524,
+     "end": 189.779
+    },
+    {
+     "w": "for",
+     "start": 189.826,
+     "end": 189.93
+    },
+    {
+     "w": "how",
+     "start": 189.977,
+     "end": 190.093
+    },
+    {
+     "w": "two",
+     "start": 190.174,
+     "end": 190.36
+    },
+    {
+     "w": "amounts",
+     "start": 190.418,
+     "end": 190.72
+    },
+    {
+     "w": "belong",
+     "start": 190.766,
+     "end": 190.998
+    },
+    {
+     "w": "together.",
+     "start": 191.045,
+     "end": 191.544
+    },
+    {
+     "w": "Equivalent",
+     "start": 192.275,
+     "end": 192.716
+    },
+    {
+     "w": "ratios",
+     "start": 192.763,
+     "end": 193.181
+    },
+    {
+     "w": "come",
+     "start": 193.239,
+     "end": 193.425
+    },
+    {
+     "w": "from",
+     "start": 193.471,
+     "end": 193.61
+    },
+    {
+     "w": "multiplying",
+     "start": 193.657,
+     "end": 194.156
+    },
+    {
+     "w": "both",
+     "start": 194.226,
+     "end": 194.458
+    },
+    {
+     "w": "amounts",
+     "start": 194.504,
+     "end": 194.911
+    },
+    {
+     "w": "by",
+     "start": 195.247,
+     "end": 195.387
+    },
+    {
+     "w": "the",
+     "start": 195.445,
+     "end": 195.514
+    },
+    {
+     "w": "same",
+     "start": 195.573,
+     "end": 195.816
+    },
+    {
+     "w": "number,",
+     "start": 195.863,
+     "end": 196.35
+    },
+    {
+     "w": "not",
+     "start": 196.687,
+     "end": 196.954
+    },
+    {
+     "w": "adding.",
+     "start": 197.001,
+     "end": 197.511
+    },
+    {
+     "w": "And",
+     "start": 197.918,
+     "end": 198.069
+    },
+    {
+     "w": "on",
+     "start": 198.115,
+     "end": 198.173
+    },
+    {
+     "w": "a",
+     "start": 198.231,
+     "end": 198.254
+    },
+    {
+     "w": "graph,",
+     "start": 198.301,
+     "end": 198.858
+    },
+    {
+     "w": "they",
+     "start": 199.044,
+     "end": 199.183
+    },
+    {
+     "w": "all",
+     "start": 199.218,
+     "end": 199.323
+    },
+    {
+     "w": "lie",
+     "start": 199.381,
+     "end": 199.566
+    },
+    {
+     "w": "on",
+     "start": 199.601,
+     "end": 199.671
+    },
+    {
+     "w": "one",
+     "start": 199.764,
+     "end": 199.926
+    },
+    {
+     "w": "line",
+     "start": 199.973,
+     "end": 200.158
+    },
+    {
+     "w": "through",
+     "start": 200.193,
+     "end": 200.425
+    },
+    {
+     "w": "zero.",
+     "start": 200.472,
+     "end": 201.691
+    }
+   ]
+  },
+  {
+   "i": 25,
+   "section": "recap",
+   "speaker": "narrator",
+   "text": "That's why every screen has the same shape. Sixteen to nine. Every size is just a point further along the same line.",
+   "start": 202.291,
+   "end": 210.093,
+   "words": [
+    {
+     "w": "That's",
+     "start": 202.291,
+     "end": 202.535
+    },
+    {
+     "w": "why",
+     "start": 202.558,
+     "end": 202.639
+    },
+    {
+     "w": "every",
+     "start": 202.697,
+     "end": 202.871
+    },
+    {
+     "w": "screen",
+     "start": 202.906,
+     "end": 203.15
+    },
+    {
+     "w": "has",
+     "start": 203.185,
+     "end": 203.278
+    },
+    {
+     "w": "the",
+     "start": 203.313,
+     "end": 203.382
+    },
+    {
+     "w": "same",
+     "start": 203.417,
+     "end": 203.603
+    },
+    {
+     "w": "shape.",
+     "start": 203.638,
+     "end": 204.067
+    },
+    {
+     "w": "Sixteen",
+     "start": 204.799,
+     "end": 205.228
+    },
+    {
+     "w": "to",
+     "start": 205.275,
+     "end": 205.321
+    },
+    {
+     "w": "nine.",
+     "start": 205.379,
+     "end": 205.82
+    },
+    {
+     "w": "Every",
+     "start": 206.68,
+     "end": 206.935
+    },
+    {
+     "w": "size",
+     "start": 206.993,
+     "end": 207.515
+    },
+    {
+     "w": "is",
+     "start": 207.701,
+     "end": 207.875
+    },
+    {
+     "w": "just",
+     "start": 207.933,
+     "end": 208.096
+    },
+    {
+     "w": "a",
+     "start": 208.142,
+     "end": 208.166
+    },
+    {
+     "w": "point",
+     "start": 208.224,
+     "end": 208.409
+    },
+    {
+     "w": "further",
+     "start": 208.468,
+     "end": 208.746
+    },
+    {
+     "w": "along",
+     "start": 208.793,
+     "end": 208.978
+    },
+    {
+     "w": "the",
+     "start": 209.013,
+     "end": 209.083
+    },
+    {
+     "w": "same",
+     "start": 209.118,
+     "end": 209.303
+    },
+    {
+     "w": "line.",
+     "start": 209.35,
+     "end": 210.093
+    }
+   ]
+  },
+  {
+   "i": 26,
+   "section": "try",
+   "speaker": "narrator",
+   "text": "Your turn. Is ten to fifteen the same ratio as two to three? And what about five to six?",
+   "start": 211.293,
+   "end": 218.027,
+   "words": [
+    {
+     "w": "Your",
+     "start": 211.293,
+     "end": 211.537
+    },
+    {
+     "w": "turn.",
+     "start": 211.595,
+     "end": 212.001
+    },
+    {
+     "w": "Is",
+     "start": 212.535,
+     "end": 212.709
+    },
+    {
+     "w": "ten",
+     "start": 212.756,
+     "end": 212.884
+    },
+    {
+     "w": "to",
+     "start": 212.918,
+     "end": 212.965
+    },
+    {
+     "w": "fifteen",
+     "start": 213.011,
+     "end": 213.325
+    },
+    {
+     "w": "the",
+     "start": 213.371,
+     "end": 213.441
+    },
+    {
+     "w": "same",
+     "start": 213.476,
+     "end": 213.673
+    },
+    {
+     "w": "ratio",
+     "start": 213.708,
+     "end": 214.01
+    },
+    {
+     "w": "as",
+     "start": 214.056,
+     "end": 214.126
+    },
+    {
+     "w": "two",
+     "start": 214.172,
+     "end": 214.288
+    },
+    {
+     "w": "to",
+     "start": 214.335,
+     "end": 214.381
+    },
+    {
+     "w": "three?",
+     "start": 214.439,
+     "end": 214.892
+    },
+    {
+     "w": "And",
+     "start": 215.624,
+     "end": 215.74
+    },
+    {
+     "w": "what",
+     "start": 215.763,
+     "end": 215.856
+    },
+    {
+     "w": "about",
+     "start": 215.879,
+     "end": 216.041
+    },
+    {
+     "w": "five",
+     "start": 216.111,
+     "end": 216.401
+    },
+    {
+     "w": "to",
+     "start": 216.436,
+     "end": 216.506
+    },
+    {
+     "w": "six?",
+     "start": 216.634,
+     "end": 218.027
+    }
+   ]
+  },
+  {
+   "i": 27,
+   "section": "try",
+   "speaker": "narrator",
+   "text": "Ten to fifteen: yes. It's two to three, times five. Five to six: no. That's three added to both, and it falls off the line.",
+   "start": 221.627,
+   "end": 229.615,
+   "words": [
+    {
+     "w": "Ten",
+     "start": 221.627,
+     "end": 221.824
+    },
+    {
+     "w": "to",
+     "start": 221.871,
+     "end": 221.917
+    },
+    {
+     "w": "fifteen:",
+     "start": 221.964,
+     "end": 222.393
+    },
+    {
+     "w": "yes.",
+     "start": 222.428,
+     "end": 222.916
+    },
+    {
+     "w": "It's",
+     "start": 223.136,
+     "end": 223.334
+    },
+    {
+     "w": "two",
+     "start": 223.38,
+     "end": 223.496
+    },
+    {
+     "w": "to",
+     "start": 223.543,
+     "end": 223.589
+    },
+    {
+     "w": "three,",
+     "start": 223.636,
+     "end": 223.903
+    },
+    {
+     "w": "times",
+     "start": 223.949,
+     "end": 224.204
+    },
+    {
+     "w": "five.",
+     "start": 224.251,
+     "end": 224.669
+    },
+    {
+     "w": "Five",
+     "start": 225.203,
+     "end": 225.447
+    },
+    {
+     "w": "to",
+     "start": 225.482,
+     "end": 225.528
+    },
+    {
+     "w": "six:",
+     "start": 225.586,
+     "end": 226.05
+    },
+    {
+     "w": "no.",
+     "start": 226.213,
+     "end": 226.584
+    },
+    {
+     "w": "That's",
+     "start": 227.049,
+     "end": 227.281
+    },
+    {
+     "w": "three",
+     "start": 227.339,
+     "end": 227.513
+    },
+    {
+     "w": "added",
+     "start": 227.548,
+     "end": 227.734
+    },
+    {
+     "w": "to",
+     "start": 227.769,
+     "end": 227.815
+    },
+    {
+     "w": "both,",
+     "start": 227.873,
+     "end": 228.175
+    },
+    {
+     "w": "and",
+     "start": 228.198,
+     "end": 228.314
+    },
+    {
+     "w": "it",
+     "start": 228.361,
+     "end": 228.407
+    },
+    {
+     "w": "falls",
+     "start": 228.454,
+     "end": 228.686
+    },
+    {
+     "w": "off",
+     "start": 228.732,
+     "end": 228.848
+    },
+    {
+     "w": "the",
+     "start": 228.883,
+     "end": 228.953
+    },
+    {
+     "w": "line.",
+     "start": 228.999,
+     "end": 229.615
+    }
+   ]
+  }
+ ],
+ "cues": {
+  "screens": 1.6,
+  "laptop": 2.064,
+  "cinema": 2.668,
+  "sizes": 4.515,
+  "same": 6.709,
+  "why": 10.27,
+  "ratio": 13.521,
+  "tiles": 20.943,
+  "two": 23.729,
+  "three": 24.809,
+  "rule": 26.598,
+  "forevery": 30.824,
+  "write": 35.968,
+  "r23": 37.593,
+  "notamount": 40.098,
+  "belong": 44.696,
+  "group": 49.053,
+  "copy": 52.629,
+  "r46": 54.569,
+  "samerule": 57.344,
+  "copy2": 60.165,
+  "r69": 61.442,
+  "r812": 63.567,
+  "table": 66.407,
+  "times": 68.88,
+  "equiv": 73.92,
+  "tempt": 79.346,
+  "why2": 82.016,
+  "add": 85.72,
+  "r45": 87.717,
+  "fair": 89.261,
+  "shape": 91.849,
+  "rect23": 93.939,
+  "rect46": 97.318,
+  "bigger": 99.721,
+  "rect45": 103.305,
+  "squarer": 106.37,
+  "diff": 110.546,
+  "howmany": 116.514,
+  "plot": 121.962,
+  "axes": 124.04,
+  "pt23": 127.837,
+  "pt46": 130.101,
+  "pt69": 132.678,
+  "pt812": 135.325,
+  "line": 138.584,
+  "origin": 140.337,
+  "online": 143.039,
+  "direction": 145.558,
+  "pt45": 147.911,
+  "off": 149.711,
+  "back": 154.684,
+  "unitpt": 157.981,
+  "unitrate": 160.525,
+  "anyamount": 164.112,
+  "five": 166.04,
+  "fivex": 167.445,
+  "seven": 169.558,
+  "total": 172.499,
+  "of5": 174.426,
+  "twofifths": 176.621,
+  "threefifths": 177.654,
+  "careful": 179.593,
+  "nottwothirds": 180.893,
+  "twooffive": 184.191,
+  "recap": 187.759,
+  "rec1": 188.769,
+  "rec2": 192.275,
+  "rec3": 197.918,
+  "screens2": 202.291,
+  "sixteen": 204.799,
+  "further": 206.68,
+  "tryq": 211.293,
+  "q1": 212.535,
+  "q2": 215.624,
+  "a1": 221.627,
+  "a2": 225.203,
+  "offline": 228.198
+ },
+ "duration": 233.715
+}

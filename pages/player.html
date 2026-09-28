@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <title>Scene player</title>
+  <style>
+    html, body { margin: 0; background: #000; overflow: hidden; }
+    canvas { display: block; width: 1920px; height: 1080px; }
+    #msg { position: fixed; left: 20px; top: 20px; color: #f2735f; font: 20px system-ui; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <canvas id="cv" width="1920" height="1080"></canvas>
+  <div id="msg"></div>
+  <script type="module" src="./player.ts"></script>
+</body>
+</html>

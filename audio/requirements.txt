@@ -1,0 +1,6 @@
+# audio pipeline (Python 3.10+): pip install -r audio/requirements.txt
+requests>=2.31
+python-dotenv>=1.0
+numpy>=1.26
+soundfile>=0.12
+librosa>=0.10

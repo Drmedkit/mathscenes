@@ -1,0 +1,31 @@
+{
+  "name": "mathscenes",
+  "version": "0.1.0",
+  "description": "Typed maths blocks and scenes that render as narrated video AND run as live interactive pages (Canvas2D + MathJax 4, offline).",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "render": "node tools/render.mjs",
+    "sheet": "node tools/sheet.mjs",
+    "shot": "node tools/shot.mjs",
+    "tex-coverage": "node tools/tex-coverage.mjs"
+  },
+  "keywords": ["math", "maths", "animation", "explainer", "video", "mathjax", "canvas", "education"],
+  "engines": { "node": ">=20.11" },
+  "devDependencies": {
+    "puppeteer": "^24.43.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.6",
+    "vitest": "^3.2.7"
+  },
+  "dependencies": {
+    "@mathjax/mathjax-newcm-font": "^4.1.3",
+    "@mathjax/src": "^4.1.3"
+  }
+}

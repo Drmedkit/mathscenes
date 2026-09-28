@@ -1,0 +1,32 @@
+# dependencies and builds
+node_modules/
+dist/
+out/
+
+# secrets: keys live in .env (see .env.example), never in the repo
+.env
+.env.*
+!.env.example
+
+# generated audio / video (each project's media/ folder), personal voices
+media/
+audio/voices.json
+*.mp3
+*.wav
+*.mp4
+*.f32
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ...but the README images are part of the repo
+!docs/media/

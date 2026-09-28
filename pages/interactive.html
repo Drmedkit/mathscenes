@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" data-theme="ink">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lemonade for your number</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Lemonade for your number</h1>
+    <button id="theme">theme: ink</button>
+    <nav><a href="./index.html">home</a><a href="./gallery.html">gallery</a><a href="./player.html?scene=ratio">player</a></nav>
+  </header>
+  <main>
+    <div class="grid2">
+      <section class="card">
+        <p class="sub">The recipe: <b style="color:var(--lemon)">2 cups of lemon</b> for every <b style="color:var(--water)">3 cups of water</b>.</p>
+        <h2>How many cups of lemon do you have?</h2>
+        <div class="pick" style="margin-top:10px">
+          <button class="big" id="minus" aria-label="fewer cups">−</button>
+          <span class="num" id="num">5</span>
+          <button class="big" id="plus" aria-label="more cups">+</button>
+        </div>
+        <div class="quick" id="quick"></div>
+        <div class="say" id="say"></div>
+        <div class="steps">
+          <button id="back">Back</button>
+          <button id="next" class="primary">Next</button>
+          <span class="dots" id="dots"></span>
+        </div>
+      </section>
+      <section class="card"><div class="stage"><canvas id="table"></canvas><div class="err" id="errT"></div></div></section>
+    </div>
+    <section class="card"><div class="stage"><canvas id="dnl"></canvas><div class="err" id="errD"></div></div></section>
+  </main>
+  <script type="module" src="./interactive.ts"></script>
+</body>
+</html>

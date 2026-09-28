@@ -1,0 +1,11 @@
+{
+ "_doc": "Sound effects of the ratio example: name -> [prompt, seconds]. python audio/gen_sfx.py examples/ratio makes media/sfx/<name>.mp3 (or --dry to preview).",
+ "tick": ["tiny soft wooden click for counting, single, gentle", 0.3],
+ "whoosh": ["soft airy swoosh transition, gentle, short", 0.7],
+ "ding": ["gentle bright bell ding, single, friendly, soft", 1.2],
+ "chime": ["happy soft xylophone arpeggio rising, correct answer chime", 1.3],
+ "sunrise": ["soft warm magical rising shimmer, short", 1.2],
+ "bead": ["a single small glass bead sliding down a thread and clicking softly against another bead, bright, short, cute", 0.5],
+ "buzz": ["soft gentle wrong answer buzz, playful, not harsh", 0.6],
+ "pop": ["soft cute bubble pop, single, gentle, clean", 0.4]
+}
