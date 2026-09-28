@@ -5,8 +5,9 @@ Why the videos are built the way they are. `docs/SCRIPTWRITING.md` turns this in
 
 ## The research: clear is not the same as learned
 
-Derek Muller's PhD research (University of Sydney, 2008; the idea behind his Veritasium videos) compared short physics
-videos made for students who arrived with a common misconception.
+Derek Muller's PhD research (*Designing Effective Multimedia for Physics Education*, University of Sydney, 2008; the
+idea behind his Veritasium videos) compared short physics videos made for students who arrived with a common
+misconception. The scores below are the ones he gives in his talk on this research.
 
 - A **clear, concise expository explanation** (the correct idea, stated well) made students **more confident** but
   barely changed their test scores (in his study about 6 → 6.3 out of 26). They already "knew" the wrong idea, did not
