@@ -33,6 +33,8 @@ export interface RatioTableParams {
   readonly kHeader?: string | null;
   /** number size in px (default theme.font.num; never below theme.font.minNum) */
   readonly size?: number;
+  /** cells left empty (an exercise: someone else fills them in); row is 0-based like highlight */
+  readonly blanks?: readonly { readonly col: 'k' | 'a' | 'b'; readonly row: number }[];
 }
 export type RatioTableStep = 'grid' | 'head' | `row${number}` | `arrow${number}` | 'hl' | 'emph';
 
@@ -69,6 +71,10 @@ export function computeRatioTable(P: RatioTableParams): RatioTableMaths {
   }
   if (P.highlight !== undefined && P.highlight !== null)
     check(Number.isInteger(P.highlight) && P.highlight >= 0 && P.highlight < rows.length, NAME, `highlight row ${P.highlight} does not exist`);
+  for (const c of P.blanks ?? []) {
+    check(c.col === 'a' || c.col === 'b' || (c.col === 'k' && !!P.kHeader), NAME, `blank cell column "${c.col}" does not exist`);
+    check(Number.isInteger(c.row) && c.row >= 0 && c.row < rows.length, NAME, `blank cell row ${c.row} does not exist`);
+  }
   plainText(P.headers[0], NAME, 'header 1'); plainText(P.headers[1], NAME, 'header 2');
   if (P.kHeader) plainText(P.kHeader, NAME, 'k header');
   return { a, b, rows, arrows };
@@ -85,6 +91,8 @@ export interface RatioTableBlock extends Block<RatioTableStep> {
   readonly maths: RatioTableMaths;
   /** centre of a cell: col 'k' | 'a' | 'b', row i */
   cell(col: 'k' | 'a' | 'b', row: number): Pt;
+  /** the whole cell (inside the grid lines): for a slot, a highlight */
+  cellBox(col: 'k' | 'a' | 'b', row: number): Box;
 }
 
 export function RatioTable(P: RatioTableParams, f: Frame, th: Theme): RatioTableBlock {
@@ -155,12 +163,14 @@ export function RatioTable(P: RatioTableParams, f: Frame, th: Theme): RatioTable
   check(all.x0 >= f.x - 1 && all.x1 <= f.x + f.w + 1, NAME, 'the arrow labels do not fit next to the table');
 
   const hl = P.highlight ?? null;
+  const blank = new Set((P.blanks ?? []).map(c => `${c.col}${c.row}`));
   const steps = ratioTableSteps(n, M.arrows.length > 0);
   const colRole = (c: 'k' | 'a' | 'b'): Role => (c === 'k' ? 'dim' : c === 'a' ? roles[0] : roles[1]);
 
   return {
     kind: NAME, steps, box: all, maths: M,
     cell: (c, r) => [colX(c), rowY(r)],
+    cellBox: (c, r) => box(colX(c) - colW / 2 + 8, rowY(r) - rowH / 2 + 6, colX(c) + colW / 2 - 8, rowY(r) + rowH / 2 - 6),
     draw(c: Canvas, p: Progress<RatioTableStep>) {
       const kg = p.k('grid'), kh = p.k('head'), emph = E.bump(p.k('emph'));
       // grid
@@ -173,6 +183,7 @@ export function RatioTable(P: RatioTableParams, f: Frame, th: Theme): RatioTable
         const kr = p.k(`row${i}`);
         if (kr <= 0) return;
         cols.forEach((col, j) => {
+          if (blank.has(`${col}${i}`)) return;
           const kc = clamp(kr * (cols.length === 3 ? 1.8 : 1.5) - j * (cols.length === 3 ? 0.4 : 0.5));
           texDraw(c, v[col], colX(col), rowY(i), { size: numSize, align: 'center', col: colRole(col), k: kc, lag: 0.5 });
         });
