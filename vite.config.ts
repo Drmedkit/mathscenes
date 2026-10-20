@@ -25,6 +25,7 @@ export default defineConfig({
         gallery: resolve(root, 'gallery.html'),
         interactive: resolve(root, 'interactive.html'),
         player: resolve(root, 'player.html'),
+        lessonFractionsAsDivision: resolve(root, 'lessons/fractions-as-division.html'),
       },
     },
   },
