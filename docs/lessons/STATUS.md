@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 1, live 62 (of 63)
+Totals: live 63 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -90,7 +90,7 @@ Totals: building 1, live 62 (of 63)
 | 6 | Dilations and similarity | `dilations-and-similarity` | 8 | 23 | live | 23 sub-goals, 46 voice lines; small label crowding in ratioK (polish later); VOICE PENDING |
 | 7 | Pythagorean theorem | `pythagorean-theorem` | 8 | 22 | live | 22 sub-goals, 42 voice lines; VOICE PENDING |
 | 8 | Proportional and linear relationships: slope, graphs, and equations | `slope-and-lines` | 8 | 27 | live | 27 sub-goals, 44 voice lines; VOICE PENDING |
-| 9 | Systems of linear equations | `systems-of-equations` | 8 | 23 | building | wave 7: Opus builder, lead QA |
+| 9 | Systems of linear equations | `systems-of-equations` | 8 | 23 | live | 23 sub-goals, 42 voice lines; VOICE PENDING |
 | 10 | Linear functions and slope-intercept form | `linear-functions` | 8 | 24 | live | 24 sub-goals, 40 voice lines; VOICE PENDING |
 | 11 | Scatter plots and bivariate data | `scatter-plots` | 8 | 22 | live | 22 sub-goals, 42 voice lines; VOICE PENDING |
 | 12 | Two-way tables, relative frequencies and segmented bar graphs | `two-way-tables` | 8 | 15 | live | 15 sub-goals; VOICE PENDING |

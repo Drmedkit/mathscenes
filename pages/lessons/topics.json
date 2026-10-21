@@ -758,7 +758,8 @@
   "requires": [
    "secondary-t5-29-proportional-relationships-lines-and-linear-equations",
    "secondary-t5-30-solving-linear-equations"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-33-linear-functions-and-slope-intercept-form",

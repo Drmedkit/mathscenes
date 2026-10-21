@@ -354,10 +354,10 @@
   "commit": "88ccb53"
  },
  "systems-of-equations": {
-  "state": "building",
-  "note": "wave 7: Opus builder, lead QA",
-  "at": "2026-10-21 16:51",
-  "commit": "8f2a4d0"
+  "state": "live",
+  "note": "23 sub-goals, 42 voice lines; VOICE PENDING",
+  "at": "2026-10-21 18:20",
+  "commit": "a82a7c5"
  },
  "linear-functions": {
   "state": "live",
