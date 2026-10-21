@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scale Drawings</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    b.w { color: var(--wrong); }
+    /* the commit cards hold mixed numbers: keep the fraction readable at card size */
+    .cards button .fr { font-size: .62em; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Scale drawings</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The scale drawing and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./scale-drawings.ts"></script>
+</body>
+</html>
