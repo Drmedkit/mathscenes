@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 17, live 23, queued 23 (of 63)
+Totals: building 18, live 23, queued 22 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -83,7 +83,7 @@ Totals: building 17, live 23, queued 23 (of 63)
 | # | topic | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
 | 1 | Area and perimeter of composite figures | `composite-figures` | 7 | 19 | building | agent |
-| 2 | Composite area, volume, and surface area | `composite-area-volume` | 7 | 21 | queued |  |
+| 2 | Composite area, volume, and surface area | `composite-area-volume` | 7 | 21 | building | agent |
 | 3 | Angle relationships with parallel lines and triangles | `parallel-lines-and-triangles` | 8 | 25 | queued |  |
 | 4 | Volume of cylinders, cones, and spheres | `cylinders-cones-spheres` | 8 | 25 | queued |  |
 | 5 | Multi-step linear equations with rational coefficients | `multi-step-equations` | 8 | 22 | queued |  |
