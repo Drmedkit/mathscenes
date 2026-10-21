@@ -1,0 +1,125 @@
+{
+ "q.intro": {
+  "text": "You are cutting floor tiles. Each tile must be an exact copy of the template ABC. You may trace the template, then slide, turn or flip the tracing paper."
+ },
+ "q.ask": {
+  "text": "Which tile can the tracing cover exactly, corner on corner?"
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the picture moves first, then the board writes it down."
+ },
+ "e.s1": {
+  "text": "Match the corners by their sides. A sits at the right angle, between the four-unit side and the three-unit side. So does D. So A goes with D, B with E, and C with F."
+ },
+ "e.s2": {
+  "text": "A, B, C goes counterclockwise, but D, E, F goes clockwise. Only a flip reverses that, so flip the tracing over the y-axis. A prime lands at six, two."
+ },
+ "e.s3": {
+  "text": "A prime is at six, two and D is at six, negative four, straight below it: slide six down."
+ },
+ "e.s4": {
+  "text": "Check every corner: A double prime is on D, B double prime on E, C double prime on F. The tracing covers the tile exactly, so triangle ABC is congruent to triangle DEF."
+ },
+ "e.why": {
+  "text": "Quick check: why does this prove the tiles are congruent?"
+ },
+ "e.w-ok": {
+  "text": "Yes. The tracing only moved; it never stretched. And every corner landed on its partner."
+ },
+ "e.w-look": {
+  "text": "Looking alike is not a proof: tile one looked alike too. The tracing has to land exactly, on every corner."
+ },
+ "e.w-one": {
+  "text": "One corner is not enough. B and C have to land on E and F too."
+ },
+ "t.intro": {
+  "text": "Your turn: show that triangle ABC is congruent to triangle DEF. Matching the corners and the first move are done for you."
+ },
+ "t.match": {
+  "text": "A goes with D, B with E, C with F. Both go counterclockwise, so no flip is needed."
+ },
+ "t.turn": {
+  "text": "First move: turn ninety degrees counterclockwise about the origin. A prime lands at negative one, one."
+ },
+ "t.slide-ask": {
+  "text": "Now the slide. It starts at A prime negative one, one and ends at D one, negative four. Fill in its rule."
+ },
+ "t.slide-ok": {
+  "text": "Yes: from A prime negative one, one to D one, negative four is two right and five down."
+ },
+ "t.slide-orig": {
+  "text": "That slide goes from A to D. But the turn already moved A: the slide starts at A prime negative one, one."
+ },
+ "t.slide-back": {
+  "text": "That goes from D back to A prime. Count from A prime to D: across, then down."
+ },
+ "t.slide-other": {
+  "text": "Count from A prime negative one, one to D one, negative four: across first, then down."
+ },
+ "t.check-ask": {
+  "text": "The tracing has landed. Which check proves triangle ABC is congruent to triangle DEF?"
+ },
+ "t.k-ok": {
+  "text": "Right: every corner is on its partner. triangle ABC is congruent to triangle DEF."
+ },
+ "t.k-one": {
+  "text": "A double prime on D is a start, but the other corners have to be checked too."
+ },
+ "t.k-two": {
+  "text": "Two corners are not enough: the mirror image of the triangle fits them too. Check C double prime as well."
+ },
+ "t.cb-right": {
+  "text": "You were right: tile two. Turned and flipped copies are congruent, as long as the tracing covers them exactly."
+ },
+ "t.cb-one": {
+  "text": "Tile one looked like the template, but its long side is five units, not four. Tile two is the congruent one, even though it is flipped."
+ },
+ "t.cb-both": {
+  "text": "Tile one only looks alike: its long side is five units, not four. Only tile two is congruent."
+ },
+ "t.cb-none": {
+  "text": "Tile two is the congruent tile: a flip and a slide cover it exactly."
+ },
+ "p.intro": {
+  "text": "Jordan has two rectangles: P is six by two and Q is four by three. Jordan says: “Both cover twelve squares, so they are congruent.”"
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each “because” with the reason that makes the line true."
+ },
+ "p.build-test": {
+  "text": "Let’s test it. Fill each “because” with the reason that makes the line true, and see where it leads."
+ },
+ "p.claim1": {
+  "text": "A slide, turn or flip keeps every side length,"
+ },
+ "p.claim2": {
+  "text": "P has a side of six, and Q has no side of six,"
+ },
+ "p.claim3": {
+  "text": "So no sequence of moves puts P exactly on Q,"
+ },
+ "p.c1": {
+  "text": "Right. Watch the tracing: it turns and slides, and its sides stay six and two."
+ },
+ "p.c2": {
+  "text": "P’s sides are six, two, six and two. Q’s sides are four, three, four and three. The six has no partner."
+ },
+ "p.c3": {
+  "text": "Put the tracing on Q any way you like: the six-unit side always sticks out."
+ },
+ "p.x-area": {
+  "text": "Equal areas don’t make figures congruent: six by two and four by three both make twelve."
+ },
+ "p.x-try": {
+  "text": "One move that fails proves nothing: maybe another one works. The side lengths are the proof."
+ },
+ "p.x-other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof: three claims, each with its reason. P and Q have the same area, but they are not congruent."
+ }
+}
