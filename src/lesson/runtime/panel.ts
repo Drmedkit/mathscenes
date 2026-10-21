@@ -22,11 +22,13 @@ export function solutionList(lines: readonly string[]): HTMLElement { const ol =
 
 export interface Input { node: HTMLElement; read(): Response | null; focus(): void }
 const numBox = (cls: string, label: string, onEnter: () => void) => {
-  const i = h('input', { class: cls, inputmode: 'numeric', autocomplete: 'off', 'aria-label': label });
+  // inputmode 'text': phone number pads hide the minus key, and grades 7-8 answers can be negative
+  const i = h('input', { class: cls, inputmode: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', 'aria-label': label });
   i.addEventListener('keydown', e => { if (e.key === 'Enter') onEnter(); });
   return i;
 };
-const num = (i: HTMLInputElement) => (i.value.trim() === '' ? NaN : Number(i.value.trim()));
+/** a typed number; the real minus sign (−) and a decimal comma count too */
+export const num = (i: HTMLInputElement) => { const v = i.value.trim().replace(/[−–]/g, '-').replace(',', '.'); return v === '' ? NaN : Number(v); };
 
 /** a fraction or mixed number: [whole] numerator / denominator */
 export function fracInput(unit: string, onEnter: () => void, mixedBox = true): Input {
@@ -48,14 +50,14 @@ export function fracInput(unit: string, onEnter: () => void, mixedBox = true): I
 }
 export function numInput(unit: string, onEnter: () => void): Input {
   const i = numBox('', 'answer', onEnter);
-  return { node: h('div', { class: 'ans' }, i, h('span', { class: 'unit' }, unit)), read: () => (i.value.trim() === '' ? null : { kind: 'num', v: Number(i.value) }), focus: () => i.focus() };
+  return { node: h('div', { class: 'ans' }, i, h('span', { class: 'unit' }, unit)), read: () => (i.value.trim() === '' ? null : { kind: 'num', v: num(i) }), focus: () => i.focus() };
 }
 export function pairInput(leadHtml: string, op: string, onEnter: () => void): Input {
   const x = numBox('', 'first number', onEnter), y = numBox('', 'second number', onEnter);
   const lead = h('span', { class: 'op' }); lead.innerHTML = leadHtml;
   return {
     node: h('div', { class: 'ans' }, lead, x, h('span', { class: 'op' }, op), y),
-    read: () => (x.value.trim() === '' || y.value.trim() === '' ? null : { kind: 'pair', x: Number(x.value), y: Number(y.value) }),
+    read: () => (x.value.trim() === '' || y.value.trim() === '' ? null : { kind: 'pair', x: num(x), y: num(y) }),
     focus: () => x.focus(),
   };
 }

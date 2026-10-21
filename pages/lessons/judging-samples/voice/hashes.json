@@ -1,0 +1,22 @@
+{
+ "q.intro": "5b6541d89daa6c71",
+ "q.ask": "89f0d35dd94a6a7f",
+ "e.intro": "328d4c7c40eceb02",
+ "e.step0": "ad2b033cb8d16d00",
+ "e.step1": "dc36c2d924013a11",
+ "e.step2": "c0cfb3eba7ef8003",
+ "e.step3": "de2e72ba437a13ff",
+ "e.why": "de0d7870c91ee882",
+ "t.intro": "2a06292ff1e8e82c",
+ "t.clue": "47487b4e5c6aeb14",
+ "t.miss": "7fb7d90328e5f27e",
+ "t.fill": "33a8e48e81b973c2",
+ "t.state": "f6dc391f8f04265f",
+ "t.done": "f1bbabcf99dc8e6a",
+ "p.intro": "174bd817079c0872",
+ "p.build": "69ccccb9b211e377",
+ "p.c1": "b5b826de95344e7f",
+ "p.c2": "964c849a16f3e242",
+ "p.c3": "1b997933f8ee864f",
+ "p.done": "cb5a8683f5ed8984"
+}

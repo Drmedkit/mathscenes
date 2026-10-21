@@ -1,0 +1,125 @@
+{
+ "q.intro": {
+  "text": "In a quiz game, a wrong answer scores minus three points. You have four points. Then the host finds that one of your wrong answers was right after all, and takes that minus three away."
+ },
+ "q.ask": {
+  "text": "Your new score is four minus negative three. What is it?"
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the number line moves first, then the notation."
+ },
+ "e.s1": {
+  "text": "Adding negative three would move three to the left: from four to one."
+ },
+ "e.s2": {
+  "text": "But the minus three is taken away. Taking it away undoes that move, so the arrow flips: three to the right."
+ },
+ "e.s3": {
+  "text": "You land on seven. Four minus negative three is four plus three, which is seven. Taking away a number is adding its opposite."
+ },
+ "e.s4": {
+  "text": "Check: add the minus three back. Seven plus negative three is four, the score you started with."
+ },
+ "e.why": {
+  "text": "Quick check: why does taking away negative three move to the right?"
+ },
+ "e.w-ok": {
+  "text": "Yes. Taking away undoes adding. Adding negative three moves left, so taking it away moves right."
+ },
+ "e.w-two": {
+  "text": "Two negatives make a positive is a rule for multiplying. In a sum, negative three plus negative four is negative seven, not seven. The reason here is the flip."
+ },
+ "e.w-left": {
+  "text": "Then four minus negative three would be one. But losing a penalty can only raise your score: the move is to the right."
+ },
+ "t.intro": {
+  "text": "Now you have minus two points, and the host takes away a minus six penalty. Your score is negative two minus negative six. The first step is done for you."
+ },
+ "t.s1": {
+  "text": "Adding negative six would move six to the left: from negative two to negative eight."
+ },
+ "t.flip": {
+  "text": "Your step. The minus six is taken away. Which way does the arrow point now?"
+ },
+ "t.f-ok": {
+  "text": "Yes. Taking it away undoes the move, so the arrow flips: six to the right."
+ },
+ "t.f-left": {
+  "text": "Subtracting does not always mean left. Taking away negative six undoes a move to the left, and that is a move to the right."
+ },
+ "t.land": {
+  "text": "Where does the flipped arrow land? Type the number."
+ },
+ "t.l-ok": {
+  "text": "Yes. Negative two minus negative six is negative two plus six, which is four."
+ },
+ "t.l-before": {
+  "text": "That is where the arrow pointed before the flip. Taking negative six away flips it: count six to the right of negative two."
+ },
+ "t.l-both": {
+  "text": "Only the number taken away changes sign. The negative two stays: negative two plus six."
+ },
+ "t.l-other": {
+  "text": "Count six to the right from negative two: two steps reach zero, then four more."
+ },
+ "t.check": {
+  "text": "Last step: which addition checks the answer?"
+ },
+ "t.c-ok": {
+  "text": "Yes. Add the minus six back to four, and you are at negative two again. The answer checks out."
+ },
+ "t.c-pair": {
+  "text": "That adds the answer to the first number. Add back the number taken away: four plus negative six is negative two."
+ },
+ "t.c-again": {
+  "text": "Doing the same subtraction again can repeat the same slip. Undo it instead: four plus negative six is negative two."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked seven, and you were right. Now you can show why: taking away negative three flips the move."
+ },
+ "t.cb-one": {
+  "text": "At the start you picked one: that moves left for every minus sign. Taking away negative three flips the move, so four minus negative three is seven."
+ },
+ "t.cb-m7": {
+  "text": "At the start you picked negative seven: that adds the sizes and keeps a minus sign. Losing a penalty raises the score: four minus negative three is seven."
+ },
+ "t.cb-sure": {
+  "text": "You were sure, and changing your mind after being sure is exactly how this sticks."
+ },
+ "p.intro": {
+  "text": "Sam says: subtracting always makes a number smaller."
+ },
+ "p.ask": {
+  "text": "Is Sam's claim always true, sometimes true, or never true?"
+ },
+ "p.j-ok": {
+  "text": "Sometimes. Now prove it: fill each because with the reason that makes the line true."
+ },
+ "p.j-test": {
+  "text": "Let's test it. Build the argument and see where it leads."
+ },
+ "p.c1": {
+  "text": "Five minus two is three, which is smaller than five,"
+ },
+ "p.c2": {
+  "text": "but five minus negative two is seven, which is bigger than five,"
+ },
+ "p.c3": {
+  "text": "so Sam's claim is only sometimes true."
+ },
+ "p.x-left": {
+  "text": "That is the idea being tested, and the line disproves it: taking away negative two moves right."
+ },
+ "p.x-examples": {
+  "text": "One example that works does not prove a rule for every number. One example that fails does disprove it."
+ },
+ "p.x-other": {
+  "text": "True, but it is the reason for a different line."
+ },
+ "p.done": {
+  "text": "That's a proof: two cases on the number line, and the one that fails settles it. Subtracting makes a number smaller only when the number taken away is positive."
+ }
+}

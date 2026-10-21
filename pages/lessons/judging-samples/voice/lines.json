@@ -1,0 +1,22 @@
+{
+  "q.intro": { "text": "The Lincoln student council wants to know: do the two hundred forty seventh graders at Lincoln Middle get an hour of exercise most days? They asked sixty kids at the gym after school, and fifty-one said yes." },
+  "q.ask": { "text": "What can the council say? Pick a statement, and say how sure you are." },
+  "e.intro": { "text": "Let's work it out, step by step. Press each step, and watch the map first, then the board." },
+  "e.step0": { "text": "The population is all two hundred forty seventh graders at Lincoln Middle: everyone the question is about." },
+  "e.step1": { "text": "The sample is the sixty kids at the gym. They are part of the population, and fifty-one of them said yes." },
+  "e.step2": { "text": "Kids who go straight home after school were never asked. Kids at the gym are more likely to exercise, so fifty-one of sixty is likely too high for the whole grade." },
+  "e.step3": { "text": "Not most of the two hundred forty: the data don't reach that far. The council can say fifty-one of the sixty kids at the gym get an hour most days." },
+  "e.why": { "text": "Quick check. Why can't the council say most of Lincoln's seventh graders?" },
+  "t.intro": { "text": "Your turn. The Oak Hill librarian handed a reading survey to all two hundred students. A hundred forty forms came back, and a hundred ten said yes. Sixty were never returned. I'll do the first two steps." },
+  "t.clue": { "text": "A clue: teachers noticed that students who don't like reading often left the form in their backpacks." },
+  "t.miss": { "text": "For all two hundred students, is a hundred ten of a hundred forty likely too high, too low, or about right?" },
+  "t.fill": { "text": "Every way the sixty could have answered: if all sixty said yes, that's a hundred seventy of two hundred. If all said no, a hundred ten of two hundred." },
+  "t.state": { "text": "Which statement can the librarian make about all two hundred students?" },
+  "t.done": { "text": "Even if all sixty said no, a hundred ten of two hundred is more than half. A claim may cover the whole group when it holds in every case." },
+  "p.intro": { "text": "Maya writes in the Eastside paper: we asked two hundred students in the cafeteria line, and a hundred sixty like the new lunch menu. So most of the six hundred Eastside students like the new menu. Is Maya right, or does her claim go too far?" },
+  "p.build": { "text": "Prove it. Fill each because with the reason that makes the line true." },
+  "p.c1": { "text": "Right. The population is the whole group the question is about: all six hundred Eastside students." },
+  "p.c2": { "text": "And every answer came from the lunch line. Students who bring lunch from home were never asked, and they may like the menu less." },
+  "p.c3": { "text": "So the claim can only cover the group the data came from: a hundred sixty of the two hundred in line." },
+  "p.done": { "text": "That's the argument. Who the question is about, who actually answered, and so how far the claim may reach." }
+}

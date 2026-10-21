@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Add and Subtract Rationals</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* this topic: the flipped arrow (the opposite of the number taken away) is lavender, like the canvas */
+    b.pk { color: var(--pick); font-weight: 650; }
+    .cards button { font-variant-numeric: tabular-nums; }
+    .dir { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0 4px; }
+    .dir button { font-size: 17px; padding: 12px 8px; }
+    .dir button.on { border-color: var(--pick); background: #2c2a5c; }
+    .jsure { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 4px; }
+    .jsure button.on { border-color: var(--pick); background: #2c2a5c; }
+    /* the marked minus sign of a "which minus is it?" problem */
+    .panel b.mk { font-size: 1.25em; line-height: 1; padding: 0 .14em; border-radius: 5px; background: rgba(195, 174, 246, .22); }
+    /* numbers in answer choices: big enough to read the fractions */
+    .opts button { font-size: 17px; }
+    .opts button .fr { font-size: .95em; }
+    .panel .ans input { width: 86px; }
+    .panel .ans input.whole { width: 64px; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Add and subtract rational numbers</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The number line and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./add-subtract-rational-numbers.ts"></script>
+</body>
+</html>
