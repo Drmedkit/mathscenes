@@ -1,0 +1,137 @@
+{
+ "q.intro": {
+  "text": "Earth is about one point five times ten to the eighth kilometers from the Sun. Neptune, the farthest planet, is about four point five times ten to the ninth kilometers from the Sun."
+ },
+ "q.ask": {
+  "text": "About how many times as far from the Sun is Neptune?"
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the ladder moves first, then the notation."
+ },
+ "e.s1": {
+  "text": "Each rung of the ladder is ten times the rung below. Earth sits a little past ten to the eighth. Neptune is past ten to the ninth, more than halfway to the next rung."
+ },
+ "e.s2": {
+  "text": "Divide the powers: ten to the ninth divided by ten to the eighth is ten to the first. One rung up is times ten: Earth's distance, ten times over, is one point five times ten to the ninth kilometers."
+ },
+ "e.s3": {
+  "text": "Divide the numbers in front: four point five divided by one point five is three. Inside the gap, Neptune is three times as far as that copy."
+ },
+ "e.s4": {
+  "text": "Put it together: three times ten to the first is thirty. Neptune is about thirty times as far from the Sun as Earth: ten times for the rung, three times inside it."
+ },
+ "e.why": {
+  "text": "Quick check: why isn't the answer just ten times?"
+ },
+ "e.w-ok": {
+  "text": "Yes. The power of ten gives the rung, the numbers in front give the rest: ten times three is thirty."
+ },
+ "e.w-ten": {
+  "text": "Only when the numbers in front are equal. A copy of Earth's distance one rung up is one point five times ten to the ninth kilometers, and Neptune is three times farther still."
+ },
+ "e.w-add": {
+  "text": "Ten to the ninth is one billion and ten to the eighth is one hundred million: they are nine hundred million apart, not one. Each rung is ten times the last."
+ },
+ "t.intro": {
+  "text": "A grain of fine sand is about two times ten to the negative four meters wide. A red blood cell is about eight times ten to the negative six meters across. How many times as wide is the grain? The ladder is set up. The rest is your turn."
+ },
+ "t.pow": {
+  "text": "Divide the powers: ten to the negative four divided by ten to the negative six is ten to what power?"
+ },
+ "t.fill": {
+  "text": "Type a number in the box first."
+ },
+ "t.p-ok": {
+  "text": "Yes: negative four minus negative six is negative four plus six, which is two. Two rungs up: times one hundred."
+ },
+ "t.p-subneg": {
+  "text": "Negative four minus six would be negative ten. But you subtract negative six, and subtracting a negative adds: negative four plus six."
+ },
+ "t.p-rev": {
+  "text": "That is negative six minus negative four: the cell's power first. The grain is divided by the cell, so start with negative four: negative four minus negative six."
+ },
+ "t.p-div": {
+  "text": "Dividing powers of ten subtracts the exponents. It doesn't divide them: negative four minus negative six."
+ },
+ "t.p-other": {
+  "text": "Count the rungs from ten to the negative six up to ten to the negative four on the ladder."
+ },
+ "t.coef": {
+  "text": "Now divide the numbers in front: two divided by eight is what?"
+ },
+ "t.c-ok": {
+  "text": "Yes: two divided by eight is zero point two five. Two rungs up overshoots the grain. A quarter of that lands on it."
+ },
+ "t.c-flip": {
+  "text": "Eight divided by two divides the cell by the grain. The grain comes first: two divided by eight, even though two is smaller."
+ },
+ "t.c-sub": {
+  "text": "That subtracts. The numbers in front are divided: two divided by eight."
+ },
+ "t.c-other": {
+  "text": "Two divided by eight is the same as one divided by four: a quarter, written as a decimal."
+ },
+ "t.write": {
+  "text": "Put it together: zero point two five times ten squared. Write it in scientific notation."
+ },
+ "t.w-ok": {
+  "text": "Yes: zero point two five times ten squared is two point five times ten to the first, which is twenty-five. The grain is twenty-five times as wide as the cell."
+ },
+ "t.w-same": {
+  "text": "The number in front got ten times bigger, from zero point two five to two point five, so the power must get ten times smaller: ten squared becomes ten to the first."
+ },
+ "t.w-out": {
+  "text": "That is the right size, but the number in front must be at least one and less than ten."
+ },
+ "t.w-other": {
+  "text": "Zero point two five times one hundred is twenty-five. Write twenty-five as a number from one up to ten, times a power of ten."
+ },
+ "t.cb-right": {
+  "text": "At the start you said thirty times, and you were right: ten times for the rung, three times inside it."
+ },
+ "t.cb-ten": {
+  "text": "At the start you said ten times: the exponents alone. Now you've seen why it's thirty: the numbers in front count too."
+ },
+ "t.cb-three": {
+  "text": "At the start you said three times: the numbers in front alone. The powers add a rung, times ten, so it's thirty."
+ },
+ "t.cb-none": {
+  "text": "At the start: Neptune is thirty times as far from the Sun as Earth, ten times for the rung and three times inside it."
+ },
+ "p.intro": {
+  "text": "A town has nine times ten to the fourth people. A city has one times ten to the fifth people. Mia says: the city is one power of ten bigger, so it has ten times as many people."
+ },
+ "p.ask": {
+  "text": "Is Mia right?"
+ },
+ "p.build-wrong": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.build-right": {
+  "text": "Let's test it. Build the argument, and see where it leads."
+ },
+ "p.c1": {
+  "text": "Right: nine times ten thousand is ninety thousand, and one times one hundred thousand is one hundred thousand."
+ },
+ "p.c2": {
+  "text": "One hundred thousand divided by ninety thousand is ten ninths, about one point one. Ten times the town would be nine hundred thousand people: far up the ladder."
+ },
+ "p.c3": {
+  "text": "The exponents only say which band a number is in. The numbers in front decide the exact ratio."
+ },
+ "p.x-ten": {
+  "text": "That is Mia's idea. It only holds when the numbers in front are equal, and nine times ten to the fourth and one times ten to the fifth are nearly the same size."
+ },
+ "p.x-add": {
+  "text": "Ten to the fifth is one hundred thousand and ten to the fourth is ten thousand: they are ninety thousand apart, not one."
+ },
+ "p.x-slot": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That's a proof: three claims, each with its reason, and the ladder backs every one. One power of ten apart is not always ten times."
+ }
+}
