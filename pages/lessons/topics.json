@@ -442,7 +442,8 @@
   "requires": [
    "primary.geometry.enlarge-reduce-scale-factor",
    "primary.ratios.scale-introduction"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "primary.geometry.coordinate-plane-transformations",
