@@ -744,7 +744,8 @@
    "secondary-t5-32-functions-concept-and-representations",
    "secondary-t5-36-dilations-and-similarity",
    "secondary-t5-37-angle-relationships-in-parallel-lines-and-triangles"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-31-systems-of-linear-equations",

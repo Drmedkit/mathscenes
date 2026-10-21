@@ -348,10 +348,10 @@
   "commit": "5339429"
  },
  "slope-and-lines": {
-  "state": "building",
-  "note": "wave 7: Opus builder, lead QA",
-  "at": "2026-10-21 16:51",
-  "commit": "8f2a4d0"
+  "state": "live",
+  "note": "27 sub-goals, 44 voice lines; VOICE PENDING",
+  "at": "2026-10-21 17:57",
+  "commit": "88ccb53"
  },
  "systems-of-equations": {
   "state": "building",
