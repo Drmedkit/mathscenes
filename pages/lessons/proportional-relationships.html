@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proportional Relationships</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* the three shop cards of part 1 */
+    .cards.shops button { font-size: 22px; font-weight: 650; }
+    .cards.shops button small { font-weight: 400; }
+    /* equation choices read as maths */
+    .opts.eqs button { font-size: 20px; font-family: "Cambria Math", "Times New Roman", serif; }
+    .opts.eqs button i { font-style: italic; }
+    .ans .op { min-width: 10px; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Proportional relationships</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The graph and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./proportional-relationships.ts"></script>
+</body>
+</html>
