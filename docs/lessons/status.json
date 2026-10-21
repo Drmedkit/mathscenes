@@ -198,10 +198,10 @@
   "commit": "7f3f265"
  },
  "circles": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 08:40",
-  "commit": "8a118ce"
+  "state": "live",
+  "note": "23 sub-goals, 49 voice lines",
+  "at": "2026-10-21 09:31",
+  "commit": "02dd7c3"
  },
  "angle-relationships": {
   "state": "building",

@@ -462,7 +462,8 @@
    "primary.geometry.enlarge-reduce-scale-factor",
    "secondary-t5-16-proportional-relationships",
    "secondary-t5-19-two-step-equations-and-inequalities"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-22-angle-relationships",

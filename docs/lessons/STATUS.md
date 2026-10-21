@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 12, live 29, queued 22 (of 63)
+Totals: building 11, live 30, queued 22 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -65,7 +65,7 @@ Totals: building 12, live 29, queued 22 (of 63)
 
 | # | topic | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
-| 1 | Area and circumference of circles | `circles` | 7 | 23 | building | agent |
+| 1 | Area and circumference of circles | `circles` | 7 | 23 | live | 23 sub-goals, 49 voice lines |
 | 2 | Angle relationships | `angle-relationships` | 7 | 25 | building | agent |
 | 3 | Two-step inequalities | `two-step-inequalities` | 7 | 14 | building | agent |
 | 4 | Rational and irrational numbers | `irrational-numbers` | 8 | 21 | building | agent |
