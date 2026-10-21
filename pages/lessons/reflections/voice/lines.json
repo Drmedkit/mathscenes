@@ -1,0 +1,140 @@
+{
+ "q.intro": {
+  "text": "A dab of wet paint sits at P on a sheet of graph paper. You fold the sheet along the crease m, and press it flat."
+ },
+ "q.ask": {
+  "text": "Where does the paint print?"
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one. The picture moves first, then the notation."
+ },
+ "e.s0": {
+  "text": "The fold moves P straight toward the crease, at a right angle to m. It meets m at the point M."
+ },
+ "e.s1": {
+  "text": "From P to M: two diagonal steps, grid corner to grid corner."
+ },
+ "e.s2": {
+  "text": "Two more steps beyond m. That is P prime. P prime is as far behind m as P is in front of it."
+ },
+ "e.s3": {
+  "text": "Fold along m, and P lands exactly on P prime. The paint prints at spot two."
+ },
+ "e.why": {
+  "text": "Quick check. Why does the paint print at spot two, and not straight across the page at spot one?"
+ },
+ "e.w-ok": {
+  "text": "Yes. Folding along m moves P at a right angle to m, so P prime is on the perpendicular from P."
+ },
+ "e.w-across": {
+  "text": "Only when m runs straight up and down the page. Here m is slanted, so the right angle is with m, not with the page."
+ },
+ "e.w-far": {
+  "text": "Spots one and three are just as far from m as P. Only spot two is also on the perpendicular from P."
+ },
+ "t.intro": {
+  "text": "Now reflect triangle A B C in m, one vertex at a time. Vertex A is done for you."
+ },
+ "t.a": {
+  "text": "A is two diagonal steps from m, so A prime is two steps beyond it."
+ },
+ "t.count": {
+  "text": "Your turn. Count the diagonal steps from B to m, at a right angle to m."
+ },
+ "t.c-ok": {
+  "text": "Yes. Three steps from B to m."
+ },
+ "t.c-across": {
+  "text": "That counts squares straight across the page. Step diagonally, corner to corner, at a right angle to m."
+ },
+ "t.c-points": {
+  "text": "Count the steps, not the corners. Start counting after B."
+ },
+ "t.c-other": {
+  "text": "Step from B toward m along the other diagonal, and count the steps."
+ },
+ "t.spot": {
+  "text": "Now count three steps beyond m. Which spot is B prime?"
+ },
+ "t.s-ok": {
+  "text": "Yes. Three steps beyond m. That's B prime."
+ },
+ "t.s-short": {
+  "text": "That spot is only two steps beyond m. Count three, the same as from B to m."
+ },
+ "t.s-long": {
+  "text": "That spot is four steps beyond m. One too many. Count three, the same as from B to m."
+ },
+ "t.c": {
+  "text": "C is on m. Where is C prime?"
+ },
+ "t.cc-ok": {
+  "text": "Right. C is zero steps from m, so C prime is zero steps beyond. C prime is C."
+ },
+ "t.cc-no": {
+  "text": "C is on m: zero steps from it. Zero steps beyond m is still C. Points on the line stay put."
+ },
+ "t.join": {
+  "text": "Join A prime, B prime and C prime, in order. Going A, B, C turns clockwise. Which way does A prime, B prime, C prime turn?"
+ },
+ "t.o-ok": {
+  "text": "Right. The order is reversed. A reflection flips the triangle over. A slide never would."
+ },
+ "t.o-no": {
+  "text": "Trace it again. A prime, B prime, C prime goes the other way round. A reflection always reverses the order."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked spot two, and you were right. Now you can say why: at a right angle to m, just as far beyond."
+ },
+ "t.cb-across": {
+  "text": "At the start you picked spot one, straight across the page. The fold moves P at a right angle to m, so the paint printed at spot two."
+ },
+ "t.cb-far": {
+  "text": "At the start you picked spot three. It is as far from m as P, but moved along m. The image is on the perpendicular: spot two."
+ },
+ "p.intro": {
+  "text": "Riley says: Q is the image of P in m, because Q is on the other side of m, and just as far from it."
+ },
+ "p.ask": {
+  "text": "Is Riley right?"
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.test": {
+  "text": "Let's test it. Build the argument, and see where it leads."
+ },
+ "p.k1": {
+  "text": "The image of P has to be on the perpendicular from P to m,"
+ },
+ "p.k2": {
+  "text": "But Q is not on that perpendicular,"
+ },
+ "p.k3": {
+  "text": "So Q is not the image of P. The image, P prime, is two steps beyond M,"
+ },
+ "p.c1": {
+  "text": "Right. A fold moves every point at a right angle to the crease."
+ },
+ "p.c2": {
+  "text": "And P Q crosses m on a slant. Q is moved along m, away from the perpendicular."
+ },
+ "p.c3": {
+  "text": "P is two steps from m, so P prime is two steps beyond M, on the same perpendicular. Q is not P prime."
+ },
+ "p.x-far": {
+  "text": "That is Riley's mistake. Equal distance is not enough. Q must also be on the perpendicular from P."
+ },
+ "p.x-side": {
+  "text": "The other side is not enough. The image has to be at a right angle to m, and just as far."
+ },
+ "p.x-other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That's a proof. Three claims, each with its reason, and the picture backs every one. Same distance is not enough. The right angle matters too."
+ }
+}

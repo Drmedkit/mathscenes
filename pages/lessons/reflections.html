@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reflect Across a Line</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    b.p { color: var(--pick); font-weight: 650; }
+    .cards button small { font-size: 14px; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Reflect shapes and points across a line</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The graph paper with the line of reflection, and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./reflections.ts"></script>
+</body>
+</html>
