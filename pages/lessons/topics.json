@@ -567,7 +567,8 @@
   "subgoals": 16,
   "requires": [
    "primary.fractions.fraction-decimal-percentage-extend"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "primary.ratios.scale-area",

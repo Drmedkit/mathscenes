@@ -288,10 +288,10 @@
   "commit": "ef28598"
  },
  "choose-the-form": {
-  "state": "building",
-  "note": "wave 5: Opus builder + Haiku QA",
-  "at": "2026-10-21 14:23",
-  "commit": "a7a0b5e"
+  "state": "live",
+  "note": "16 sub-goals, 40 voice lines; practice pictures added in review; VOICE PENDING",
+  "at": "2026-10-21 16:16",
+  "commit": "b8b1f39"
  },
  "scale-and-area": {
   "state": "live",
