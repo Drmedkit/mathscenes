@@ -621,7 +621,8 @@
   "subgoals": 18,
   "requires": [
    "primary.ratios.scale-drawing-reality-calculations"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t6-29-area-and-perimeter-of-composite-figures",

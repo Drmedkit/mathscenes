@@ -312,10 +312,10 @@
   "commit": "ff33bf4"
  },
  "map-scale": {
-  "state": "building",
-  "note": "wave 6: Opus builder + Haiku QA",
-  "at": "2026-10-21 15:49",
-  "commit": "ff33bf4"
+  "state": "live",
+  "note": "18 sub-goals, 42 voice lines; VOICE PENDING",
+  "at": "2026-10-21 16:42",
+  "commit": "415ad40"
  },
  "multi-step-equations": {
   "state": "building",
