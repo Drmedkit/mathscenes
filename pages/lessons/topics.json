@@ -477,7 +477,8 @@
   "requires": [
    "secondary-t5-18-expressions-expand-and-factor",
    "secondary-t5-19-two-step-equations-and-inequalities"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary.two-step-inequalities",
