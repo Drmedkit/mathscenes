@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 18, live 1, queued 44 (of 63)
+Totals: building 17, live 2, queued 44 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -13,7 +13,7 @@ Totals: building 18, live 1, queued 44 (of 63)
 |---|---|---|---|---|---|---|
 | 1 | Sharing makes fractions | `fractions-as-division` | 5 |  | live | 12 sub-goals, voiced |
 | 2 | A fraction of an amount | `fraction-of-quantity` | 5 |  | building | agent |
-| 3 | A fraction of a fraction | `fraction-times-fraction` | 5 |  | building | agent |
+| 3 | A fraction of a fraction | `fraction-times-fraction` | 5 |  | live | 18 sub-goals, 12 families, 41 voice lines |
 
 ## Wave 1
 

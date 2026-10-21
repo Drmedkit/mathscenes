@@ -19,7 +19,8 @@
   "slug": "fraction-times-fraction",
   "title": "A fraction of a fraction",
   "grade": "5",
-  "wave": 0
+  "wave": 0,
+  "live": true
  },
  {
   "id": "secondary-t5-16-proportional-relationships",

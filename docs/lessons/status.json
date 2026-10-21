@@ -12,10 +12,10 @@
   "commit": "4efcbf5"
  },
  "fraction-times-fraction": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 07:26",
-  "commit": "4efcbf5"
+  "state": "live",
+  "note": "18 sub-goals, 12 families, 41 voice lines",
+  "at": "2026-10-21 07:52",
+  "commit": "9cb60d2"
  },
  "proportional-relationships": {
   "state": "building",
