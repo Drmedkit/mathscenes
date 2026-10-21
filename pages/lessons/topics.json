@@ -289,7 +289,8 @@
   "requires": [
    "primary.ratios.solve-complex-ratio-problems",
    "secondary-t5-24-probability-concepts"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-43-percent-applications-grade-7",

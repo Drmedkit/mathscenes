@@ -186,10 +186,10 @@
   "commit": "e1b16a1"
  },
  "sampling-and-inference": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 08:35",
-  "commit": "0f72d49"
+  "state": "live",
+  "note": "17 sub-goals, 41 voice lines; panel overflows 93px on longest items; VOICE PENDING",
+  "at": "2026-10-21 13:35",
+  "commit": "2cf5981"
  },
  "original-amount": {
   "state": "live",
