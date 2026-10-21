@@ -1,0 +1,134 @@
+{
+ "q.intro": {
+  "text": "A garden bed is four feet wide. Along its length there are x feet of tomatoes, then three feet of herbs."
+ },
+ "q.ask": {
+  "text": "Its area is four times the quantity x plus three, in square feet. Which expression has the same value, for every length x?"
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the picture moves first, then the algebra."
+ },
+ "e.s1": {
+  "text": "Each row is one strip, x long, and three squares. Four rows make the bed: four groups of x plus three."
+ },
+ "e.s2": {
+  "text": "Split the bed where the tomatoes end. Both parts are still four rows high: four times x, and four times three."
+ },
+ "e.s3": {
+  "text": "The strips make four x. The squares make twelve: four rows of three, not just three."
+ },
+ "e.s4": {
+  "text": "Four times the quantity x plus three is four x plus twelve, for every x. That's the distributive property. Read it backwards, and you have factored four x plus twelve."
+ },
+ "e.why": {
+  "text": "Quick check. Why is it plus twelve, and not plus three?"
+ },
+ "e.w-ok": {
+  "text": "Yes. The four multiplies every term inside the parentheses: each of the four rows has three squares."
+ },
+ "e.w-part": {
+  "text": "Then only the top row would have squares. Look: all four rows have three squares, so twelve."
+ },
+ "e.w-pemdas": {
+  "text": "PEMDAS says what to do first. It does not explain the twelve. The rows do: four rows of three squares."
+ },
+ "t.intro": {
+  "text": "Now the bed is three rows of two x plus five. The first two steps are done for you."
+ },
+ "t.area": {
+  "text": "Your step. Find the area of each part, and write three times the quantity two x plus five as a sum."
+ },
+ "t.a-ok": {
+  "text": "Yes. Three rows of two strips make six x, and three rows of five squares make fifteen."
+ },
+ "t.a-part": {
+  "text": "Count the squares. Each of the three rows has five. That makes fifteen, not five."
+ },
+ "t.a-concat": {
+  "text": "Three times two x is six x: three rows of two strips. It is not thirty two x."
+ },
+ "t.a-unlike": {
+  "text": "Strips and squares are unlike terms. Six x and fifteen stay separate."
+ },
+ "t.a-other": {
+  "text": "Count each part: the strips, three rows of two, and the squares, three rows of five."
+ },
+ "t.fill": {
+  "text": "Fill in both boxes."
+ },
+ "t.name": {
+  "text": "Which property turns three times the quantity two x plus five into six x plus fifteen?"
+ },
+ "t.n-ok": {
+  "text": "Yes, the distributive property. The three is shared out to every term inside."
+ },
+ "t.n-comm": {
+  "text": "The commutative property changes the order, and nothing was reordered here. The three went into the sum."
+ },
+ "t.n-assoc": {
+  "text": "The associative property moves parentheses. Here, a factor went into a sum."
+ },
+ "t.back": {
+  "text": "Now read it backwards. Six x plus fifteen is what number times the quantity two x plus five?"
+ },
+ "t.b-ok": {
+  "text": "Yes, three. The parts slide back together. That is factoring."
+ },
+ "t.b-one": {
+  "text": "Check it. Six times five is thirty, not fifteen. The factor has to go into both terms."
+ },
+ "t.b-other": {
+  "text": "Which number times two x makes six x, and times five makes fifteen?"
+ },
+ "t.num": {
+  "text": "Type a number in the box."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked four x plus twelve, and you were right. Now you can show why."
+ },
+ "t.cb-part": {
+  "text": "At the start you picked four x plus three. The squares show why it is twelve: four rows of three."
+ },
+ "t.cb-unlike": {
+  "text": "At the start you picked sixteen x. But four x and twelve are unlike terms. They cannot become one term."
+ },
+ "p.intro": {
+  "text": "Riley says two times the quantity x plus three, and three x plus four, are equivalent. I tried x equals two, and both give ten."
+ },
+ "p.judge": {
+  "text": "Is Riley right?"
+ },
+ "p.build": {
+  "text": "Prove it. Fill each because, with the reason that makes the line true."
+ },
+ "p.test": {
+  "text": "Let's test that. Build the argument, and see where it leads."
+ },
+ "p.c1": {
+  "text": "Right. Two times the quantity x plus three is two x plus six, for every x."
+ },
+ "p.c2": {
+  "text": "At x equals zero, two times the quantity x plus three is six, but three x plus four is four. They differ."
+ },
+ "p.c3": {
+  "text": "So they are not equivalent. Matching at x equals two was a coincidence."
+ },
+ "p.done": {
+  "text": "That is a proof. Every line has its reason, and one counterexample settles it."
+ },
+ "p.w-pemdas": {
+  "text": "PEMDAS says what to do first. It does not allow a rewrite. The distributive property does."
+ },
+ "p.w-examples": {
+  "text": "That is Riley's slip. Matching at one value is not matching at every value."
+ },
+ "p.w-exception": {
+  "text": "A counterexample is not an exception. Equivalent means equal for every x, so one miss breaks it."
+ },
+ "p.w-other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ }
+}

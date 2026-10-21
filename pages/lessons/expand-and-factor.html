@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Expand and Factor</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* this topic's extra colour roles: y-terms (lemon) and x-squared terms (water), as on the canvas */
+    b.y { color: #f9cb55; font-weight: 650; } b.x2 { color: #6dc1e6; font-weight: 650; }
+    .cards button { font-size: 24px; }
+    .panel .ans .ans { margin: 0; }
+    .panel i { font-family: "Cambria Math", "Times New Roman", serif; font-size: 1.08em; }
+    .panel .claim .because i { font-family: inherit; font-size: inherit; }
+    .panel p b, .panel .claim b, .panel .fb b { white-space: nowrap; }
+    /* six reason chips: a placed chip leaves no hole, so the chain and its feedback stay on screen */
+    .panel .chips button.used { display: none; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Expand, combine, and factor</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The model and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./expand-and-factor.ts"></script>
+</body>
+</html>
