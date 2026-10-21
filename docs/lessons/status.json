@@ -196,5 +196,23 @@
   "note": "agent",
   "at": "2026-10-21 08:37",
   "commit": "abc10f3"
+ },
+ "circles": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:40",
+  "commit": "8a118ce"
+ },
+ "angle-relationships": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:40",
+  "commit": "8a118ce"
+ },
+ "scientific-notation": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:40",
+  "commit": "8a118ce"
  }
 }
