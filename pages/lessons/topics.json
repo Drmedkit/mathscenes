@@ -188,7 +188,8 @@
   "wave": 1,
   "level": 0,
   "subgoals": 22,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "primary.numbers.square-roots-of-perfect-squares",
