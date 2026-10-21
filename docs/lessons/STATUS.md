@@ -5,14 +5,14 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 17, live 2, queued 44 (of 63)
+Totals: building 17, live 3, queued 43 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
 | # | topic | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
 | 1 | Sharing makes fractions | `fractions-as-division` | 5 |  | live | 12 sub-goals, voiced |
-| 2 | A fraction of an amount | `fraction-of-quantity` | 5 |  | building | agent |
+| 2 | A fraction of an amount | `fraction-of-quantity` | 5 |  | live | 15 sub-goals, 17 families; prove-it leader crosses a denominator (fix later) |
 | 3 | A fraction of a fraction | `fraction-times-fraction` | 5 |  | live | 18 sub-goals, 12 families, 41 voice lines |
 
 ## Wave 1
@@ -49,7 +49,7 @@ Totals: building 17, live 2, queued 44 (of 63)
 | 3 | Scale drawings | `scale-drawings` | 7 | 13 | queued |  |
 | 4 | Sampling and comparative inferences | `sampling-and-inference` | 7 | 17 | queued |  |
 | 5 | Percent applications | `percent-applications` | 7 | 25 | queued |  |
-| 6 | Multiply and divide rational numbers | `multiply-divide-rational-numbers` | 7 | 23 | queued |  |
+| 6 | Multiply and divide rational numbers | `multiply-divide-rational-numbers` | 7 | 23 | building | agent |
 | 7 | One-step inequalities and signed one-step equations | `one-step-inequalities` | 7 | 11 | queued |  |
 | 8 | Integer exponents | `integer-exponents` | 8 | 17 | queued |  |
 | 9 | Square roots and cube roots | `square-and-cube-roots` | 8 | 21 | queued |  |
