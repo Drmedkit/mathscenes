@@ -1,0 +1,140 @@
+{
+ "q.intro": {
+  "text": "Sneakers are marked sixty dollars. The sales tax is eight percent."
+ },
+ "q.ask": {
+  "text": "What do you pay at the register?"
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the picture moves first, then the notation."
+ },
+ "e.s1": {
+  "text": "The shelf price, sixty dollars, is before tax. It is the whole: one hundred percent. The tape is the same sixty dollars."
+ },
+ "e.s2": {
+  "text": "One percent of sixty dollars is sixty cents. So eight percent is eight times sixty cents: four dollars and eighty cents. The tax sticks out past the hundred percent."
+ },
+ "e.s3": {
+  "text": "Sixty dollars plus four eighty is sixty-four dollars and eighty cents. That is the total, what you pay."
+ },
+ "e.s4": {
+  "text": "The total is one hundred percent plus eight percent: one hundred eight percent of the price. One point zero eight times sixty dollars is sixty-four eighty: the same total, in one step."
+ },
+ "e.why": {
+  "text": "Quick check: why does one point zero eight times sixty dollars give the total?"
+ },
+ "e.w-ok": {
+  "text": "Yes. The one keeps the whole price, and the point zero eight adds the tax: one hundred eight percent of the price."
+ },
+ "e.w-less": {
+  "text": "A percent can be more than one hundred percent. The total is the price and more: one hundred eight percent of it."
+ },
+ "e.w-append": {
+  "text": "It is not about the digits. Eight percent is point zero eight, so the multiplier is one plus point zero eight. For seven and a half percent tax it is one point zero seven five, not one point seven five."
+ },
+ "t.intro": {
+  "text": "Now a forty dollar board game with seven and a half percent tax. The first two steps are done for you."
+ },
+ "t.tax": {
+  "text": "The tax: seven and a half percent is point zero seven five, and that times forty dollars is three dollars."
+ },
+ "t.add": {
+  "text": "Your step: what do you pay in total?"
+ },
+ "t.empty": {
+  "text": "Type an amount, like twelve fifty."
+ },
+ "t.a-ok": {
+  "text": "Yes: forty dollars plus three dollars is forty-three dollars."
+ },
+ "t.a-pct": {
+  "text": "That adds seven dollars and fifty cents. The tax is seven and a half percent of the price: three dollars."
+ },
+ "t.a-tax": {
+  "text": "Three dollars is the tax. You pay the price and the tax."
+ },
+ "t.a-sub": {
+  "text": "Sales tax is added at the register, not taken off."
+ },
+ "t.a-shelf": {
+  "text": "The forty dollars on the shelf is before tax. The tax comes on top."
+ },
+ "t.a-other": {
+  "text": "Add the tax to the pre-tax price: forty dollars plus three dollars."
+ },
+ "t.mult": {
+  "text": "Your step: which one multiplication gives the total?"
+ },
+ "t.m-ok": {
+  "text": "Yes: one hundred percent plus seven and a half percent is one hundred seven and a half percent, so one point zero seven five times forty dollars is forty-three dollars."
+ },
+ "t.m-append": {
+  "text": "Seven and a half percent is point zero seven five, so the multiplier is one plus point zero seven five. One point seven five times forty dollars would be seventy dollars."
+ },
+ "t.m-tax": {
+  "text": "Point zero seven five times forty dollars is only the tax, three dollars. The total keeps the price too."
+ },
+ "t.m-down": {
+  "text": "Point nine two five takes seven and a half percent off, like a discount. Tax is added."
+ },
+ "t.bench": {
+  "text": "Last check: is three dollars a sensible tax on forty dollars?"
+ },
+ "t.b-ok": {
+  "text": "Five percent of forty dollars is two dollars, and ten percent is four dollars. Seven and a half percent is between them, and so is three dollars."
+ },
+ "t.b-one": {
+  "text": "Less than forty dollars is only one side: thirty dollars is less than forty too. Check a lower and an upper bound."
+ },
+ "t.b-scale": {
+  "text": "Thirty dollars would be seventy-five percent of the price. Ten percent is only four dollars, so the tax is under four dollars."
+ },
+ "t.cb-68": {
+  "text": "At the start you picked sixty-eight dollars. That adds eight dollars, but eight percent of sixty dollars is four eighty."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked sixty-four eighty, and you were right. Now you can show why: the price is one hundred percent, the total one hundred eight."
+ },
+ "t.cb-480": {
+  "text": "At the start you picked four eighty. That is the tax. You pay the price and the tax."
+ },
+ "t.cb-none": {
+  "text": "The pre-tax price is one hundred percent. The tax adds its percent on top, so the total is more than one hundred percent of the price."
+ },
+ "p.intro": {
+  "text": "Ana’s receipt says the total is eighty-one dollars, with eight percent tax, but the price is torn off. Ana says: eight percent of eighty-one dollars is six forty-eight, so the price was seventy-four dollars and fifty-two cents. Is Ana right?"
+ },
+ "p.test": {
+  "text": "Let’s test it. Build the argument, and see where it leads."
+ },
+ "p.prove": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "The total, eighty-one dollars, is one hundred eight percent of the pre-tax price, because the price is the whole and the tax adds eight percent on top."
+ },
+ "p.c2": {
+  "text": "So the price is eighty-one dollars divided by one point zero eight: seventy-five dollars, and the tax is six dollars, because dividing by one point zero eight undoes the times one point zero eight."
+ },
+ "p.c3": {
+  "text": "And Ana’s six forty-eight is too much, because eighty-one dollars is a bigger whole than seventy-five, so each percent of it is bigger."
+ },
+ "p.x-cancel": {
+  "text": "They do not cancel. The eight percent added was of seventy-five dollars. The eight percent Ana takes off is of eighty-one dollars, a bigger whole."
+ },
+ "p.x-div": {
+  "text": "Eighty-one dollars divided by point zero eight is over a thousand dollars: far too much. Point zero eight times the price is only the tax. The total is one point zero eight times the price."
+ },
+ "p.x-dollars": {
+  "text": "Eight percent is not eight dollars. The tax was eight percent of the price."
+ },
+ "p.x-other": {
+  "text": "True, but it is the reason for a different line."
+ },
+ "p.done": {
+  "text": "That's a proof: three claims, each with its reason, and the tapes back every one. Undo a tax by dividing by one point zero eight, not by taking eight percent of the total."
+ }
+}
