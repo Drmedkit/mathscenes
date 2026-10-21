@@ -33,17 +33,27 @@ def main():
     if dry or not todo:
         return
 
+    import time, threading
+    lock = threading.Lock()
+
     def gen(job):
         lid, text, h = job
-        r = el.post(f"/v1/text-to-speech/{VOICE['voice_id']}?output_format=mp3_44100_128",
-                    json={"text": text, "model_id": VOICE["model_id"], "voice_settings": VOICE["voice_settings"]})
+        for attempt in range(5):   # dropped connections happen: retry with a back-off
+            try:
+                r = el.post(f"/v1/text-to-speech/{VOICE['voice_id']}?output_format=mp3_44100_128",
+                            json={"text": text, "model_id": VOICE["model_id"], "voice_settings": VOICE["voice_settings"]})
+                break
+            except Exception as e:
+                if attempt == 4: raise
+                print(f"   retry {lid}: {type(e).__name__}"); time.sleep(3 * (attempt + 1))
         (folder / f"{lid}.mp3").write_bytes(r.content)
+        with lock:   # save progress after every line, so a crash never loses finished lines
+            hashes[lid] = h
+            el.save_json(hp, hashes)
         return lid, h
 
     for lid, h in el.pmap(gen, todo):
-        hashes[lid] = h
         print("  ", lid)
-    el.save_json(hp, hashes)
 
 
 if __name__ == "__main__":
