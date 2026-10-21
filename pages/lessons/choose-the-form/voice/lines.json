@@ -1,0 +1,122 @@
+{
+  "q.intro": {
+    "text": "A forty-eight dollar jacket is twenty-five percent off. Mia finds the discount as one fourth of forty-eight dollars. Leo works out zero point two five times forty-eight. Who is right? Pick an answer, and say how sure you are."
+  },
+  "q.sure": {
+    "text": "How sure are you?"
+  },
+  "e.intro": {
+    "text": "Four steps. Press each one: the picture moves first, then the notation."
+  },
+  "e.step0": {
+    "text": "Twenty-five percent means twenty-five hundredths. That is one fourth, and it is zero point two five. Three names, one point on the line."
+  },
+  "e.step1": {
+    "text": "The fraction route: one fourth of forty-eight dollars. Cut the bar into four equal parts: one part is twelve dollars. One easy division, forty-eight divided by four."
+  },
+  "e.step2": {
+    "text": "The decimal route: zero point two five times forty-eight. Twenty-five times forty-eight is twelve hundred, and two decimal places make twelve. Same point, same twelve dollars."
+  },
+  "e.step3": {
+    "text": "Both routes are right. Forty-eight splits evenly into four, so the fraction is quicker in your head. Report it as money: a twelve dollar discount."
+  },
+  "e.why": {
+    "text": "Quick check: why do both routes give twelve dollars?"
+  },
+  "e.why.ok": {
+    "text": "Yes. The same number times the same forty-eight gives the same answer, every time."
+  },
+  "e.why.differ": {
+    "text": "It is never luck. Two correct routes for the same number always agree."
+  },
+  "e.why.one": {
+    "text": "Both routes are real. Any route that keeps the number the same is valid: pick the shorter one."
+  },
+  "t.intro": {
+    "text": "Now you leave an eighteen percent tip on a forty-five dollar bill. The first step is done for you."
+  },
+  "t.route": {
+    "text": "Eighteen percent is eighteen hundredths, or zero point one eight. No friendly fraction this time. Which route suits these numbers?"
+  },
+  "t.route.ok": {
+    "text": "Yes: ten percent is easy to find, and eight percent is eight pieces of one percent. Then add."
+  },
+  "t.route.div": {
+    "text": "Eighteen percent is not one eighteenth. That gives two dollars fifty, a tiny tip."
+  },
+  "t.route.times": {
+    "text": "Eighteen percent is zero point one eight, not eighteen. That gives eight hundred ten dollars, a tip bigger than the bill!"
+  },
+  "t.ten": {
+    "text": "Find ten percent of forty-five dollars."
+  },
+  "t.ten.ok": {
+    "text": "Yes: ten percent of forty-five dollars is four dollars fifty, one tenth of the bar."
+  },
+  "t.ten.point": {
+    "text": "The point is one place off. Ten percent is one tenth: forty-five dollars divided by ten."
+  },
+  "t.ten.no": {
+    "text": "Ten percent is one tenth: split forty-five dollars into ten equal parts."
+  },
+  "t.empty": {
+    "text": "Type a number first."
+  },
+  "t.total": {
+    "text": "Eight percent is eight times forty-five cents, three dollars sixty. So what is the whole eighteen percent tip?"
+  },
+  "t.total.ok": {
+    "text": "Yes: four fifty plus three sixty is eight dollars ten. Same answer as zero point one eight times forty-five, with no long multiplication."
+  },
+  "t.total.part": {
+    "text": "Three sixty is only the eight percent part. Add the ten percent part too."
+  },
+  "t.total.no": {
+    "text": "Eighteen percent is ten percent plus eight percent: add four fifty and three sixty."
+  },
+  "q.cb.right": {
+    "text": "At the start you picked both, and you were right: one number, so every correct route gives the same answer."
+  },
+  "q.cb.one": {
+    "text": "At the start you picked only Leo. Mia’s fraction route was just as right, and here a third route, ten percent plus eight percent, was the quickest."
+  },
+  "q.cb.differ": {
+    "text": "At the start you thought the amounts could differ. They can’t: one number gives one answer. You just pick the route that suits the numbers."
+  },
+  "q.cb.none": {
+    "text": "One number, three names: pick the form that makes the numbers easy, then report the answer in the form the context needs."
+  },
+  "p.intro": {
+    "text": "Three cousins share a nine hundred dollar prize. Ava gives each cousin thirty-three percent: zero point three three times nine hundred is two hundred ninety-seven dollars. She says that is exactly one third of the prize. Is Ava right?"
+  },
+  "p.test": {
+    "text": "Let’s test it. Build the argument, and see where it leads."
+  },
+  "p.build": {
+    "text": "Now prove it. Fill each because with the reason that makes the line true."
+  },
+  "p.c1": {
+    "text": "Right. One third is zero point three three three, and the threes never stop. Zero point three three is a rounded third."
+  },
+  "p.c2": {
+    "text": "Right. Cut the bar into three equal parts: each is exactly three hundred dollars."
+  },
+  "p.c3": {
+    "text": "Right. Zoom in on the end of the bar: Ava’s three shares stop at eight hundred ninety-one dollars, so nine dollars is left out."
+  },
+  "p.no.inexact": {
+    "text": "Some decimals are exact: zero point two five is exactly one fourth. The trouble is that one third never stops."
+  },
+  "p.no.mid": {
+    "text": "It can: a tiny gap times nine hundred is three dollars per cousin."
+  },
+  "p.no.calc": {
+    "text": "A screen cuts digits off. One third is zero point three three three, forever."
+  },
+  "p.no.other": {
+    "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+  },
+  "p.done": {
+    "text": "That’s a proof. Ava rounded first, so her shares miss nine dollars. Here the fraction one third is exact, and easier: nine hundred divided by three."
+  }
+}
