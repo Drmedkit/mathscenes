@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 45, queued 18 (of 63)
+Totals: building 6, live 45, queued 12 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -38,7 +38,7 @@ Totals: live 45, queued 18 (of 63)
 | 17 | Square roots of perfect squares | `perfect-squares` | 8 | 13 | live | 13 sub-goals, 42 voice lines |
 | 18 | Recognize a linear relationship | `linear-patterns` | 8 | 19 | live | 19 sub-goals, 48 voice lines |
 | 19 | Calculate sales tax, totals, and pre-tax prices | `sales-tax` | 7 | 19 | live | 19 sub-goals, 46 voice lines; pilot Opus builder + Haiku QA; VOICE PENDING |
-| 20 | Calculate simple interest | `simple-interest` | 7 | 15 | queued |  |
+| 20 | Calculate simple interest | `simple-interest` | 7 | 15 | building | wave 5: Opus builder + Haiku QA |
 
 ## Wave 2
 
@@ -56,9 +56,9 @@ Totals: live 45, queued 18 (of 63)
 | 10 | Function concept and identifying functions | `functions` | 8 | 18 | live | 18 sub-goals, 40 voice lines |
 | 11 | Translations, reflections, and rotations | `rigid-transformations` | 8 | 24 | live | 24 sub-goals, 42 voice lines |
 | 12 | Convert fractions, decimals, and percents: extended | `fractions-decimals-percents` | 7 | 23 | live | 23 sub-goals, 45 voice lines |
-| 13 | Combine percents and ratios in one problem | `percents-and-ratios` | 7 | 14 | queued |  |
+| 13 | Combine percents and ratios in one problem | `percents-and-ratios` | 7 | 14 | building | wave 5: Opus builder + Haiku QA |
 | 14 | Find the original amount after a percent change | `original-amount` | 7 | 7 | live | 7 sub-goals, 47 voice lines |
-| 15 | Scale calculations: drawing lengths and actual lengths | `scale-calculations` | 7 | 16 | queued |  |
+| 15 | Scale calculations: drawing lengths and actual lengths | `scale-calculations` | 7 | 16 | building | wave 5: Opus builder + Haiku QA |
 | 16 | Transformations in the coordinate plane: reflect and translate | `coordinate-transformations` | 8 | 21 | live | 21 sub-goals, 46 voice lines |
 
 ## Wave 3
@@ -72,9 +72,9 @@ Totals: live 45, queued 18 (of 63)
 | 5 | Solving linear equations in one variable | `linear-equations` | 8 | 22 | live | 22 sub-goals, 45 voice lines |
 | 6 | Congruence via transformations | `congruence` | 8 | 18 | live | 18 sub-goals, 41 voice lines; VOICE PENDING |
 | 7 | Scientific notation and order of magnitude | `scientific-notation` | 8 | 15 | live | 15 sub-goals, 45 voice lines; VOICE PENDING |
-| 8 | Choose a fraction, decimal, or percent form to calculate with, and justify it | `choose-the-form` | 7 | 16 | queued |  |
-| 9 | Scale factor and area: the area is multiplied by k^2 | `scale-and-area` | 7 | 16 | queued |  |
-| 10 | Pythagorean theorem: introduction and use | `pythagoras-intro` | 8 | 16 | queued |  |
+| 8 | Choose a fraction, decimal, or percent form to calculate with, and justify it | `choose-the-form` | 7 | 16 | building | wave 5: Opus builder + Haiku QA |
+| 9 | Scale factor and area: the area is multiplied by k^2 | `scale-and-area` | 7 | 16 | building | wave 5: Opus builder + Haiku QA |
+| 10 | Pythagorean theorem: introduction and use | `pythagoras-intro` | 8 | 16 | building | wave 5: Opus builder + Haiku QA |
 | 11 | Read a map: map key, scale, and estimating distance | `reading-maps` | 7 | 18 | queued |  |
 | 12 | Use a map scale (1 in = 1 mi, i.e. 1:63,360; 1:24,000) | `map-scale` | 7 | 18 | queued |  |
 

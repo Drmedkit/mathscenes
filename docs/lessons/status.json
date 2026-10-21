@@ -268,5 +268,41 @@
   "note": "19 sub-goals, 46 voice lines; pilot Opus builder + Haiku QA; VOICE PENDING",
   "at": "2026-10-21 14:22",
   "commit": "93f1ec7"
+ },
+ "simple-interest": {
+  "state": "building",
+  "note": "wave 5: Opus builder + Haiku QA",
+  "at": "2026-10-21 14:23",
+  "commit": "a7a0b5e"
+ },
+ "percents-and-ratios": {
+  "state": "building",
+  "note": "wave 5: Opus builder + Haiku QA",
+  "at": "2026-10-21 14:23",
+  "commit": "a7a0b5e"
+ },
+ "scale-calculations": {
+  "state": "building",
+  "note": "wave 5: Opus builder + Haiku QA",
+  "at": "2026-10-21 14:23",
+  "commit": "a7a0b5e"
+ },
+ "choose-the-form": {
+  "state": "building",
+  "note": "wave 5: Opus builder + Haiku QA",
+  "at": "2026-10-21 14:23",
+  "commit": "a7a0b5e"
+ },
+ "scale-and-area": {
+  "state": "building",
+  "note": "wave 5: Opus builder + Haiku QA",
+  "at": "2026-10-21 14:23",
+  "commit": "a7a0b5e"
+ },
+ "pythagoras-intro": {
+  "state": "building",
+  "note": "wave 5: Opus builder + Haiku QA",
+  "at": "2026-10-21 14:23",
+  "commit": "a7a0b5e"
  }
 }
