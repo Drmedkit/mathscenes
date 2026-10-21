@@ -1,0 +1,113 @@
+{
+ "q.intro": {
+  "text": "A rug is three feet by two feet, so it takes six square feet of fabric. A scaled copy has every length three times as long. How much fabric does the copy take? Pick an answer, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one, and watch the rugs move first."
+ },
+ "e.step0": {
+  "text": "Every length times three. The copy is nine feet long and six feet wide."
+ },
+ "e.step1": {
+  "text": "The length times three. One row holds three rugs. That is three times six, eighteen square feet. But the copy is not full yet."
+ },
+ "e.step2": {
+  "text": "The width times three as well. Three rows of three rugs. The row’s eighteen square feet, three times. Eighteen times three is fifty-four."
+ },
+ "e.step3": {
+  "text": "Each length gave one factor of three, so the area is times three times three. Three squared is nine. That is nine rugs, fifty-four square feet. Check: nine times six is fifty-four."
+ },
+ "e.why": {
+  "text": "Quick check. Why does the copy take nine times the fabric, not three times?"
+ },
+ "e.why.ok": {
+  "text": "Yes. The length multiplies the area by three, and the width multiplies it by three again."
+ },
+ "e.why.k": {
+  "text": "Three times the fabric is just one row of rugs. The copy is three times as long and three times as wide. That makes three rows."
+ },
+ "e.why.add": {
+  "text": "Six rugs would leave a gap. Count them. Three rows of three is nine. The factors multiply."
+ },
+ "t.intro": {
+  "text": "A photo is four inches by three inches. That is twelve square inches. A print has every length two times as long. The first two steps are done for you."
+ },
+ "t.count": {
+  "text": "Now the width doubles too. How many photos fill the print?"
+ },
+ "t.count.ok": {
+  "text": "Yes. Two rows of two photos. Two times two is four."
+ },
+ "t.count.k": {
+  "text": "Two photos fill only one row. That was the length. The width doubles too, so there are two rows."
+ },
+ "t.count.no": {
+  "text": "Count the rows, then the photos in each row."
+ },
+ "t.area": {
+  "text": "What is the area of the print?"
+ },
+ "t.area.ok": {
+  "text": "Yes. Four photos of twelve square inches. Forty-eight square inches. And eight times six is forty-eight. It checks."
+ },
+ "t.area.k": {
+  "text": "Twenty-four is one row of photos. There are two rows. Four photos of twelve square inches."
+ },
+ "t.area.factor": {
+  "text": "Four is how many photos fit, not the area. Each photo is twelve square inches."
+ },
+ "t.area.sq": {
+  "text": "That squares the area. Square the scale factor instead. Two times two is four photos of twelve."
+ },
+ "t.area.no": {
+  "text": "Four photos, and each one is twelve square inches."
+ },
+ "t.empty": {
+  "text": "Type a number first."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked fifty-four square feet, and you were right. Now you can show why. One factor of three for each length."
+ },
+ "q.cb.k": {
+  "text": "At the start you picked eighteen square feet. That is one row of rugs. It scales the length only. The width scales too."
+ },
+ "q.cb.add": {
+  "text": "At the start you picked thirty-six square feet. That adds the factors, three plus three. The rows of rugs show they multiply. Three times three."
+ },
+ "q.cb.none": {
+  "text": "Every length times k. The area is times k, then times k again. That is k squared."
+ },
+ "p.intro": {
+  "text": "Riley scales a triangle by two. The base goes from four to eight, the height from three to six. Riley says: k times k is for rectangles. My triangle’s area just doubles, from six to twelve square units. Is Riley right?"
+ },
+ "p.test": {
+  "text": "Let’s test it. Build the argument, and see where it leads."
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Right. Four copies fill the big triangle, the middle one turned around. Riley’s twelve is struck out."
+ },
+ "p.c2": {
+  "text": "Right. Four copies of six square units. Four times six is twenty-four."
+ },
+ "p.c3": {
+  "text": "Right. Doubling the base doubles the area. Doubling the height doubles it again. And one half times eight times six is twenty-four. It checks."
+ },
+ "p.no.k": {
+  "text": "That is exactly Riley’s claim. Count the copies in the picture. There are four, not two."
+ },
+ "p.no.rect": {
+  "text": "The triangle tiles too. Four copies fill it. The rule is not special to rectangles."
+ },
+ "p.no.ex": {
+  "text": "One triangle can’t prove it for every figure. The reason must work for any base and any height."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof. Three claims, each with its reason, and the picture backs every one. Scaling by two makes four times the area, for triangles too."
+ }
+}
