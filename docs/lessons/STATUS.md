@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 17, live 9, queued 37 (of 63)
+Totals: building 17, live 10, queued 36 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -29,7 +29,7 @@ Totals: building 17, live 9, queued 37 (of 63)
 | 8 | Enlarge and reduce with a scale factor (scaled copies) | `scale-factor` | 7 | 18 | building | agent |
 | 9 | Enlarge and reduce shapes informally on grid paper | `enlarge-on-grids` | 7 | 14 | queued |  |
 | 10 | Relationships between quantities: ratio tables and proportional relationships | `ratio-tables-and-proportions` | 7 | 20 | queued |  |
-| 11 | Percent increase and decrease: find and apply percent change | `percent-change` | 7 | 19 | building | agent |
+| 11 | Percent increase and decrease: find and apply percent change | `percent-change` | 7 | 19 | live | 19 sub-goals, 42 voice lines |
 | 12 | Calculate a discount | `discounts` | 7 | 13 | building | agent |
 | 13 | Understand scale: drawings and actual lengths | `scale-basics` | 7 | 15 | queued |  |
 | 14 | Solve ratio problems with fractions and decimals | `ratio-problems` | 7 | 21 | queued |  |
@@ -69,7 +69,7 @@ Totals: building 17, live 9, queued 37 (of 63)
 | 2 | Angle relationships | `angle-relationships` | 7 | 25 | queued |  |
 | 3 | Two-step inequalities | `two-step-inequalities` | 7 | 14 | queued |  |
 | 4 | Rational and irrational numbers | `irrational-numbers` | 8 | 21 | queued |  |
-| 5 | Solving linear equations in one variable | `linear-equations` | 8 | 22 | queued |  |
+| 5 | Solving linear equations in one variable | `linear-equations` | 8 | 22 | building | agent |
 | 6 | Congruence via transformations | `congruence` | 8 | 18 | queued |  |
 | 7 | Scientific notation and order of magnitude | `scientific-notation` | 8 | 15 | queued |  |
 | 8 | Choose a fraction, decimal, or percent form to calculate with, and justify it | `choose-the-form` | 7 | 16 | queued |  |

@@ -36,10 +36,10 @@
   "commit": "3146944"
  },
  "percent-change": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 07:28",
-  "commit": "3146944"
+  "state": "live",
+  "note": "19 sub-goals, 42 voice lines",
+  "at": "2026-10-21 08:28",
+  "commit": "3573ade"
  },
  "scale-factor": {
   "state": "building",
@@ -154,5 +154,11 @@
   "note": "agent",
   "at": "2026-10-21 08:21",
   "commit": "45723d0"
+ },
+ "linear-equations": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:27",
+  "commit": "018e193"
  }
 }
