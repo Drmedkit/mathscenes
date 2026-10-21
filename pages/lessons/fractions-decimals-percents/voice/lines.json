@@ -1,0 +1,137 @@
+{
+  "q.intro": {
+    "text": "A one-mile relay is split equally among six runners. Each runs one sixth of a mile."
+  },
+  "q.calc": {
+    "text": "Your calculator shows one divided by six equals zero point one six six six six six six six six seven."
+  },
+  "q.ask": {
+    "text": "Which of these is exactly one sixth?"
+  },
+  "q.sure": {
+    "text": "How sure are you?"
+  },
+  "e.intro": {
+    "text": "Four steps. Press each one: the picture moves first, then the notation."
+  },
+  "e.s1": {
+    "text": "One sixth means one divided by six. Six does not fit into one: digit zero, remainder one. Bring down a zero: ten divided by six is one, remainder four."
+  },
+  "e.s2": {
+    "text": "Remainder four becomes forty. Forty divided by six is six, remainder four. The remainder four is back."
+  },
+  "e.s3": {
+    "text": "Same remainder, same next line, forever: the six repeats. Only the six, because the one came once. So one sixth is zero point one six, with the six repeating."
+  },
+  "e.s4": {
+    "text": "Times one hundred moves the point two places: sixteen point six six six percent. Read the block again from the new point: one sixth is sixteen point six repeating percent, exactly."
+  },
+  "e.why": {
+    "text": "Quick check: why does the bar go over the six only?"
+  },
+  "e.w-ok": {
+    "text": "Yes. The one came from remainder one, which never comes back. Remainder four keeps coming back, and it always makes a six."
+  },
+  "e.w-all": {
+    "text": "A bar over one six would mean zero point one six one six one six, and so on. But the one comes only once."
+  },
+  "e.w-last": {
+    "text": "The bar is not about the last digit you wrote. It covers the block that repeats, here just the six."
+  },
+  "t.intro": {
+    "text": "Now twelve runners share a five-mile relay: five twelfths of a mile each. The first step is done for you."
+  },
+  "t.given": {
+    "text": "Five divided by twelve is zero, remainder five. Then fifty divided by twelve is four, remainder two. Then twenty divided by twelve is one, remainder eight."
+  },
+  "t.step": {
+    "text": "Your step: the remainder eight becomes eighty. What is eighty divided by twelve?"
+  },
+  "t.s-ok": {
+    "text": "Yes: six times twelve is seventy-two, and eighty minus seventy-two is eight. Remainder eight again!"
+  },
+  "t.s-big": {
+    "text": "Seven times twelve is eighty-four, more than eighty. Try one less."
+  },
+  "t.s-rem": {
+    "text": "A remainder must be less than twelve. Check: the digit times twelve, then eighty minus that."
+  },
+  "t.s-other": {
+    "text": "How many twelves fit into eighty? Then eighty minus that is the remainder."
+  },
+  "t.write": {
+    "text": "Remainder eight came back. Which is five twelfths in bar notation?"
+  },
+  "t.w-ok": {
+    "text": "Yes: remainder eight keeps coming back and makes a six every time. The four and the one came once. Five twelfths is zero point four one six, with the six repeating."
+  },
+  "t.w-all": {
+    "text": "That repeats four one six again and again. The four and the one came once; only the six repeats."
+  },
+  "t.w-two": {
+    "text": "A bar over one six repeats the one and the six. The one came once; only the six repeats."
+  },
+  "t.w-stop": {
+    "text": "Zero point four one six stops. The remainder is eight, not zero, so the sixes go on."
+  },
+  "t.pct": {
+    "text": "Last step: write five twelfths as an exact percent."
+  },
+  "t.p-ok": {
+    "text": "Yes: times one hundred gives forty-one point six six six percent, and the six still repeats."
+  },
+  "t.p-unscaled": {
+    "text": "That would be less than one percent. Multiply by one hundred first."
+  },
+  "t.p-one": {
+    "text": "Times one hundred moves the point two places, not one."
+  },
+  "t.p-drop": {
+    "text": "Forty-one point six percent stops. After the shift the sixes still go on, so the bar stays."
+  },
+  "t.cb-right": {
+    "text": "At the start you picked zero point one six with the six repeating, and you were right. Now you know where the bar comes from: a remainder that comes back."
+  },
+  "t.cb-calc": {
+    "text": "At the start you picked the calculator's answer. The display ran out of room: one sixth never stops."
+  },
+  "t.cb-all": {
+    "text": "At the start you picked a bar over one six. That repeats the one too, but the one comes once."
+  },
+  "t.cb-none": {
+    "text": "At the start: one sixth is zero point one six with the six repeating, exactly. The calculator only shows the first ten digits."
+  },
+  "p.intro": {
+    "text": "Ava says one third equals zero point three three three, exactly. Is Ava right?"
+  },
+  "p.test": {
+    "text": "Let's test it. Build the argument and see where it leads."
+  },
+  "p.prove": {
+    "text": "Now prove it. Fill each because with the reason that makes the line true."
+  },
+  "p.c1": {
+    "text": "After three digits, one divided by three still has a remainder of one, not zero, because ten divided by three is three, remainder one, at every step."
+  },
+  "p.c2": {
+    "text": "so three times zero point three three three is zero point nine nine nine: that is one thousandth short of one, because that leftover thousandth was never shared out."
+  },
+  "p.c3": {
+    "text": "so one third is zero point three repeating, exactly, and zero point three three three is only close to one third, because cutting a repeating decimal off gives a different, smaller number."
+  },
+  "p.x-length": {
+    "text": "Three threes are just three digits, and then it stops. Repeating means it goes on forever, which is what a bar says."
+  },
+  "p.x-ends": {
+    "text": "It never does: every step is ten divided by three, three, remainder one. The remainder one comes back forever."
+  },
+  "p.x-inexact": {
+    "text": "Some decimals are exact: zero point one two five is exactly one eighth. The question is whether zero point three three three is all of one third. It is not."
+  },
+  "p.x-other": {
+    "text": "True, but it is the reason for a different line."
+  },
+  "p.done": {
+    "text": "That's a proof: three claims, each with its reason, and the division backs every one. Ava's number is close to one third; exactly, one third is zero point three repeating."
+  }
+}

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fractions, Decimals, and Percents</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* repeating decimals: the bar over the digits that repeat */
+    .rep { text-decoration: overline; text-decoration-thickness: 2px; text-underline-offset: 2px; }
+    .panel .calc { display: block; margin-top: 6px; font-size: 14px; color: var(--faint); }
+    /* decimals in the answer cards are long (0.1666666667): one card per row */
+    .cards.long { grid-template-columns: 1fr; }
+    .cards.long button { flex-direction: row; justify-content: space-between; align-items: baseline; padding: 12px 18px; font-size: 26px; font-variant-numeric: tabular-nums; }
+    .opts button { font-variant-numeric: tabular-nums; }
+    .opts button.num { font-size: 22px; padding: 8px 16px; }
+    .panel .ans input { width: 96px; }
+    .panel .ans .whole { width: 60px; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Convert fractions, decimals, and percents</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The long division ladder, the digit cells and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./fractions-decimals-percents.ts"></script>
+</body>
+</html>
