@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 18, live 18, queued 27 (of 63)
+Totals: building 17, live 19, queued 27 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -19,7 +19,7 @@ Totals: building 18, live 18, queued 27 (of 63)
 
 | # | topic | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
-| 1 | Proportional relationships | `proportional-relationships` | 7 | 17 | building | agent |
+| 1 | Proportional relationships | `proportional-relationships` | 7 | 17 | live | 17 sub-goals, 45 voice lines |
 | 2 | Add and subtract rational numbers | `add-subtract-rational-numbers` | 7 | 19 | live | 19 sub-goals, 27 families, 41 voice lines |
 | 3 | Cross-sections of right rectangular prisms and pyramids | `cross-sections` | 7 | 6 | live | 6 sub-goals, 44 voice lines |
 | 4 | Probability concepts | `probability` | 7 | 20 | live | 20 sub-goals, 43 voice lines |

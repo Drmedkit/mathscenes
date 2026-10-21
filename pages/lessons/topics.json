@@ -31,7 +31,8 @@
   "wave": 1,
   "level": 0,
   "subgoals": 17,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t5-17-operations-with-rational-numbers",
