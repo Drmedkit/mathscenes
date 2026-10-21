@@ -1,0 +1,119 @@
+{
+ "q.intro": {
+  "text": "Elm Street and Oak Street are parallel. A rail line crosses both. Where it meets Oak Street, one corner is sixty-five degrees. What is corner x, where it meets Elm Street? Pick an answer, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one. The figure moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "Two crossings, P and Q. The band between the parallel streets is the interior. The sixty-five degree corner and x are both inside it, on the same side of the rail line."
+ },
+ "e.step1": {
+  "text": "Slide Oak Street's crossing up the rail line until Q lands on P. The streets are parallel, so it lands exactly on Elm Street. The sixty-five degree corner lands on corner y. So y is sixty-five degrees. They are corresponding angles."
+ },
+ "e.step2": {
+  "text": "x and y together fill a straight line: the rail line, one hundred eighty degrees. So x is one hundred eighty minus sixty-five, which is one hundred fifteen degrees."
+ },
+ "e.step3": {
+  "text": "One hundred fifteen plus sixty-five is one hundred eighty. Same-side interior angles at parallel lines add to one hundred eighty degrees. They are not equal."
+ },
+ "e.why": {
+  "text": "Quick check: why could the sixty-five degree corner move up to Elm Street?"
+ },
+ "e.why.ok": {
+  "text": "Yes. Parallel is what makes the slide land exactly. Without it, the corners would not match."
+ },
+ "e.why.look": {
+  "text": "Looks can fool you, and a drawing may not be to scale. The reason is the slide, which needs parallel streets."
+ },
+ "e.why.equal": {
+  "text": "They are not equal: one hundred fifteen and sixty-five. Same-side interior corners add to one hundred eighty degrees."
+ },
+ "t.intro": {
+  "text": "Now the parallel lines l and m stand up, and the given angle is one hundred eight degrees. The first step is done for you."
+ },
+ "t.partner": {
+  "text": "Which marked angle is the alternate interior partner of the one hundred eight degree angle?"
+ },
+ "t.p.ok": {
+  "text": "Yes. Angle a is between the lines, on the other side of t. Watch the half turn about M carry the one hundred eight degree angle onto a."
+ },
+ "t.p.b": {
+  "text": "Angle b is between the lines too, but on the same side of t. That makes it same-side interior. Alternate means opposite sides."
+ },
+ "t.p.c": {
+  "text": "Angle c is outside the lines. It corresponds to the one hundred eight degree angle. Alternate interior angles are both between the lines."
+ },
+ "t.a": {
+  "text": "What is the measure of angle a?"
+ },
+ "t.empty": {
+  "text": "Type a number first."
+ },
+ "t.a.72": {
+  "text": "The half turn put the one hundred eight degree angle right on top of a. Alternate interior angles are equal, not supplementary."
+ },
+ "t.a.no": {
+  "text": "The half turn carried the one hundred eight degree angle exactly onto a. So what is a?"
+ },
+ "t.a.ok": {
+  "text": "Yes. Angle a is one hundred eight degrees. Alternate interior angles at parallel lines are equal."
+ },
+ "t.b": {
+  "text": "Angle b is on the same side of t as the one hundred eight degree angle, between the lines. What is its measure?"
+ },
+ "t.b.108": {
+  "text": "Angles b and a sit side by side on line m. Together they make a straight line. They add to one hundred eighty degrees, so b is not one hundred eight."
+ },
+ "t.b.no": {
+  "text": "Angles a and b fill a straight line together. They add to one hundred eighty degrees."
+ },
+ "t.b.ok": {
+  "text": "Yes. Angle b is one hundred eighty minus one hundred eight, which is seventy-two degrees. Angle b and the one hundred eight degree angle are same-side interior angles: they add to one hundred eighty."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked one hundred fifteen degrees, and you were right. Now you can show why: slide, then use the straight line."
+ },
+ "q.cb.equal": {
+  "text": "At the start you picked sixty-five degrees. Corners between the lines on the same side are not equal. They add to one hundred eighty degrees."
+ },
+ "q.cb.cant": {
+  "text": "At the start you picked can't tell. With the streets given as parallel, you can tell: the slide lands exactly."
+ },
+ "q.cb.none": {
+  "text": "Parallel lines let you move an angle from one crossing to the other. Then a straight line does the rest."
+ },
+ "p.intro": {
+  "text": "Riley added the angles of five triangles. The sums were one hundred eighty, one seventy-nine, one eighty-one, one eighty, and one eighty. So every triangle makes one hundred eighty. Is that a proof?"
+ },
+ "p.test": {
+  "text": "Five examples are not a proof. It must work for every triangle. Line l is drawn through A, parallel to B C. Pick each reason."
+ },
+ "p.build": {
+  "text": "Right. Examples are not a proof. Line l is drawn through A, parallel to B C. Pick each reason."
+ },
+ "p.no.look": {
+  "text": "Looking parallel is not enough. Line l was drawn parallel to B C. That is the reason."
+ },
+ "p.no.circ": {
+  "text": "That is exactly what we are trying to prove. It can't be a reason in its own proof."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.c1": {
+  "text": "Right. A half turn about the middle of A B carries angle B onto angle one."
+ },
+ "p.c2": {
+  "text": "Right. A half turn about the middle of A C carries angle C onto angle three."
+ },
+ "p.c3": {
+  "text": "Right. Angle one, angle A and angle three fill line l. That is one hundred eighty degrees."
+ },
+ "p.c4": {
+  "text": "Right. Watch A slide. The argument never used a size."
+ },
+ "p.done": {
+  "text": "That's a proof. Every claim has a known reason, and it works for every triangle. Riley's triangles were only examples."
+ }
+}
