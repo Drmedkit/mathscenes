@@ -380,7 +380,8 @@
   "requires": [
    "primary.geometry.reflect-2d-shapes",
    "secondary-t5-17-operations-with-rational-numbers"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "primary.fractions.fraction-decimal-percentage-extend",
