@@ -174,10 +174,10 @@
   "commit": "2fff793"
  },
  "fractions-decimals-percents": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 08:33",
-  "commit": "d2b0ed6"
+  "state": "live",
+  "note": "23 sub-goals, 45 voice lines",
+  "at": "2026-10-21 09:26",
+  "commit": "5c36c97"
  },
  "coordinate-transformations": {
   "state": "building",
