@@ -204,7 +204,8 @@
   "wave": 1,
   "level": 0,
   "subgoals": 19,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "primary.ratios.calculate-sales-tax",

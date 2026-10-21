@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 16, live 7, queued 40 (of 63)
+Totals: building 17, live 8, queued 38 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -36,7 +36,7 @@ Totals: building 16, live 7, queued 40 (of 63)
 | 15 | Reflect shapes and points across a line | `reflections` | 8 | 23 | building | agent |
 | 16 | Rotate: quarter turn and half turn | `rotations` | 8 | 22 | building | agent |
 | 17 | Square roots of perfect squares | `perfect-squares` | 8 | 13 | building | agent |
-| 18 | Recognize a linear relationship | `linear-patterns` | 8 | 19 | building | agent |
+| 18 | Recognize a linear relationship | `linear-patterns` | 8 | 19 | live | 19 sub-goals, 48 voice lines |
 | 19 | Calculate sales tax, totals, and pre-tax prices | `sales-tax` | 7 | 19 | queued |  |
 | 20 | Calculate simple interest | `simple-interest` | 7 | 15 | queued |  |
 
@@ -52,9 +52,9 @@ Totals: building 16, live 7, queued 40 (of 63)
 | 6 | Multiply and divide rational numbers | `multiply-divide-rational-numbers` | 7 | 23 | building | agent |
 | 7 | One-step inequalities and signed one-step equations | `one-step-inequalities` | 7 | 11 | building | agent |
 | 8 | Integer exponents | `integer-exponents` | 8 | 17 | building | agent |
-| 9 | Square roots and cube roots | `square-and-cube-roots` | 8 | 21 | queued |  |
+| 9 | Square roots and cube roots | `square-and-cube-roots` | 8 | 21 | building | agent |
 | 10 | Function concept and identifying functions | `functions` | 8 | 18 | building | agent |
-| 11 | Translations, reflections, and rotations | `rigid-transformations` | 8 | 24 | queued |  |
+| 11 | Translations, reflections, and rotations | `rigid-transformations` | 8 | 24 | building | agent |
 | 12 | Convert fractions, decimals, and percents: extended | `fractions-decimals-percents` | 7 | 23 | queued |  |
 | 13 | Combine percents and ratios in one problem | `percents-and-ratios` | 7 | 14 | queued |  |
 | 14 | Find the original amount after a percent change | `original-amount` | 7 | 7 | queued |  |

@@ -54,10 +54,10 @@
   "commit": "3146944"
  },
  "linear-patterns": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 07:29",
-  "commit": "3146944"
+  "state": "live",
+  "note": "19 sub-goals, 48 voice lines",
+  "at": "2026-10-21 08:21",
+  "commit": "31ac246"
  },
  "perfect-squares": {
   "state": "building",
@@ -136,5 +136,17 @@
   "note": "agent",
   "at": "2026-10-21 08:14",
   "commit": "f342e10"
+ },
+ "square-and-cube-roots": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:20",
+  "commit": "e6dad26"
+ },
+ "rigid-transformations": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:20",
+  "commit": "e6dad26"
  }
 }
