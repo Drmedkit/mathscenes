@@ -372,9 +372,9 @@
   "commit": "8f2a4d0"
  },
  "two-way-tables": {
-  "state": "building",
-  "note": "wave 7: Opus builder, lead QA",
-  "at": "2026-10-21 16:51",
-  "commit": "8f2a4d0"
+  "state": "live",
+  "note": "15 sub-goals; VOICE PENDING",
+  "at": "2026-10-21 18:02",
+  "commit": "463fefb"
  }
 }

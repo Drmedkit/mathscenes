@@ -799,6 +799,7 @@
    "primary.data.make-pie-chart",
    "secondary-t5-24-probability-concepts",
    "secondary-t5-40-scatter-plots-and-bivariate-data"
-  ]
+  ],
+  "live": true
  }
 ]
