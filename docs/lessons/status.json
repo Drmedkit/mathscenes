@@ -120,10 +120,10 @@
   "commit": "b856cdd"
  },
  "one-step-inequalities": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 08:09",
-  "commit": "6f77845"
+  "state": "live",
+  "note": "11 sub-goals, 46 voice lines",
+  "at": "2026-10-21 09:02",
+  "commit": "e689270"
  },
  "integer-exponents": {
   "state": "building",
@@ -220,5 +220,11 @@
   "note": "agent",
   "at": "2026-10-21 08:44",
   "commit": "dfc15ce"
+ },
+ "two-step-inequalities": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:46",
+  "commit": "dee4267"
  }
 }
