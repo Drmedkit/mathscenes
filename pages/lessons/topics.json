@@ -504,7 +504,8 @@
   "requires": [
    "primary.fractions.fraction-decimal-percentage-extend",
    "primary.numbers.square-roots-of-perfect-squares"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-30-solving-linear-equations",

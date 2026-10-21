@@ -216,10 +216,10 @@
   "commit": "8a118ce"
  },
  "irrational-numbers": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 08:44",
-  "commit": "dfc15ce"
+  "state": "live",
+  "note": "21 sub-goals, 44 voice lines; VOICE PENDING",
+  "at": "2026-10-21 13:26",
+  "commit": "808a515"
  },
  "two-step-inequalities": {
   "state": "building",
