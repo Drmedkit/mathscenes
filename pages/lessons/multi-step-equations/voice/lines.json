@@ -1,0 +1,119 @@
+{
+ "q.intro": {
+  "text": "The left pan holds half a bag and two thirds of a marble. The right pan holds a third of a bag and one marble. They balance: one half x, plus two thirds, equals one third x, plus one."
+ },
+ "q.ask": {
+  "text": "Fractions are fiddly. Multiply every term by six. Which equation do you get? Pick one, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the balance moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "The pieces are halves and thirds. Six is the least number that both two and three go into, so times six clears every fraction."
+ },
+ "e.step1": {
+  "text": "Six copies of each pan: still level, because both pans grew six times. The pieces make whole things: three bags and four marbles balance two bags and six marbles. Three x plus four equals two x plus six."
+ },
+ "e.step2": {
+  "text": "Take two bags and four marbles off both pans. One bag balances two marbles. x equals two."
+ },
+ "e.step3": {
+  "text": "Put two into the original equation. Both sides are five thirds. So x equals two is right."
+ },
+ "e.why": {
+  "text": "Quick check: why may we multiply every term by six?"
+ },
+ "e.why.ok": {
+  "text": "Yes. Multiplying every term on both sides by the same number, not zero, keeps the balance, and the solution."
+ },
+ "e.why.only": {
+  "text": "Twelve or eighteen would clear them too. Six is just the least, so the numbers stay small."
+ },
+ "e.why.some": {
+  "text": "Then the right pan would get only its pieces copied, and the balance tips. The one is a term too: it becomes six."
+ },
+ "t.intro": {
+  "text": "Now three fourths x, plus one half, equals one fourth x, plus three. The multiplier is found for you: the pieces are quarters and halves, so times four."
+ },
+ "t.line": {
+  "text": "Multiply every term by four. Which line do you get?"
+ },
+ "t.line.ok": {
+  "text": "Yes: times four on every term, both pans. Watch the four copies gather into whole things."
+ },
+ "t.line.some": {
+  "text": "Watch: the three marbles were not copied, so the balance tips. The three is a term too: four times three is twelve."
+ },
+ "t.line.left": {
+  "text": "Only the left pan was copied, so the balance tips. Both sides get times four."
+ },
+ "t.x": {
+  "text": "One bag balances how many marbles? What is x?"
+ },
+ "t.x.empty": {
+  "text": "Type a number first."
+ },
+ "t.x.all": {
+  "text": "Ten balances both bags. One bag balances one share: split ten into two."
+ },
+ "t.x.no": {
+  "text": "Count one share: ten marbles split into two equal rows."
+ },
+ "t.x.ok": {
+  "text": "Yes: ten divided by two is five. x equals five."
+ },
+ "t.check": {
+  "text": "Check in the original: what is the left side, three fourths times five, plus one half?"
+ },
+ "t.check.derived": {
+  "text": "Seventeen is the left side of the line after times four. Check in the original: three fourths times five, plus one half."
+ },
+ "t.check.no": {
+  "text": "Three fourths times five is fifteen fourths. Add two fourths. What do you get?"
+ },
+ "t.check.ok": {
+  "text": "Seventeen fourths, and the right side is seventeen fourths too. x equals five is right."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked three x plus four equals two x plus six, and you were right: every term, both sides, the whole number too."
+ },
+ "q.cb.one": {
+  "text": "At the start you picked three x plus four equals two x plus one. The one was left out. A whole number is a term too: it gets times six as well."
+ },
+ "q.cb.xonly": {
+  "text": "At the start you picked three x plus two thirds equals two x plus one. Only the x terms were multiplied. Every term gets times six."
+ },
+ "q.cb.none": {
+  "text": "Multiply every term on both sides by the same number. Then the balance, and the solution, stay the same."
+ },
+ "p.intro": {
+  "text": "Maya clears the fraction in two thirds x, plus four, equals six, by multiplying by three. She writes two x plus four equals eighteen, so x equals seven. Is Maya right?"
+ },
+ "p.test": {
+  "text": "Let's test it. Build the argument, and see where it leads."
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.no.whole": {
+  "text": "That is exactly Maya's slip. Clearing multiplies every term, so the four must become twelve."
+ },
+ "p.no.derived": {
+  "text": "It solves her line, but her line is not equivalent to the original. Check in the original: two thirds of seven, plus four, is not six."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.c1": {
+  "text": "Right. Only the pieces of the bag were copied, not the four marbles, so the balance tips."
+ },
+ "p.c2": {
+  "text": "Right. Three copies of each whole pan: still level, and the pieces make two bags and twelve marbles."
+ },
+ "p.c3": {
+  "text": "Right. Twelve off both pans leaves two bags and six marbles: one bag balances three. And two thirds of three, plus four, is six."
+ },
+ "p.done": {
+  "text": "That's a proof: three claims, each with its reason, and the balance backs every one. Maya multiplied only some of the terms."
+ }
+}

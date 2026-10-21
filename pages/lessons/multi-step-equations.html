@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Multi-step linear equations with rational coefficients</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* equation cards: one per row, so a whole equation fits */
+    .cards.eqs { grid-template-columns: 1fr; }
+    .cards.eqs button { font-size: 25px; padding: 12px 10px; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Multi-step linear equations with rational coefficients</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The model and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./multi-step-equations.ts"></script>
+</body>
+</html>
