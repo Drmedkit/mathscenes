@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Find the Original Amount</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* money and multiplier answers need room for cents (47.17) */
+    .panel .ans input { width: 112px; font-size: 22px; font-weight: 600; }
+    .panel .ans .money { display: inline-flex; align-items: center; gap: 6px; font-size: 22px; color: var(--dim); }
+    .panel .ans .op { font-size: 17px; color: var(--dim); }
+    .panel .calc { display: block; margin-top: 6px; font-size: 14px; color: var(--faint); }
+    .cards button b { font-weight: 600; }
+    b.p { color: var(--pick); font-weight: 650; }
+    /* two money boxes (one section, the original): one per line, labels in a column */
+    .panel .ans:has(> .op + input + .op) { display: grid; grid-template-columns: max-content 120px; gap: 8px 10px; align-items: center; justify-content: start; }
+    .panel .ans:has(> .op + input + .op) > .op { justify-self: end; margin: 0; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Find the original amount after a percent change</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="A price tag or receipt, the tapes of the original and the new amount, and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./original-amount.ts"></script>
+</body>
+</html>

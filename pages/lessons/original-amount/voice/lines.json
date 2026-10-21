@@ -1,0 +1,143 @@
+{
+  "q.intro": {
+    "text": "A jacket is twenty percent off. The sale price is forty-eight dollars."
+  },
+  "q.ask": {
+    "text": "What was the original price?"
+  },
+  "q.sure": {
+    "text": "How sure are you?"
+  },
+  "e.intro": {
+    "text": "Four steps. Press each one: the picture moves first, then the notation."
+  },
+  "e.s1": {
+    "text": "The original price is the whole: one hundred percent. Twenty percent came off, so forty-eight dollars is eighty percent of it, four of its five equal sections."
+  },
+  "e.s2": {
+    "text": "Forty-eight dollars is four sections. One section is forty-eight divided by four: twelve dollars."
+  },
+  "e.s3": {
+    "text": "The original is all five sections: five times twelve dollars is sixty dollars."
+  },
+  "e.s4": {
+    "text": "In one step: the sale price is zero point eight times the original, so the original is forty-eight dollars divided by zero point eight: sixty dollars."
+  },
+  "e.why": {
+    "text": "Quick check: why divide by zero point eight, and not add twenty percent of forty-eight dollars back?"
+  },
+  "e.w-ok": {
+    "text": "Yes. The twenty percent was twenty percent of the original. Forty-eight dollars is only eighty percent of it, so dividing by zero point eight gets back to one hundred percent."
+  },
+  "e.w-back": {
+    "text": "Twenty percent of forty-eight dollars is only nine dollars and sixty cents, which gives fifty-seven sixty. The twenty percent came off the bigger original: twenty percent of sixty dollars is twelve dollars."
+  },
+  "e.w-rate": {
+    "text": "Forty-eight divided by zero point two is two hundred forty dollars, five times too much. Forty-eight dollars is eighty percent of the original, so divide by zero point eight."
+  },
+  "t.intro": {
+    "text": "Now a concert ticket costs fifty-four dollars in total, with eight percent sales tax. The first step is done for you."
+  },
+  "t.whole": {
+    "text": "The price before tax is the whole, one hundred percent. The tax adds eight percent, so the total is one hundred eight percent of the price."
+  },
+  "t.mult": {
+    "text": "Your step: the total is what number times the price before tax?"
+  },
+  "t.m-ok": {
+    "text": "Yes: one hundred eight percent is one point zero eight. The total is one point zero eight times the price."
+  },
+  "t.m-rate": {
+    "text": "Zero point zero eight is only the tax. The total is the price plus the tax: one plus zero point zero eight."
+  },
+  "t.m-dir": {
+    "text": "Tax makes the total bigger than the price, so the multiplier is more than one."
+  },
+  "t.m-pct": {
+    "text": "One hundred eight percent is right, but write it as a decimal: one hundred eight hundredths."
+  },
+  "t.m-other": {
+    "text": "The total is one hundred eight percent of the price. Write one hundred eight percent as a decimal."
+  },
+  "t.div": {
+    "text": "Your step: divide. What was the price before tax?"
+  },
+  "t.d-ok": {
+    "text": "Yes: fifty-four dollars divided by one point zero eight is fifty dollars."
+  },
+  "t.d-opp": {
+    "text": "That takes eight percent of fifty-four dollars off: the wrong base. The eight percent was of the price before tax. Divide by one point zero eight."
+  },
+  "t.d-rate": {
+    "text": "That divides by the tax rate. Fifty-four dollars is one hundred eight percent of the price, so divide by one point zero eight."
+  },
+  "t.d-fwd": {
+    "text": "That adds the tax a second time. To undo it, divide by one point zero eight."
+  },
+  "t.d-num": {
+    "text": "Eight percent is not eight dollars. Divide fifty-four dollars by one point zero eight."
+  },
+  "t.d-other": {
+    "text": "Fifty-four dollars is one point zero eight times the price. Divide fifty-four dollars by one point zero eight."
+  },
+  "t.check": {
+    "text": "Now check it. Which one is a real check?"
+  },
+  "t.c-ok": {
+    "text": "Yes: eight percent of fifty dollars is four dollars, and fifty plus four is fifty-four. Going forward lands on the total."
+  },
+  "t.c-repeat": {
+    "text": "Doing the same division again repeats any slip. Check by going forward from your answer."
+  },
+  "t.c-opp": {
+    "text": "Eight percent of fifty-four dollars uses the total as the base. It gives forty-nine sixty-eight, not fifty, even though fifty dollars is right."
+  },
+  "t.c-less": {
+    "text": "Being less than fifty-four dollars only checks the direction. Many wrong prices pass that."
+  },
+  "t.cb-right": {
+    "text": "At the start you picked sixty dollars, and you were right. Now you can show why."
+  },
+  "t.cb-576": {
+    "text": "At the start you picked fifty-seven sixty: that adds twenty percent of forty-eight dollars, the wrong base. The original was sixty dollars."
+  },
+  "t.cb-68": {
+    "text": "At the start you picked sixty-eight dollars: that adds twenty dollars, not twenty percent. The original was sixty dollars."
+  },
+  "t.cb-none": {
+    "text": "At the start: forty-eight dollars is eighty percent of the original, so the original was forty-eight divided by zero point eight, sixty dollars."
+  },
+  "p.intro": {
+    "text": "A store marks a sixty dollar skateboard up twenty-five percent to seventy-five dollars. Theo says: take twenty-five percent off seventy-five dollars and you are back at sixty. Is Theo right?"
+  },
+  "p.test": {
+    "text": "Let's test it. Build the argument and see where it leads."
+  },
+  "p.prove": {
+    "text": "Now prove it. Fill each because with the reason that makes the line true."
+  },
+  "p.c1": {
+    "text": "The markup was twenty-five percent of sixty dollars, that is fifteen dollars, because a percent change is a percent of the amount before the change."
+  },
+  "p.c2": {
+    "text": "but twenty-five percent off seventy-five dollars is twenty-five percent of seventy-five, that is eighteen seventy-five, because after the markup the base is seventy-five dollars, and the same percent of a bigger base is more."
+  },
+  "p.c3": {
+    "text": "so it leaves fifty-six twenty-five, not sixty. The way back is seventy-five divided by one point two five, sixty dollars, because seventy-five dollars is one hundred twenty-five percent of the original."
+  },
+  "p.x-cancel": {
+    "text": "Up twenty-five percent and down twenty-five percent would only cancel if both were percents of the same amount. They are not."
+  },
+  "p.x-near": {
+    "text": "Fifty-six twenty-five is not a rounding gap: every amount here is exact. Three seventy-five is missing."
+  },
+  "p.x-rate": {
+    "text": "Dividing by zero point two five gives three hundred dollars. Seventy-five dollars is one hundred twenty-five percent of the original, so divide by one point two five."
+  },
+  "p.x-other": {
+    "text": "True, but it is the reason for a different line."
+  },
+  "p.done": {
+    "text": "That's a proof: each claim has its reason, and the tapes back every one. Theo used the new price as the base."
+  }
+}
