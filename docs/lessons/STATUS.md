@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 17, live 15, queued 31 (of 63)
+Totals: building 17, live 16, queued 30 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -26,7 +26,7 @@ Totals: building 17, live 15, queued 31 (of 63)
 | 5 | Draw triangles from given conditions | `draw-triangles` | 7 | 11 | live | 11 sub-goals, 19 voice lines |
 | 6 | Judge sample representativeness and limit conclusions | `judging-samples` | 7 | 6 | live | 6 sub-goals, 12 families |
 | 7 | Make a circle graph (pie chart) with percents | `pie-charts` | 7 | 18 | live | 18 sub-goals, 42 voice lines |
-| 8 | Enlarge and reduce with a scale factor (scaled copies) | `scale-factor` | 7 | 18 | building | agent |
+| 8 | Enlarge and reduce with a scale factor (scaled copies) | `scale-factor` | 7 | 18 | live | 18 sub-goals, 49 voice lines |
 | 9 | Enlarge and reduce shapes informally on grid paper | `enlarge-on-grids` | 7 | 14 | queued |  |
 | 10 | Relationships between quantities: ratio tables and proportional relationships | `ratio-tables-and-proportions` | 7 | 20 | building | agent |
 | 11 | Percent increase and decrease: find and apply percent change | `percent-change` | 7 | 19 | live | 19 sub-goals, 42 voice lines |
@@ -57,7 +57,7 @@ Totals: building 17, live 15, queued 31 (of 63)
 | 11 | Translations, reflections, and rotations | `rigid-transformations` | 8 | 24 | building | agent |
 | 12 | Convert fractions, decimals, and percents: extended | `fractions-decimals-percents` | 7 | 23 | building | agent |
 | 13 | Combine percents and ratios in one problem | `percents-and-ratios` | 7 | 14 | queued |  |
-| 14 | Find the original amount after a percent change | `original-amount` | 7 | 7 | queued |  |
+| 14 | Find the original amount after a percent change | `original-amount` | 7 | 7 | building | agent |
 | 15 | Scale calculations: drawing lengths and actual lengths | `scale-calculations` | 7 | 16 | queued |  |
 | 16 | Transformations in the coordinate plane: reflect and translate | `coordinate-transformations` | 8 | 21 | building | agent |
 
