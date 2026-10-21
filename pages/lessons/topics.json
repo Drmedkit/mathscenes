@@ -638,7 +638,8 @@
    "secondary-t5-19-two-step-equations-and-inequalities",
    "secondary-t5-21-area-and-circumference-of-circles",
    "secondary-t5-23-cross-sections-and-composite-area-volume"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-37-angle-relationships-in-parallel-lines-and-triangles",

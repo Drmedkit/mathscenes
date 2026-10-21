@@ -240,10 +240,10 @@
   "commit": "ccd8566"
  },
  "composite-area-volume": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 09:05",
-  "commit": "f28ff33"
+  "state": "live",
+  "note": "21 sub-goals, 42 voice lines; VOICE PENDING",
+  "at": "2026-10-21 13:37",
+  "commit": "7cc7201"
  },
  "enlarge-on-grids": {
   "state": "building",
