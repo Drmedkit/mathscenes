@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 15, live 26, queued 22 (of 63)
+Totals: building 14, live 27, queued 22 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -57,7 +57,7 @@ Totals: building 15, live 26, queued 22 (of 63)
 | 11 | Translations, reflections, and rotations | `rigid-transformations` | 8 | 24 | live | 24 sub-goals, 42 voice lines |
 | 12 | Convert fractions, decimals, and percents: extended | `fractions-decimals-percents` | 7 | 23 | building | agent |
 | 13 | Combine percents and ratios in one problem | `percents-and-ratios` | 7 | 14 | queued |  |
-| 14 | Find the original amount after a percent change | `original-amount` | 7 | 7 | building | agent |
+| 14 | Find the original amount after a percent change | `original-amount` | 7 | 7 | live | 7 sub-goals, 47 voice lines |
 | 15 | Scale calculations: drawing lengths and actual lengths | `scale-calculations` | 7 | 16 | queued |  |
 | 16 | Transformations in the coordinate plane: reflect and translate | `coordinate-transformations` | 8 | 21 | building | agent |
 

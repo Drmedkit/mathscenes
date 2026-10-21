@@ -419,7 +419,8 @@
   "requires": [
    "primary.ratios.calculate-sales-tax",
    "primary.ratios.discounts"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "primary.ratios.scale-drawing-reality-calculations",

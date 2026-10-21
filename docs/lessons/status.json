@@ -192,10 +192,10 @@
   "commit": "0f72d49"
  },
  "original-amount": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 08:37",
-  "commit": "abc10f3"
+  "state": "live",
+  "note": "7 sub-goals, 47 voice lines",
+  "at": "2026-10-21 09:18",
+  "commit": "7f3f265"
  },
  "circles": {
   "state": "building",
