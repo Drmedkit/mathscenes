@@ -339,7 +339,8 @@
   "subgoals": 17,
   "requires": [
    "secondary-t5-17-operations-with-rational-numbers"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-28-square-roots-and-cube-roots",

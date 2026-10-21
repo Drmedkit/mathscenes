@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 17, live 21, queued 25 (of 63)
+Totals: building 17, live 22, queued 24 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -51,7 +51,7 @@ Totals: building 17, live 21, queued 25 (of 63)
 | 5 | Percent applications | `percent-applications` | 7 | 25 | building | agent |
 | 6 | Multiply and divide rational numbers | `multiply-divide-rational-numbers` | 7 | 23 | live | 23 sub-goals, 43 voice lines |
 | 7 | One-step inequalities and signed one-step equations | `one-step-inequalities` | 7 | 11 | live | 11 sub-goals, 46 voice lines |
-| 8 | Integer exponents | `integer-exponents` | 8 | 17 | building | agent |
+| 8 | Integer exponents | `integer-exponents` | 8 | 17 | live | 17 sub-goals, 43 voice lines |
 | 9 | Square roots and cube roots | `square-and-cube-roots` | 8 | 21 | building | agent |
 | 10 | Function concept and identifying functions | `functions` | 8 | 18 | building | agent |
 | 11 | Translations, reflections, and rotations | `rigid-transformations` | 8 | 24 | building | agent |
@@ -70,7 +70,7 @@ Totals: building 17, live 21, queued 25 (of 63)
 | 3 | Two-step inequalities | `two-step-inequalities` | 7 | 14 | building | agent |
 | 4 | Rational and irrational numbers | `irrational-numbers` | 8 | 21 | building | agent |
 | 5 | Solving linear equations in one variable | `linear-equations` | 8 | 22 | building | agent |
-| 6 | Congruence via transformations | `congruence` | 8 | 18 | queued |  |
+| 6 | Congruence via transformations | `congruence` | 8 | 18 | building | agent |
 | 7 | Scientific notation and order of magnitude | `scientific-notation` | 8 | 15 | building | agent |
 | 8 | Choose a fraction, decimal, or percent form to calculate with, and justify it | `choose-the-form` | 7 | 16 | queued |  |
 | 9 | Scale factor and area: the area is multiplied by k^2 | `scale-and-area` | 7 | 16 | queued |  |

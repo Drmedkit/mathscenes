@@ -126,10 +126,10 @@
   "commit": "e689270"
  },
  "integer-exponents": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 08:14",
-  "commit": "f342e10"
+  "state": "live",
+  "note": "17 sub-goals, 43 voice lines",
+  "at": "2026-10-21 09:03",
+  "commit": "e58a5ad"
  },
  "functions": {
   "state": "building",
@@ -226,5 +226,11 @@
   "note": "agent",
   "at": "2026-10-21 08:46",
   "commit": "dee4267"
+ },
+ "congruence": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 09:02",
+  "commit": "2a9557e"
  }
 }
