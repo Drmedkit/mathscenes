@@ -330,10 +330,10 @@
   "commit": "ff33bf4"
  },
  "cylinders-cones-spheres": {
-  "state": "building",
-  "note": "wave 6: Opus builder + Haiku QA",
-  "at": "2026-10-21 15:49",
-  "commit": "ff33bf4"
+  "state": "live",
+  "note": "25 sub-goals, 43 voice lines; VOICE PENDING",
+  "at": "2026-10-21 16:45",
+  "commit": "3aba20e"
  },
  "dilations-and-similarity": {
   "state": "building",

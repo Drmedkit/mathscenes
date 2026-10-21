@@ -679,7 +679,8 @@
    "primary.geometry.enlarge-reduce-scale-factor",
    "secondary-t5-21-area-and-circumference-of-circles",
    "secondary-t5-23-cross-sections-and-composite-area-volume"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-44-multi-step-equations-with-rational-coefficients",
