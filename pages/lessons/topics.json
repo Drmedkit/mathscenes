@@ -544,7 +544,8 @@
   "subgoals": 15,
   "requires": [
    "secondary-t5-27-integer-exponents-and-scientific-notation"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "primary.fractions.choose-calculation-form-fractions",

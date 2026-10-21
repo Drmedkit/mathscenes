@@ -210,10 +210,10 @@
   "commit": "a621ab1"
  },
  "scientific-notation": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 08:40",
-  "commit": "8a118ce"
+  "state": "live",
+  "note": "15 sub-goals, 45 voice lines; VOICE PENDING",
+  "at": "2026-10-21 13:29",
+  "commit": "8df8709"
  },
  "irrational-numbers": {
   "state": "live",
