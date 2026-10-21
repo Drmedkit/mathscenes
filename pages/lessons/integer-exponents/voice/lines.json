@@ -1,0 +1,131 @@
+{
+ "q.intro": {
+  "text": "A colony of bacteria doubles its area every hour. At noon it covers one square millimeter, so at three p.m. it covers two times two times two, two to the third, which is eight square millimeters."
+ },
+ "q.ask": {
+  "text": "A lab writes its area t hours after noon as two to the t square millimeters. At nine a.m., t is negative three. How big was the colony then: what is two to the negative three?"
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the tiles move first, then the table fills in."
+ },
+ "e.s1": {
+  "text": "Two to the third is three factors of two: one times two times two times two is eight. Every product starts from the one. That's the colony at three p.m."
+ },
+ "e.s2": {
+  "text": "Each hour back divides by two. A two below the bar cancels a two on top, because two divided by two is one. After three hours no twos are left, only the one. Two to the zero is one: the colony at noon."
+ },
+ "e.s3": {
+  "text": "Keep going. Now there is no two on top to cancel, so the twos stay below the bar. Two to the negative three is one divided by two times two times two."
+ },
+ "e.s4": {
+  "text": "Read it: two to the negative three is one over two cubed, which is one eighth. At nine a.m. the colony covered one eighth of a square millimeter: small, but not negative. A negative exponent divides. It does not make the number negative."
+ },
+ "e.why": {
+  "text": "Quick check: why is two to the negative three not negative eight?"
+ },
+ "e.w-ok": {
+  "text": "Yes. The exponent counts the twos, and its minus sign puts them below the bar: you divide by them. Dividing never makes the colony negative."
+ },
+ "e.w-neg": {
+  "text": "The minus sign belongs to the exponent, not to the answer. It says the three twos divide: one eighth. A colony can shrink, but its area is never below zero."
+ },
+ "e.w-times": {
+  "text": "An exponent is not a factor: two to the third is two times two times two, eight, not two times three. The negative three counts three twos, below the bar."
+ },
+ "t.intro": {
+  "text": "Another colony triples every hour. At two p.m. it covers three squared square millimeters, at five p.m. three to the fifth. What fraction of its five p.m. size was it at two p.m.? That is three squared divided by three to the fifth. The first two steps are done for you."
+ },
+ "t.s1": {
+  "text": "Two threes on top, five threes below the bar."
+ },
+ "t.s2": {
+  "text": "Each three on top cancels a three below, because three divided by three is one. Two pairs cancel."
+ },
+ "t.pow": {
+  "text": "Your step. Three threes are left, below the bar. Write what is left as one power of three. Type the exponent."
+ },
+ "t.p-ok": {
+  "text": "Yes. Three threes below the bar is three to the negative three. And two minus five is negative three: the quotient rule still works when the bottom has more."
+ },
+ "t.p-sign": {
+  "text": "Three threes are left, but they are below the bar, so they divide. That makes the exponent negative: two minus five is negative three."
+ },
+ "t.p-div": {
+  "text": "Dividing powers does not divide the exponents. Count the threes that are left after the pairs cancel: three, below the bar."
+ },
+ "t.p-add": {
+  "text": "Adding exponents is for multiplying. Here you divide: cancel the pairs, then count what is left."
+ },
+ "t.p-other": {
+  "text": "Count the threes left after the two pairs cancel. They are below the bar, so the exponent is negative."
+ },
+ "t.val": {
+  "text": "Last step: what is three to the negative three, as a fraction?"
+ },
+ "t.v-ok": {
+  "text": "Yes. Three to the negative three is one over three cubed, one twenty-seventh. At two p.m. the colony was one twenty-seventh of its five p.m. size."
+ },
+ "t.v-neg": {
+  "text": "A negative exponent does not make the number negative. The three threes divide: one divided by twenty-seven."
+ },
+ "t.v-times": {
+  "text": "Three cubed is three times three times three, twenty-seven, not three times three. So three to the negative three is one over twenty-seven."
+ },
+ "t.v-flip": {
+  "text": "Twenty-seven is three cubed. The threes are below the bar, so it is one over twenty-seven."
+ },
+ "t.v-other": {
+  "text": "Three threes below the bar: one divided by three times three times three."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked one eighth of a square millimeter, and you were right. Now you can show why: the three twos sit below the bar, so they divide."
+ },
+ "t.cb-neg": {
+  "text": "At the start you picked negative eight: that puts the exponent's minus sign on the answer. The twos divide instead: two to the negative three is one eighth. A colony cannot cover a negative area."
+ },
+ "t.cb-six": {
+  "text": "At the start you picked negative six: that multiplies two by negative three. The exponent counts twos, and here they divide: two to the negative three is one eighth."
+ },
+ "t.cb-sure": {
+  "text": "You were sure, and changing your mind after being sure is exactly how this sticks."
+ },
+ "p.intro": {
+  "text": "Sam says: five to the zero is zero, because there are no fives to multiply."
+ },
+ "p.ask": {
+  "text": "Is Sam right?"
+ },
+ "p.j-ok": {
+  "text": "Right, Sam is wrong. Now prove it: fill each because with the reason that makes the line true."
+ },
+ "p.j-test": {
+  "text": "Let's test it with the product rule. Build the argument and see where it leads."
+ },
+ "p.c1": {
+  "text": "Five squared times five to the zero is five to the two plus zero, five squared, so multiplying by five to the zero changes nothing,"
+ },
+ "p.c2": {
+  "text": "and the only number that changes nothing when you multiply by it is one, so five to the zero is one,"
+ },
+ "p.c3": {
+  "text": "and if five to the zero were zero, then five squared times five to the zero would be zero, not twenty-five: Sam's value breaks the rule."
+ },
+ "p.x-arb": {
+  "text": "It is not just a rule to memorize: one is the only value that keeps the product rule working. That is what this proof shows."
+ },
+ "p.x-examples": {
+  "text": "Examples can suggest a rule but cannot prove it for every base. The product rule argument works for any base except zero."
+ },
+ "p.x-base": {
+  "text": "If five to the zero were five, then five squared times five to the zero would be five cubed, not five squared. No fives are multiplied, so only the one is left."
+ },
+ "p.x-other": {
+  "text": "True, but it is the reason for a different line."
+ },
+ "p.done": {
+  "text": "That's a proof: five to the zero is one, because it is the only value that keeps the product rule true. It works the same for every base except zero, which is left out: zero to the negative one would be one divided by zero, and that has no value."
+ }
+}

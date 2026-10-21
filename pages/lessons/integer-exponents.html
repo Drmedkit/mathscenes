@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Integer Exponents</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* this topic: exponents in the panel, a quiet hint for the fraction boxes */
+    .panel sup { font-size: .72em; line-height: 0; }
+    .panel .hint { color: var(--faint); font-size: 14px; white-space: nowrap; }
+    .cards button { font-variant-numeric: tabular-nums; }
+    .cards button .fr { font-size: .8em; }
+    .jsure { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 4px; }
+    .jsure button { font-size: 16px; padding: 10px 6px; }
+    .jsure button.on { border-color: var(--pick); background: #2c2a5c; }
+    .opts button { font-size: 17px; }
+    .opts button .fr { font-size: .95em; }
+    .panel .ans input { width: 86px; }
+    .panel .ans input.whole { width: 64px; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Integer exponents</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The factor tiles and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./integer-exponents.ts"></script>
+</body>
+</html>
