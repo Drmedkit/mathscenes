@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 17, live 8, queued 38 (of 63)
+Totals: building 17, live 9, queued 37 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -44,11 +44,11 @@ Totals: building 17, live 8, queued 38 (of 63)
 
 | # | topic | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
-| 1 | Expand, combine, and factor linear expressions | `expand-and-factor` | 7 | 22 | building | agent |
+| 1 | Expand, combine, and factor linear expressions | `expand-and-factor` | 7 | 22 | live | 22 sub-goals, 44 voice lines |
 | 2 | Two-step equations | `two-step-equations` | 7 | 10 | live | 10 sub-goals, 39 voice lines |
 | 3 | Scale drawings | `scale-drawings` | 7 | 13 | queued |  |
 | 4 | Sampling and comparative inferences | `sampling-and-inference` | 7 | 17 | queued |  |
-| 5 | Percent applications | `percent-applications` | 7 | 25 | queued |  |
+| 5 | Percent applications | `percent-applications` | 7 | 25 | building | agent |
 | 6 | Multiply and divide rational numbers | `multiply-divide-rational-numbers` | 7 | 23 | building | agent |
 | 7 | One-step inequalities and signed one-step equations | `one-step-inequalities` | 7 | 11 | building | agent |
 | 8 | Integer exponents | `integer-exponents` | 8 | 17 | building | agent |

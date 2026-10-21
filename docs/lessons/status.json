@@ -108,10 +108,10 @@
   "commit": "06b2818"
  },
  "expand-and-factor": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 07:29",
-  "commit": "3146944"
+  "state": "live",
+  "note": "22 sub-goals, 44 voice lines",
+  "at": "2026-10-21 08:26",
+  "commit": "9642b84"
  },
  "multiply-divide-rational-numbers": {
   "state": "building",
@@ -148,5 +148,11 @@
   "note": "agent",
   "at": "2026-10-21 08:20",
   "commit": "e6dad26"
+ },
+ "percent-applications": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:21",
+  "commit": "45723d0"
  }
 }
