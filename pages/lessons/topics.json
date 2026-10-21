@@ -709,7 +709,8 @@
    "secondary-t5-17-operations-with-rational-numbers",
    "secondary-t5-35-congruence-via-transformations",
    "secondary-t5-37-angle-relationships-in-parallel-lines-and-triangles"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-38-pythagorean-theorem",

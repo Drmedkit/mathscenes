@@ -336,9 +336,9 @@
   "commit": "3aba20e"
  },
  "dilations-and-similarity": {
-  "state": "building",
-  "note": "wave 6: Opus builder + Haiku QA",
-  "at": "2026-10-21 15:49",
-  "commit": "ff33bf4"
+  "state": "live",
+  "note": "23 sub-goals, 46 voice lines; small label crowding in ratioK (polish later); VOICE PENDING",
+  "at": "2026-10-21 16:51",
+  "commit": "b0788c1"
  }
 }
