@@ -19,9 +19,9 @@
  },
  "proportional-relationships": {
   "state": "live",
-  "note": "17 sub-goals, 45 voice lines",
+  "note": "17 sub-goals, 45 voice lines; worked-example leader makes a long S-curve to the line end (polish later)",
   "at": "2026-10-21 08:44",
-  "commit": "92b31e3"
+  "commit": "dfc15ce"
  },
  "add-subtract-rational-numbers": {
   "state": "live",
@@ -214,5 +214,11 @@
   "note": "agent",
   "at": "2026-10-21 08:40",
   "commit": "8a118ce"
+ },
+ "irrational-numbers": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:44",
+  "commit": "dfc15ce"
  }
 }
