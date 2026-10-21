@@ -37,15 +37,34 @@ const shot = async name => { n++; await page.screenshot({ path: path.join(out, `
 const ready = async () => { await page.waitForFunction('window.lessonReady', { timeout: 60000 }); };
 
 const PARTS = ['question', 'example', 'turn', 'prove'];
+const partOverflow = {};
 if (!argv.includes('--no-parts')) {
   for (let i = 0; i < 4; i++) {
-    try { await page.goto(url(`&part=${i}`), { waitUntil: 'networkidle0', timeout: 90000 }); await ready(); await sleep(5); await shot(`part${i + 1}-${PARTS[i]}-start`); }
-    catch (e) { errors.push(`part ${i + 1}: ${e.message}`); }
+    try {
+      await page.goto(url(`&part=${i}`), { waitUntil: 'networkidle0', timeout: 90000 }); await ready(); await sleep(5); await shot(`part${i + 1}-${PARTS[i]}-start`);
+      // panel overflow in the explain parts: measured at the start and after clicking the first choice card (prove-it
+      // opens its because-slots and reason chips only after the kid picks a side)
+      const over = () => page.evaluate(() => Math.max(0, Math.round((document.querySelector('.panel')?.getBoundingClientRect().bottom ?? 0) - innerHeight)));
+      let o = await over();
+      // click each of the first two answer buttons in turn (not the go buttons); the claim-is-wrong side usually
+      // is the second one and opens the because-slots and chips
+      for (const k of [0, 1]) {
+        const clicked = await page.evaluate(k => { const bs = [...document.querySelectorAll('.panel button')].filter(b => !b.classList.contains('go') && !b.disabled); const b = bs[k]; if (b) { b.click(); return true; } return false; }, k);
+        if (clicked) { await sleep(2.5); o = Math.max(o, await over()); }
+      }
+      await shot(`part${i + 1}-${PARTS[i]}-clicked`);
+      partOverflow[PARTS[i]] = o;
+    } catch (e) { errors.push(`part ${i + 1}: ${e.message}`); }
   }
+}
+if (argv.includes('--parts-only')) {
+  await browser.close();
+  console.log(JSON.stringify({ slug, partOverflow, errors: errors.length ? errors : 'none' }));
+  process.exit(0);
 }
 
 // practice
-const summary = { slug, seed: SEED, items: 0, wrong: 0, families: {}, subgoalsDone: 0, subgoalsTotal: 0, mastered: false, panelOverflowPx: 0, attempts: 0, attemptsWithMc: 0, errors };
+const summary = { slug, partOverflow, seed: SEED, items: 0, wrong: 0, families: {}, subgoalsDone: 0, subgoalsTotal: 0, mastered: false, panelOverflowPx: 0, attempts: 0, attemptsWithMc: 0, errors };
 try {
   await page.goto(url('&part=4'), { waitUntil: 'networkidle0', timeout: 90000 }); await ready(); await sleep(2);
   for (let i = 0; i < ITEMS; i++) {
