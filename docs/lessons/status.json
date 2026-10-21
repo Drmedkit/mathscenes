@@ -48,10 +48,10 @@
   "commit": "3146944"
  },
  "draw-triangles": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 07:28",
-  "commit": "3146944"
+  "state": "live",
+  "note": "11 sub-goals, 19 voice lines",
+  "at": "2026-10-21 08:34",
+  "commit": "ecf046a"
  },
  "linear-patterns": {
   "state": "live",
@@ -172,5 +172,11 @@
   "note": "agent",
   "at": "2026-10-21 08:32",
   "commit": "2fff793"
+ },
+ "fractions-decimals-percents": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:33",
+  "commit": "d2b0ed6"
  }
 }

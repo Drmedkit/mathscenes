@@ -72,7 +72,8 @@
   "wave": 1,
   "level": 0,
   "subgoals": 11,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "primary.data.judge-sample-representativeness-and-limit-conclusions",
