@@ -1,0 +1,140 @@
+{
+ "q.intro": {
+  "text": "A dilation has a center O and a scale factor k equals two. Dilate triangle ABC about O."
+ },
+ "q.ask": {
+  "text": "Where does the corner C one, four land? Pick a point, and say how sure you are."
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the picture moves first, then the board writes it down."
+ },
+ "e.s1": {
+  "text": "A dilation pushes every point straight away from the center. Draw a ray from O through each corner: each image lands on its own ray."
+ },
+ "e.s2": {
+  "text": "k equals two means twice as far from O. O to C is one amber bar; O to C prime is two of them. So C one, four lands on C prime two, eight."
+ },
+ "e.s3": {
+  "text": "Do the same for A and B, and join the image. With the center at the origin, every coordinate doubles: x, y goes to two x, two y."
+ },
+ "e.s4": {
+  "text": "Check what stays. The right angle is still a right angle, and A, B, C still goes counterclockwise. Every side doubled: eight divided by four equals four divided by two equals two."
+ },
+ "e.why": {
+  "text": "Quick check: why is point one, negative one, five, not the image of C?"
+ },
+ "e.w-ok": {
+  "text": "Yes. The center is O, so C prime must be on ray OC. Point one was pushed out from the middle of the triangle instead."
+ },
+ "e.w-add": {
+  "text": "Adding two to each coordinate gives three, six, point three. A dilation multiplies the distance from O by two; it does not add two."
+ },
+ "e.w-mid": {
+  "text": "The center is whatever the problem says: here, O. The middle of the triangle is a different center, and it gives a different image."
+ },
+ "t.intro": {
+  "text": "Your turn. Dilate triangle PQR about O with k equals one half. The rays and the image of P are done for you."
+ },
+ "t.p": {
+  "text": "P negative six, four is six left and four up from O. Half as far: P prime negative three, two."
+ },
+ "t.q-ask": {
+  "text": "Your step: where does Q negative two, four land?"
+ },
+ "t.q-ok": {
+  "text": "Yes: half of negative two, four is negative one, two. Q prime is on ray OQ, half as far from O."
+ },
+ "t.q-big": {
+  "text": "That doubled it. k equals one half is less than one, so the image comes closer to O."
+ },
+ "t.q-sign": {
+  "text": "Right size, wrong sign. Q is left of O, so Q prime is left of O too: half of negative two is negative one."
+ },
+ "t.q-one": {
+  "text": "Halve both coordinates, not just one."
+ },
+ "t.q-same": {
+  "text": "That is Q itself. Here Q moves halfway toward O."
+ },
+ "t.q-no": {
+  "text": "Count from O to Q: two left and four up. Take half of each."
+ },
+ "t.len-ask": {
+  "text": "PR is six units long. How long is P prime R prime?"
+ },
+ "t.len-ok": {
+  "text": "Yes: one half times six equals three."
+ },
+ "t.len-big": {
+  "text": "Twelve is six times two. The image is smaller: one half times six."
+ },
+ "t.len-same": {
+  "text": "Only k equals one keeps lengths. Here every length is halved."
+ },
+ "t.len-sub": {
+  "text": "The scale factor multiplies: one half times six, not six minus one half."
+ },
+ "t.len-no": {
+  "text": "Multiply the length by the scale factor, one half."
+ },
+ "t.true-ask": {
+  "text": "Which is true for triangle P prime Q prime R prime?"
+ },
+ "t.true-ok": {
+  "text": "Right: a dilation multiplies every length by k and keeps every angle."
+ },
+ "t.true-add": {
+  "text": "The sides are multiplied by one half, not shortened by two: the six became three, the four became two."
+ },
+ "t.true-ang": {
+  "text": "Angles are not halved: the right angle at P prime is still ninety degrees."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked point two, and you were right: C prime is on ray OC, twice as far from O."
+ },
+ "t.cb-mid": {
+  "text": "At the start you picked point one. That grows the triangle from its own middle. The center was O, so every image lies on a ray from O."
+ },
+ "t.cb-add": {
+  "text": "At the start you picked point three. That adds two to each coordinate. A dilation multiplies the distance from the center instead."
+ },
+ "t.cb-none": {
+  "text": "Every image lands on its ray from the center, k times as far away."
+ },
+ "p.intro": {
+  "text": "Riley has two rectangles: R is six by four and S is nine by five. Riley says: “Both have four right angles, so R and S are similar.”"
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each “because” with the reason that makes the line true."
+ },
+ "p.build-test": {
+  "text": "Let’s test it. Fill each “because” with the reason that makes the line true, and see where it leads."
+ },
+ "p.c1": {
+  "text": "Right. A dilation stretches every side by the same k, and rigid motions never change a length."
+ },
+ "p.c2": {
+  "text": "Right. Three halves times six equals nine, but three halves times four equals six, and S is only five tall: a strip is left over."
+ },
+ "p.c3": {
+  "text": "Right. Matching angles are not enough for four-sided shapes. The sides have to share one ratio too."
+ },
+ "p.no-angles": {
+  "text": "That is Riley’s mistake. A long thin rectangle and a square both have four right angles, but they are not the same shape."
+ },
+ "p.no-diff": {
+  "text": "Similar figures are compared by dividing, not subtracting: the question is whether one k works for every side."
+ },
+ "p.no-one": {
+  "text": "One pair of sides is never enough. The short sides must give the same k as the long sides."
+ },
+ "p.x-other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof: three claims, each with its reason, and the picture backs every one. R and S are not similar."
+ }
+}
