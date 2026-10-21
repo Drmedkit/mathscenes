@@ -1,0 +1,122 @@
+{
+ "q.intro": {
+  "text": "A bike shop charges a one-time fee plus a price per hour. The table shows three rentals. Two hours cost thirty-four dollars, four hours cost fifty dollars, and six hours cost sixty-six dollars. How big is the fee: the cost before you ride at all? Pick an answer, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the graph moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "From two to four hours, the cost goes from thirty-four to fifty dollars: sixteen dollars more for two hours. Per one hour, sixteen divided by two is eight. The rate is eight dollars per hour."
+ },
+ "e.step1": {
+  "text": "Now walk back from two hours to zero hours. Two hours less takes away two times eight, sixteen dollars. Thirty-four minus sixteen is eighteen. At zero hours the cost is eighteen dollars. That is the fee: b is eighteen."
+ },
+ "e.step2": {
+  "text": "The cost is eight dollars for every hour, plus the eighteen dollar fee. C equals eight h plus eighteen, where C is the cost in dollars and h is the time in hours."
+ },
+ "e.step3": {
+  "text": "Check it on a row we did not use: eight times six plus eighteen is sixty-six. It fits every row, so C equals eight h plus eighteen is the rule."
+ },
+ "e.why": {
+  "text": "Quick check: why is the fee eighteen dollars, and not thirty-four?"
+ },
+ "e.why.ok": {
+  "text": "Yes. Thirty-four dollars already includes two hours of riding. The fee is the cost at zero hours."
+ },
+ "e.why.first": {
+  "text": "The first row is two hours, not zero hours. Thirty-four dollars is the fee plus two hours of riding."
+ },
+ "e.why.swap": {
+  "text": "The price per hour is the rate, eight dollars. The fee is paid once, at the start."
+ },
+ "t.intro": {
+  "text": "A phone battery runs down at a steady rate. At five minutes it shows eighty-five percent, at fifteen minutes sixty-five percent, and at twenty-five minutes forty-five percent. The rate is done for you."
+ },
+ "t.rate": {
+  "text": "Every ten minutes the battery loses twenty points. Per one minute that is minus two: two points down each minute."
+ },
+ "t.b": {
+  "text": "Your step: what did the battery show at zero minutes? Type b."
+ },
+ "t.b.empty": {
+  "text": "Type a number first."
+ },
+ "t.b.ok": {
+  "text": "Yes. Going back five minutes adds back five times two, ten points. Eighty-five plus ten is ninety-five. b is ninety-five."
+ },
+ "t.b.first": {
+  "text": "Eighty-five percent is the reading at five minutes. Go back five more minutes, to zero."
+ },
+ "t.b.sign": {
+  "text": "Going back in time, the battery was fuller. Add the ten points, don’t take them away."
+ },
+ "t.b.no": {
+  "text": "Start at eighty-five percent at five minutes. Each minute back adds two points."
+ },
+ "t.eq": {
+  "text": "Your step: which equation fits? B is the battery in percent, and t is the time in minutes."
+ },
+ "t.eq.ok": {
+  "text": "Yes. Start at ninety-five, down two each minute. B equals minus two t plus ninety-five."
+ },
+ "t.eq.swap": {
+  "text": "That multiplies the start by t. The rate, minus two, multiplies t. The start, ninety-five, stands alone."
+ },
+ "t.eq.sign": {
+  "text": "The battery goes down, so the rate is negative: minus two, not plus two."
+ },
+ "t.check": {
+  "text": "Check it: what does your equation give at t equals twenty-five?"
+ },
+ "t.check.ok": {
+  "text": "Minus two times twenty-five, plus ninety-five, is forty-five: the same as the table. The equation fits."
+ },
+ "t.check.sign": {
+  "text": "Mind the sign. Minus two times twenty-five is minus fifty. Minus fifty plus ninety-five is what?"
+ },
+ "t.check.no": {
+  "text": "Minus two times twenty-five is minus fifty. Then add ninety-five."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked eighteen dollars, and you were right. Now you can show why: walk back to zero hours with the rate."
+ },
+ "q.cb.first": {
+  "text": "At the start you picked thirty-four dollars. That is the cost of two hours. The fee is the cost at zero hours."
+ },
+ "q.cb.zero": {
+  "text": "At the start you picked zero dollars. But there is a fee, so the line starts at eighteen dollars, not at zero."
+ },
+ "q.cb.none": {
+  "text": "Rate first, per one unit. Then walk back to input zero for b."
+ },
+ "p.intro": {
+  "text": "Jordan says: two hours cost thirty-four dollars, so four hours cost sixty-eight. Twice the time, twice the cost. Is Jordan right?"
+ },
+ "p.test": {
+  "text": "Let’s test it. Build the argument, and see where it leads."
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Right. The table says four hours cost fifty dollars. Jordan’s sixty-eight is off the line."
+ },
+ "p.c2": {
+  "text": "Right. Only the eight h part doubles. The eighteen dollar fee is paid once, so doubling counts it twice."
+ },
+ "p.c3": {
+  "text": "Right. A proportional line goes through zero, zero. This one starts at eighteen."
+ },
+ "p.no.prop": {
+  "text": "Straight means linear, not proportional. A proportional line must also go through zero, zero."
+ },
+ "p.no.scale": {
+  "text": "Going up every hour is not enough. The fee does not grow with the hours, so the cost does not double."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof: three claims, each with its reason, and the graph backs every one. The rental is linear, but not proportional."
+ }
+}
