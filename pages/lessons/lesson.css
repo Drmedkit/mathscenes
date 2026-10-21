@@ -77,7 +77,7 @@ ol.plan li button { margin-top: 8px; }
 /* chips (reasons, roles) */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
 .chips button { font-size: 15px; padding: 8px 12px; text-align: left; border-radius: 10px; line-height: 1.35; }
-.chips button.used { visibility: hidden; }
+.chips button.used { display: none; }
 .eq { display: flex; align-items: center; gap: 8px; font-size: 22px; margin: 12px 0; flex-wrap: wrap; }
 .eq .slot { min-width: 110px; min-height: 46px; border: 1.5px dashed var(--faint); border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; font-size: 16px; color: var(--faint); cursor: pointer; background: none; }
 .eq .slot.filled { border-style: solid; color: var(--text); }
