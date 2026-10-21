@@ -1,0 +1,134 @@
+{
+ "q.intro": {
+  "text": "A square tile has an area of exactly two square feet, so its side is the square root of two feet. A calculator shows the square root of two as one point four one four two one three five six two."
+ },
+ "q.ask": {
+  "text": "Now square the number on the screen: multiply it by itself. What do you get?"
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Each one zooms in ten times closer on the square root of two. Press each one: the picture moves first, then the notation."
+ },
+ "e.s1": {
+  "text": "One squared is one, less than two. Two squared is four, more than two. So the square root of two is between one and two."
+ },
+ "e.s2": {
+  "text": "Zoom into that piece, cut into tenths. One point four squared is one point nine six, under two. One point five squared is two point two five, over. So the square root of two is between one point four and one point five."
+ },
+ "e.s3": {
+  "text": "Zoom again, into hundredths. One point four one squared is one point nine eight eight one, under two. One point four two squared is two point zero one six four, over. So the square root of two is between one point four one and one point four two."
+ },
+ "e.s4": {
+  "text": "Each zoom adds one digit: one point four one four two one three five six, and on. The digits never end and never repeat, so the square root of two is irrational. It still has one exact point on the line."
+ },
+ "e.calc": {
+  "text": "So the screen shows the square root of two cut off. Its number squared is one point nine nine nine nine nine nine nine nine eight, and on: just under two. Write approximately equal, not equal."
+ },
+ "e.why": {
+  "text": "Quick check: why is the square root of two between one point four and one point five?"
+ },
+ "e.w-ok": {
+  "text": "Yes. Squaring the two ends is the test: one square lands under two, the other over."
+ },
+ "e.w-interp": {
+  "text": "Two is a third of the way from one to four, but roots do not spread out evenly. A third of the way from one to two is about one point three three, and that squared is only about one point seven seven."
+ },
+ "e.w-round": {
+  "text": "Close is not equal: one point four squared is one point nine six, less than two, so the square root of two is more than one point four. That is why it sits between one point four and one point five."
+ },
+ "t.intro": {
+  "text": "Now the square root of ten: the side of a square of ten square feet. The first zoom is done for you: three squared is nine and four squared is sixteen, so it is between three and four."
+ },
+ "t.tenths": {
+  "text": "Zoom to tenths. Use the squares in the list. Between which two tenths is the square root of ten?"
+ },
+ "t.fill": {
+  "text": "Type both numbers first."
+ },
+ "t.a-ok": {
+  "text": "Yes: nine point six one is under ten and ten point two four is over, so the square root of ten is between three point one and three point two."
+ },
+ "t.a-close": {
+  "text": "Ten point two four is the closest square to ten, but it is over ten, so the square root of ten is below three point two. The interval is three point one to three point two."
+ },
+ "t.a-squares": {
+  "text": "Those are the squares. The bounds are the numbers you squared: three point one and three point two."
+ },
+ "t.a-other": {
+  "text": "Find the two tenths whose squares are just under ten and just over ten."
+ },
+ "t.hund": {
+  "text": "Zoom to hundredths. Use the new squares. Between which two hundredths is the square root of ten?"
+ },
+ "t.b-ok": {
+  "text": "Yes: nine point nine eight five six is under ten and ten point zero four eight nine is over. So the square root of ten is between three point one six and three point one seven."
+ },
+ "t.b-other": {
+  "text": "Look for the square just under ten and the square just over ten. Their two numbers are the bounds."
+ },
+ "t.round": {
+  "text": "Now round the square root of ten to the nearest tenth and write it down. Tap a sign and a number into the boxes."
+ },
+ "t.r-ok": {
+  "text": "Yes: the square root of ten is approximately three point two. It is past three point one six, beyond the midpoint three point one five, so it rounds up. And approximately, because three point two is not exactly the square root of ten."
+ },
+ "t.r-eq": {
+  "text": "Three point two squared is ten point two four, not ten. A rounded value is only close: write approximately equal, not equal."
+ },
+ "t.r-trunc": {
+  "text": "Three point one cuts the digits off. The square root of ten is more than three point one six, past the midpoint three point one five, so it rounds up, to three point two."
+ },
+ "t.r-other": {
+  "text": "Put a sign in the first box and a number in the second: the square root of ten, the sign, then its rounded value."
+ },
+ "t.cb-right": {
+  "text": "At the start you said just under two, and you were right: the screen shows the square root of two cut off, a bit too small, so its square falls just short of two."
+ },
+ "t.cb-eq": {
+  "text": "At the start you picked exactly two. But the screen shows the square root of two cut off, a bit too small: its square is just under two."
+ },
+ "t.cb-none": {
+  "text": "At the start you picked no exact answer. But the number on the screen ends, so its square is exact: just under two. And the square root of two itself is exact too; only its digits never end."
+ },
+ "t.cb-skip": {
+  "text": "At the start: the number on the screen is the square root of two cut off, so its square is just under two."
+ },
+ "p.intro": {
+  "text": "Ava says: zero point two seven two seven two seven, and so on, never ends. So it is irrational."
+ },
+ "p.ask": {
+  "text": "Is Ava right?"
+ },
+ "p.build-wrong": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.build-right": {
+  "text": "Let's test it. Build the argument, and see where it leads."
+ },
+ "p.c1": {
+  "text": "Multiplying by a hundred slides every digit two places left: a hundred x is twenty-seven point two seven two seven, and so on."
+ },
+ "p.c2": {
+  "text": "The two tails sit in the same columns, so they cancel: ninety-nine x is twenty-seven."
+ },
+ "p.c3": {
+  "text": "x is twenty-seven ninety-ninths, which is three elevenths: a quotient of integers. So the repeating decimal is rational."
+ },
+ "p.x-forever": {
+  "text": "Never ending is not the test. It repeats, and repeating tails can be made to cancel."
+ },
+ "p.x-ten": {
+  "text": "Look at the columns: ten x over x puts sevens over twos. Those tails do not cancel."
+ },
+ "p.x-one": {
+  "text": "The steps only used one fact: a block of digits repeats. So they work for every repeating decimal."
+ },
+ "p.x-slot": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That's a proof: each line has its reason, and the tiles show it. A decimal that repeats is always a fraction: rational. Only a decimal that never repeats is irrational."
+ }
+}

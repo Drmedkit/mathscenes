@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rational and Irrational Numbers</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* a radical in the panel: the sign, then a bar over the radicand */
+    .rad { white-space: nowrap; }
+    .rad > span { display: inline-block; line-height: 1.05; border-top: 1.5px solid currentColor; padding: .06em .12em 0 .04em; margin-left: -.02em; }
+    .cards button { font-size: 24px; }
+    .eq .slot { font-size: 22px; min-width: 84px; }
+    .eq .slot.k { border-color: var(--s); color: var(--s); }
+    /* a repeating block: the bar over the digits */
+    .ov { text-decoration: overline; text-decoration-thickness: 1.5px; text-underline-offset: 0; }
+    /* the three commit cards hold words, not numbers */
+    .cards button.wordy { font-size: 19px; line-height: 1.25; padding: 14px 6px; }
+    /* trial squares in the panel */
+    .squares { display: grid; grid-template-columns: repeat(3, auto); gap: 4px 18px; justify-content: start; margin: 4px 0 8px; font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Rational and irrational numbers</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The model and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./irrational-numbers.ts"></script>
+</body>
+</html>
