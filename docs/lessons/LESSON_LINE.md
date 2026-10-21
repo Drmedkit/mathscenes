@@ -1,6 +1,28 @@
 # The lesson line: concrete, annotated, lots of practice (proposal + prototype)
 
-Status 2026-10-20: **research done, one prototype topic built, waiting for the owner's direction before scaling.**
+## Status 2026-10-21: owner decisions, phase 2
+The owner answered the open questions (§8):
+1. **Voice** for the explain parts: yes. One narrator (Chris, the Level Up voice), no characters. Line ids per part,
+   texts in `pages/lessons/<slug>/voice/lines.json`, `python tools/lesson-voice.py <slug>` makes the mp3s (cached by
+   text, committed). Voice switch in the header; `?mute` for test runs.
+2. **Look**: good as is; may be less painterly where that helps clarity.
+3. **The five parts stay.**
+4. **Much more practice that walks through all sub-goals** of the topic JSON: `runtime/practice.ts` goes sub-goal by
+   sub-goal (2 right each, at most 5 tries, then flagged), then mixes; mastery = 5 of the last 6 from ≥ 4 families
+   AND every sub-goal right twice. Fractions as division: 12 sub-goals, 12 families, ~40 problems per run.
+5. **Diagnosis is recorded** (`runtime/store.ts`), internal (kids never see ids): every answer in every part is one
+   attempt `{at, topic, part, subgoal, family, item, prompt, board, response, expected, correct, mc, ms, sure}` in
+   localStorage; `window.mathscenesLessons.export()` returns all of it, `?log` on a lesson page shows it with a
+   misconception summary. This is the input for a later AI helper.
+
+Runtime (`src/lesson/runtime/`): `shell` (five parts, rail, progress, voice, log view), `stage` (canvas loop, board
+lines, leaders), `panel` (inputs), `practice`, `store`, `voice`, `item` (shared item types). How to build a topic:
+`docs/lessons/TOPIC_BRIEF.md`. The path page `pages/lessons/index.html` lists the topics in order:
+fractions as division → fraction of a quantity → fraction × fraction.
+
+---
+
+Status 2026-10-20: research done, one prototype topic built, waiting for the owner's direction before scaling.
 Prototype: `pages/lessons/fractions-as-division.html` (run `npm run dev`, or the `mathscenes-lessons` launch config,
 port 5290; `?part=0..4&open` jumps to a part, `?seed=n` fixes the practice items). Click-through + screenshots:
 `node tools/lesson-walk.mjs` → `out/lesson-walk/`.
