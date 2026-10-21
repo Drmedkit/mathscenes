@@ -340,5 +340,41 @@
   "note": "23 sub-goals, 46 voice lines; small label crowding in ratioK (polish later); VOICE PENDING",
   "at": "2026-10-21 16:51",
   "commit": "b0788c1"
+ },
+ "pythagorean-theorem": {
+  "state": "building",
+  "note": "wave 7: Opus builder, lead QA",
+  "at": "2026-10-21 16:51",
+  "commit": "8f2a4d0"
+ },
+ "slope-and-lines": {
+  "state": "building",
+  "note": "wave 7: Opus builder, lead QA",
+  "at": "2026-10-21 16:51",
+  "commit": "8f2a4d0"
+ },
+ "systems-of-equations": {
+  "state": "building",
+  "note": "wave 7: Opus builder, lead QA",
+  "at": "2026-10-21 16:51",
+  "commit": "8f2a4d0"
+ },
+ "linear-functions": {
+  "state": "building",
+  "note": "wave 7: Opus builder, lead QA",
+  "at": "2026-10-21 16:51",
+  "commit": "8f2a4d0"
+ },
+ "scatter-plots": {
+  "state": "building",
+  "note": "wave 7: Opus builder, lead QA",
+  "at": "2026-10-21 16:51",
+  "commit": "8f2a4d0"
+ },
+ "two-way-tables": {
+  "state": "building",
+  "note": "wave 7: Opus builder, lead QA",
+  "at": "2026-10-21 16:51",
+  "commit": "8f2a4d0"
  }
 }
