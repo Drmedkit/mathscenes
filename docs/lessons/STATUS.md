@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 11, live 30, queued 22 (of 63)
+Totals: building 10, live 31, queued 22 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -69,7 +69,7 @@ Totals: building 11, live 30, queued 22 (of 63)
 | 2 | Angle relationships | `angle-relationships` | 7 | 25 | building | agent |
 | 3 | Two-step inequalities | `two-step-inequalities` | 7 | 14 | building | agent |
 | 4 | Rational and irrational numbers | `irrational-numbers` | 8 | 21 | building | agent |
-| 5 | Solving linear equations in one variable | `linear-equations` | 8 | 22 | building | agent |
+| 5 | Solving linear equations in one variable | `linear-equations` | 8 | 22 | live | 22 sub-goals, 45 voice lines |
 | 6 | Congruence via transformations | `congruence` | 8 | 18 | building | agent |
 | 7 | Scientific notation and order of magnitude | `scientific-notation` | 8 | 15 | building | agent |
 | 8 | Choose a fraction, decimal, or percent form to calculate with, and justify it | `choose-the-form` | 7 | 16 | queued |  |

@@ -156,10 +156,10 @@
   "commit": "c99ec05"
  },
  "linear-equations": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 08:27",
-  "commit": "018e193"
+  "state": "live",
+  "note": "22 sub-goals, 45 voice lines",
+  "at": "2026-10-21 13:08",
+  "commit": "2f3e44b"
  },
  "scale-drawings": {
   "state": "live",
