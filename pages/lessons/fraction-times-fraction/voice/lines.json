@@ -1,0 +1,125 @@
+{
+ "q.intro": {
+  "text": "Three fourths of a pan of brownies is frosted. Maya eats two thirds of the frosted part."
+ },
+ "q.ask": {
+  "text": "How much of the whole pan does Maya eat?"
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the picture moves first, then the notation."
+ },
+ "e.s1": {
+  "text": "The frosted part is cut into three equal rows. One row is one third of the frosted part."
+ },
+ "e.s2": {
+  "text": "Maya eats two of the three rows: two thirds of the three fourths."
+ },
+ "e.s3": {
+  "text": "Run the cuts on through the whole pan: twelve equal cells. Maya's part is six of them, six twelfths of the pan."
+ },
+ "e.s4": {
+  "text": "Two thirds times three fourths is six twelfths. Rows times columns on top; all the cells of one pan underneath."
+ },
+ "e.why": {
+  "text": "Quick check: why is twelve the bottom number?"
+ },
+ "e.w-ok": {
+  "text": "Yes. The bottom number counts the equal cells of one whole pan: three rows times four columns."
+ },
+ "e.w-rule": {
+  "text": "The rule is right, but it has a reason: the cuts make three times four, twelve equal cells in the whole pan."
+ },
+ "e.w-part": {
+  "text": "The frosted part has only nine cells. Twelve counts the whole pan."
+ },
+ "t.intro": {
+  "text": "Now two fifths of a pan is left. Sam packs three fourths of what is left for lunch. The first two steps are done for you."
+ },
+ "t.count": {
+  "text": "The cuts run on through the whole pan. What fraction of the whole pan does Sam pack?"
+ },
+ "t.fill": {
+  "text": "Fill in the top and the bottom box."
+ },
+ "t.c-ok": {
+  "text": "Yes: six of the twenty cells of the whole pan, six twentieths."
+ },
+ "t.c-part": {
+  "text": "Three fourths is the part of the leftover. Against the whole pan there are twenty cells, and six are packed."
+ },
+ "t.c-add": {
+  "text": "That adds the cells of both fractions. Only the cells in both count: three rows times two columns."
+ },
+ "t.c-other": {
+  "text": "Count the small cells: how many are packed, and how many are in the whole pan?"
+ },
+ "t.write": {
+  "text": "Tap the chips to write it as one equation."
+ },
+ "t.w-ok": {
+  "text": "Yes: three fourths times two fifths is six twentieths. Of means times."
+ },
+ "t.w-add": {
+  "text": "That adds or takes away. Sam packs a part of the leftover: that is times."
+ },
+ "t.w-other": {
+  "text": "Use the two fractions of the story and the sign for of."
+ },
+ "t.size": {
+  "text": "Is Sam's lunch more or less than the two fifths of a pan that was left?"
+ },
+ "t.s-ok": {
+  "text": "Right: three fourths is less than one, so Sam packs less than all of the leftover. Six twentieths is less than eight twentieths."
+ },
+ "t.s-no": {
+  "text": "Look at the pan: the packed cells are only part of the leftover. Three fourths is less than one, so the product is less than two fifths."
+ },
+ "t.simple": {
+  "text": "Six twentieths is three tenths: the same amount in simplest form."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked six twelfths, and you were right. Now you can show why."
+ },
+ "t.cb-part": {
+  "text": "At the start you picked two thirds: that names the frosted part, not the whole pan. Maya eats six twelfths of the pan."
+ },
+ "t.cb-add": {
+  "text": "At the start you picked one and five twelfths: that adds the fractions. Maya eats six twelfths of the pan, less than the frosted part."
+ },
+ "p.intro": {
+  "text": "Riley says: multiplying always makes a number bigger, so two thirds times three fourths is more than three fourths."
+ },
+ "p.test": {
+  "text": "Let's test it. Build the argument and see where it leads."
+ },
+ "p.prove": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Two thirds times three fourths means two thirds of the frosted three fourths,"
+ },
+ "p.c2": {
+  "text": "and two of three equal rows is less than all three rows,"
+ },
+ "p.c3": {
+  "text": "so two thirds times three fourths, six twelfths, is less than three fourths, nine twelfths."
+ },
+ "p.x-bigger": {
+  "text": "That is Riley's idea, the one being tested. Multiplying by a number less than one makes it smaller."
+ },
+ "p.x-examples": {
+  "text": "One example is not a reason: a reason must say why it works for every number."
+ },
+ "p.x-shrink": {
+  "text": "Careful: five fourths times three fourths is more than three fourths. It depends on the factor being less than one."
+ },
+ "p.x-other": {
+  "text": "True, but it is the reason for a different line."
+ },
+ "p.done": {
+  "text": "That's a proof: three claims, each with its reason, and the picture backs every one. Multiplying by a fraction less than one makes a number smaller."
+ }
+}

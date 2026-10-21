@@ -88,7 +88,7 @@ export interface Scene {
   extra?: (c: Canvas) => void;
 }
 let scene: Scene = { lines: [], leads: [] };
-let dirty = true, frames = 0;
+let dirty = true, frames = 0, wasBusy = false;
 export function setScene(s: Scene): void { scene = s; dirty = true; }
 export function markDirty(): void { dirty = true; }
 
@@ -107,7 +107,12 @@ export function startStage(cv: HTMLCanvasElement): { frames: () => number; rende
     S.extra?.(c);
   };
   const loop = (): void => {
-    try { if (dirty || tr.busy()) { render(); dirty = false; frames++; } } catch (e) { console.error('render failed', e); }
+    // draw while anything animates, and one more frame after it stops, so every animation ends on its final state
+    try {
+      const busy = tr.busy();
+      if (dirty || busy || wasBusy) { render(); dirty = false; frames++; }
+      wasBusy = busy;
+    } catch (e) { console.error('render failed', e); }
     // animation frames with a timer fallback: a background page gets few frames, but state must stay current
     let next = true;
     const f = () => { if (next) { next = false; loop(); } };
