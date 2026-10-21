@@ -90,10 +90,10 @@
   "commit": "3146944"
  },
  "pie-charts": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 07:29",
-  "commit": "3146944"
+  "state": "live",
+  "note": "18 sub-goals, 42 voice lines",
+  "at": "2026-10-21 08:19",
+  "commit": "9eb70e4"
  },
  "judging-samples": {
   "state": "live",
@@ -124,5 +124,17 @@
   "note": "agent",
   "at": "2026-10-21 08:09",
   "commit": "6f77845"
+ },
+ "integer-exponents": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:14",
+  "commit": "f342e10"
+ },
+ "functions": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:14",
+  "commit": "f342e10"
  }
 }

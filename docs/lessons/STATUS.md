@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 16, live 5, queued 42 (of 63)
+Totals: building 17, live 6, queued 40 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -25,7 +25,7 @@ Totals: building 16, live 5, queued 42 (of 63)
 | 4 | Probability concepts | `probability` | 7 | 20 | building | agent |
 | 5 | Draw triangles from given conditions | `draw-triangles` | 7 | 11 | building | agent |
 | 6 | Judge sample representativeness and limit conclusions | `judging-samples` | 7 | 6 | live | 6 sub-goals, 12 families |
-| 7 | Make a circle graph (pie chart) with percents | `pie-charts` | 7 | 18 | building | agent |
+| 7 | Make a circle graph (pie chart) with percents | `pie-charts` | 7 | 18 | live | 18 sub-goals, 42 voice lines |
 | 8 | Enlarge and reduce with a scale factor (scaled copies) | `scale-factor` | 7 | 18 | building | agent |
 | 9 | Enlarge and reduce shapes informally on grid paper | `enlarge-on-grids` | 7 | 14 | queued |  |
 | 10 | Relationships between quantities: ratio tables and proportional relationships | `ratio-tables-and-proportions` | 7 | 20 | queued |  |
@@ -51,9 +51,9 @@ Totals: building 16, live 5, queued 42 (of 63)
 | 5 | Percent applications | `percent-applications` | 7 | 25 | queued |  |
 | 6 | Multiply and divide rational numbers | `multiply-divide-rational-numbers` | 7 | 23 | building | agent |
 | 7 | One-step inequalities and signed one-step equations | `one-step-inequalities` | 7 | 11 | building | agent |
-| 8 | Integer exponents | `integer-exponents` | 8 | 17 | queued |  |
+| 8 | Integer exponents | `integer-exponents` | 8 | 17 | building | agent |
 | 9 | Square roots and cube roots | `square-and-cube-roots` | 8 | 21 | queued |  |
-| 10 | Function concept and identifying functions | `functions` | 8 | 18 | queued |  |
+| 10 | Function concept and identifying functions | `functions` | 8 | 18 | building | agent |
 | 11 | Translations, reflections, and rotations | `rigid-transformations` | 8 | 24 | queued |  |
 | 12 | Convert fractions, decimals, and percents: extended | `fractions-decimals-percents` | 7 | 23 | queued |  |
 | 13 | Combine percents and ratios in one problem | `percents-and-ratios` | 7 | 14 | queued |  |

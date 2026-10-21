@@ -93,7 +93,8 @@
   "wave": 1,
   "level": 0,
   "subgoals": 18,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "primary.geometry.enlarge-reduce-scale-factor",
