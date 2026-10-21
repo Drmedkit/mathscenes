@@ -360,10 +360,10 @@
   "commit": "8f2a4d0"
  },
  "linear-functions": {
-  "state": "building",
-  "note": "wave 7: Opus builder, lead QA",
-  "at": "2026-10-21 16:51",
-  "commit": "8f2a4d0"
+  "state": "live",
+  "note": "24 sub-goals, 40 voice lines; VOICE PENDING",
+  "at": "2026-10-21 17:58",
+  "commit": "50aa6e9"
  },
  "scatter-plots": {
   "state": "building",

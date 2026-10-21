@@ -772,7 +772,8 @@
    "secondary-t5-17-operations-with-rational-numbers",
    "secondary-t5-29-proportional-relationships-lines-and-linear-equations",
    "secondary-t5-32-functions-concept-and-representations"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-40-scatter-plots-and-bivariate-data",
