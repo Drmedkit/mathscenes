@@ -174,7 +174,8 @@
   "wave": 1,
   "level": 0,
   "subgoals": 21,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "primary.geometry.reflect-2d-shapes",
