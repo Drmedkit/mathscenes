@@ -180,7 +180,8 @@
   "wave": 1,
   "level": 0,
   "subgoals": 23,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "primary.geometry.rotate-quarter-half-turns",
