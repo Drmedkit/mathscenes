@@ -302,7 +302,8 @@
    "primary.ratios.calculate-percentage-change",
    "primary.ratios.calculate-simple-interest",
    "secondary-t5-16-proportional-relationships"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary.multiply-and-divide-rational-numbers",

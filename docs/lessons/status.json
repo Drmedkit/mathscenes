@@ -150,10 +150,10 @@
   "commit": "502c7da"
  },
  "percent-applications": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 08:21",
-  "commit": "45723d0"
+  "state": "live",
+  "note": "25 sub-goals, 37 voice lines",
+  "at": "2026-10-21 09:14",
+  "commit": "c99ec05"
  },
  "linear-equations": {
   "state": "building",
