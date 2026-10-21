@@ -168,10 +168,10 @@
   "commit": "0caf08b"
  },
  "ratio-tables-and-proportions": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 08:32",
-  "commit": "2fff793"
+  "state": "live",
+  "note": "20 sub-goals, 47 voice lines; one leader runs close to 1.5",
+  "at": "2026-10-21 13:09",
+  "commit": "07f7573"
  },
  "fractions-decimals-percents": {
   "state": "live",
