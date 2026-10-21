@@ -1,0 +1,149 @@
+{
+ "q.intro": {
+  "text": "A pizza is twelve inches across. How much cheese covers the top? That is the pizza's area, in square inches."
+ },
+ "q.ask": {
+  "text": "Pick an answer, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Let's work it out in four steps. Press each one, and watch the picture first."
+ },
+ "e.step0": {
+  "text": "The radius goes from the center to the crust. It is half of the twelve inches across: six inches."
+ },
+ "e.step1": {
+  "text": "Cut the pizza into sixteen wedges and lay them in a row, one up, one down. The crust is the circumference: pi times twelve, twelve pi inches. Half of it runs along the top: six pi."
+ },
+ "e.step2": {
+  "text": "The same cheese now makes an almost rectangle, six pi long and six tall. A wedge's side is the radius. The area is six pi times six: thirty-six pi square inches. That is pi times r squared."
+ },
+ "e.step3": {
+  "text": "Thirty-six pi is about thirty-six times three point one four: about one hundred thirteen square inches. Check: the shape holds about three squares of six by six, and three times thirty-six is one hundred eight. Close."
+ },
+ "e.why": {
+  "text": "Quick check. Why is the long side six pi, not twelve pi?"
+ },
+ "e.why.ok": {
+  "text": "Yes. Half the wedges have their crust on top, half at the bottom. The top gets half the circumference."
+ },
+ "e.why.all": {
+  "text": "The whole crust is twelve pi, but only half of it is on top. The other half runs along the bottom. So the long side is six pi."
+ },
+ "e.why.d": {
+  "text": "Twelve inches is the way across. The top is made of crust, half the way around: six pi, about nineteen inches."
+ },
+ "t.intro": {
+  "text": "Now a round rug, ten feet across. How much floor does it cover? The first two steps are done for you."
+ },
+ "t.given": {
+  "text": "The radius is ten divided by two, five feet. The edge of the rug is pi times ten, ten pi feet. Watch the wedges."
+ },
+ "t.sides": {
+  "text": "How long is the top of the near rectangle, and how tall is it?"
+ },
+ "t.sides.ok": {
+  "text": "Yes. The top is half the edge, five pi feet, and the height is the radius, five feet."
+ },
+ "t.sides.half": {
+  "text": "The whole edge is ten pi, but the top only gets half of it. The other half runs along the bottom."
+ },
+ "t.sides.d": {
+  "text": "The height is the side of one wedge, from the center to the edge. That is the radius, not the diameter."
+ },
+ "t.sides.other": {
+  "text": "The top is half of ten pi. The height is the side of one wedge, the radius."
+ },
+ "t.area": {
+  "text": "So what is the area, in terms of pi?"
+ },
+ "t.area.ok": {
+  "text": "Yes. Five pi times five is twenty-five pi square feet. That is pi times five squared."
+ },
+ "t.area.pow": {
+  "text": "Five squared means five times five, not five times two. Long side times height: five pi times five."
+ },
+ "t.area.d": {
+  "text": "That squares the diameter, ten. The height of the shape is the radius, five."
+ },
+ "t.area.half": {
+  "text": "Use the top, five pi, not the whole edge, ten pi. Five pi times five."
+ },
+ "t.area.other": {
+  "text": "The area is the long side times the height: five pi times five."
+ },
+ "t.round": {
+  "text": "About how many square feet is that? Use three point one four for pi."
+ },
+ "t.round.c": {
+  "text": "Thirty-one point four is ten pi, the edge around the rug. The floor it covers is the area, twenty-five pi."
+ },
+ "t.round.sq": {
+  "text": "That squares pi too. Only the radius is squared: twenty-five times three point one four."
+ },
+ "t.round.three": {
+  "text": "Seventy-five is the quick estimate with pi as three. With three point one four it is a bit more."
+ },
+ "t.round.other": {
+  "text": "Multiply twenty-five by three point one four."
+ },
+ "t.done": {
+  "text": "Twenty-five pi is about twenty-five times three point one four: seventy-eight point five square feet. Check: about three times twenty-five is seventy-five. Close."
+ },
+ "t.cb.rr": {
+  "text": "At the start you picked thirty-six square inches. That is six times six, one square of side r. The pizza holds about three point one four of those squares: about one hundred thirteen."
+ },
+ "t.cb.c": {
+  "text": "At the start you picked about thirty-eight. That is pi times twelve, the crust, a length around the edge. The cheese is an area: pi r squared, thirty-six pi, about one hundred thirteen."
+ },
+ "t.cb.right": {
+  "text": "At the start you picked about one hundred thirteen square inches, and that was right: pi times six squared, thirty-six pi. Now you know why."
+ },
+ "t.cb.none": {
+  "text": "At the start: the twelve inch pizza has thirty-six pi, about one hundred thirteen square inches of cheese."
+ },
+ "t.sure.0": {
+  "text": "You were guessing then. Now you can explain it."
+ },
+ "t.sure.1": {
+  "text": "You were pretty sure then."
+ },
+ "t.sure.2": {
+  "text": "You were certain then."
+ },
+ "p.intro": {
+  "text": "Sam says: a sixteen inch pizza is twice as wide as an eight inch pizza. So two eight inch pizzas are as much pizza as one sixteen inch pizza. Is Sam right?"
+ },
+ "p.build": {
+  "text": "Prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.test": {
+  "text": "Let's test it. Build the argument, and see where it leads."
+ },
+ "p.no.k": {
+  "text": "That is Sam's idea. The width is times two, but the area uses r twice: two times two is four."
+ },
+ "p.no.pi": {
+  "text": "Pi is the same for every circle, about three point one four, big or small."
+ },
+ "p.no.add": {
+  "text": "Sizes are multiplied, not added. The radius is times two, not plus four."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.c1": {
+  "text": "Right. Sixteen divided by eight is two. The radii, four and eight inches: times two."
+ },
+ "p.c2": {
+  "text": "The crust is two pi r. Double r, double the crust: eight pi becomes sixteen pi."
+ },
+ "p.c3": {
+  "text": "But the area is pi r squared, and r is used twice: two times two is four. Sixteen pi becomes sixty-four pi. Four small pizzas fit the big one's box the same way."
+ },
+ "p.c4": {
+  "text": "Two small pizzas are only thirty-two pi. It takes four to match sixty-four pi. Sam is wrong."
+ },
+ "p.done": {
+  "text": "That's a proof. Each line has its reason, and the picture backs every one. Lengths double, and the area is four times as big."
+ }
+}

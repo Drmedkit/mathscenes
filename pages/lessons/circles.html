@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Circles</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    .panel .tag { color: var(--dim); font-size: 14px; white-space: nowrap; }
+    .panel table.tbl { border-collapse: collapse; margin: 10px 0 4px; font-variant-numeric: tabular-nums; }
+    .panel table.tbl th, .panel table.tbl td { padding: 5px 12px; border-bottom: 1px solid var(--line); text-align: center; font-weight: 600; }
+    .panel table.tbl th { text-align: left; font-style: italic; }
+    .panel table.tbl th.a { color: var(--a); } .panel table.tbl th.b { color: var(--b); }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Area and circumference of circles</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The model and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./circles.ts"></script>
+</body>
+</html>
