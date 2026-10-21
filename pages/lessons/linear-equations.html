@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solving Linear Equations</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* answer boxes: big, readable digits (signed, fraction and decimal answers need room) */
+    .panel .ans input { font-size: 22px; font-weight: 600; width: 92px; }
+    .panel .ans .stack input { width: 72px; }
+    .panel .ans .op { font-size: 20px; }
+    .panel .opts button { line-height: 1.45; }
+    .panel .cards button span { font-size: 26px; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Solving linear equations</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The two-pan balance and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./linear-equations.ts"></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+{
+ "q.intro": {
+  "text": "Every bag holds the same number of marbles. Five bags and three loose marbles balance one bag and fifteen loose marbles."
+ },
+ "q.ask": {
+  "text": "How many marbles are in one bag?"
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one. The balance moves first, then the algebra."
+ },
+ "e.s1": {
+  "text": "One bag comes off each pan. Both pans lose the same amount, whatever is in a bag, so they stay level. Four x plus three equals fifteen."
+ },
+ "e.s2": {
+  "text": "Now three loose marbles off both pans, still level. Four x equals twelve."
+ },
+ "e.s3": {
+  "text": "Split both pans into four equal rows. One bag balances three marbles. x equals three."
+ },
+ "e.s4": {
+  "text": "Put everything back, and open the bags. Left: five times three, plus three, is eighteen. Right: three plus fifteen is eighteen. Both sides match, so x equals three is right."
+ },
+ "e.why": {
+  "text": "Quick check. Why may a bag come off both pans, when nobody knows what is in it?"
+ },
+ "e.w-ok": {
+  "text": "Yes. Whatever x is, both sides lose the same amount, so equal sides stay equal."
+ },
+ "e.w-move": {
+  "text": "That is the shortcut's name, not the reason. Nothing moved across. One bag came off each pan."
+ },
+ "e.w-const": {
+  "text": "Bags may come off too. Whatever a bag holds, both pans lose the same, so the beam stays level for every x."
+ },
+ "t.intro": {
+  "text": "Now three bags and eleven marbles balance five bags and three marbles. The first step is done for you."
+ },
+ "t.s1": {
+  "text": "Done. Three bags off both pans. Eleven equals two x plus three."
+ },
+ "t.move": {
+  "text": "Your step. What comes off next, so the bags are alone?"
+ },
+ "t.m-ok": {
+  "text": "Yes. Three marbles off both pans. Eight equals two x."
+ },
+ "t.m-one": {
+  "text": "Watch. Only the right pan lost marbles, so the balance tips. Take the same off both pans."
+ },
+ "t.m-11": {
+  "text": "The right pan has only three loose marbles. Take off what both pans can lose: three."
+ },
+ "t.x": {
+  "text": "Two bags balance eight marbles. How many marbles are in one bag?"
+ },
+ "t.x-ok": {
+  "text": "Yes. Eight in two equal rows is four. Four equals x, the same as x equals four."
+ },
+ "t.x-16": {
+  "text": "Sixteen is eight times two. Undo the times two: split the eight into two equal rows."
+ },
+ "t.x-8": {
+  "text": "Eight balances both bags. One bag balances one row."
+ },
+ "t.x-no": {
+  "text": "Count one row: eight marbles in two equal rows."
+ },
+ "t.empty": {
+  "text": "Type a number first."
+ },
+ "t.check": {
+  "text": "Check it in the original equation. What is each side worth, when x equals four?"
+ },
+ "t.c-ok": {
+  "text": "Yes. Both sides are twenty-three. x equals four is right."
+ },
+ "t.c-one": {
+  "text": "Work out the right side too: five times four, plus three. Both whole sides count."
+ },
+ "t.c-no": {
+  "text": "Left: three times four, plus eleven. Right: five times four, plus three. Work out each one."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked three, and you were right. Now you can show why: the same bag off both pans."
+ },
+ "t.cb-sign": {
+  "text": "At the start you picked two. That adds the bag on the right to the left side. It comes off both pans instead: four x, not six x."
+ },
+ "t.cb-cant": {
+  "text": "At the start you said you can't tell, with bags on both pans. You can: take the same bags off both pans."
+ },
+ "p.intro": {
+  "text": "Jordan solves two x plus five equals two x plus nine. Subtract two x from both sides: five equals nine. The x's are gone, so x equals zero."
+ },
+ "p.ask": {
+  "text": "Is Jordan right?"
+ },
+ "p.build": {
+  "text": "Prove it. Fill each because, with the reason that makes the line true."
+ },
+ "p.test": {
+  "text": "Let's test it. Build the argument, and see where it leads."
+ },
+ "p.k1": {
+  "text": "Taking two bags off both pans gives five equals nine,"
+ },
+ "p.k2": {
+  "text": "and five equals nine is false, whatever x is,"
+ },
+ "p.k3": {
+  "text": "so the equation has no solution, and x equals zero is not one."
+ },
+ "p.c1": {
+  "text": "Right. Both pans lose two bags. The beam stays tipped, exactly as before."
+ },
+ "p.c2": {
+  "text": "Right. Try any number in the bags. The right pan is always four marbles heavier."
+ },
+ "p.c3": {
+  "text": "Right. At x equals zero, the sides are five and nine. No number works. No solution."
+ },
+ "p.w-zero": {
+  "text": "That is Jordan's slip. When the x's cancel, read what is left. Five equals nine is false, so no number works."
+ },
+ "p.w-err": {
+  "text": "Nothing went wrong. Every step was fine. Some equations have no solution."
+ },
+ "p.w-other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That's a proof. Every step kept the solutions, and the last line is never true. No solution is not the same as x equals zero."
+ }
+}
