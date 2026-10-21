@@ -318,10 +318,10 @@
   "commit": "415ad40"
  },
  "multi-step-equations": {
-  "state": "building",
-  "note": "wave 6: Opus builder + Haiku QA",
-  "at": "2026-10-21 15:49",
-  "commit": "ff33bf4"
+  "state": "live",
+  "note": "22 sub-goals, 39 voice lines; practice balance small, most items notation slate (polish later); VOICE PENDING",
+  "at": "2026-10-21 16:47",
+  "commit": "6110035"
  },
  "parallel-lines-and-triangles": {
   "state": "building",
