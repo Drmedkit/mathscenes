@@ -84,4 +84,5 @@ accept −, $, %, decimal and thousands commas.
 - No answer visible before the kid answers (labels, boards, choice wording).
 - Spoken text has no digits or symbols ("three fourths"); short lines; US English and units.
 - Every misconception id exists in `math-curriculum-essentials/misconceptions.json`.
+- Windows is case-insensitive: never name a model block `Plan.ts` or `Items.ts` (it overwrites `plan.ts` / `items.ts`).
 - Use TeX `-` inside math (MathJax makes the minus); write `\\` correctly in TS template strings.
