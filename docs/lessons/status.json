@@ -180,10 +180,10 @@
   "commit": "5c36c97"
  },
  "coordinate-transformations": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 08:34",
-  "commit": "facb242"
+  "state": "live",
+  "note": "21 sub-goals, 46 voice lines",
+  "at": "2026-10-21 13:20",
+  "commit": "e1b16a1"
  },
  "sampling-and-inference": {
   "state": "building",

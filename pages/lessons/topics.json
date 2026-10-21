@@ -449,7 +449,8 @@
   "requires": [
    "primary.geometry.reflect-2d-shapes",
    "secondary-t5-17-operations-with-rational-numbers"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-21-area-and-circumference-of-circles",
