@@ -1,0 +1,21 @@
+{
+  "q.intro": { "text": "You have three wooden sticks: three inches, four inches and seven inches long. You join them end to end to make a triangle. How many different triangles can you make? Pick an answer, and say how sure you are." },
+  "e.intro": { "text": "Let's draw a triangle with sides of five, four and three inches, with a ruler and a compass. Press each step, and watch the picture first." },
+  "e.step0": { "text": "The request has three conditions: A B is five inches, A C is four inches, and B C is three inches. The sketch shows each one on its side, and nothing else." },
+  "e.step1": { "text": "Put the ruler's zero on A, and mark B at five. That meets the first condition." },
+  "e.step2": { "text": "Open the compass to four inches, and swing an arc around A. Every point on it is four inches from A. Then three inches around B." },
+  "e.step3": { "text": "C is where the arcs cross: four inches from A, and three inches from B, at the same time. They cross because four plus three is more than five." },
+  "e.why": { "text": "Quick check. Why does C have to be where the arcs cross?" },
+  "t.intro": { "text": "Your turn. Draw triangle A B C with A B six inches, A C three and a half inches, and B C four inches. The sketch and the base are done for you." },
+  "t.arc": { "text": "The first arc goes around A. How wide do you open the compass?" },
+  "t.arcB": { "text": "Yes. A C is three and a half inches, and A is one end of A C. Then four inches around B." },
+  "t.point": { "text": "Which point is C?" },
+  "t.flat": { "text": "Now the sticks from the start, on paper. The base is seven inches, with an arc of three inches around A, and one of four inches around B. Where do the arcs meet?" },
+  "t.done": { "text": "Three plus four is seven, so the arcs only touch on the base. The sticks lie flat, and a flat shape is no triangle. The two shorter sides must add up to more than the longest." },
+  "p.intro": { "text": "Jordan says: a triangle with angles of forty, sixty and eighty degrees? There is only one. Everybody's drawing will match mine. Is Jordan right?" },
+  "p.build": { "text": "Now prove it. Fill each because with the reason that makes the line true." },
+  "p.c1": { "text": "On a three inch base, angles of forty and sixty degrees give a triangle with eighty degrees at the top, because the three angles of every triangle add up to one hundred eighty degrees." },
+  "p.c2": { "text": "On a five inch base, the same angles give a bigger triangle, again with eighty degrees at the top, because the rays leave at the same angles, so on a longer base they meet farther out." },
+  "p.c3": { "text": "So the three angles allow many triangles, and Jordan is wrong, because they have the same angles but different side lengths. One is not a copy of the other." },
+  "p.done": { "text": "That's a proof. Three angles fix the shape, not the size. Three sides, two sides and the angle between them, or a side and its two end angles, each fix exactly one triangle." }
+}
