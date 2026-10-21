@@ -1,0 +1,137 @@
+{
+ "q.intro": {
+  "text": "Main Street and Oak Avenue are both straight, and they cross. At one corner the angle between them is 65 degrees."
+ },
+ "q.ask": {
+  "text": "What is the angle at the corner across the intersection?"
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the picture moves first, then the notation."
+ },
+ "e.s1": {
+  "text": "The streets become two lines, A C and B D, crossing at O. The only number we know: the measure of angle A O B equals 65 degrees."
+ },
+ "e.s2": {
+  "text": "Angle A O B and angle B O C share the side O B, and their outer sides O A and O C are opposite rays of line A C. That makes them a linear pair: together they fill a straight angle, 180 degrees."
+ },
+ "e.s3": {
+  "text": "So 65 plus x equals 180, and x equals 115. The angle at the next corner, the measure of angle B O C, is 115 degrees."
+ },
+ "e.s4": {
+  "text": "Line B D gives a second linear pair: 115 plus the measure of angle C O D equals 180, so the measure of angle C O D equals 65 degrees. The angle across the crossing equals the one we started with."
+ },
+ "e.why": {
+  "text": "Quick check: why do angle A O B and angle B O C add up to 180 degrees?"
+ },
+ "e.w-ok": {
+  "text": "Yes. The drawn line makes a straight angle, and the two angles fill it exactly."
+ },
+ "e.w-adj": {
+  "text": "Being next to each other is not enough: adjacent angles can add up to anything. The drawn line is what makes 180 degrees."
+ },
+ "e.w-look": {
+  "text": "Looks are not a reason. The reason is in the figure: line A C is drawn."
+ },
+ "t.intro": {
+  "text": "Now lines P R and Q S cross at O, and the measure of angle P O Q equals 38 degrees. The first two steps are done for you."
+ },
+ "t.pair": {
+  "text": "Angle P O Q and angle Q O R are a linear pair on line P R: they add up to 180 degrees."
+ },
+ "t.x-ask": {
+  "text": "Write the equation, then type the measure of angle Q O R."
+ },
+ "t.x-ok": {
+  "text": "Yes: 38 plus 142 equals 180, so the measure of angle Q O R equals 142 degrees."
+ },
+ "t.x-swap": {
+  "text": "That uses 90. A straight angle is 180 degrees: 38 plus x equals 180."
+ },
+ "t.x-equal": {
+  "text": "That copies the 38 degrees. These two angles sit side by side on a line: they add up to 180 degrees, they are not equal."
+ },
+ "t.x-whole": {
+  "text": "180 is the whole straight angle. Take away the 38 degrees you know."
+ },
+ "t.x-other": {
+  "text": "Not quite. 38 plus x equals 180: what is x?"
+ },
+ "t.y-ask": {
+  "text": "Now go across the crossing. What is the measure of angle R O S?"
+ },
+ "t.y-ok": {
+  "text": "Yes: angle Q O R and angle R O S are a linear pair on line Q S, so 180 minus 142 equals 38. Vertical angles are equal, even when they open sideways."
+ },
+ "t.y-supp": {
+  "text": "142 degrees is the angle next to it. Use line Q S: 142 plus the measure of angle R O S equals 180."
+ },
+ "t.y-swap": {
+  "text": "A straight angle is 180 degrees, not 90 degrees: 142 plus the measure of angle R O S equals 180."
+ },
+ "t.done": {
+  "text": "The last corner, angle S O P, is 142 degrees: it is across from angle Q O R."
+ },
+ "t.cb-right": {
+  "text": "You were right: 65 degrees. The angle across a crossing always equals the angle you start from, and now you can show why."
+ },
+ "t.cb-supp": {
+  "text": "115 degrees is the corner next door: those two are a linear pair. The corner across is 65 degrees."
+ },
+ "t.cb-unknown": {
+  "text": "It had no number on it, but it could still be found: two linear pairs give 65 degrees."
+ },
+ "t.cb-none": {
+  "text": "The corner across the intersection is 65 degrees."
+ },
+ "p.intro": {
+  "text": "Jordan measured five crossings with a protractor. Every time, the angles across from each other were equal. Jordan says: That proves it for every crossing."
+ },
+ "p.build": {
+  "text": "Right: five examples are not every crossing. Let’s build a proof that works for any two lines. Choose a reason for each statement."
+ },
+ "p.build-test": {
+  "text": "Five checks cannot cover every crossing: there are endlessly many. Let’s build a proof that does. Choose a reason for each statement."
+ },
+ "p.given": {
+  "text": "Given: lines A C and B D cross at O. Prove: the measure of angle 1 equals the measure of angle 3."
+ },
+ "p.r1": {
+  "text": "The measure of angle 1 plus the measure of angle 2 equals 180 degrees"
+ },
+ "p.r2": {
+  "text": "The measure of angle 2 plus the measure of angle 3 equals 180 degrees"
+ },
+ "p.r3": {
+  "text": "The measure of angle 1 plus the measure of angle 2 equals the measure of angle 2 plus the measure of angle 3"
+ },
+ "p.r4": {
+  "text": "The measure of angle 1 equals the measure of angle 3"
+ },
+ "p.c1": {
+  "text": "Yes. Line A C is drawn, so angle 1 and angle 2 fill a straight angle."
+ },
+ "p.c2": {
+  "text": "Yes. The same with line B D: angle 2 and angle 3 fill the other straight angle."
+ },
+ "p.c3": {
+  "text": "Both sums are 180 degrees, so they are equal to each other."
+ },
+ "p.c4": {
+  "text": "Take angle 2 away from both sides, and what is left is angle 1 equals angle 3."
+ },
+ "p.x-measure": {
+  "text": "Measuring checks one crossing. A reason in a proof has to work for every crossing."
+ },
+ "p.x-adj": {
+  "text": "Adjacent alone does not give 180 degrees. Which drawn line makes the straight angle?"
+ },
+ "p.x-other": {
+  "text": "True, but it is the reason for a different statement. Which reason makes this one true?"
+ },
+ "p.done": {
+  "text": "That’s a proof. It never used a measurement, so it works for every pair of crossing lines. Watch: whatever the crossing, angle 1 equals angle 3."
+ }
+}

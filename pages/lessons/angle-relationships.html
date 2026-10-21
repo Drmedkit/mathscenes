@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Angle Relationships</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    b.p { color: var(--pick); font-weight: 650; }
+    .opts.three { grid-template-columns: repeat(3, 1fr); }
+    .opts.three button { text-align: center; font-size: 20px; }
+    p.given { font-size: 15.5px; border-left: 3px solid var(--line); padding-left: 10px; }
+    /* the two-column proof: statements | reasons */
+    table.proof { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 6px 0 4px; font-size: 15px; }
+    table.proof th { text-align: left; font-weight: 600; font-size: 13px; color: var(--faint); padding: 0 8px; }
+    table.proof td { padding: 8px; vertical-align: top; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--faint); }
+    table.proof td.st { width: 46%; border-left: 1px solid var(--line); border-radius: 10px 0 0 10px; white-space: nowrap; font-size: 14.5px; }
+    table.proof td.rs { border-right: 1px solid var(--line); border-radius: 0 10px 10px 0; }
+    table.proof tr.now td { border-color: var(--pick); color: var(--text); }
+    table.proof tr.ok td { color: var(--text); border-color: #3d5a3a; }
+    table.proof td.rs i { font-style: normal; color: var(--s); }
+    table.proof td.rs .empty { display: inline-block; min-width: 120px; border-bottom: 1.5px dashed var(--faint); }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Angle relationships</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The angle figure and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./angle-relationships.ts"></script>
+</body>
+</html>

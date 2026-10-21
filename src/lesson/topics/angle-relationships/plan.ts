@@ -1,0 +1,30 @@
+// plan.ts: the practice walks through every sub-goal of secondary-t5-22-angle-relationships, in topic JSON order.
+import type { SubgoalPlan } from '../../runtime/practice';
+
+export const PLAN: readonly SubgoalPlan[] = [
+  { id: 'rays-opposite-rays', title: 'Rays and opposite rays', families: ['rays'] },
+  { id: 'read-angle-names', title: 'Read an angle’s name', families: ['names'] },
+  { id: 'diagram-conventions', title: 'What a figure really says', families: ['evidence'] },
+  { id: 'identify-adjacent', title: 'Adjacent angles', families: ['adjacent'] },
+  { id: 'angle-additivity', title: 'Parts add up to the whole', families: ['addParts', 'armLength'] },
+  { id: 'identify-complementary', title: 'Complementary: 90° together', families: ['pairName'] },
+  { id: 'identify-supplementary', title: 'Supplementary: 180° together', families: ['pairName'] },
+  { id: 'identify-linear-pair', title: 'A linear pair', families: ['linearPair'] },
+  { id: 'identify-vertical', title: 'Vertical angles', families: ['vertical'] },
+  { id: 'vertical-angles-equal', title: 'Vertical angles are equal', families: ['equalPick'] },
+  { id: 'cross-classify', title: 'Every name that fits', families: ['allNames'] },
+  { id: 'find-complement', title: 'Find a complement', families: ['findPair'] },
+  { id: 'find-supplement', title: 'Find a supplement', families: ['findPair'] },
+  { id: 'find-vertical', title: 'Find a vertical angle', families: ['findVertical'] },
+  { id: 'find-missing-part', title: 'The missing part', families: ['missingPart'] },
+  { id: 'several-parts-on-line', title: 'Several angles on a line', families: ['lineParts'] },
+  { id: 'angles-around-point', title: 'Angles around a point', families: ['aroundPoint'] },
+  { id: 'select-relationship', title: 'Choose the relationship', families: ['mixed'] },
+  { id: 'chain-relationships', title: 'Two steps to the target', families: ['chain'] },
+  { id: 'justify-steps', title: 'Give the reason', families: ['reason'] },
+  { id: 'reject-unsupported', title: 'Check a step', families: ['critique'] },
+  { id: 'vertical-general-argument', title: 'Why vertical angles are always equal', families: ['argument'] },
+  { id: 'angle-expressions', title: 'An angle with x', families: ['expr'] },
+  { id: 'combined-expression-angles', title: 'x in more than one angle', families: ['exprCombined'] },
+  { id: 'model-context', title: 'Angles in real life', families: ['context'] },
+];
