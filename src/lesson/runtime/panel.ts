@@ -27,8 +27,13 @@ const numBox = (cls: string, label: string, onEnter: () => void) => {
   i.addEventListener('keydown', e => { if (e.key === 'Enter') onEnter(); });
   return i;
 };
-/** a typed number; the real minus sign (−) and a decimal comma count too */
-export const num = (i: HTMLInputElement) => { const v = i.value.trim().replace(/[−–]/g, '-').replace(',', '.'); return v === '' ? NaN : Number(v); };
+/** a typed number: the real minus sign (−), a $ sign, spaces, a trailing %, and decimal or thousands commas are read too */
+export const num = (i: HTMLInputElement) => {
+  let v = i.value.trim().replace(/[−–]/g, '-').replace(/[$\s]/g, '').replace(/%$/, '');
+  // a thousands comma (1,450) is dropped, a single decimal comma (3,5) becomes a point
+  v = /^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(v) ? v.replace(/,/g, '') : v.replace(',', '.');
+  return v === '' ? NaN : Number(v);
+};
 
 /** a fraction or mixed number: [whole] numerator / denominator */
 export function fracInput(unit: string, onEnter: () => void, mixedBox = true): Input {
