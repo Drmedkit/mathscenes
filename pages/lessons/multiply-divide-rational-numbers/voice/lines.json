@@ -1,0 +1,131 @@
+{
+ "q.intro": {
+  "text": "A diver swims down at a steady pace: her height changes by negative four feet every minute."
+ },
+ "q.ask": {
+  "text": "Right now she is at the marker. Compared with now, where was she three minutes ago?"
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the picture moves first, then the notation."
+ },
+ "e.s1": {
+  "text": "Every minute is one equal jump of negative four feet: four feet down."
+ },
+ "e.s2": {
+  "text": "Later is positive time. In three minutes she makes three jumps of negative four: three times negative four is negative twelve. One negative factor: a negative product."
+ },
+ "e.s3": {
+  "text": "Earlier is negative time. The three jumps before now brought her down to the marker, so three minutes ago she was twelve feet higher: negative three times negative four is twelve."
+ },
+ "e.s4": {
+  "text": "Division undoes it: twelve divided by negative three is negative four, because negative three times negative four is twelve. Same signs: positive. Different signs: negative."
+ },
+ "e.why": {
+  "text": "Quick check: why is negative three times negative four positive?"
+ },
+ "e.w-ok": {
+  "text": "Yes. Going back three minutes undoes three drops of four feet, so she was twelve feet higher than now."
+ },
+ "e.w-add": {
+  "text": "Careful: two negatives added stay negative, negative three plus negative four is negative seven. The picture shows why the product is positive."
+ },
+ "e.w-rule": {
+  "text": "It has a reason: going back in time undoes the drops, so she was twelve feet higher."
+ },
+ "t.intro": {
+  "text": "A cold front: the temperature changes by negative one point five degrees every hour. It is thirty degrees now. The first two steps are done for you."
+ },
+ "t.count": {
+  "text": "Your step: compared with now, how much warmer or colder was it four hours ago? Warmer is plus, colder is minus."
+ },
+ "t.fill": {
+  "text": "Type a number. Use a minus sign for colder."
+ },
+ "t.c-ok": {
+  "text": "Yes: the four drops of one point five degrees came after, so four hours ago it was six degrees warmer: plus six."
+ },
+ "t.c-neg": {
+  "text": "Look at the jumps: they lead down to now. Before them it was warmer, so the change is plus six, not negative six."
+ },
+ "t.c-add": {
+  "text": "That adds negative four and negative one point five. Four hours of negative one point five degrees each is a product."
+ },
+ "t.c-other": {
+  "text": "Count the jumps from four hours ago to now: four jumps of one point five degrees each."
+ },
+ "t.write": {
+  "text": "Tap the chips to write it as one multiplication."
+ },
+ "t.w-ok": {
+  "text": "Yes: negative four times negative one point five is six. Two negative factors, a positive product."
+ },
+ "t.w-add": {
+  "text": "That adds. Four hours of the same change is times."
+ },
+ "t.w-later": {
+  "text": "Four times negative one point five is four hours from now: negative six. Hours ago are negative time: negative four."
+ },
+ "t.w-other": {
+  "text": "Use the time, where hours ago are negative, and the change per hour."
+ },
+ "t.div": {
+  "text": "Now divide: six divided by negative four. Use the multiplication you just wrote."
+ },
+ "t.d-ok": {
+  "text": "Right: negative four times negative one point five is six, so six divided by negative four is negative one point five, the change per hour. Different signs: a negative quotient."
+ },
+ "t.d-no": {
+  "text": "Check it: negative four times one point five is negative six, not six. The quotient is negative one point five: different signs, negative."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked plus twelve feet, and you were right. Now you can show why."
+ },
+ "t.cb-neg": {
+  "text": "At the start you picked negative twelve feet: that is where she will be three minutes from now. Three minutes ago she was twelve feet higher."
+ },
+ "t.cb-add": {
+  "text": "At the start you picked negative seven feet: that adds negative three and negative four. It is a product: negative three times negative four is plus twelve."
+ },
+ "p.intro": {
+  "text": "Jordan says: negative three times negative four is negative twelve, because a negative times anything stays negative."
+ },
+ "p.test": {
+  "text": "Let's test it. Build the argument and see where it leads."
+ },
+ "p.prove": {
+  "text": "Now prove it, without the diver. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Negative three times the sum four plus negative four is zero,"
+ },
+ "p.c2": {
+  "text": "and it also equals negative three times four, plus negative three times negative four,"
+ },
+ "p.c3": {
+  "text": "where negative three times four is negative twelve,"
+ },
+ "p.c4": {
+  "text": "so negative twelve plus negative three times negative four is zero, and negative three times negative four is twelve."
+ },
+ "p.x-any": {
+  "text": "That is Jordan's idea, the one being tested. It cannot be a reason here."
+ },
+ "p.x-add": {
+  "text": "That adds. Every line here is about products."
+ },
+ "p.x-examples": {
+  "text": "One example is not a reason: a reason must work for every number."
+ },
+ "p.x-rule": {
+  "text": "That uses the rule to prove the rule. Find what makes this line true."
+ },
+ "p.x-other": {
+  "text": "True, but it is the reason for a different line."
+ },
+ "p.done": {
+  "text": "That's a proof: four claims, each with its reason, and the scale backs every one. The distributive property forces negative times negative to be positive."
+ }
+}
