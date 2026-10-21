@@ -1,0 +1,75 @@
+// script.ts: the panel text (HTML, by voice id) and the board TeX of parts 1-4, side by side so the tests can check
+// every string (no control characters, every panel line voiced). The spoken text is in
+// pages/lessons/scatter-plots/voice/lines.json (same ids, written to be read aloud: no digits, no symbols).
+const X = '<i>x</i>', Y = '<i>y</i>';
+
+export const PANEL: Record<string, string> = {
+  // 1. the question
+  'q.intro': `A smoothie stand logged <b class="a">12 summer days</b>: each day’s high temperature and the smoothies it sold. Two of those days were 80°F. Tomorrow’s forecast is <b class="b">80°F</b>. How many smoothies should the stand plan for? Pick an answer, and say how sure you are.`,
+  // 2. worked example
+  'e.intro': 'Four steps. Press each one: the plot moves first, then the notation.',
+  'e.step0': `Each row is one day: two numbers that belong together. Each day becomes <b>one dot</b>: across for the temperature, up for the smoothies. Both 80°F days get their own dot, one above the other.`,
+  'e.step1': `Left to right, the cloud tends to go up: a <b class="s">positive</b> association. The dots hug a straight edge: <b class="s">linear</b>. They stay close to it: <b class="s">strong</b>. A tendency, not a rule: some hotter days sold fewer.`,
+  'e.step2': `A trend line runs through the middle of the cloud, with dots on both sides all along. It passes (70, 40) and (90, 90): up 50 for 20 degrees, so the slope is 2.5. Its equation is <b class="s">${Y} = 2.5${X} − 135</b>.`,
+  'e.step3': `Up from 80°F to the line, then across: about <b class="s">65 smoothies</b>. The two real 80°F days, 58 and 72, sit on either side. The line gives a typical day, not an exact one.`,
+  'e.why': 'Quick check: why plan for about 65, and not 72?',
+  'e.why.ok': 'Yes. One day can run high or low. The line sums up all 12.',
+  'e.why.exact': 'Look at the two real 80°F days: 58 and 72. Days at the same temperature differ, so 65 is an estimate.',
+  'e.why.only': 'The other ten days count too. Together they show the trend, and the trend is steadier than any one day.',
+  // 3. your turn
+  't.intro': `Same stand, same line. The first three steps are done. Now you predict for an <b class="b">86°F</b> day, then read what the slope and the intercept mean.`,
+  't.pred': `Use the line ${Y} = 2.5${X} − 135. About how many smoothies on an 86°F day?`,
+  't.pred.empty': 'Type a number first.',
+  't.pred.ok': `Yes: 2.5 × 86 = 215, and 215 − 135 = 80. About <b class="s">80 smoothies</b>.`,
+  't.pred.mult': '215 is 2.5 × 86. Now take away the 135.',
+  't.pred.near': 'That is a real day near 86°F. The prediction comes from the line, not from one dot.',
+  't.pred.no': `Put 86 in for ${X}: 2.5 × 86, then take away 135.`,
+  't.slope': 'What does the slope 2.5 mean here?',
+  't.slope.ok': 'Yes: on average. Single days scatter around the line.',
+  't.slope.exact': 'Look at the dots: two days one degree apart can differ by much more, or less. The slope is an average.',
+  't.slope.cause': 'These data show an association. Heat may well matter, but the data alone cannot prove cause.',
+  't.int': 'The equation gives −135 at 0°F. What does that mean?',
+  't.int.ok': 'Yes. The logged days run from 68°F to 94°F. Zero is far outside, and sales can’t be negative.',
+  't.int.real': 'No day near 0°F was logged, and nobody sells negative smoothies. The intercept has no real meaning here.',
+  't.int.wrong': 'The line fits the logged days well. It just should not be stretched to 0°F.',
+  'q.cb.right': 'At the start you picked about 65, and you were right: the trend of all 12 days, not one day.',
+  'q.cb.single': 'At the start you picked 72, one single day. The line uses all 12 days, so it gives about 65.',
+  'q.cb.none': 'At the start you said you couldn’t tell. The days do disagree, but the trend of all 12 still gives a fair estimate: about 65.',
+  'q.cb.skip': 'A trend line turns a cloud of days into a fair estimate.',
+  // 4. prove it
+  'p.intro': `Riley uses the same line for a heat wave: “At <b>120°F</b> the stand will sell 2.5 × 120 − 135 = <b>165</b> smoothies.” Is Riley right?`,
+  'p.test': 'Let’s test it. Build the argument, and see where it leads.',
+  'p.build': 'Now prove it. Fill each “because” with the reason that makes the line true.',
+  'p.c1': 'Right. The dots stop at 94°F, and 120 is far past them: extrapolation.',
+  'p.c2': 'Right. Past the data, nothing shows whether the pattern goes on, bends, or stops.',
+  'p.c3': 'Right. At 80°F the line is backed by real days on both sides. At 120°F it is not.',
+  'p.no.axis': 'How long an axis is drawn is up to whoever draws it. The dots, from 68°F to 94°F, set the range.',
+  'p.no.exact': 'No day was exactly 86°F either, and 86 is inside the range. The range matters, not exact matches.',
+  'p.no.line': 'A line on paper goes on forever. Real sales were only seen from 68°F to 94°F.',
+  'p.no.worthless': 'Too strong: inside the logged range, the line gives fair estimates.',
+  'p.no.other': 'True, but it is the reason for a different line. Which reason makes this line true?',
+  'p.done': 'That’s a proof: three claims, each with its reason, and the plot backs every one. Riley extrapolated far past the data.',
+};
+
+export const BOARD_TEX = {
+  q: 'x = 80 \\;\\Rightarrow\\; y = \\,?',
+  dir: '\\text{direction: }\\cssId{v}{\\text{positive}}',
+  form: '\\text{form: }\\cssId{v}{\\text{linear}}',
+  str: '\\text{strength: }\\cssId{v}{\\text{strong}}',
+  slope: 'm = \\frac{\\cssId{r}{50}}{\\cssId{u}{20}} = \\cssId{m}{2.5}',
+  bLine: '40 = 2.5(70) + b',
+  eq: 'y = \\cssId{m}{2.5}x - \\cssId{b}{135}',
+  pred: 'y = 2.5(80) - 135',
+  predV: 'y = \\cssId{v}{65}',
+  turnEq: 'y = 2.5x - 135',
+  turnPred: 'y = 2.5(86) - 135',
+  turnPredV: 'y = \\cssId{v}{80}',
+  turnInt: 'x = 0:\\ y = \\cssId{v}{-135}',
+  rileyA: '\\text{Riley, at }120^{\\circ}\\mathrm{F}\\text{:}',
+  rileyB: 'y = 2.5(120) - 135',
+  rileyC: 'y = \\cssId{v}{165}',
+  p1: '68 \\le x \\le 94',
+  p2: '\\cssId{v}{120} > 94',
+  p3: 'y(120) = \\,?',
+  p4: 'y(80) = \\cssId{v}{65}',
+} as const satisfies Record<string, string>;
