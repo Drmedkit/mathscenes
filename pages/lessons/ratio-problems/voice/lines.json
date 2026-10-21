@@ -1,0 +1,134 @@
+{
+ "q.intro": {
+  "text": "At the farmers market, four pounds of cherries cost ten dollars."
+ },
+ "q.ask": {
+  "text": "How much do six pounds cost? Pick an answer, and say how sure you are."
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one. The picture moves first, then the notation."
+ },
+ "e.s1": {
+  "text": "The pounds go from four to six. The multiplier is new divided by old: six divided by four is one and a half. Not a whole number, and that is fine."
+ },
+ "e.s2": {
+  "text": "Times one and a half, in whole steps: cut the four pounds into two equal pieces, two pounds for five dollars each. Three pieces make six pounds for fifteen dollars. Divide both by two, then multiply both by three."
+ },
+ "e.s3": {
+  "text": "So the dollars get the same multiplier: ten dollars times one and a half is fifteen dollars. More than ten dollars, because one and a half is more than one."
+ },
+ "e.s4": {
+  "text": "Check with the rate inside each pair: ten divided by four is two point five, and fifteen divided by six is two point five. That is two dollars and fifty cents per pound, a rate with a unit. The multiplier, one and a half, has no unit."
+ },
+ "e.why": {
+  "text": "Quick check: why do the dollars get times one and a half too?"
+ },
+ "e.why.ok": {
+  "text": "Yes. Six pounds is one and a half times four pounds, so it costs one and a half times as much. Every pound costs the same."
+ },
+ "e.why.add": {
+  "text": "Look at the picture: twelve dollars does not line up with six pounds. Adding two to both keeps the difference, not the ratio. Two more pounds cost two times two fifty, five dollars more."
+ },
+ "e.why.rate": {
+  "text": "The price per pound is two fifty, not one and a half. The one and a half goes between the pairs. The two fifty goes inside one pair."
+ },
+ "t.intro": {
+  "text": "Maya hikes twelve miles in four hours at a steady pace. How long does she take for nine miles? The first step is done for you."
+ },
+ "t.s1": {
+  "text": "The miles go from twelve to nine. The multiplier is nine divided by twelve, zero point seven five."
+ },
+ "t.pred": {
+  "text": "Your step: before you work it out, will the time be more or less than four hours?"
+ },
+ "t.p-ok": {
+  "text": "Yes. Times zero point seven five is less than one, so the time shrinks too."
+ },
+ "t.p-big": {
+  "text": "Multiplying by zero point seven five, a number less than one, makes it smaller. Fewer miles take less time."
+ },
+ "t.p-inv": {
+  "text": "Twelve divided by nine is old divided by new. The multiplier is new divided by old: nine divided by twelve, zero point seven five. Less than one."
+ },
+ "t.hours": {
+  "text": "Your step: multiply the hours by the same zero point seven five. How many hours?"
+ },
+ "t.h-ok": {
+  "text": "Yes. Four times zero point seven five is three hours. On the line: four pieces of one hour and three miles. Count three of them."
+ },
+ "t.h-add": {
+  "text": "That takes away the same three as the miles. Taking away keeps the difference, not the ratio. Multiply by zero point seven five."
+ },
+ "t.h-inv": {
+  "text": "That multiplies by twelve divided by nine, the multiplier upside down. Fewer miles must take less time."
+ },
+ "t.h-miles": {
+  "text": "That is nine times zero point seven five. The miles got the multiplier twice. Multiply the hours: four times zero point seven five."
+ },
+ "t.h-mult": {
+  "text": "Zero point seven five is the multiplier, not the time. Multiply the four hours by it."
+ },
+ "t.h-no": {
+  "text": "Multiply the hours by the multiplier: four times zero point seven five."
+ },
+ "t.h-empty": {
+  "text": "Type a number first."
+ },
+ "t.rate": {
+  "text": "Last step: what is Maya’s speed, the rate inside one pair?"
+ },
+ "t.r-ok": {
+  "text": "Yes. Twelve divided by four is three, and nine divided by three is three. Three miles per hour in both pairs, so the answer checks."
+ },
+ "t.r-mult": {
+  "text": "Zero point seven five is the multiplier between the pairs. A speed is inside one pair, with a unit: miles divided by hours."
+ },
+ "t.r-rev": {
+  "text": "That is four divided by twelve: hours per mile. Miles per hour is miles divided by hours: twelve divided by four."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked fifteen dollars, and you were right. Now you can show why: both quantities times one and a half."
+ },
+ "q.cb.add": {
+  "text": "At the start you picked twelve dollars. That adds two dollars because six is two more than four. Multiply both by one and a half instead: fifteen dollars."
+ },
+ "q.cb.rev": {
+  "text": "At the start you picked two forty. That used four divided by ten, pounds per dollar, as the price. The price is ten divided by four, two fifty a pound, so six pounds cost fifteen dollars."
+ },
+ "q.cb.none": {
+  "text": "Multiply both quantities by the same number, even when it is not whole."
+ },
+ "p.intro": {
+  "text": "Pears: seven pounds cost twenty dollars. Alex finds the cost of twelve pounds. Twenty dollars divided by seven is about two eighty-six a pound, and twelve times two eighty-six is thirty-four thirty-two. Is Alex right?"
+ },
+ "p.test": {
+  "text": "Let’s test it. Build the argument, and see where it leads."
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Right. Cut the seven pounds into seven one-pound pieces. Twelve of them is twelve sevenths of the whole, so two hundred forty sevenths of a dollar, exactly."
+ },
+ "p.c2": {
+  "text": "Right. Two hundred forty divided by seven is thirty-four point two eight five, and the five after the cents rounds up: thirty-four twenty-nine."
+ },
+ "p.c3": {
+  "text": "Right. Two eighty-six is about three tenths of a cent too much per pound. Twelve pounds make that about three cents."
+ },
+ "p.no.early": {
+  "text": "Rounding every step is exactly what went wrong. Keep the exact value until the end, then round once."
+ },
+ "p.no.trunc": {
+  "text": "Cutting off is not rounding. The next digit is five, so the cents round up: thirty-four twenty-nine."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof: exact first, one rounding at the end. Alex rounded too early, and twelve pounds made the slip grow."
+ }
+}
