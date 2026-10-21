@@ -33,7 +33,7 @@ function write(k: string, v: unknown): void { try { localStorage.setItem(k, JSON
 export class LessonStore {
   private memLog: Attempt[];
   constructor(readonly topic: string) { this.memLog = read<Attempt[]>(KEY(topic) + '.log', []); }
-  progress(): Progress { return read<Progress>(KEY(this.topic) + '.progress', { part: 0, reached: 0, commit: { pick: null, sure: null } }); }
+  progress(): Progress { return read<Progress | null>(KEY(this.topic) + '.progress', null) ?? { part: 0, reached: 0, commit: { pick: null, sure: null } }; }
   saveProgress(p: Progress): void { write(KEY(this.topic) + '.progress', p); }
   log(a: Omit<Attempt, 'at' | 'topic'>): Attempt {
     const full: Attempt = { at: new Date().toISOString(), topic: this.topic, ...a };
