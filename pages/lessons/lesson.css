@@ -75,8 +75,8 @@ ol.plan li button { margin-top: 8px; }
 .ans .whole { width: 52px; }
 
 /* chips (reasons, roles) */
-.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
-.chips button { font-size: 15px; padding: 8px 12px; text-align: left; border-radius: 10px; line-height: 1.35; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.chips button { font-size: 15px; padding: 6px 11px; text-align: left; border-radius: 10px; line-height: 1.35; }
 .chips button.used { display: none; }
 .eq { display: flex; align-items: center; gap: 8px; font-size: 22px; margin: 12px 0; flex-wrap: wrap; }
 .eq .slot { min-width: 110px; min-height: 46px; border: 1.5px dashed var(--faint); border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; font-size: 16px; color: var(--faint); cursor: pointer; background: none; }
@@ -84,13 +84,15 @@ ol.plan li button { margin-top: 8px; }
 .eq .slot.a { border-color: var(--a); color: var(--a); } .eq .slot.b { border-color: var(--b); color: var(--b); }
 
 /* the because-chain */
-.chain { display: grid; gap: 10px; margin: 12px 0; }
-.claim { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; color: var(--faint); }
+.chain { display: grid; gap: 8px; margin: 10px 0; }
+.claim { border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; color: var(--faint); }
 .claim.now { border-color: var(--pick); color: var(--text); }
 .claim.ok { color: var(--text); border-color: #3d5a3a; }
 .claim .because { display: block; margin-top: 6px; font-size: 15px; color: var(--dim); }
 .claim .because i { font-style: normal; color: var(--s); }
 .claim .because .empty { display: inline-block; min-width: 160px; border-bottom: 1.5px dashed var(--faint); }
+/* a claim that is not reached yet shows only the claim: its empty because-slot comes when it is the current one */
+.claim:not(.now):not(.ok) .because { display: none; }
 
 .opts { display: grid; gap: 8px; margin: 10px 0; }
 .opts button { text-align: left; font-size: 15.5px; padding: 10px 14px; }
