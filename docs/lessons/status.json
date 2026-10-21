@@ -244,5 +244,29 @@
   "note": "agent",
   "at": "2026-10-21 09:05",
   "commit": "f28ff33"
+ },
+ "enlarge-on-grids": {
+  "state": "building",
+  "note": "Opus builder + Haiku QA (pilot)",
+  "at": "2026-10-21 13:15",
+  "commit": "8e7037d"
+ },
+ "scale-basics": {
+  "state": "building",
+  "note": "Opus builder + Haiku QA (pilot)",
+  "at": "2026-10-21 13:15",
+  "commit": "8e7037d"
+ },
+ "ratio-problems": {
+  "state": "building",
+  "note": "Opus builder + Haiku QA (pilot)",
+  "at": "2026-10-21 13:15",
+  "commit": "8e7037d"
+ },
+ "sales-tax": {
+  "state": "building",
+  "note": "Opus builder + Haiku QA (pilot)",
+  "at": "2026-10-21 13:15",
+  "commit": "8e7037d"
  }
 }

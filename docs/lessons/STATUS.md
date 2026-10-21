@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 8, live 33, queued 22 (of 63)
+Totals: building 12, live 33, queued 18 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -27,17 +27,17 @@ Totals: building 8, live 33, queued 22 (of 63)
 | 6 | Judge sample representativeness and limit conclusions | `judging-samples` | 7 | 6 | live | 6 sub-goals, 12 families |
 | 7 | Make a circle graph (pie chart) with percents | `pie-charts` | 7 | 18 | live | 18 sub-goals, 42 voice lines |
 | 8 | Enlarge and reduce with a scale factor (scaled copies) | `scale-factor` | 7 | 18 | live | 18 sub-goals, 49 voice lines |
-| 9 | Enlarge and reduce shapes informally on grid paper | `enlarge-on-grids` | 7 | 14 | queued |  |
+| 9 | Enlarge and reduce shapes informally on grid paper | `enlarge-on-grids` | 7 | 14 | building | Opus builder + Haiku QA (pilot) |
 | 10 | Relationships between quantities: ratio tables and proportional relationships | `ratio-tables-and-proportions` | 7 | 20 | live | 20 sub-goals, 47 voice lines; one leader runs close to 1.5 |
 | 11 | Percent increase and decrease: find and apply percent change | `percent-change` | 7 | 19 | live | 19 sub-goals, 42 voice lines |
 | 12 | Calculate a discount | `discounts` | 7 | 13 | live | 13 sub-goals, 44 voice lines |
-| 13 | Understand scale: drawings and actual lengths | `scale-basics` | 7 | 15 | queued |  |
-| 14 | Solve ratio problems with fractions and decimals | `ratio-problems` | 7 | 21 | queued |  |
+| 13 | Understand scale: drawings and actual lengths | `scale-basics` | 7 | 15 | building | Opus builder + Haiku QA (pilot) |
+| 14 | Solve ratio problems with fractions and decimals | `ratio-problems` | 7 | 21 | building | Opus builder + Haiku QA (pilot) |
 | 15 | Reflect shapes and points across a line | `reflections` | 8 | 23 | live | 23 sub-goals, 46 voice lines |
 | 16 | Rotate: quarter turn and half turn | `rotations` | 8 | 22 | live | 22 sub-goals, 41 voice lines |
 | 17 | Square roots of perfect squares | `perfect-squares` | 8 | 13 | live | 13 sub-goals, 42 voice lines |
 | 18 | Recognize a linear relationship | `linear-patterns` | 8 | 19 | live | 19 sub-goals, 48 voice lines |
-| 19 | Calculate sales tax, totals, and pre-tax prices | `sales-tax` | 7 | 19 | queued |  |
+| 19 | Calculate sales tax, totals, and pre-tax prices | `sales-tax` | 7 | 19 | building | Opus builder + Haiku QA (pilot) |
 | 20 | Calculate simple interest | `simple-interest` | 7 | 15 | queued |  |
 
 ## Wave 2
