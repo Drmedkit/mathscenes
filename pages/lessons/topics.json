@@ -785,7 +785,8 @@
   "subgoals": 22,
   "requires": [
    "secondary-t5-33-linear-functions-and-slope-intercept-form"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "us.statistics.two-way-tables-relative-frequencies-and-segmented-bar-graphs",

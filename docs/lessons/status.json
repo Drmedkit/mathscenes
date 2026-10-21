@@ -366,10 +366,10 @@
   "commit": "50aa6e9"
  },
  "scatter-plots": {
-  "state": "building",
-  "note": "wave 7: Opus builder, lead QA",
-  "at": "2026-10-21 16:51",
-  "commit": "8f2a4d0"
+  "state": "live",
+  "note": "22 sub-goals, 42 voice lines; VOICE PENDING",
+  "at": "2026-10-21 18:12",
+  "commit": "e6fb9e5"
  },
  "two-way-tables": {
   "state": "live",
