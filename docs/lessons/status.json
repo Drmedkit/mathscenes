@@ -304,5 +304,41 @@
   "note": "wave 5: Opus builder + Haiku QA",
   "at": "2026-10-21 14:23",
   "commit": "a7a0b5e"
+ },
+ "reading-maps": {
+  "state": "building",
+  "note": "wave 6: Opus builder + Haiku QA",
+  "at": "2026-10-21 15:49",
+  "commit": "ff33bf4"
+ },
+ "map-scale": {
+  "state": "building",
+  "note": "wave 6: Opus builder + Haiku QA",
+  "at": "2026-10-21 15:49",
+  "commit": "ff33bf4"
+ },
+ "multi-step-equations": {
+  "state": "building",
+  "note": "wave 6: Opus builder + Haiku QA",
+  "at": "2026-10-21 15:49",
+  "commit": "ff33bf4"
+ },
+ "parallel-lines-and-triangles": {
+  "state": "building",
+  "note": "wave 6: Opus builder + Haiku QA",
+  "at": "2026-10-21 15:49",
+  "commit": "ff33bf4"
+ },
+ "cylinders-cones-spheres": {
+  "state": "building",
+  "note": "wave 6: Opus builder + Haiku QA",
+  "at": "2026-10-21 15:49",
+  "commit": "ff33bf4"
+ },
+ "dilations-and-similarity": {
+  "state": "building",
+  "note": "wave 6: Opus builder + Haiku QA",
+  "at": "2026-10-21 15:49",
+  "commit": "ff33bf4"
  }
 }

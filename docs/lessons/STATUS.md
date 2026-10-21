@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 2, live 49, queued 12 (of 63)
+Totals: building 8, live 49, queued 6 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -75,8 +75,8 @@ Totals: building 2, live 49, queued 12 (of 63)
 | 8 | Choose a fraction, decimal, or percent form to calculate with, and justify it | `choose-the-form` | 7 | 16 | building | wave 5: Opus builder + Haiku QA |
 | 9 | Scale factor and area: the area is multiplied by k^2 | `scale-and-area` | 7 | 16 | live | 16 sub-goals; practice pictures added in review; VOICE PENDING |
 | 10 | Pythagorean theorem: introduction and use | `pythagoras-intro` | 8 | 16 | building | wave 5: Opus builder + Haiku QA |
-| 11 | Read a map: map key, scale, and estimating distance | `reading-maps` | 7 | 18 | queued |  |
-| 12 | Use a map scale (1 in = 1 mi, i.e. 1:63,360; 1:24,000) | `map-scale` | 7 | 18 | queued |  |
+| 11 | Read a map: map key, scale, and estimating distance | `reading-maps` | 7 | 18 | building | wave 6: Opus builder + Haiku QA |
+| 12 | Use a map scale (1 in = 1 mi, i.e. 1:63,360; 1:24,000) | `map-scale` | 7 | 18 | building | wave 6: Opus builder + Haiku QA |
 
 ## Wave 4
 
@@ -84,10 +84,10 @@ Totals: building 2, live 49, queued 12 (of 63)
 |---|---|---|---|---|---|---|
 | 1 | Area and perimeter of composite figures | `composite-figures` | 7 | 19 | live | 19 sub-goals, 46 voice lines; VOICE PENDING |
 | 2 | Composite area, volume, and surface area | `composite-area-volume` | 7 | 21 | live | 21 sub-goals, 42 voice lines; VOICE PENDING |
-| 3 | Angle relationships with parallel lines and triangles | `parallel-lines-and-triangles` | 8 | 25 | queued |  |
-| 4 | Volume of cylinders, cones, and spheres | `cylinders-cones-spheres` | 8 | 25 | queued |  |
-| 5 | Multi-step linear equations with rational coefficients | `multi-step-equations` | 8 | 22 | queued |  |
-| 6 | Dilations and similarity | `dilations-and-similarity` | 8 | 23 | queued |  |
+| 3 | Angle relationships with parallel lines and triangles | `parallel-lines-and-triangles` | 8 | 25 | building | wave 6: Opus builder + Haiku QA |
+| 4 | Volume of cylinders, cones, and spheres | `cylinders-cones-spheres` | 8 | 25 | building | wave 6: Opus builder + Haiku QA |
+| 5 | Multi-step linear equations with rational coefficients | `multi-step-equations` | 8 | 22 | building | wave 6: Opus builder + Haiku QA |
+| 6 | Dilations and similarity | `dilations-and-similarity` | 8 | 23 | building | wave 6: Opus builder + Haiku QA |
 | 7 | Pythagorean theorem | `pythagorean-theorem` | 8 | 22 | queued |  |
 | 8 | Proportional and linear relationships: slope, graphs, and equations | `slope-and-lines` | 8 | 27 | queued |  |
 | 9 | Systems of linear equations | `systems-of-equations` | 8 | 23 | queued |  |
