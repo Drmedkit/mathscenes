@@ -109,3 +109,21 @@ ol.plan li button { margin-top: 8px; }
 .meter .marks i { width: 12px; height: 12px; border-radius: 3px; background: var(--line); }
 .meter .marks i.ok { background: var(--s); } .meter .marks i.no { background: var(--wrong); }
 .callback { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-top: 12px; background: #1a1e3c; }
+
+/* header tools (voice switch) */
+#tools { margin-left: auto; display: flex; gap: 8px; }
+#tools button.voice { font-size: 14px; padding: 6px 12px; border-radius: 10px; }
+#tools button.voice[aria-pressed="true"] { border-color: var(--s); }
+
+/* practice: the parts of the topic */
+.sgmap { margin-top: 14px; }
+.sgmap ol { list-style: none; padding: 0; margin: 6px 0 0; display: grid; gap: 3px; font-size: 13.5px; color: var(--faint); }
+.sgmap li { display: flex; align-items: center; gap: 8px; }
+.sgmap li i { width: 10px; height: 10px; border-radius: 3px; background: var(--line); flex: none; }
+.sgmap li.some i { background: var(--faint); }
+.sgmap li.now { color: var(--text); } .sgmap li.now i { background: var(--pick); }
+.sgmap li.ok { color: var(--dim); } .sgmap li.ok i { background: var(--s); }
+.sgmap li.flag { color: var(--dim); } .sgmap li.flag i { background: var(--a); }
+
+/* the diagnosis log view (?log) */
+pre.log { background: #11142b; border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-size: 12px; max-height: 60vh; overflow: auto; white-space: pre-wrap; }

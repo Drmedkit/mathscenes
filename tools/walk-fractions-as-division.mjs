@@ -5,8 +5,8 @@ import puppeteer from 'puppeteer';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const base = process.argv[2] ?? 'http://localhost:5290/lessons/fractions-as-division.html';
-const out = process.argv[3] ?? 'out/lesson-walk';
+const base = process.argv[2] ?? 'http://localhost:5290/lessons/fractions-as-division.html?mute&fresh&seed=7';
+const out = process.argv[3] ?? 'out/walk-fractions-as-division';
 fs.mkdirSync(out, { recursive: true });
 const browser = await puppeteer.launch({ headless: true, args: ['--mute-audio', '--disable-renderer-backgrounding', '--disable-background-timer-throttling'] });
 const page = await browser.newPage();
@@ -61,8 +61,8 @@ await click('Each bar is cut into 5'); await sleep(9.5); await shot('prove-3');
 await click('Practice');
 // practice: answer right, but every third item wrong (to see feedback, the worked solution and the twin)
 await sleep(1.5);
-for (let i = 0; i < 14; i++) {
-  const it = await page.evaluate(() => { const x = window.__lesson.item(); return { fam: x.family, input: x.input, ans: x.answer, prompt: x.prompt }; });
+for (let i = 0; i < 40; i++) {
+  const it = await page.evaluate(() => { const x = window.__practiceItem; return { fam: x.family, input: x.input, ans: x.answer, prompt: x.prompt }; });
   const wrong = i % 3 === 1;
   if (it.input === 'frac') {
     const a = it.ans; const v = a.w * a.d + a.n;
@@ -75,12 +75,15 @@ for (let i = 0; i < 14; i++) {
     await page.evaluate(i => document.querySelectorAll('.panel .opts button')[i].click(), wrong ? (it.ans.i + 1) % 3 : it.ans.i);
   }
   await sleep(0.8);
-  if (i < 6 || wrong) await shot(`practice-${i + 1}-${it.fam}`);
+  if (i < 4 || (wrong && i < 24)) await shot(`practice-${i + 1}-${it.fam}`);
   await click('Check'); await sleep(wrong ? 5.5 : 0.6);
-  if (i < 6 || wrong) await shot(`practice-${i + 1}-${it.fam}-${wrong ? 'wrong' : 'right'}`);
+  if (i < 4 || (wrong && i < 24)) await shot(`practice-${i + 1}-${it.fam}-${wrong ? 'wrong' : 'right'}`);
   await click(wrong ? 'Try one like it' : 'Next');
   await sleep(1.4);
 }
 await shot('practice-end');
+const log = await page.evaluate(() => window.mathscenesLessons.log('fractions-as-division'));
+fs.writeFileSync(path.join(out, 'diagnosis-log.json'), JSON.stringify(log, null, 1));
+console.log(`diagnosis log: ${log.length} attempts, ${log.filter(a => a.mc).length} with a misconception`);
 console.log(errors.length ? `PAGE ERRORS:\n${errors.join('\n')}` : 'no page errors');
 await browser.close();

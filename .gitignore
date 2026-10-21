@@ -30,3 +30,6 @@ Thumbs.db
 
 # ...but the README images are part of the repo
 !docs/media/
+
+# lesson narration is product content (pages/lessons/<slug>/voice/*.mp3, tools/lesson-voice.py)
+!pages/lessons/*/voice/*.mp3

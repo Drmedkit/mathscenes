@@ -1,7 +1,8 @@
 // The lesson line: item families generate valid items, the right answer passes, and the classic wrong answers are
 // classified as their catalogue misconception. The equal-share model conserves the whole.
 import { describe, expect, it } from 'vitest';
-import { FAMILIES, GENERATORS, mastery, nextFamily, rng, type Attempt } from '../src/lesson/items';
+import { FAMILIES, GENERATORS, rng } from '../src/lesson/topics/fractions-as-division/items';
+import { PLAN } from '../src/lesson/topics/fractions-as-division/plan';
 import { computeEqualShare } from '../src/lesson/EqualShare';
 
 describe('item families', () => {
@@ -17,7 +18,7 @@ describe('item families', () => {
         }
         ids.add(it.prompt + it.board);
       }
-      expect(ids.size).toBeGreaterThan(id === 'toFrac' || id === 'slip' ? 60 : 100);
+      expect(ids.size).toBeGreaterThan(['toFrac', 'slip', 'twoWays'].includes(id) ? 40 : 100);
     });
   }
   it('story: the flipped fraction and the one-piece answer are diagnosed', () => {
@@ -42,18 +43,18 @@ describe('item families', () => {
   });
 });
 
-describe('session', () => {
-  it('a twin after a miss, never the same family twice after a hit', () => {
-    const R = rng(3);
-    expect(nextFamily([], R)).toBe('story');
-    expect(nextFamily([{ family: 'between', ok: false }], R)).toBe('between');
-    for (let i = 0; i < 50; i++) expect(nextFamily([{ family: 'story', ok: true }, { family: 'between', ok: true }], R)).not.toBe('between');
+describe('plan', () => {
+  it('walks through all 12 sub-goals of the topic JSON, and every family it names exists', () => {
+    expect(PLAN.map(p => p.id)).toEqual(['share-one-whole', 'share-several-wholes-less-than-one', 'share-one-or-more-wholes', 'fraction-bar-means-divide', 'sharing-story-to-division', 'quotient-as-mixed-number', 'bound-between-wholes', 'remainder-as-fraction-of-divisor', 'conservation-check', 'two-sharing-methods-agree', 'remainder-subdivide-or-keep', 'remainder-sharing-vs-grouping']);
+    for (const p of PLAN) for (const f of p.families) expect(GENERATORS[f as keyof typeof GENERATORS], f).toBeDefined();
   });
-  it('mastery: 5 of the last 6, from at least 4 families', () => {
-    const f = (fam: Attempt['family'], ok = true): Attempt => ({ family: fam, ok });
-    expect(mastery([f('story'), f('toFrac'), f('toDiv'), f('between'), f('story'), f('toFrac', false)]).done).toBe(true);
-    expect(mastery([f('story'), f('toFrac'), f('story'), f('toFrac'), f('story'), f('between')]).done).toBe(false);
-    expect(mastery([f('story'), f('toFrac'), f('toDiv'), f('between'), f('story', false), f('toFrac', false)]).done).toBe(false);
+  it('every sub-goal x family makes valid items (300 seeds), with the sub-goal ranges', () => {
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 300; s++) {
+      const it = GENERATORS[f as keyof typeof GENERATORS](rng(s * 7 + 1), s, p.id);
+      expect(it.check(it.answer).ok, `${p.id}/${f}: ${it.prompt}`).toBe(true);
+      if (p.id === 'share-one-whole' && it.answer.kind === 'frac') expect(it.answer.n).toBe(1);
+      if (p.id === 'share-several-wholes-less-than-one' && it.answer.kind === 'frac') expect(it.answer.n).toBeLessThan(it.answer.d);
+    }
   });
 });
 

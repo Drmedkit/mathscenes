@@ -2,83 +2,40 @@
 // wrong answer classified against the misconception catalogue (math-curriculum-essentials/misconceptions.json ids).
 //
 // A FAMILY is one deep structure (e.g. "a sharing story -> a/b with its unit"); its items vary the numbers, the
-// context, the order of the story and the wording. Families are what interleaving mixes and what mastery counts.
-// Pure: no DOM, no canvas. A seeded rng makes any session reproducible (?seed=).
-import { equalShareFits } from './shareLayout';
+// context, the order of the story and the wording. A generator gets the SUB-GOAL it practises (plan.ts) and uses
+// that sub-goal's number ranges from the topic JSON. Pure: no DOM, no canvas; a seeded rng makes sessions repeatable.
+import { equalShareFits } from '../../shareLayout';
+import { type Item, type Response, type Verdict, A, B, S, fr, fracValue, gcd, int, mixed, pick, rng, same, shuffle } from '../../runtime/item';
+export { fr, mixed, rng, fracValue, same };
+export type { Response, Verdict };
 
-export type FamilyId = 'story' | 'toFrac' | 'toDiv' | 'between' | 'remainder' | 'checkBack' | 'slip';
+export type FamilyId = 'story' | 'storyToDiv' | 'toFrac' | 'toDiv' | 'toMixed' | 'between' | 'remainder' | 'checkBack' | 'twoWays' | 'cutOrKeep' | 'groups' | 'slip';
 export const FAMILIES: readonly { id: FamilyId; name: string }[] = [
   { id: 'story', name: 'Sharing story' },
+  { id: 'storyToDiv', name: 'Story to division' },
   { id: 'toFrac', name: 'Division to fraction' },
   { id: 'toDiv', name: 'Fraction to division' },
+  { id: 'toMixed', name: 'As a mixed number' },
   { id: 'between', name: 'Between which wholes' },
   { id: 'remainder', name: 'Share the leftover' },
   { id: 'checkBack', name: 'Check it adds back' },
+  { id: 'twoWays', name: 'Two ways to share' },
+  { id: 'cutOrKeep', name: 'Cut it or keep it whole' },
+  { id: 'groups', name: 'What does the question ask?' },
   { id: 'slip', name: 'Spot the slip' },
 ];
+export const FAMILY_NAMES: Record<string, string> = Object.fromEntries(FAMILIES.map(f => [f.id, f.name]));
 
-export type Response =
-  | { kind: 'frac'; w: number; n: number; d: number }
-  | { kind: 'pair'; x: number; y: number }
-  | { kind: 'choice'; i: number }
-  | { kind: 'num'; v: number };
-
-export interface Verdict { ok: boolean; mc?: string; say: string }
 export interface Model { a: number; b: number; words: [string, string]; one: [string, string]; look: Look }
 export type Look = 'granola' | 'brownie' | 'ribbon';
-
-export interface Item {
-  id: string;
+/** an item of this topic: a runtime Item plus the pictures this page can draw */
+export interface ShareItem extends Item {
   family: FamilyId;
-  /** the question, HTML; amounts wrapped in <b class="a">, sharers in <b class="b"> */
-  prompt: string;
-  /** TeX shown big on the board (the notation of the question) */
-  board: string;
-  input: 'frac' | 'pair' | 'choice' | 'num';
-  /** unit word after the answer box ("of a bar", "ft") */
-  unit?: string;
-  choices?: string[];
-  /** for 'pair': the TeX around the two boxes, e.g. ['\\frac{8}{3} =', '\\div', ''] */
-  pairTex?: [string, string, string];
-  /** the picture of the situation (when the model can draw it) */
+  /** the picture of the situation (when the EqualShare model can draw it) */
   model?: Model;
   /** a measured amount drawn as a strip (rope, rice, trail mix) */
   strip?: { a: number; b: number; unit: string; sharers: string };
-  /** the worked solution, shown after a miss: HTML lines */
-  solution: string[];
-  /** one right response (tests, and "show me" in a review build) */
-  answer: Response;
-  check(r: Response): Verdict;
 }
-
-// ---------- rng ----------
-export function rng(seed: number): () => number {
-  let s = seed >>> 0;
-  return () => { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-}
-const int = (R: () => number, lo: number, hi: number) => lo + Math.floor(R() * (hi - lo + 1));
-const pick = <T>(R: () => number, xs: readonly T[]): T => xs[Math.floor(R() * xs.length)]!;
-function shuffle<T>(R: () => number, xs: T[]): T[] { for (let i = xs.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [xs[i], xs[j]] = [xs[j]!, xs[i]!]; } return xs; }
-
-// ---------- exact values ----------
-const gcd = (a: number, b: number): number => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a; };
-/** value of a fraction response as an exact pair [num, den] (den > 0), or null if not a number */
-export function fracValue(r: { w: number; n: number; d: number }): [number, number] | null {
-  if (!Number.isInteger(r.w) || !Number.isInteger(r.n) || !Number.isInteger(r.d) || r.d <= 0 || r.n < 0 || r.w < 0) return null;
-  return [r.w * r.d + r.n, r.d];
-}
-export const same = (p: [number, number], a: number, b: number): boolean => p[0] * b === a * p[1];
-
-// ---------- HTML helpers ----------
-export const fr = (n: number | string, d: number | string) => `<span class="fr"><span>${n}</span><span>${d}</span></span>`;
-export function mixed(a: number, b: number): string {
-  const w = Math.floor(a / b), r = a % b;
-  if (r === 0) return String(w);
-  return `${w ? w + '&#8202;' : ''}${fr(r, b)}`;
-}
-const A = (s: string | number) => `<b class="a">${s}</b>`;
-const B = (s: string | number) => `<b class="b">${s}</b>`;
-const S = (s: string) => `<b class="s">${s}</b>`;
 
 // ---------- contexts (no money; US units) ----------
 interface Ctx { thing: string; things: string; sharer: string; sharers: string; look: Look; measure?: string }
@@ -144,12 +101,17 @@ function shareSolution(a: number, b: number, unit: string): string[] {
 }
 
 // ---------- families ----------
-type Gen = (R: () => number, n: number) => Item;
+type Gen = (R: () => number, n: number, sg?: string) => ShareItem;
 
-const story: Gen = (R, n) => {
-  const measure = R() < 0.4;
+const story: Gen = (R, n, sg) => {
+  // sub-goal ranges (topic JSON 'cases'): one whole; several wholes, share < 1; share >= 1 incl. exact; else mixed
+  const objectsOnly = sg === 'share-one-whole' || sg === 'share-several-wholes-less-than-one' || sg === 'share-one-or-more-wholes';
+  const measure = !objectsOnly && R() < 0.4;
   let a: number, b: number;
-  do { b = int(R, 2, measure ? 8 : 6); a = int(R, measure ? 2 : 1, measure ? 3 * b : 2 * b); } while (a === b || a % b === 0 || (!measure && !equalShareFits(a, b)));
+  if (sg === 'share-one-whole') { a = 1; b = pick(R, [2, 3, 4, 6]); }
+  else if (sg === 'share-several-wholes-less-than-one') do { b = pick(R, [3, 4, 6]); a = int(R, 2, Math.min(5, b - 1)); } while (!equalShareFits(a, b));
+  else if (sg === 'share-one-or-more-wholes') do { b = pick(R, [2, 3, 4]); a = int(R, b, Math.min(8, 2 * b)); } while (!equalShareFits(a, b));
+  else do { b = int(R, 2, measure ? 8 : 6); a = int(R, measure ? 2 : 1, measure ? 3 * b : 2 * b); } while (a === b || a % b === 0 || (!measure && !equalShareFits(a, b)));
   if (!measure) {
     const c = pick(R, OBJECTS), peopleFirst = R() < 0.45;
     const things = a === 1 ? c.thing : c.things;
@@ -199,7 +161,7 @@ const toDiv: Gen = (R, n) => {
   do { b = int(R, 2, 9); a = int(R, 1, 30); } while (a === b);
   return {
     id: `toDiv-${n}`, family: 'toDiv', prompt: 'Which division does this fraction mean?', board: `\\frac{${a}}{${b}} = \\,?\\, \\div \\,?`, input: 'pair',
-    pairTex: [`\\frac{${a}}{${b}} =`, '\\div', ''],
+    pairLead: `${fr(a, b)} =`, pairOp: '÷',
     solution: [`The top number is shared, the bottom number is how many shares: ${fr(a, b)} = ${S(`${a} ÷ ${b}`)}.`],
     answer: { kind: 'pair', x: a, y: b },
     check: r => {
@@ -321,29 +283,142 @@ const slip: Gen = (R, n) => {
   };
 };
 
-export const GENERATORS: Record<FamilyId, Gen> = { story, toFrac, toDiv, between, remainder, checkBack, slip };
 
-// ---------- the session: blocked start, then interleaved; a twin after a miss; mastery from the last six ----------
-export interface Attempt { family: FamilyId; ok: boolean; mc?: string }
-export const MASTERY = { window: 6, need: 5, families: 4 } as const;
+// ---------- families for the remaining sub-goals ----------
 
-export function mastery(log: readonly Attempt[]): { done: boolean; lastOk: number; famOk: number; window: readonly Attempt[] } {
-  const w = log.slice(-MASTERY.window);
-  const lastOk = w.filter(x => x.ok).length;
-  const famOk = new Set(w.filter(x => x.ok).map(x => x.family)).size;
-  return { done: w.length >= MASTERY.window && lastOk >= MASTERY.need && famOk >= MASTERY.families, lastOk, famOk, window: w };
-}
+/** sharing-story-to-division: write the division for a story (people sometimes named first) */
+const storyToDiv: Gen = (R, n) => {
+  let a: number, b: number;
+  const objects = R() < 0.5;
+  // objects are drawn with the EqualShare model, measures with the strip: both show the situation, not the answer
+  if (objects) do { b = int(R, 2, 6); a = int(R, 2, 8); } while (a === b || !equalShareFits(a, b));
+  else do { b = int(R, 2, 10); a = int(R, 2, 30); } while (a === b);
+  const peopleFirst = objects && R() < 0.6;
+  const c = pick(R, OBJECTS), x = pick(R, MEASURES);
+  const m = objects ? { amt: `${a} ${c.things}`, who: `${b} ${c.sharers}` } : { amt: `${a} ${x.unit} ${x.what}`, who: `${b} ${x.sharers}` };
+  const prompt = peopleFirst
+    ? `${B(m.who)} share ${A(m.amt)} equally. Which division gives one share?`
+    : objects ? `${A(m.amt)} are shared equally by ${B(m.who)}. Which division gives one share?`
+      : `${A(m.amt)} ${x.verb} ${B(m.who)}. Which division gives one ${x.sharer}?`;
+  return {
+    id: `storyToDiv-${n}`, family: 'storyToDiv', prompt, board: `\\,?\\, \\div \\,?`, input: 'pair', pairLead: `one ${objects ? 'share' : x.sharer} =`, pairOp: '÷',
+    ...(objects ? { model: { a, b, words: [c.things, c.sharers] as [string, string], one: [c.thing, c.sharer] as [string, string], look: c.look } } : { strip: { a, b, unit: x.unit, sharers: x.sharers } }),
+    solution: [`The amount that is shared comes first: ${A(a)}. The number of shares comes second: ${B(b)}.`, `One share = ${A(a)} ÷ ${B(b)} = ${S(fr(a, b))}.`],
+    answer: { kind: 'pair', x: a, y: b },
+    check: r => {
+      if (r.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
+      if (r.x === a && r.y === b) return { ok: true, say: `Yes: ${a} ÷ ${b}, and that is ${fr(a, b)} each.` };
+      if (r.x === b && r.y === a) return {
+        ok: false, mc: peopleFirst ? 'mc.reasoning-language.numbers-in-reading-order' : 'mc.fraction-ops.larger-number-always-dividend',
+        say: peopleFirst ? `The story names the ${B(m.who.split(' ').slice(1).join(' '))} first, but they are the shares, not what is shared. The amount goes first: ${a} ÷ ${b}.`
+          : `${b} ÷ ${a} would share ${b} among ${a}. Here ${A(m.amt)} are shared: ${a} ÷ ${b}.`,
+      };
+      return { ok: false, say: `What is shared ÷ how many share it: ${a} ÷ ${b}.` };
+    },
+  };
+};
 
-/** the next family: a twin after a miss, two blocked 'story' items first, then never the same family twice in a row,
- *  preferring the families with the fewest correct answers so far */
-export function nextFamily(log: readonly Attempt[], R: () => number): FamilyId {
-  const last = log[log.length - 1];
-  if (last && !last.ok) return last.family;
-  if (log.length < 2) return 'story';
-  const okCount = (f: FamilyId) => log.filter(x => x.family === f && x.ok).length;
-  const cands = FAMILIES.map(f => f.id).filter(f => f !== last?.family);
-  const min = Math.min(...cands.map(okCount));
-  const low = cands.filter(f => okCount(f) <= min + 0);
-  return pick(R, low);
-}
-export function makeItem(f: FamilyId, R: () => number, n: number): Item { return GENERATORS[f](R, n); }
+/** quotient-as-mixed-number: write a/b > 1 as a whole number or a mixed number */
+const toMixed: Gen = (R, n) => {
+  let a: number, b: number;
+  do { b = pick(R, [2, 3, 4, 5, 6, 8, 9]); a = int(R, b + 1, Math.min(60, 10 * b - 1)); } while (a > 30 && R() < 0.5);
+  const q = Math.floor(a / b), rem = a % b;
+  return {
+    id: `toMixed-${n}`, family: 'toMixed', prompt: rem ? 'Write the share as a mixed number.' : 'Write the share as a whole number.',
+    board: `${a} \\div ${b} = \\frac{${a}}{${b}} = \\,?`, input: 'frac',
+    solution: [`${b} × ${q} = ${b * q}, so ${q} whole${q === 1 ? '' : 's'} use ${b * q} of the ${a} ${fr(1, b)}-pieces.`, rem ? `${rem} piece${rem === 1 ? '' : 's'} are left: ${fr(rem, b)}. So ${fr(a, b)} = ${S(mixed(a, b))}.` : `Nothing is left: ${fr(a, b)} = ${S(String(q))}.`],
+    answer: { kind: 'frac', w: q, n: rem, d: rem ? b : 1 },
+    check: r => {
+      if (r.kind !== 'frac') return { ok: false, say: 'Type a mixed number.' };
+      const v = fracValue(r);
+      if (!v) return { ok: false, say: 'Fill in whole numbers; the bottom box cannot be 0.' };
+      if (same(v, a, b)) {
+        if (r.w === 0 && r.n > r.d) return { ok: false, mc: 'mc.fractions-concept.mixed-number-form-unfinished', say: `Same value, but still an improper fraction. Group ${b} pieces into each whole: ${mixed(a, b)}.` };
+        if (r.n >= r.d && r.n > 0) return { ok: false, mc: 'mc.fractions-concept.mixed-number-form-unfinished', say: `Same value, but the fraction part is a whole or more. Move whole ones out: ${mixed(a, b)}.` };
+        return { ok: true, say: `Yes: ${fr(a, b)} = ${mixed(a, b)}.` };
+      }
+      if (rem && r.w === q && r.n === rem && r.d === a) return { ok: false, mc: 'mc.fractions-concept.remainder-misplaced-in-fraction-part', say: `The leftover pieces are ${fr(1, b)}s, so ${rem} of them is ${fr(rem, b)}, not ${fr(rem, a)}: ${mixed(a, b)}.` };
+      if (rem && r.w === q && r.n === 0) return { ok: false, mc: 'mc.mul-div.drops-remainder', say: `${q} wholes, and ${rem} pieces are still left: ${mixed(a, b)}.` };
+      return { ok: false, say: `How many wholes fit? ${b} × ${q} = ${b * q}. ${fr(a, b)} = ${mixed(a, b)}.` };
+    },
+  };
+};
+
+/** two-sharing-methods-agree: "cut everything" a/b and "wholes first" q r/b are the same share */
+const twoWays: Gen = (R, n) => {
+  let a: number, b: number;
+  do { b = int(R, 2, 5); a = int(R, b + 1, 20); } while (a % b === 0);
+  const q = Math.floor(a / b), rem = a % b, c = pick(R, OBJECTS);
+  const opts = shuffle(R, [
+    { t: `The same: ${a} pieces of ${fr(1, b)} make ${q} whole and ${fr(rem, b)}.`, ok: true },
+    { t: `Cutting everything gives more, because there are more pieces.`, ok: false, mc: 'mc.fractions-concept.numerator-counted-as-whole-units' },
+    { t: `Wholes first gives more, because whole ${c.things} are bigger.`, ok: false, mc: 'mc.fractions-concept.different-forms-different-numbers' },
+    { t: `They can't be compared: one is a fraction and one is a mixed number.`, ok: false, mc: 'mc.fractions-concept.different-forms-different-numbers' },
+  ]);
+  return {
+    id: `twoWays-${n}`, family: 'twoWays',
+    prompt: `${A(`${a} ${c.things}`)} for ${B(`${b} ${c.sharers}`)}. Kai cuts every one into ${b} and deals the pieces: ${fr(a, b)} each. Lee gives out whole ones first, then cuts the rest: ${mixed(a, b)} each. Who gives more?`,
+    board: `\\frac{${a}}{${b}} \\ \\text{or}\\ ${q}\\tfrac{${rem}}{${b}}\\,?`, input: 'choice', choices: opts.map(o => o.t),
+    solution: [`Kai's ${a} pieces of ${fr(1, b)}: every ${b} of them make one whole, so ${q} wholes and ${rem} pieces.`, `That is exactly Lee's ${mixed(a, b)}. Two ways, ${S('the same share')}.`],
+    answer: { kind: 'choice', i: opts.findIndex(o => o.ok) },
+    check: r => {
+      const o = r.kind === 'choice' ? opts[r.i] : undefined;
+      if (!o) return { ok: false, say: 'Pick one.' };
+      return o.ok ? { ok: true, say: `Right: ${fr(a, b)} = ${mixed(a, b)}. The same amount, written two ways.` } : { ok: false, mc: o.mc, say: `Count it: ${a} pieces of ${fr(1, b)} = ${q} whole and ${rem} more pieces = ${mixed(a, b)}. The same share.` };
+    },
+  };
+};
+
+/** remainder-subdivide-or-keep: objects that must stay whole -> q each and r left over */
+const KEEP = [{ things: 'trading cards', who: 'kids' }, { things: 'marbles', who: 'friends' }, { things: 'stickers', who: 'kids' }, { things: 'balloons', who: 'tables' }];
+const cutOrKeep: Gen = (R, n) => {
+  let a: number, b: number;
+  do { b = int(R, 2, 8); a = int(R, b + 1, 40); } while (a % b === 0);
+  const q = Math.floor(a / b), rem = a % b, k = pick(R, KEEP);
+  return {
+    id: `cutOrKeep-${n}`, family: 'cutOrKeep',
+    prompt: `${A(`${a} ${k.things}`)} are shared equally by ${B(`${b} ${k.who}`)}. They can't be cut. How many does each get, and how many are left over?`,
+    board: `${a} = ${b} \\times \\,?\\, + \\,?`, input: 'pair', pairLead: 'each gets', pairOp: 'left over',
+    solution: [`${b} × ${q} = ${b * q}: each gets ${S(String(q))}.`, `${a} − ${b * q} = ${rem} ${k.things} are left over; they stay whole. Check: ${b} × ${q} + ${rem} = ${a}.`],
+    answer: { kind: 'pair', x: q, y: rem },
+    check: r => {
+      if (r.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
+      if (r.x === q && r.y === rem) return { ok: true, say: `Yes: ${b} × ${q} + ${rem} = ${a}. Nothing lost.` };
+      if (r.x === q && r.y === 0) return { ok: false, mc: 'mc.mul-div.excludes-leftovers-from-total-check', say: `${b} × ${q} = ${b * q}, not ${a}: ${rem} are left over and must be counted.` };
+      if (r.x === q + rem) return { ok: false, mc: 'mc.fractions-concept.allocates-entire-remainder-to-each-sharer', say: `If each got ${q + rem}, that would need ${b * (q + rem)}. Each gets ${q}; ${rem} stay over.` };
+      if (r.x * b + r.y === a && r.y >= b) return { ok: false, say: `${r.y} left over is enough to give everyone one more. Each gets ${q}, ${rem} left over.` };
+      return { ok: false, say: `How many times does ${b} fit in ${a}? ${b} × ${q} = ${b * q}, so ${q} each and ${rem} left over.` };
+    },
+  };
+};
+
+/** remainder-sharing-vs-grouping: the same division, the answer form the question asks for */
+const groups: Gen = (R, n) => {
+  let a: number, b: number;
+  do { b = int(R, 3, 9); a = int(R, b + 1, 9 * b); } while (a % b === 0);
+  const q = Math.floor(a / b), rem = a % b;
+  const ctx = pick(R, [
+    { what: 'eggs', box: 'cartons', ask: 'full', q: `How many cartons can be filled completely?`, ans: q },
+    { what: 'eggs', box: 'cartons', ask: 'need', q: `How many cartons are needed to hold all the eggs?`, ans: q + 1 },
+    { what: 'eggs', box: 'cartons', ask: 'left', q: `How many eggs are in the carton that is not full?`, ans: rem },
+    { what: 'students', box: 'vans', ask: 'need', q: `How many vans are needed to take every student?`, ans: q + 1 },
+    { what: 'cookies', box: 'boxes', ask: 'full', q: `How many boxes can be filled completely?`, ans: q },
+  ]);
+  const hold = ctx.box === 'vans' ? `Each van holds ${b} students.` : `Each ${ctx.box.slice(0, -1).replace('boxe', 'box')} holds ${b}.`;
+  return {
+    id: `groups-${n}`, family: 'groups',
+    prompt: `${A(`${a} ${ctx.what}`)}. ${hold} ${ctx.q}`, board: `${a} \\div ${b} = ${q}\\ \\text{R}\\ ${rem}`, input: 'num', unit: ctx.ask === 'left' ? ctx.what : ctx.box,
+    solution: [`${a} = ${b} × ${q} + ${rem}: ${q} full, ${rem} left.`, ctx.ask === 'full' ? `Full ones: ${S(String(q))}.` : ctx.ask === 'need' ? `The ${rem} left still need a place: ${q} + 1 = ${S(String(q + 1))}.` : `The not-full one holds the ${S(String(rem))} left over.`],
+    answer: { kind: 'num', v: ctx.ans },
+    check: r => {
+      if (r.kind !== 'num' || !Number.isFinite(r.v)) return { ok: false, say: 'Type a whole number.' };
+      if (r.v === ctx.ans) return { ok: true, say: `Yes: ${a} = ${b} × ${q} + ${rem}, and the question asks for ${ctx.ask === 'full' ? 'the full ones' : ctx.ask === 'need' ? 'enough for everything' : 'the leftover'}.` };
+      if (ctx.ask === 'need' && r.v === q) return { ok: false, mc: 'mc.mul-div.drops-remainder', say: `With ${q} there are still ${rem} ${ctx.what} with no place. You need one more: ${q + 1}.` };
+      if (ctx.ask === 'full' && r.v === q + 1) return { ok: false, mc: 'mc.mul-div.answer-form-from-fixed-context-category', say: `The last one only gets ${rem}, so it is not full. Full: ${q}.` };
+      return { ok: false, say: `${a} = ${b} × ${q} + ${rem}. Read what the question asks: ${ctx.ans}.` };
+    },
+  };
+};
+
+export const GENERATORS: Record<FamilyId, Gen> = { story, storyToDiv, toFrac, toDiv, toMixed, between, remainder, checkBack, twoWays, cutOrKeep, groups, slip };
+void gcd; void rng;

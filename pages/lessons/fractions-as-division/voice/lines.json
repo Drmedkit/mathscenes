@@ -1,0 +1,20 @@
+{
+  "q.intro": { "text": "Three granola bars are shared equally by four friends. Everyone gets the same amount, and nothing is left over. How much of a bar does each friend get? Pick an answer, and say how sure you are." },
+  "e.intro": { "text": "Let's work it out, step by step. Press each step, and watch the picture first." },
+  "e.step0": { "text": "Each piece is one fourth of a bar: one bar, shared by four." },
+  "e.step1": { "text": "Every friend now has one piece from each of the three bars." },
+  "e.step2": { "text": "One friend has three pieces of one fourth. The dashed outline is one whole bar, and the pieces fill three fourths of it." },
+  "e.step3": { "text": "Three divided by four is three fourths. The amount that is shared goes on top. The number of friends goes underneath." },
+  "e.why": { "text": "Quick check. Why is four the bottom number?" },
+  "t.intro": { "text": "Now five granola bars are shared by three friends. I'll do the first two steps. Then it's your turn." },
+  "t.count": { "text": "Look at one friend's tray. How much of a bar is that?" },
+  "t.write": { "text": "Now write it as one division. Tap the chips to fill the boxes." },
+  "t.whole": { "text": "Is five thirds of a bar more, or less, than one whole bar?" },
+  "t.done": { "text": "Five thirds is one whole bar and two thirds of another. A share can be more than one." },
+  "p.intro": { "text": "Jordan shares two granola bars among five friends, and writes: two divided by five is five halves. Is Jordan right?" },
+  "p.build": { "text": "Prove it. Fill each because with the reason that makes the line true." },
+  "p.c1": { "text": "Right. There are fewer bars than friends, so each friend gets less than one bar." },
+  "p.c2": { "text": "And five halves is two and a half bars. That's more than all the bars there are, so Jordan's answer can't be right." },
+  "p.c3": { "text": "Each bar is cut into five pieces, and each friend takes one piece from each bar: two fifths." },
+  "p.done": { "text": "That's a proof. Three claims, each with its reason, and the picture backs every one." }
+}
