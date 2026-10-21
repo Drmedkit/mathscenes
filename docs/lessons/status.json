@@ -276,10 +276,10 @@
   "commit": "639ec68"
  },
  "percents-and-ratios": {
-  "state": "building",
-  "note": "wave 5: Opus builder + Haiku QA",
-  "at": "2026-10-21 14:23",
-  "commit": "a7a0b5e"
+  "state": "live",
+  "note": "14 sub-goals; 35 families; several practice items slate-only (polish later); VOICE PENDING",
+  "at": "2026-10-21 15:49",
+  "commit": "364ae1b"
  },
  "scale-calculations": {
   "state": "live",

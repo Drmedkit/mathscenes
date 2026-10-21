@@ -415,7 +415,8 @@
   "subgoals": 14,
   "requires": [
    "primary.ratios.calculate-percentage-change"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "primary.ratios.find-the-original-amount-after-a-percent-change",
