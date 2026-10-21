@@ -1,0 +1,21 @@
+{
+  "q.intro": { "text": "A tray holds twelve cookies. Maya eats three fourths of them. How many cookies does Maya eat? Pick an answer, and say how sure you are." },
+  "e.intro": { "text": "Let's work it out, step by step. Press each step, and watch the picture first." },
+  "e.step0": { "text": "The whole is all twelve cookies. The tape under them is the same twelve." },
+  "e.step1": { "text": "Four equal groups. Twelve divided by four is three in each group. Each part of the tape is three too." },
+  "e.step2": { "text": "Three fourths means three of the four groups. Three groups of three is nine cookies." },
+  "e.step3": { "text": "Three fourths of twelve is twelve divided by four, times three. That is nine. Divide by the bottom number, then multiply by the top." },
+  "e.why": { "text": "Quick check. Why do we divide by four, not by three?" },
+  "t.intro": { "text": "Leo has a fifteen foot ribbon. He cuts off two thirds of it. The first two steps are done for you." },
+  "t.share": { "text": "How long is one of the three equal parts?" },
+  "t.take": { "text": "Leo cuts off two thirds: two of those parts. How long is that?" },
+  "t.write": { "text": "Which expression is what you just did?" },
+  "t.more": { "text": "What about four thirds of the ribbon? Is it more or less than the whole fifteen feet?" },
+  "t.done": { "text": "Four thirds of fifteen feet is four times five, twenty feet. That is more than the whole. A fraction of something can be more than all of it." },
+  "p.intro": { "text": "Riley has a twenty-eight foot rope, and says three fourths of it is eighteen feet. Is Riley right?" },
+  "p.build": { "text": "Now prove it. Fill each because with the reason that makes the line true." },
+  "p.c1": { "text": "If Riley is right, one share would be six feet, because eighteen is three equal shares." },
+  "p.c2": { "text": "Then the whole rope would be twenty-four feet, not twenty-eight, because the whole is four shares." },
+  "p.c3": { "text": "So three fourths of twenty-eight feet is twenty-one feet. Twenty-eight divided by four is seven, and three shares are twenty-one." },
+  "p.done": { "text": "That's a proof: three claims, each with its reason, and the picture backs every one. Working backward has to rebuild the whole." }
+}
