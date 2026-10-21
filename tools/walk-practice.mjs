@@ -84,7 +84,7 @@ try {
     if (st.mastered) break;
     const nx = await page.evaluate(() => { const b = [...document.querySelectorAll('.panel button.go')].find(x => /Next|Try one like it/.test(x.textContent)); if (b) { b.click(); return true; } return false; });
     if (!nx) { errors.push(`item ${i + 1}: no Next button`); break; }
-    await sleep(1.2);
+    await sleep(2.5);   // let the next item's picture finish drawing before the next screenshot
   }
   const log = await page.evaluate(s => window.mathscenesLessons?.log(s) ?? [], slug);
   fs.writeFileSync(path.join(out, 'log.json'), JSON.stringify(log, null, 1));
