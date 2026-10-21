@@ -306,10 +306,10 @@
   "commit": "e4c24ae"
  },
  "reading-maps": {
-  "state": "building",
-  "note": "wave 6: Opus builder + Haiku QA",
-  "at": "2026-10-21 15:49",
-  "commit": "ff33bf4"
+  "state": "live",
+  "note": "18 sub-goals, 37 voice lines; ruler maps still small (polish later); VOICE PENDING",
+  "at": "2026-10-21 17:10",
+  "commit": "3250956"
  },
  "map-scale": {
   "state": "live",

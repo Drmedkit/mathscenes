@@ -609,7 +609,8 @@
   "subgoals": 18,
   "requires": [
    "primary.ratios.scale-drawing-reality-calculations"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "primary.ratios.use-map-scale",
