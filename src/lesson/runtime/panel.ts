@@ -52,11 +52,14 @@ export function numInput(unit: string, onEnter: () => void): Input {
   const i = numBox('', 'answer', onEnter);
   return { node: h('div', { class: 'ans' }, i, h('span', { class: 'unit' }, unit)), read: () => (i.value.trim() === '' ? null : { kind: 'num', v: num(i) }), focus: () => i.focus() };
 }
-export function pairInput(leadHtml: string, op: string, onEnter: () => void): Input {
+/** two number boxes: lead [x] op [y] tail (op and tail may hold HTML, e.g. "x +" and ")") */
+export function pairInput(leadHtml: string, op: string, onEnter: () => void, tailHtml = ''): Input {
   const x = numBox('', 'first number', onEnter), y = numBox('', 'second number', onEnter);
   const lead = h('span', { class: 'op' }); lead.innerHTML = leadHtml;
+  const mid = h('span', { class: 'op' }); mid.innerHTML = op;
+  const tail = h('span', { class: 'op' }); tail.innerHTML = tailHtml;
   return {
-    node: h('div', { class: 'ans' }, lead, x, h('span', { class: 'op' }, op), y),
+    node: h('div', { class: 'ans' }, lead, x, mid, y, ...(tailHtml ? [tail] : [])),
     read: () => (x.value.trim() === '' || y.value.trim() === '' ? null : { kind: 'pair', x: num(x), y: num(y) }),
     focus: () => x.focus(),
   };

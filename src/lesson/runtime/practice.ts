@@ -32,6 +32,7 @@ export function startPractice(o: PracticeOpts): void {
   const recs: Rec[] = [];
   let walk = 0, n = 0, lastFamily = '', twin: { subgoal: string; family: string } | null = null;
   const flagged = new Set<string>();
+  let mapOpen = false;
   const okBy = (sg: string) => recs.filter(r => r.subgoal === sg && r.ok).length;
   const triedBy = (sg: string) => recs.filter(r => r.subgoal === sg).length;
   const allFamilies = [...new Set(o.plan.flatMap(p => p.families))];
@@ -67,10 +68,14 @@ export function startPractice(o: PracticeOpts): void {
     return it;
   }
   function drawMap(current: string): void {
-    map.replaceChildren(h('div', { class: 'label' }, 'Parts of this topic'), h('ol', {}, ...o.plan.map((p, i) => {
-      const st = okBy(p.id) >= MASTERY.perSubgoal ? 'ok' : flagged.has(p.id) ? 'flag' : p.id === current ? 'now' : triedBy(p.id) ? 'some' : '';
-      return h('li', { class: st, title: p.id }, h('i'), `${i + 1}. ${p.title}`);
-    })));
+    // a compact strip (one square per part) that always fits, and the full list behind a disclosure
+    const st = (p: SubgoalPlan) => okBy(p.id) >= MASTERY.perSubgoal ? 'ok' : flagged.has(p.id) ? 'flag' : p.id === current ? 'now' : triedBy(p.id) ? 'some' : '';
+    const strip = h('div', { class: 'sgstrip', role: 'img', 'aria-label': `${o.plan.filter(p => st(p) === 'ok').length} of ${o.plan.length} parts done` },
+      ...o.plan.map((p, i) => h('i', { class: st(p), title: `${i + 1}. ${p.title}` })));
+    const list = h('ol', {}, ...o.plan.map((p, i) => h('li', { class: st(p), title: p.id }, h('i'), `${i + 1}. ${p.title}`)));
+    const det = h('details', mapOpen ? { open: '' } : {}, h('summary', {}, 'Parts of this topic'), list);
+    det.addEventListener('toggle', () => { mapOpen = det.open; });
+    map.replaceChildren(strip, det);
   }
   function drawMeter(): void {
     const ms = mastery(), inWalk = walk < o.plan.length;
@@ -96,7 +101,7 @@ export function startPractice(o: PracticeOpts): void {
     let input: Input;
     if (item.input === 'frac') input = fracInput(item.unit ?? '', () => submit());
     else if (item.input === 'num') input = numInput(item.unit ?? '', () => submit());
-    else if (item.input === 'pair') input = pairInput(item.pairLead ?? '', item.pairOp ?? '÷', () => submit());
+    else if (item.input === 'pair') input = pairInput(item.pairLead ?? '', item.pairOp ?? '÷', () => submit(), item.pairTail ?? '');
     else input = choiceInput(item.choices ?? []);
     const t0 = performance.now();
     let done = false;

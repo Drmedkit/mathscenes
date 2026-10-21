@@ -25,7 +25,7 @@ export interface Item {
   unit?: string;
   choices?: string[];
   /** for 'pair': the HTML before the boxes and the operator between them */
-  pairLead?: string; pairOp?: string;
+  pairLead?: string; pairOp?: string; pairTail?: string;
   /** a picture the topic page knows how to draw (free-form per topic) */
   picture?: Record<string, unknown>;
   /** the worked solution shown after a miss, HTML lines */
