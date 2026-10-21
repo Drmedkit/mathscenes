@@ -1,0 +1,122 @@
+{
+ "q.intro": {
+  "text": "A right triangle on grid paper: its legs are three inches and four inches, and each grid square is one inch. How long is the slanted side? Pick an answer and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the picture moves first, then the notation."
+ },
+ "e.s0": {
+  "text": "The square corner is the right angle. The side across from it is the hypotenuse, c. The two sides that make the right angle are the legs, a and b."
+ },
+ "e.s1": {
+  "text": "A square on the three inch leg covers three times three, nine square inches. On the four inch leg: four times four, sixteen. That is what a squared and b squared mean: areas of squares."
+ },
+ "e.s2": {
+  "text": "The square on c is tilted, so surround it: the upright square around it is seven by seven, forty-nine. Take away the four corner triangles of six each: c squared is forty-nine minus twenty-four, twenty-five."
+ },
+ "e.s3": {
+  "text": "Nine plus sixteen is twenty-five: the two leg squares together cover the hypotenuse square exactly. So c is the square root of twenty-five: five inches."
+ },
+ "e.rule": {
+  "text": "It works for every right triangle: a squared plus b squared equals c squared. This is the Pythagorean theorem."
+ },
+ "e.why": {
+  "text": "Quick check: why is the slanted side five inches, and not seven?"
+ },
+ "e.why-ok": {
+  "text": "Yes. The side of a square is the number that, times itself, makes its area: five times five is twenty-five."
+ },
+ "e.why-add": {
+  "text": "Walking along both legs is three plus four, seven inches. The slanted side cuts across the corner, so it is shorter: five inches."
+ },
+ "e.why-area": {
+  "text": "Twenty-five is the area of the square, in square inches. The side is the number that times itself makes twenty-five: five."
+ },
+ "t.intro": {
+  "text": "Your turn: legs of six inches and eight inches. The first two steps are done for you."
+ },
+ "t.area": {
+  "text": "What is the area of the square on the hypotenuse, c squared?"
+ },
+ "t.area-ok": {
+  "text": "Yes: thirty-six plus sixty-four is one hundred square inches. The two leg squares fill the hypotenuse square."
+ },
+ "t.area-add": {
+  "text": "Fourteen adds the side lengths, six plus eight. The theorem adds the areas of the squares: thirty-six plus sixty-four."
+ },
+ "t.area-sub": {
+  "text": "The square on the hypotenuse is the biggest one: the two leg squares together cover it. Thirty-six plus sixty-four is what?"
+ },
+ "t.area-side": {
+  "text": "Ten inches is a side. The question asks for the area of the square on the hypotenuse."
+ },
+ "t.area-no": {
+  "text": "The two leg squares together cover the hypotenuse square. Add their areas."
+ },
+ "t.empty": {
+  "text": "Type a number first."
+ },
+ "t.c": {
+  "text": "Now the side: how long is the hypotenuse, c?"
+ },
+ "t.c-ok": {
+  "text": "Yes: ten times ten is one hundred, so c is the square root of one hundred, ten inches."
+ },
+ "t.c-area": {
+  "text": "One hundred is the area of the square. The side is the number that times itself makes one hundred."
+ },
+ "t.c-half": {
+  "text": "Fifty is half of one hundred. A square root is not half: which number times itself makes one hundred?"
+ },
+ "t.c-add": {
+  "text": "Six plus eight walks along both legs. The hypotenuse cuts across the corner, so it is shorter."
+ },
+ "t.c-no": {
+  "text": "Which number times itself makes one hundred?"
+ },
+ "t.cb-right": {
+  "text": "At the start you picked five inches, and you were right. Now you can show why: the two leg squares add up to the hypotenuse square."
+ },
+ "t.cb-add": {
+  "text": "At the start you picked seven inches. That adds the legs, but the slanted side cuts across the corner. Add the squares, not the sides."
+ },
+ "t.cb-count": {
+  "text": "At the start you picked six inches, maybe by counting the grid squares the slanted side crosses. Most of them it only clips. The areas tell the truth: five inches."
+ },
+ "t.cb-none": {
+  "text": "Square the legs, add, take the square root. That is how every hypotenuse is found."
+ },
+ "p.intro": {
+  "text": "Sam checked two right triangles, three four five and six eight ten: both work. Sam says: so a squared plus b squared equals c squared is true for every right triangle. Is Sam’s check a proof?"
+ },
+ "p.yes": {
+  "text": "Two examples can’t cover every right triangle. Here is an argument that can. Fill each because with the reason that makes the line true."
+ },
+ "p.build": {
+  "text": "Right: examples are not a proof. Here is an argument that is. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Right. Four equal sides and four right angles: the middle is a square, c by c."
+ },
+ "p.c2": {
+  "text": "Right. The triangles slide into two rectangles, a by b. Uncovered: a square on a and a square on b."
+ },
+ "p.c3": {
+  "text": "Right. Same big square, same four triangles, so the same area is uncovered: c squared equals a squared plus b squared."
+ },
+ "p.no-looks": {
+  "text": "Looks can fool you. The reason is the angles: the two sharp angles of a right triangle add to ninety degrees, so each corner is one hundred eighty minus ninety, ninety degrees."
+ },
+ "p.no-ex": {
+  "text": "Examples are what Sam had. This argument never uses particular numbers, so it works for any right triangle."
+ },
+ "p.no-area": {
+  "text": "a squared and b squared are areas of squares on the legs, not the area of the triangle."
+ },
+ "p.no-other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof: it never used particular numbers, so it holds for every right triangle. And it needs the right angle: the ninety degree corners made the middle a square."
+ }
+}
