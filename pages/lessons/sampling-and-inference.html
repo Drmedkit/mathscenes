@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sampling and Inference</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* conclusion cards: whole sentences, one per row */
+    .cards.words { grid-template-columns: 1fr; }
+    .cards.words button { font-size: 16px; line-height: 1.4; text-align: left; align-items: flex-start; padding: 12px 14px; }
+    /* a biased method (the online poll) is lavender until the proof names it */
+    b.p { color: var(--pick); font-weight: 650; }
+    .panel .ans input { width: 96px; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Sampling and comparative inferences</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The roster, the dot plots of samples and sample means, and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./sampling-and-inference.ts"></script>
+</body>
+</html>
