@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quarter and Half Turns</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* candidate dots: four in a row */
+    .opts.dots { grid-template-columns: repeat(4, 1fr); }
+    .opts.dots button { text-align: center; }
+    #cv { cursor: pointer; }
+    b.p { color: var(--pick); font-weight: 650; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Rotate: quarter turn and half turn</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The dot paper with the turning figure, and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./rotations.ts"></script>
+</body>
+</html>
