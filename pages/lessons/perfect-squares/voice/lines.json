@@ -1,0 +1,128 @@
+{
+ "q.intro": {
+  "text": "A square patio is covered with sixty-four square tiles, each one foot on a side. Its area is sixty-four square feet."
+ },
+ "q.ask": {
+  "text": "How long is one side of the patio?"
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the picture moves first, then the notation."
+ },
+ "e.s1": {
+  "text": "The sixty-four tiles fit exactly in a square: no tile left over, no gap."
+ },
+ "e.s2": {
+  "text": "Count the tiles along the top edge: eight. Each tile is one foot, so one side is eight feet."
+ },
+ "e.s3": {
+  "text": "Check by squaring: eight rows of eight tiles is eight times eight, sixty-four. The area comes back."
+ },
+ "e.s4": {
+  "text": "The square root of sixty-four is eight. The square root of the area is the side. The root sign asks: which number times itself makes sixty-four?"
+ },
+ "e.why": {
+  "text": "Quick check: why is the side eight feet?"
+ },
+ "e.w-ok": {
+  "text": "Yes. Squaring the side gives back the area, and that is exactly what a square root means."
+ },
+ "e.w-half": {
+  "text": "Halving three times lands on eight here by luck. For thirty-six it gives four and a half, but the side is six, because six times six is thirty-six. The real reason is eight times eight is sixty-four."
+ },
+ "e.w-perim": {
+  "text": "The four sides add up to eight plus eight plus eight plus eight, thirty-two feet: that is the distance around. The sixty-four counts the tiles inside: eight rows of eight."
+ },
+ "t.intro": {
+  "text": "A bigger square patio has an area of one hundred forty-four square feet. The tiles are laid for you. The rest is your turn."
+ },
+ "t.count": {
+  "text": "Count the tiles along the top edge. How long is one side?"
+ },
+ "t.fill": {
+  "text": "Type a number in the box first."
+ },
+ "t.c-ok": {
+  "text": "Yes: twelve tiles along the edge, so one side is twelve feet."
+ },
+ "t.c-half": {
+  "text": "Seventy-two is half of one hundred forty-four. Count the tiles along the top edge instead."
+ },
+ "t.c-perim": {
+  "text": "Thirty-six is one hundred forty-four shared by four sides, as if it were the distance around. But one hundred forty-four counts the tiles inside. Count the tiles along one edge."
+ },
+ "t.c-other": {
+  "text": "Count the tiles along the top edge, one by one."
+ },
+ "t.check": {
+  "text": "Now check by squaring. How many tiles do twelve rows of twelve make?"
+ },
+ "t.k-ok": {
+  "text": "Yes: twelve times twelve is one hundred forty-four. The area comes back, so twelve is right."
+ },
+ "t.k-double": {
+  "text": "Twelve times two is twenty-four: that doubles the side. Squaring is twelve times twelve: twelve rows of twelve."
+ },
+ "t.k-other": {
+  "text": "Twelve times twelve is one hundred twenty, plus twenty-four. Count it again, row by row."
+ },
+ "t.write": {
+  "text": "Now write it with the root sign. Tap the numbers into the boxes."
+ },
+ "t.w-ok": {
+  "text": "Yes: the square root of one hundred forty-four is twelve. The area goes under the sign; the side is its value."
+ },
+ "t.w-swap": {
+  "text": "That is swapped. The area, one hundred forty-four, goes under the root sign; the side, twelve, is the value."
+ },
+ "t.w-half": {
+  "text": "Seventy-two is half of one hundred forty-four, and seventy-two times seventy-two is far more than that. The value of the root is the side."
+ },
+ "t.cb-right": {
+  "text": "At the start you said eight feet, and you were right. Now you can show why: eight times eight is sixty-four, so the square root of sixty-four is eight."
+ },
+ "t.cb-half": {
+  "text": "At the start you picked thirty-two feet, half of sixty-four. But thirty-two times thirty-two is one thousand and twenty-four. The square root of sixty-four is eight, because eight times eight is sixty-four."
+ },
+ "t.cb-perim": {
+  "text": "At the start you picked sixteen feet: sixty-four shared by four sides. But sixty-four is the area, not the distance around. The square root of sixty-four is eight."
+ },
+ "t.cb-none": {
+  "text": "At the start: a patio of sixty-four square feet has sides of eight feet, because eight times eight is sixty-four."
+ },
+ "p.intro": {
+  "text": "Sam notices that the square root of four is two, and four divided by two is also two. Sam says: taking the square root is the same as dividing by two."
+ },
+ "p.ask": {
+  "text": "Is Sam right?"
+ },
+ "p.build-wrong": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.build-right": {
+  "text": "Let's test it. Build the argument, and see where it leads."
+ },
+ "p.c1": {
+  "text": "Right: two times two is four, so the side is two. Half of four is two as well. Here the two rules agree."
+ },
+ "p.c2": {
+  "text": "But four times four is sixteen, so the square root of sixteen is four. Half of sixteen is eight, and a side of eight needs sixty-four tiles: far too many."
+ },
+ "p.c3": {
+  "text": "One counterexample is enough: sixteen breaks Sam's rule."
+ },
+ "p.x-differ": {
+  "text": "They can agree: at four both give two, and at zero both give zero. Agreeing at a few numbers does not make two rules the same."
+ },
+ "p.x-examples": {
+  "text": "Checking a few cases can't prove always. One case that fails is enough to break it."
+ },
+ "p.x-slot": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That's a proof: three claims, each with its reason, and the picture backs every one. Taking a square root is not halving."
+ }
+}

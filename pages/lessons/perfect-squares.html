@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Square Roots</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* a radical in the panel: the sign, then a bar over the radicand */
+    .rad { white-space: nowrap; }
+    .rad > span { display: inline-block; line-height: 1.05; border-top: 1.5px solid currentColor; padding: .06em .12em 0 .04em; margin-left: -.02em; }
+    .cards button { font-size: 24px; }
+    .eq .slot.rad-slot { min-width: 96px; border-top: 2.5px solid var(--text); border-top-left-radius: 0; border-top-right-radius: 0; }
+    .eq .sign { font-size: 40px; line-height: 1; margin-right: -9px; transform: translateY(-2px); }
+    .eq .slot.n { border-color: var(--a); color: var(--a); } .eq .slot.k { border-color: var(--s); color: var(--s); }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Square roots of perfect squares</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The model and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./perfect-squares.ts"></script>
+</body>
+</html>
