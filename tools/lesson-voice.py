@@ -3,7 +3,8 @@
     python tools/lesson-voice.py <slug> [--dry]
 
 Reads pages/lessons/<slug>/voice/lines.json ({"id": {"text": "..."}}) and writes pages/lessons/<slug>/voice/<id>.mp3.
-A line is (re)generated only when its text or the voice changed (hashes.json). One narrator for the whole line:
+A line is (re)generated only when its text or the voice changed (hashes.json); a line whose hash already exists in any
+other lesson topic is copied from there for free, and a hash repeated inside the topic is generated once. One narrator for the whole line:
 Chris, the Kubo Level Up narrator voice (owner's pick). Needs ELEVENLABS_API_KEY (.env), at most 2 requests at once.
 """
 import sys, json, hashlib, pathlib
@@ -28,8 +29,32 @@ def main():
         h = hashlib.sha1((json.dumps(VOICE, sort_keys=True) + d["text"]).encode()).hexdigest()[:16]
         if hashes.get(lid) != h or not (folder / f"{lid}.mp3").exists():
             todo.append((lid, d["text"], h))
+    # reuse: the same hash (same text, voice and settings) in ANY lesson topic is the same audio, so copy it for free;
+    # a hash that occurs twice in this topic is generated once and copied
+    import shutil
+    known = {}
+    for other in (el.REPO / "pages" / "lessons").glob("*/voice/hashes.json"):
+        for oid, oh in el.load_json(other).items():
+            mp3 = other.parent / f"{oid}.mp3"
+            if mp3.exists():
+                known.setdefault(oh, mp3)
+    reused, rest, first = 0, [], {}
+    for lid, text, h in todo:
+        if h in known and known[h] != folder / f"{lid}.mp3":
+            if not dry:
+                shutil.copyfile(known[h], folder / f"{lid}.mp3")
+                hashes[lid] = h
+            reused += 1
+        elif h in first:
+            first[h].append(lid)
+        else:
+            first[h] = [lid]
+            rest.append((lid, text, h))
+    if reused and not dry:
+        el.save_json(hp, hashes)
+    todo = rest
     chars = sum(len(t) for _, t, _ in todo)
-    print(f"{args[0]}: {len(todo)} of {len(lines)} lines to generate ({chars} characters)")
+    print(f"{args[0]}: {reused} lines reused from other topics, {len(todo)} of {len(lines)} to generate ({chars} characters)")
     if dry or not todo:
         return
 
@@ -46,9 +71,11 @@ def main():
             except Exception as e:
                 if attempt == 4: raise
                 print(f"   retry {lid}: {type(e).__name__}"); time.sleep(3 * (attempt + 1))
-        (folder / f"{lid}.mp3").write_bytes(r.content)
+        for same in first[h]:   # the generated line plus any later line in this topic with the same hash
+            (folder / f"{same}.mp3").write_bytes(r.content)
         with lock:   # save progress after every line, so a crash never loses finished lines
-            hashes[lid] = h
+            for same in first[h]:
+                hashes[same] = h
             el.save_json(hp, hashes)
         return lid, h
 
