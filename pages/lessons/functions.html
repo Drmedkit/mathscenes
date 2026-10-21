@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Functions</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* statement cards: short sentences, one per row */
+    .cards.words { grid-template-columns: 1fr; }
+    .cards.words button { font-size: 18px; line-height: 1.35; text-align: left; align-items: flex-start; padding: 12px 14px; }
+    .panel b.pk { color: var(--pick); font-weight: 650; }
+    /* the input buttons of "your turn" (x values) */
+    .xs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; }
+    .xs button { font-size: 22px; padding: 10px 4px; }
+    .xs button.nope { border-color: var(--wrong); } .xs button.right { border-color: var(--s); }
+    /* story sketches inside answer buttons */
+    .opts button svg.sketch { display: block; width: 200px; height: 96px; }
+    .opts button .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Function concept and identifying functions</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The model and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./functions.ts"></script>
+</body>
+</html>
