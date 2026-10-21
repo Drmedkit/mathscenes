@@ -30,10 +30,10 @@
   "commit": "ff2e4bd"
  },
  "probability": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 07:28",
-  "commit": "3146944"
+  "state": "live",
+  "note": "20 sub-goals, 43 voice lines",
+  "at": "2026-10-21 08:39",
+  "commit": "89f1a09"
  },
  "percent-change": {
   "state": "live",
