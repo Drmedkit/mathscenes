@@ -84,5 +84,9 @@ accept −, $, %, decimal and thousands commas.
 - No answer visible before the kid answers (labels, boards, choice wording).
 - Spoken text has no digits or symbols ("three fourths"); short lines; US English and units.
 - Every misconception id exists in `math-curriculum-essentials/misconceptions.json`.
+- Practice volume: every sub-goal gets 2-3 genuinely different families (structure or context, not just numbers);
+  a topic lands at about 25-35 families. Map typical slips to misconception ids wherever that is honest.
+- Practice pictures: most items show the model (sized to fit, answer hidden until the solve). An item that truly
+  has no picture gets a big slate where the picture would be, never a small card on an empty stage.
 - Windows is case-insensitive: never name a model block `Plan.ts` or `Items.ts` (it overwrites `plan.ts` / `items.ts`).
 - Use TeX `-` inside math (MathJax makes the minus); write `\\` correctly in TS template strings.
