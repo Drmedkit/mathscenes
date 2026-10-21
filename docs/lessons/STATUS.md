@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 8, live 49, queued 6 (of 63)
+Totals: building 7, live 50, queued 6 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -74,7 +74,7 @@ Totals: building 8, live 49, queued 6 (of 63)
 | 7 | Scientific notation and order of magnitude | `scientific-notation` | 8 | 15 | live | 15 sub-goals, 45 voice lines; VOICE PENDING |
 | 8 | Choose a fraction, decimal, or percent form to calculate with, and justify it | `choose-the-form` | 7 | 16 | building | wave 5: Opus builder + Haiku QA |
 | 9 | Scale factor and area: the area is multiplied by k^2 | `scale-and-area` | 7 | 16 | live | 16 sub-goals; practice pictures added in review; VOICE PENDING |
-| 10 | Pythagorean theorem: introduction and use | `pythagoras-intro` | 8 | 16 | building | wave 5: Opus builder + Haiku QA |
+| 10 | Pythagorean theorem: introduction and use | `pythagoras-intro` | 8 | 16 | live | 16 sub-goals, 40 voice lines; VOICE PENDING |
 | 11 | Read a map: map key, scale, and estimating distance | `reading-maps` | 7 | 18 | building | wave 6: Opus builder + Haiku QA |
 | 12 | Use a map scale (1 in = 1 mi, i.e. 1:63,360; 1:24,000) | `map-scale` | 7 | 18 | building | wave 6: Opus builder + Haiku QA |
 

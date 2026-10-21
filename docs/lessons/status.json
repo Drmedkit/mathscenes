@@ -300,10 +300,10 @@
   "commit": "e861a9c"
  },
  "pythagoras-intro": {
-  "state": "building",
-  "note": "wave 5: Opus builder + Haiku QA",
-  "at": "2026-10-21 14:23",
-  "commit": "a7a0b5e"
+  "state": "live",
+  "note": "16 sub-goals, 40 voice lines; VOICE PENDING",
+  "at": "2026-10-21 15:51",
+  "commit": "e4c24ae"
  },
  "reading-maps": {
   "state": "building",

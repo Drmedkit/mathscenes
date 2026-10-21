@@ -595,7 +595,8 @@
    "primary.numbers.square-roots-of-perfect-squares",
    "secondary-t5-20-scale-drawings-and-geometric-constructions",
    "secondary-t5-28-square-roots-and-cube-roots"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "primary.geometry.read-map-scale-legend-distance",
