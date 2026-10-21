@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Probability Concepts</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* marble chips in "Your turn": toggles */
+    .chips button.tog.on { border-color: var(--s); color: var(--s); background: #26304a; }
+    .chips button.tog sub { font-size: .72em; }
+    /* a reason chip that is placed leaves the list (no holes) */
+    .chips button.used { display: none; }
+    .words5 { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin: 10px 0; }
+    .words5 button { font-size: 14px; padding: 9px 4px; line-height: 1.25; }
+    .words5 button.right { border-color: var(--s); } .words5 button.nope { border-color: var(--wrong); }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Probability concepts</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The model and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./probability.ts"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+{
+  "q.intro": {
+    "text": "A bag holds four marbles: three blue and one white. You reach in without looking and pull one out."
+  },
+  "q.ask": {
+    "text": "How likely is it that you pull a blue marble?"
+  },
+  "q.sure": {
+    "text": "How sure are you?"
+  },
+  "e.intro": {
+    "text": "Four steps. Press each one: the picture moves first, then the notation."
+  },
+  "e.s1": {
+    "text": "Every marble gets its own name: B one, B two, B three, and W. These four outcomes are the sample space."
+  },
+  "e.s2": {
+    "text": "The marbles are the same size and well mixed, so each one is equally likely: one fourth each. The colors are not: there are more blue marbles."
+  },
+  "e.s3": {
+    "text": "The event blue is made of three outcomes: B one, B two, and B three. Three of the four."
+  },
+  "e.s4": {
+    "text": "P of blue is three fourths: the blue outcomes on top, all the outcomes underneath. On the scale from zero to one, that is likely, not certain."
+  },
+  "e.why": {
+    "text": "Quick check. There are only two colors. Why isn't the chance of blue one half?"
+  },
+  "e.w-ok": {
+    "text": "Yes. The marbles are what is equally likely, and three of the four are blue."
+  },
+  "e.w-eq": {
+    "text": "Two colors don't make it fifty-fifty. Blue and white are not equally likely: blue has three marbles, white has one."
+  },
+  "e.w-part": {
+    "text": "Three to one compares blue with white. A probability compares blue with all the marbles: three of four."
+  },
+  "t.intro": {
+    "text": "Now the bag holds six marbles: two blue, three white, and one pink. What is the chance the marble is not white? The first two steps are done for you."
+  },
+  "t.given": {
+    "text": "Six marbles, six names, and each one is equally likely: one sixth each. Your turn."
+  },
+  "t.count": {
+    "text": "Which marbles make up the event not white? Tap every one, then check."
+  },
+  "t.c-ok": {
+    "text": "Yes: B one, B two, and P. Three outcomes."
+  },
+  "t.c-white": {
+    "text": "Not white means every marble that is not white. Leave the white ones out."
+  },
+  "t.c-miss": {
+    "text": "Some are missing. Every marble that is not white is in the event, the pink one too."
+  },
+  "t.c-one": {
+    "text": "An event can hold more than one outcome. Tap every marble that is not white."
+  },
+  "t.write": {
+    "text": "Now write the chance of not white as a fraction."
+  },
+  "t.w-ok": {
+    "text": "Yes: three of the six marbles. Three sixths."
+  },
+  "t.w-colors": {
+    "text": "That counts colors: two of the three colors. The colors are not equally likely; the marbles are. Count marbles."
+  },
+  "t.w-part": {
+    "text": "That compares with the white marbles. Compare with all six marbles."
+  },
+  "t.w-count": {
+    "text": "Three is how many marbles are in the event. A probability says out of how many: put all the marbles underneath."
+  },
+  "t.w-other": {
+    "text": "Count the marbles in the event for the top, and all the marbles for the bottom."
+  },
+  "t.place": {
+    "text": "Where does it go on the scale?"
+  },
+  "t.p-ok": {
+    "text": "Right. Three sixths is one half: as likely as not."
+  },
+  "t.p-no": {
+    "text": "Three sixths is exactly one half: the middle of the scale."
+  },
+  "t.cb-eq": {
+    "text": "At the start you picked one half for blue: that counted colors. Here the answer is one half, but because three of the six marbles count, not because there are two ways."
+  },
+  "t.cb-right": {
+    "text": "At the start you picked three fourths, and you were right. Now you can show why: count the marbles, not the colors."
+  },
+  "t.cb-part": {
+    "text": "At the start you picked three to one. That compares blue with white. A probability compares with all the marbles: three fourths."
+  },
+  "t.cb-none": {
+    "text": "At the start: three of the four marbles are blue, so the chance of blue is three fourths."
+  },
+  "p.intro": {
+    "text": "Sam uses the first bag: three blue and one white. Sam pulls a marble, puts it back and mixes, four times: blue, white, blue, white. Sam says: the chance of blue is really one half, so three fourths was wrong. Is Sam right?"
+  },
+  "p.yes": {
+    "text": "Let's test it. Build the argument and see where it leads."
+  },
+  "p.no": {
+    "text": "Now prove it. Fill each because with the reason that makes the line true."
+  },
+  "p.c1": {
+    "text": "Ten batches of four draws: the number of blues jumps around, and two blues is nothing unusual."
+  },
+  "p.c2": {
+    "text": "Four hundred draws: the share of blue wanders at first, then settles close to three fourths."
+  },
+  "p.c3": {
+    "text": "A probability describes the long run. Four draws can't overturn three fourths."
+  },
+  "p.x-mirror": {
+    "text": "Four draws don't have to give exactly three blue. The batches show it: they jump around."
+  },
+  "p.x-closer": {
+    "text": "Not every draw: the share can wander away for a while. It settles only over many draws."
+  },
+  "p.x-due": {
+    "text": "Nothing is due: the marble goes back and the bag is mixed. Every draw is three fourths for blue."
+  },
+  "p.x-other": {
+    "text": "True, but it backs a different line. Which reason makes this line true?"
+  },
+  "p.done": {
+    "text": "That's a proof: three claims, each with its reason, and the picture backs every one. Sam judged a probability by four draws."
+  }
+}
