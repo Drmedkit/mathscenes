@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 17, live 22, queued 24 (of 63)
+Totals: building 17, live 23, queued 23 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -53,7 +53,7 @@ Totals: building 17, live 22, queued 24 (of 63)
 | 7 | One-step inequalities and signed one-step equations | `one-step-inequalities` | 7 | 11 | live | 11 sub-goals, 46 voice lines |
 | 8 | Integer exponents | `integer-exponents` | 8 | 17 | live | 17 sub-goals, 43 voice lines |
 | 9 | Square roots and cube roots | `square-and-cube-roots` | 8 | 21 | building | agent |
-| 10 | Function concept and identifying functions | `functions` | 8 | 18 | building | agent |
+| 10 | Function concept and identifying functions | `functions` | 8 | 18 | live | 18 sub-goals, 40 voice lines |
 | 11 | Translations, reflections, and rotations | `rigid-transformations` | 8 | 24 | building | agent |
 | 12 | Convert fractions, decimals, and percents: extended | `fractions-decimals-percents` | 7 | 23 | building | agent |
 | 13 | Combine percents and ratios in one problem | `percents-and-ratios` | 7 | 14 | queued |  |
@@ -82,7 +82,7 @@ Totals: building 17, live 22, queued 24 (of 63)
 
 | # | topic | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
-| 1 | Area and perimeter of composite figures | `composite-figures` | 7 | 19 | queued |  |
+| 1 | Area and perimeter of composite figures | `composite-figures` | 7 | 19 | building | agent |
 | 2 | Composite area, volume, and surface area | `composite-area-volume` | 7 | 21 | queued |  |
 | 3 | Angle relationships with parallel lines and triangles | `parallel-lines-and-triangles` | 8 | 25 | queued |  |
 | 4 | Volume of cylinders, cones, and spheres | `cylinders-cones-spheres` | 8 | 25 | queued |  |

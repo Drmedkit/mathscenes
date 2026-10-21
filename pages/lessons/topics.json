@@ -365,7 +365,8 @@
   "subgoals": 18,
   "requires": [
    "secondary-t5-17-operations-with-rational-numbers"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-34-transformations-translations-reflections-rotations",
