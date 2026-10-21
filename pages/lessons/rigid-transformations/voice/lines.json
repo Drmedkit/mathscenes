@@ -1,0 +1,128 @@
+{
+ "q.intro": {
+  "text": "A puzzle game moves the tile A B C to A prime B prime C prime, in one single move. Which kind of move was it? Pick an answer, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Let's work it out in four steps. Press each one. The picture moves first, then the board writes it down."
+ },
+ "e.step0": {
+  "text": "Every point has a partner. A goes to A prime, B to B prime, C to C prime. Match by the letters, never by where things sit on the page."
+ },
+ "e.step1": {
+  "text": "Go round A, B, C: counterclockwise. Go round A prime, B prime, C prime: counterclockwise too. The order is kept, so it's a slide or a turn. A flip would reverse it."
+ },
+ "e.step2": {
+  "text": "The three dashed segments meet at the origin, O, and each one is cut exactly in half. Every point stays as far from O as before. That's a half turn: one hundred eighty degrees about O."
+ },
+ "e.step3": {
+  "text": "A, at one, one, lands on A prime, at negative one, negative one. Every point does the same: both coordinates change sign. The rule is: x, y goes to negative x, negative y."
+ },
+ "e.why": {
+  "text": "Quick check. Why is this a turn, and not a flip?"
+ },
+ "e.why.ok": {
+  "text": "Yes. A flip reverses the order of the corners. Here the order is kept, and every point turned one hundred eighty degrees about O."
+ },
+ "e.why.flip": {
+  "text": "Upside down isn't the test. A half turn looks upside down too. Check the order of the corners: it's kept."
+ },
+ "e.why.slide": {
+  "text": "Every motion moves points. In a slide, they all move the same way. Here, A, B and C move in different directions."
+ },
+ "t.intro": {
+  "text": "A new tile, and a new move. I'll do the first two steps. Then it's your turn."
+ },
+ "t.given": {
+  "text": "Matched: A to A prime, B to B prime, C to C prime. The order A, B, C is counterclockwise in both, so it's kept. It's a slide or a turn."
+ },
+ "t.turn": {
+  "text": "Find what stays fixed. Which single motion maps A B C onto A prime B prime C prime?"
+ },
+ "t.turn.ok": {
+  "text": "Right. A quarter turn: ninety degrees counterclockwise about O. O to A, and O to A prime, make a right angle."
+ },
+ "t.turn.reverse": {
+  "text": "Follow A to A prime around O. It goes the other way: counterclockwise."
+ },
+ "t.turn.flip": {
+  "text": "A flip would reverse the order of the corners, and here it's kept. It's a turn."
+ },
+ "t.rule": {
+  "text": "Write the rule. A, at two, one, went to A prime, at negative one, two. And B, at five, one, went to negative one, five. Which rule does every point follow?"
+ },
+ "t.rule.ok": {
+  "text": "Right. x, y goes to negative y, x. The coordinates swap, and the new first one changes sign."
+ },
+ "t.rule.swap": {
+  "text": "A plain swap would put A prime at one, two. The real A prime is at negative one, two. The new x also changes sign."
+ },
+ "t.rule.reverse": {
+  "text": "That rule turns clockwise. Test it on A: it gives one, negative two. But A prime is at negative one, two."
+ },
+ "t.apply": {
+  "text": "Use the rule on a new point. Where does D, at four, negative three, land?"
+ },
+ "t.apply.ok": {
+  "text": "Right. D prime is at three, four. Watch D turn the same quarter turn."
+ },
+ "t.apply.swap": {
+  "text": "That only swaps the coordinates. The rule is negative y, x. The first coordinate is minus y."
+ },
+ "t.apply.reverse": {
+  "text": "That turns D clockwise. The rule, negative y, x, turns counterclockwise."
+ },
+ "t.apply.flip": {
+  "text": "That reflects D across the y-axis. Use the rule: negative y, x."
+ },
+ "t.apply.miss": {
+  "text": "Put the numbers in the rule. x is four, y is negative three. So what is negative y, x?"
+ },
+ "t.len": {
+  "text": "Last check. A B is three units long. How long is A prime B prime?"
+ },
+ "t.len.ok": {
+  "text": "Right. A turn keeps every length, so A prime B prime is three units, with no measuring."
+ },
+ "t.len.remeasure": {
+  "text": "No need to measure. A rigid motion keeps every length, so A prime B prime equals A B: three."
+ },
+ "t.len.moved": {
+  "text": "How far the tile travels doesn't matter. The sides keep their lengths. A prime B prime is three."
+ },
+ "t.done": {
+  "text": "Back to the puzzle game. The order of the corners was kept, and every point turned about O. So the move was a turn: a one hundred eighty degree rotation."
+ },
+ "p.intro": {
+  "text": "Maya uses the rule: x, y goes to two x, negative y. She says: it flips the triangle over the x-axis, so it's a rigid motion. Look, the right angle at A is still a right angle. Is Maya right?"
+ },
+ "p.build.no": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.build.yes": {
+  "text": "Let's test it. Fill each because with the reason that makes the line true, and see where it leads."
+ },
+ "p.c1": {
+  "text": "B, at three, one, goes to B prime, at six, negative one. The rule doubles x, and flips the sign of y."
+ },
+ "p.c2": {
+  "text": "A B is two squares long, but A prime B prime is four squares long. The side doubled."
+ },
+ "p.c3": {
+  "text": "A rigid motion keeps every length. One changed length is enough. Maya's rule is not a rigid motion."
+ },
+ "p.done": {
+  "text": "That's a proof. Three claims, each with its reason, and the picture backs every one. One kept angle is not enough."
+ },
+ "p.chip.angle": {
+  "text": "That's exactly Maya's mistake. One kept angle doesn't mean every length is kept."
+ },
+ "p.chip.size": {
+  "text": "A rigid motion keeps the size too. A wider copy is not a rigid image."
+ },
+ "p.chip.slide": {
+  "text": "The points don't all move the same way. B moves three to the right, A only one. It's not a slide."
+ },
+ "p.chip.other": {
+  "text": "True, but it's the reason for a different line. Which one makes this line true?"
+ }
+}
