@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Linear Patterns</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* the commit cards hold short sentences here, not a fraction */
+    .cards.words { grid-template-columns: 1fr; }
+    .cards.words button { font-size: 16px; padding: 12px 14px; text-align: left; align-items: flex-start; }
+    /* the second series (Leo, or the second person in a comparison) */
+    b.w2 { color: #6dc1e6; font-weight: 650; }
+    .eq span { font-size: 17px; color: var(--dim); }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Recognize a linear relationship</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The table, the graph and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./linear-patterns.ts"></script>
+</body>
+</html>
