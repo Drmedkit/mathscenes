@@ -114,10 +114,10 @@
   "commit": "9642b84"
  },
  "multiply-divide-rational-numbers": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 07:52",
-  "commit": "efb9561"
+  "state": "live",
+  "note": "23 sub-goals, 43 voice lines",
+  "at": "2026-10-21 08:46",
+  "commit": "b856cdd"
  },
  "one-step-inequalities": {
   "state": "building",

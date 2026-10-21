@@ -313,7 +313,8 @@
   "subgoals": 23,
   "requires": [
    "secondary-t5-17-operations-with-rational-numbers"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary.one-step-inequalities-and-signed-one-step-equations",
