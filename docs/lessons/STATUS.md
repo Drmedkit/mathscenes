@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 8, live 55 (of 63)
+Totals: building 7, live 56 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -84,7 +84,7 @@ Totals: building 8, live 55 (of 63)
 |---|---|---|---|---|---|---|
 | 1 | Area and perimeter of composite figures | `composite-figures` | 7 | 19 | live | 19 sub-goals, 46 voice lines; VOICE PENDING |
 | 2 | Composite area, volume, and surface area | `composite-area-volume` | 7 | 21 | live | 21 sub-goals, 42 voice lines; VOICE PENDING |
-| 3 | Angle relationships with parallel lines and triangles | `parallel-lines-and-triangles` | 8 | 25 | building | wave 6: Opus builder + Haiku QA |
+| 3 | Angle relationships with parallel lines and triangles | `parallel-lines-and-triangles` | 8 | 25 | live | 25 sub-goals, 44 voice lines; VOICE PENDING |
 | 4 | Volume of cylinders, cones, and spheres | `cylinders-cones-spheres` | 8 | 25 | live | 25 sub-goals, 43 voice lines; VOICE PENDING |
 | 5 | Multi-step linear equations with rational coefficients | `multi-step-equations` | 8 | 22 | live | 22 sub-goals, 39 voice lines; practice balance small, most items notation slate (polish later); VOICE PENDING |
 | 6 | Dilations and similarity | `dilations-and-similarity` | 8 | 23 | live | 23 sub-goals, 46 voice lines; small label crowding in ratioK (polish later); VOICE PENDING |

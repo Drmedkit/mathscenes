@@ -324,10 +324,10 @@
   "commit": "6110035"
  },
  "parallel-lines-and-triangles": {
-  "state": "building",
-  "note": "wave 6: Opus builder + Haiku QA",
-  "at": "2026-10-21 15:49",
-  "commit": "ff33bf4"
+  "state": "live",
+  "note": "25 sub-goals, 44 voice lines; VOICE PENDING",
+  "at": "2026-10-21 16:58",
+  "commit": "e8187d5"
  },
  "cylinders-cones-spheres": {
   "state": "live",

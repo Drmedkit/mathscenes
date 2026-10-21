@@ -665,7 +665,8 @@
    "secondary-t5-19-two-step-equations-and-inequalities",
    "secondary-t5-22-angle-relationships",
    "secondary-t5-34-transformations-translations-reflections-rotations"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-39-volume-cones-cylinders-spheres",
