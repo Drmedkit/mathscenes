@@ -127,3 +127,4 @@ ol.plan li button { margin-top: 8px; }
 
 /* the diagnosis log view (?log) */
 pre.log { background: #11142b; border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-size: 12px; max-height: 60vh; overflow: auto; white-space: pre-wrap; }
+header.top h1 a.home { color: var(--dim); text-decoration: none; } header.top h1 a.home:hover { color: var(--text); }

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fractions Path</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    main.path { max-width: 860px; margin: 0 auto; padding: 8px 24px 48px; display: grid; gap: 14px; }
+    .path p.lead { color: var(--dim); margin: 0 0 10px; max-width: 62ch; }
+    a.topic { display: grid; grid-template-columns: 56px 1fr auto; gap: 16px; align-items: center; text-decoration: none; color: var(--text);
+      background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; }
+    a.topic:hover { border-color: var(--dim); }
+    a.topic .n { font: 600 34px/1 "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif; color: var(--a); text-align: center; }
+    a.topic h2 { margin: 0 0 4px; font-size: 20px; }
+    a.topic p { margin: 0; color: var(--dim); font-size: 15px; }
+    a.topic .st { font-size: 14px; color: var(--faint); white-space: nowrap; }
+    a.topic .st.go { color: var(--s); }
+    a.topic.missing { opacity: .5; pointer-events: none; }
+    @media (max-width: 600px) { a.topic { grid-template-columns: 40px 1fr; } a.topic .st { grid-column: 2; } }
+  </style>
+</head>
+<body>
+  <header class="top"><h1>Fractions: sharing, parts of, times</h1></header>
+  <main class="path">
+    <p class="lead">Three lessons that build on each other. Each one: a question, a worked example, your turn, a proof, and practice that walks through every part of the topic.</p>
+    <div id="list"></div>
+  </main>
+  <script type="module">
+    const topics = [
+      { slug: 'fractions-as-division', title: 'Sharing makes fractions', text: '3 bars for 4 friends is 3 ÷ 4 = 3/4 of a bar each.' },
+      { slug: 'fraction-of-quantity', title: 'A fraction of an amount', text: '3/4 of 12 cookies: split into 4 equal groups, take 3 of them.' },
+      { slug: 'fraction-times-fraction', title: 'A fraction of a fraction', text: '2/3 of 3/4 of a pan of brownies is 6/12 of the pan.' },
+    ];
+    const read = s => { try { return JSON.parse(localStorage.getItem(`mathscenes.lesson.${s}.progress`) || 'null'); } catch { return null; } };
+    const parts = ['The question', 'Worked example', 'Your turn', 'Prove it', 'Practice'];
+    const list = document.getElementById('list');
+    for (const [i, t] of topics.entries()) {
+      const p = read(t.slug);
+      const a = document.createElement('a');
+      a.className = 'topic'; a.href = `./${t.slug}.html`;
+      const exists = await fetch(`./${t.slug}.html`, { method: 'HEAD' }).then(r => r.ok).catch(() => false);
+      if (!exists) a.classList.add('missing');
+      a.innerHTML = `<span class="n">${i + 1}</span><div><h2></h2><p></p></div><span class="st"></span>`;
+      a.querySelector('h2').textContent = t.title;
+      a.querySelector('p').textContent = t.text;
+      const st = a.querySelector('.st');
+      st.textContent = !exists ? 'Coming soon' : p ? `Up to: ${parts[p.reached] ?? parts[0]}` : 'Start';
+      if (exists && !p) st.classList.add('go');
+      list.append(a);
+    }
+  </script>
+</body>
+</html>
