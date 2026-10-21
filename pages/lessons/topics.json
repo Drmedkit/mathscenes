@@ -619,7 +619,8 @@
   "subgoals": 19,
   "requires": [
    "secondary-t5-21-area-and-circumference-of-circles"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary.composite-area-volume-and-surface-area",

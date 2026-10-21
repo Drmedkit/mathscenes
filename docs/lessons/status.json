@@ -234,10 +234,10 @@
   "commit": "2a9557e"
  },
  "composite-figures": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 09:03",
-  "commit": "e1f697c"
+  "state": "live",
+  "note": "19 sub-goals, 46 voice lines; VOICE PENDING",
+  "at": "2026-10-21 13:27",
+  "commit": "ccd8566"
  },
  "composite-area-volume": {
   "state": "building",
