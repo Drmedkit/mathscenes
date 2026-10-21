@@ -60,10 +60,10 @@
   "commit": "31ac246"
  },
  "perfect-squares": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 07:29",
-  "commit": "3146944"
+  "state": "live",
+  "note": "13 sub-goals, 42 voice lines",
+  "at": "2026-10-21 08:31",
+  "commit": "6f3b359"
  },
  "reflections": {
   "state": "building",
@@ -160,5 +160,11 @@
   "note": "agent",
   "at": "2026-10-21 08:27",
   "commit": "018e193"
+ },
+ "scale-drawings": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:29",
+  "commit": "85ec531"
  }
 }
