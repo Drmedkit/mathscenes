@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Square and Cube Roots</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* a radicand under its bar: √<span class="rad">49</span> */
+    .rad { display: inline-block; line-height: .92; border-top: 1.5px solid currentColor; padding: .06em .08em 0 .04em; margin-left: .02em; }
+    /* answer boxes: big, readable digits (decimal and negative answers need room) */
+    .panel .ans input { font-size: 22px; font-weight: 600; width: 96px; }
+    .panel .ans .op { font-size: 20px; }
+    .panel .opts button { line-height: 1.45; }
+    .eq .slot { font-size: 24px; min-width: 84px; }
+    .chips button { font-size: 17px; }
+    .chips.roots button { font-size: 24px; min-width: 64px; text-align: center; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Square roots and cube roots</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The model and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./square-and-cube-roots.ts"></script>
+</body>
+</html>
