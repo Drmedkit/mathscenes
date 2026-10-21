@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Percent Applications</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* money in the panel: tabular digits so prices line up */
+    .panel p, .panel .claim, .panel .opts button, .cards button { font-variant-numeric: tabular-nums; }
+    b.w { color: var(--wrong); }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Percent applications</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The percent tapes and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./percent-applications.ts"></script>
+</body>
+</html>
