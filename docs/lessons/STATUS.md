@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 7, live 38, queued 18 (of 63)
+Totals: building 6, live 39, queued 18 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -70,7 +70,7 @@ Totals: building 7, live 38, queued 18 (of 63)
 | 3 | Two-step inequalities | `two-step-inequalities` | 7 | 14 | live | 14 sub-goals; VOICE PENDING |
 | 4 | Rational and irrational numbers | `irrational-numbers` | 8 | 21 | live | 21 sub-goals, 44 voice lines; VOICE PENDING |
 | 5 | Solving linear equations in one variable | `linear-equations` | 8 | 22 | live | 22 sub-goals, 45 voice lines |
-| 6 | Congruence via transformations | `congruence` | 8 | 18 | building | agent |
+| 6 | Congruence via transformations | `congruence` | 8 | 18 | live | 18 sub-goals, 41 voice lines; VOICE PENDING |
 | 7 | Scientific notation and order of magnitude | `scientific-notation` | 8 | 15 | live | 15 sub-goals, 45 voice lines; VOICE PENDING |
 | 8 | Choose a fraction, decimal, or percent form to calculate with, and justify it | `choose-the-form` | 7 | 16 | queued |  |
 | 9 | Scale factor and area: the area is multiplied by k^2 | `scale-and-area` | 7 | 16 | queued |  |

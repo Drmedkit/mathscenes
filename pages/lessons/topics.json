@@ -533,7 +533,8 @@
   "requires": [
    "secondary-t5-34-transformations-translations-reflections-rotations",
    "secondary-t5-36-dilations-and-similarity"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary.scientific-notation-and-order-of-magnitude",

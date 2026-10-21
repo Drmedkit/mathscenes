@@ -228,10 +228,10 @@
   "commit": "c648f0d"
  },
  "congruence": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 09:02",
-  "commit": "2a9557e"
+  "state": "live",
+  "note": "18 sub-goals, 41 voice lines; VOICE PENDING",
+  "at": "2026-10-21 13:33",
+  "commit": "b8673f9"
  },
  "composite-figures": {
   "state": "live",
