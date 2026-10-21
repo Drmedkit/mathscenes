@@ -240,7 +240,8 @@
   "wave": 1,
   "level": 0,
   "subgoals": 15,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t5-18-expressions-expand-and-factor",

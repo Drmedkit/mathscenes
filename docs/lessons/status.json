@@ -270,10 +270,10 @@
   "commit": "93f1ec7"
  },
  "simple-interest": {
-  "state": "building",
-  "note": "wave 5: Opus builder + Haiku QA",
-  "at": "2026-10-21 14:23",
-  "commit": "a7a0b5e"
+  "state": "live",
+  "note": "15 sub-goals, 40 voice lines; practice tapes could be larger; VOICE PENDING",
+  "at": "2026-10-21 15:16",
+  "commit": "639ec68"
  },
  "percents-and-ratios": {
   "state": "building",

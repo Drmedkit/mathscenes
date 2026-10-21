@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 6, live 45, queued 12 (of 63)
+Totals: building 5, live 46, queued 12 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -38,7 +38,7 @@ Totals: building 6, live 45, queued 12 (of 63)
 | 17 | Square roots of perfect squares | `perfect-squares` | 8 | 13 | live | 13 sub-goals, 42 voice lines |
 | 18 | Recognize a linear relationship | `linear-patterns` | 8 | 19 | live | 19 sub-goals, 48 voice lines |
 | 19 | Calculate sales tax, totals, and pre-tax prices | `sales-tax` | 7 | 19 | live | 19 sub-goals, 46 voice lines; pilot Opus builder + Haiku QA; VOICE PENDING |
-| 20 | Calculate simple interest | `simple-interest` | 7 | 15 | building | wave 5: Opus builder + Haiku QA |
+| 20 | Calculate simple interest | `simple-interest` | 7 | 15 | live | 15 sub-goals, 40 voice lines; practice tapes could be larger; VOICE PENDING |
 
 ## Wave 2
 
