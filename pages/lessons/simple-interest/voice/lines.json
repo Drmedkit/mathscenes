@@ -1,0 +1,122 @@
+{
+ "q.intro": {
+  "text": "Maya deposits two thousand dollars in a savings account that pays five percent simple interest per year. She adds nothing and takes nothing out."
+ },
+ "q.ask": {
+  "text": "How much is in the account after three years? Pick an answer, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the tapes move first, then the notation."
+ },
+ "e.s1": {
+  "text": "The two thousand dollars Maya puts in is the principal: the whole, one hundred percent. Each dashed cell is ten percent of it: two hundred dollars."
+ },
+ "e.s2": {
+  "text": "Five percent is half of one ten percent cell: one hundred dollars. In numbers, point zero five times two thousand dollars is one hundred dollars. After year one the balance is twenty-one hundred dollars."
+ },
+ "e.s3": {
+  "text": "Simple interest is always five percent of the principal, the same two thousand dollars. So every year adds the same one hundred dollars: twenty-two hundred, then twenty-three hundred dollars."
+ },
+ "e.s4": {
+  "text": "Three equal stubs. I equals P times r times t: two thousand dollars times point zero five times three is three hundred dollars. The balance is two thousand plus three hundred: twenty-three hundred dollars."
+ },
+ "e.why": {
+  "text": "Quick check: why does every year add one hundred dollars, and not more?"
+ },
+ "e.why.ok": {
+  "text": "Yes. The base never changes, so the interest never changes. The ring stays on the amber principal."
+ },
+ "e.why.grow": {
+  "text": "That is compound interest, a different rule. Simple interest is always figured on the principal: the ring stays on the two thousand dollars."
+ },
+ "e.why.five": {
+  "text": "Five percent is not five dollars. It is five dollars for every hundred dollars: twenty hundreds times five dollars is one hundred dollars."
+ },
+ "t.intro": {
+  "text": "Now a loan. Sam borrows fifteen hundred dollars for three years at four percent simple interest per year, and pays it all back at the end. The first two steps are done for you."
+ },
+ "t.total": {
+  "text": "Your step: how much interest does Sam owe for all three years?"
+ },
+ "t.empty": {
+  "text": "Type an amount in dollars, like two hundred fifty."
+ },
+ "t.total.ok": {
+  "text": "Yes: sixty dollars a year for three years. Fifteen hundred times point zero four times three is one hundred eighty dollars."
+ },
+ "t.total.one": {
+  "text": "Sixty dollars is one year. The loan runs three years, and each year adds another sixty dollars."
+ },
+ "t.total.comp": {
+  "text": "That takes four percent of a growing amount: compound interest. Simple interest is four percent of the fifteen hundred dollars every year."
+ },
+ "t.total.owe": {
+  "text": "That is everything Sam pays back. The interest is only the part on top of the fifteen hundred dollars."
+ },
+ "t.total.no": {
+  "text": "Each year adds four percent of fifteen hundred dollars, which is sixty dollars. How many years are there?"
+ },
+ "t.owe": {
+  "text": "Your step: how much does Sam owe in all at the end of the three years?"
+ },
+ "t.owe.ok": {
+  "text": "Yes: fifteen hundred plus one hundred eighty is sixteen hundred eighty dollars."
+ },
+ "t.owe.int": {
+  "text": "One hundred eighty dollars is the interest. Sam also pays back the fifteen hundred dollars he borrowed."
+ },
+ "t.owe.one": {
+  "text": "Fifteen hundred sixty dollars is what Sam would owe after one year. Three years add one hundred eighty dollars."
+ },
+ "t.owe.less": {
+  "text": "A borrower pays the interest on top: Sam owes more than he borrowed, not less."
+ },
+ "t.owe.no": {
+  "text": "Add the interest, one hundred eighty dollars, to the amount borrowed, fifteen hundred dollars."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked twenty-three hundred dollars, and you were right. Now you can show why: the same one hundred dollars every year."
+ },
+ "q.cb.time": {
+  "text": "At the start you picked twenty-one hundred dollars. That is one year of interest. Three years add one hundred dollars three times."
+ },
+ "q.cb.comp": {
+  "text": "At the start you picked two thousand three hundred fifteen dollars and twenty-five cents. That takes five percent of the growing balance: compound interest. Simple interest stays on the two thousand dollars."
+ },
+ "q.cb.none": {
+  "text": "Simple interest takes the rate of the principal, every year: the same amount each year."
+ },
+ "p.intro": {
+  "text": "Alex works out one thousand dollars at ten percent simple interest per year for three years. Year one: ten percent of one thousand dollars is one hundred. Year two: ten percent of eleven hundred is one hundred ten. Year three: ten percent of twelve hundred ten is one hundred twenty-one. So it ends at thirteen hundred thirty-one dollars. Is Alex right?"
+ },
+ "p.test": {
+  "text": "Let’s test it. Build the argument, and see where it leads."
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Right. Both rules start the same: ten percent of one thousand dollars is one hundred."
+ },
+ "p.c2": {
+  "text": "Right. The ring stays on the principal. Year two adds one hundred dollars, not one hundred ten: the stubs come out equal."
+ },
+ "p.c3": {
+  "text": "Right. Alex’s stubs grow because each takes interest on earlier interest. Simple interest ends at thirteen hundred dollars."
+ },
+ "p.no.year1": {
+  "text": "Not after year one: both rules take ten percent of the same one thousand dollars. They split only from year two on."
+ },
+ "p.no.gap": {
+  "text": "The gap grows: zero, then ten dollars, then thirty-one dollars. Interest on interest keeps piling up."
+ },
+ "p.no.always": {
+  "text": "That is the compound rule. Simple interest is always taken of the principal."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof: three claims, each with its reason, and the tapes back every one. Alex used the compound rule."
+ }
+}
