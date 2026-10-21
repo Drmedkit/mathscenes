@@ -44,6 +44,22 @@ Do not edit: `src/lesson/runtime/*`, the shared painters, the reference topic, `
 `.gitignore`. Need a runtime change? Put a local helper in your topic folder and say so in your report.
 Extra CSS goes in a `<style>` in your html. Do not commit (the lead commits).
 
+## Grades 7–8 (first two years of secondary school)
+- Your topic is a row of `pages/lessons/topics.json` (id, slug, title, the topics it requires). Kids are 12–14: the
+  tone is a smart friend, never childish; situations can be more grown-up (sports stats, recipes, trips, phones,
+  maps, savings, science), still US units and $ where money is the point.
+- "Prove it" can be more formal at this age (two-column frame with reason chips, Parsons ordering with a decoy step,
+  always / sometimes / never with a counterexample) but stays tap/drag, no free typing.
+- Pick the model that carries THE concept of your topic (number line with arrows for signed numbers, a balance or
+  algebra tiles for equations, a coordinate grid for graphs/transformations, an area model, a spinner/bag for
+  probability, a map/scale bar...). Build it as a block in your topic folder (compute + check + layout + steps +
+  `where` boxes), crisp lines where precision matters (grids, axes, angles), washes for the objects.
+- Several topics are built at the same time by different agents in this worktree. Only touch your own files. Check
+  only your own code: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep <slug>` (other topics may be half-built) and
+  `npx vitest run tests/lesson-<slug>.test.ts`.
+- The page header: copy the reference html (`<h1>` with the "Fractions"-style home link becomes the course name
+  "Math 7–8" linking to ./index.html, then your topic title).
+
 ## Checks
 `npx tsc --noEmit -p tsconfig.json`, `npx vitest run tests/lesson-<slug>.test.ts`, then the walk script against the
 running dev server http://localhost:5290/lessons/<slug>.html (started by the lead from this worktree). Look at

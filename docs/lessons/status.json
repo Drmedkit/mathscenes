@@ -1,0 +1,20 @@
+{
+ "fractions-as-division": {
+  "state": "live",
+  "note": "12 sub-goals, voiced",
+  "at": "2026-10-21 07:26",
+  "commit": "4efcbf5"
+ },
+ "fraction-of-quantity": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 07:26",
+  "commit": "4efcbf5"
+ },
+ "fraction-times-fraction": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 07:26",
+  "commit": "4efcbf5"
+ }
+}

@@ -1,0 +1,745 @@
+[
+ {
+  "id": "primary.fractions.fractions-as-division",
+  "slug": "fractions-as-division",
+  "title": "Sharing makes fractions",
+  "grade": "5",
+  "wave": 0,
+  "live": true
+ },
+ {
+  "id": "primary.fractions.fraction-of-quantity",
+  "slug": "fraction-of-quantity",
+  "title": "A fraction of an amount",
+  "grade": "5",
+  "wave": 0
+ },
+ {
+  "id": "primary.fractions.multiply-fraction-by-fraction",
+  "slug": "fraction-times-fraction",
+  "title": "A fraction of a fraction",
+  "grade": "5",
+  "wave": 0
+ },
+ {
+  "id": "secondary-t5-16-proportional-relationships",
+  "slug": "proportional-relationships",
+  "title": "Proportional relationships",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 17,
+  "requires": []
+ },
+ {
+  "id": "secondary-t5-17-operations-with-rational-numbers",
+  "slug": "add-subtract-rational-numbers",
+  "title": "Add and subtract rational numbers",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 19,
+  "requires": []
+ },
+ {
+  "id": "secondary-t5-23-cross-sections-and-composite-area-volume",
+  "slug": "cross-sections",
+  "title": "Cross-sections of right rectangular prisms and pyramids",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 6,
+  "requires": []
+ },
+ {
+  "id": "secondary-t5-24-probability-concepts",
+  "slug": "probability",
+  "title": "Probability concepts",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 20,
+  "requires": []
+ },
+ {
+  "id": "secondary.draw-triangles-from-given-conditions",
+  "slug": "draw-triangles",
+  "title": "Draw triangles from given conditions",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 11,
+  "requires": []
+ },
+ {
+  "id": "primary.data.judge-sample-representativeness-and-limit-conclusions",
+  "slug": "judging-samples",
+  "title": "Judge sample representativeness and limit conclusions",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 6,
+  "requires": []
+ },
+ {
+  "id": "primary.data.make-pie-chart",
+  "slug": "pie-charts",
+  "title": "Make a circle graph (pie chart) with percents",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 18,
+  "requires": []
+ },
+ {
+  "id": "primary.geometry.enlarge-reduce-scale-factor",
+  "slug": "scale-factor",
+  "title": "Enlarge and reduce with a scale factor (scaled copies)",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 18,
+  "requires": []
+ },
+ {
+  "id": "primary.geometry.enlarge-reduce-shapes-informal",
+  "slug": "enlarge-on-grids",
+  "title": "Enlarge and reduce shapes informally on grid paper",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 14,
+  "requires": []
+ },
+ {
+  "id": "primary.measurement.relationships-between-quantities",
+  "slug": "ratio-tables-and-proportions",
+  "title": "Relationships between quantities: ratio tables and proportional relationships",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 20,
+  "requires": []
+ },
+ {
+  "id": "primary.ratios.calculate-percentage-change",
+  "slug": "percent-change",
+  "title": "Percent increase and decrease: find and apply percent change",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 19,
+  "requires": []
+ },
+ {
+  "id": "primary.ratios.discounts",
+  "slug": "discounts",
+  "title": "Calculate a discount",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 13,
+  "requires": []
+ },
+ {
+  "id": "primary.ratios.scale-introduction",
+  "slug": "scale-basics",
+  "title": "Understand scale: drawings and actual lengths",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 15,
+  "requires": []
+ },
+ {
+  "id": "primary.ratios.solve-complex-ratio-problems",
+  "slug": "ratio-problems",
+  "title": "Solve ratio problems with fractions and decimals",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 21,
+  "requires": []
+ },
+ {
+  "id": "primary.geometry.reflect-2d-shapes",
+  "slug": "reflections",
+  "title": "Reflect shapes and points across a line",
+  "grade": "8",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 23,
+  "requires": []
+ },
+ {
+  "id": "primary.geometry.rotate-quarter-half-turns",
+  "slug": "rotations",
+  "title": "Rotate: quarter turn and half turn",
+  "grade": "8",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 22,
+  "requires": []
+ },
+ {
+  "id": "primary.numbers.square-roots-of-perfect-squares",
+  "slug": "perfect-squares",
+  "title": "Square roots of perfect squares",
+  "grade": "8",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 13,
+  "requires": []
+ },
+ {
+  "id": "primary.patterns.recognize-linear-relationship",
+  "slug": "linear-patterns",
+  "title": "Recognize a linear relationship",
+  "grade": "8",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 19,
+  "requires": []
+ },
+ {
+  "id": "primary.ratios.calculate-sales-tax",
+  "slug": "sales-tax",
+  "title": "Calculate sales tax, totals, and pre-tax prices",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 19,
+  "requires": []
+ },
+ {
+  "id": "primary.ratios.calculate-simple-interest",
+  "slug": "simple-interest",
+  "title": "Calculate simple interest",
+  "grade": "7",
+  "wave": 1,
+  "level": 0,
+  "subgoals": 15,
+  "requires": []
+ },
+ {
+  "id": "secondary-t5-18-expressions-expand-and-factor",
+  "slug": "expand-and-factor",
+  "title": "Expand, combine, and factor linear expressions",
+  "grade": "7",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 22,
+  "requires": [
+   "secondary-t5-17-operations-with-rational-numbers"
+  ]
+ },
+ {
+  "id": "secondary-t5-19-two-step-equations-and-inequalities",
+  "slug": "two-step-equations",
+  "title": "Two-step equations",
+  "grade": "7",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 10,
+  "requires": [
+   "secondary-t5-17-operations-with-rational-numbers"
+  ]
+ },
+ {
+  "id": "secondary-t5-20-scale-drawings-and-geometric-constructions",
+  "slug": "scale-drawings",
+  "title": "Scale drawings",
+  "grade": "7",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 13,
+  "requires": [
+   "primary.geometry.enlarge-reduce-scale-factor",
+   "primary.ratios.scale-introduction"
+  ]
+ },
+ {
+  "id": "secondary-t5-25-sampling-and-comparative-inferences",
+  "slug": "sampling-and-inference",
+  "title": "Sampling and comparative inferences",
+  "grade": "7",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 17,
+  "requires": [
+   "primary.ratios.solve-complex-ratio-problems",
+   "secondary-t5-24-probability-concepts"
+  ]
+ },
+ {
+  "id": "secondary-t5-43-percent-applications-grade-7",
+  "slug": "percent-applications",
+  "title": "Percent applications",
+  "grade": "7",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 25,
+  "requires": [
+   "primary.ratios.calculate-percentage-change",
+   "primary.ratios.calculate-simple-interest",
+   "secondary-t5-16-proportional-relationships"
+  ]
+ },
+ {
+  "id": "secondary.multiply-and-divide-rational-numbers",
+  "slug": "multiply-divide-rational-numbers",
+  "title": "Multiply and divide rational numbers",
+  "grade": "7",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 23,
+  "requires": [
+   "secondary-t5-17-operations-with-rational-numbers"
+  ]
+ },
+ {
+  "id": "secondary.one-step-inequalities-and-signed-one-step-equations",
+  "slug": "one-step-inequalities",
+  "title": "One-step inequalities and signed one-step equations",
+  "grade": "7",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 11,
+  "requires": [
+   "secondary-t5-17-operations-with-rational-numbers"
+  ]
+ },
+ {
+  "id": "secondary-t5-27-integer-exponents-and-scientific-notation",
+  "slug": "integer-exponents",
+  "title": "Integer exponents",
+  "grade": "8",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 17,
+  "requires": [
+   "secondary-t5-17-operations-with-rational-numbers"
+  ]
+ },
+ {
+  "id": "secondary-t5-28-square-roots-and-cube-roots",
+  "slug": "square-and-cube-roots",
+  "title": "Square roots and cube roots",
+  "grade": "8",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 21,
+  "requires": [
+   "primary.numbers.square-roots-of-perfect-squares",
+   "secondary-t5-17-operations-with-rational-numbers"
+  ]
+ },
+ {
+  "id": "secondary-t5-32-functions-concept-and-representations",
+  "slug": "functions",
+  "title": "Function concept and identifying functions",
+  "grade": "8",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 18,
+  "requires": [
+   "secondary-t5-17-operations-with-rational-numbers"
+  ]
+ },
+ {
+  "id": "secondary-t5-34-transformations-translations-reflections-rotations",
+  "slug": "rigid-transformations",
+  "title": "Translations, reflections, and rotations",
+  "grade": "8",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 24,
+  "requires": [
+   "primary.geometry.reflect-2d-shapes",
+   "secondary-t5-17-operations-with-rational-numbers"
+  ]
+ },
+ {
+  "id": "primary.fractions.fraction-decimal-percentage-extend",
+  "slug": "fractions-decimals-percents",
+  "title": "Convert fractions, decimals, and percents: extended",
+  "grade": "7",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 23,
+  "requires": [
+   "secondary-t5-17-operations-with-rational-numbers"
+  ]
+ },
+ {
+  "id": "primary.ratios.combine-percentage-ratio-contexts",
+  "slug": "percents-and-ratios",
+  "title": "Combine percents and ratios in one problem",
+  "grade": "7",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 14,
+  "requires": [
+   "primary.ratios.calculate-percentage-change"
+  ]
+ },
+ {
+  "id": "primary.ratios.find-the-original-amount-after-a-percent-change",
+  "slug": "original-amount",
+  "title": "Find the original amount after a percent change",
+  "grade": "7",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 7,
+  "requires": [
+   "primary.ratios.calculate-sales-tax",
+   "primary.ratios.discounts"
+  ]
+ },
+ {
+  "id": "primary.ratios.scale-drawing-reality-calculations",
+  "slug": "scale-calculations",
+  "title": "Scale calculations: drawing lengths and actual lengths",
+  "grade": "7",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 16,
+  "requires": [
+   "primary.geometry.enlarge-reduce-scale-factor",
+   "primary.ratios.scale-introduction"
+  ]
+ },
+ {
+  "id": "primary.geometry.coordinate-plane-transformations",
+  "slug": "coordinate-transformations",
+  "title": "Transformations in the coordinate plane: reflect and translate",
+  "grade": "8",
+  "wave": 2,
+  "level": 1,
+  "subgoals": 21,
+  "requires": [
+   "primary.geometry.reflect-2d-shapes",
+   "secondary-t5-17-operations-with-rational-numbers"
+  ]
+ },
+ {
+  "id": "secondary-t5-21-area-and-circumference-of-circles",
+  "slug": "circles",
+  "title": "Area and circumference of circles",
+  "grade": "7",
+  "wave": 3,
+  "level": 2,
+  "subgoals": 23,
+  "requires": [
+   "primary.geometry.enlarge-reduce-scale-factor",
+   "secondary-t5-16-proportional-relationships",
+   "secondary-t5-19-two-step-equations-and-inequalities"
+  ]
+ },
+ {
+  "id": "secondary-t5-22-angle-relationships",
+  "slug": "angle-relationships",
+  "title": "Angle relationships",
+  "grade": "7",
+  "wave": 3,
+  "level": 2,
+  "subgoals": 25,
+  "requires": [
+   "secondary-t5-18-expressions-expand-and-factor",
+   "secondary-t5-19-two-step-equations-and-inequalities"
+  ]
+ },
+ {
+  "id": "secondary.two-step-inequalities",
+  "slug": "two-step-inequalities",
+  "title": "Two-step inequalities",
+  "grade": "7",
+  "wave": 3,
+  "level": 2,
+  "subgoals": 14,
+  "requires": [
+   "secondary-t5-19-two-step-equations-and-inequalities"
+  ]
+ },
+ {
+  "id": "secondary-t5-26-the-number-system-rational-and-irrational-numbers",
+  "slug": "irrational-numbers",
+  "title": "Rational and irrational numbers",
+  "grade": "8",
+  "wave": 3,
+  "level": 2,
+  "subgoals": 21,
+  "requires": [
+   "primary.fractions.fraction-decimal-percentage-extend",
+   "primary.numbers.square-roots-of-perfect-squares"
+  ]
+ },
+ {
+  "id": "secondary-t5-30-solving-linear-equations",
+  "slug": "linear-equations",
+  "title": "Solving linear equations in one variable",
+  "grade": "8",
+  "wave": 3,
+  "level": 2,
+  "subgoals": 22,
+  "requires": [
+   "secondary-t5-18-expressions-expand-and-factor",
+   "secondary-t5-19-two-step-equations-and-inequalities"
+  ]
+ },
+ {
+  "id": "secondary-t5-35-congruence-via-transformations",
+  "slug": "congruence",
+  "title": "Congruence via transformations",
+  "grade": "8",
+  "wave": 3,
+  "level": 2,
+  "subgoals": 18,
+  "requires": [
+   "secondary-t5-34-transformations-translations-reflections-rotations",
+   "secondary-t5-36-dilations-and-similarity"
+  ]
+ },
+ {
+  "id": "secondary.scientific-notation-and-order-of-magnitude",
+  "slug": "scientific-notation",
+  "title": "Scientific notation and order of magnitude",
+  "grade": "8",
+  "wave": 3,
+  "level": 2,
+  "subgoals": 15,
+  "requires": [
+   "secondary-t5-27-integer-exponents-and-scientific-notation"
+  ]
+ },
+ {
+  "id": "primary.fractions.choose-calculation-form-fractions",
+  "slug": "choose-the-form",
+  "title": "Choose a fraction, decimal, or percent form to calculate with, and justify it",
+  "grade": "7",
+  "wave": 3,
+  "level": 2,
+  "subgoals": 16,
+  "requires": [
+   "primary.fractions.fraction-decimal-percentage-extend"
+  ]
+ },
+ {
+  "id": "primary.ratios.scale-area",
+  "slug": "scale-and-area",
+  "title": "Scale factor and area: the area is multiplied by k^2",
+  "grade": "7",
+  "wave": 3,
+  "level": 2,
+  "subgoals": 16,
+  "requires": [
+   "primary.geometry.enlarge-reduce-scale-factor",
+   "primary.ratios.scale-drawing-reality-calculations"
+  ]
+ },
+ {
+  "id": "primary.geometry.pythagorean-theorem-introduction",
+  "slug": "pythagoras-intro",
+  "title": "Pythagorean theorem: introduction and use",
+  "grade": "8",
+  "wave": 3,
+  "level": 2,
+  "subgoals": 16,
+  "requires": [
+   "primary.numbers.square-roots-of-perfect-squares",
+   "secondary-t5-20-scale-drawings-and-geometric-constructions",
+   "secondary-t5-28-square-roots-and-cube-roots"
+  ]
+ },
+ {
+  "id": "primary.geometry.read-map-scale-legend-distance",
+  "slug": "reading-maps",
+  "title": "Read a map: map key, scale, and estimating distance",
+  "grade": "7",
+  "wave": 3,
+  "level": 2,
+  "subgoals": 18,
+  "requires": [
+   "primary.ratios.scale-drawing-reality-calculations"
+  ]
+ },
+ {
+  "id": "primary.ratios.use-map-scale",
+  "slug": "map-scale",
+  "title": "Use a map scale (1 in = 1 mi, i.e. 1:63,360; 1:24,000)",
+  "grade": "7",
+  "wave": 3,
+  "level": 2,
+  "subgoals": 18,
+  "requires": [
+   "primary.ratios.scale-drawing-reality-calculations"
+  ]
+ },
+ {
+  "id": "secondary-t6-29-area-and-perimeter-of-composite-figures",
+  "slug": "composite-figures",
+  "title": "Area and perimeter of composite figures",
+  "grade": "7",
+  "wave": 4,
+  "level": 3,
+  "subgoals": 19,
+  "requires": [
+   "secondary-t5-21-area-and-circumference-of-circles"
+  ]
+ },
+ {
+  "id": "secondary.composite-area-volume-and-surface-area",
+  "slug": "composite-area-volume",
+  "title": "Composite area, volume, and surface area",
+  "grade": "7",
+  "wave": 4,
+  "level": 3,
+  "subgoals": 21,
+  "requires": [
+   "secondary-t5-19-two-step-equations-and-inequalities",
+   "secondary-t5-21-area-and-circumference-of-circles",
+   "secondary-t5-23-cross-sections-and-composite-area-volume"
+  ]
+ },
+ {
+  "id": "secondary-t5-37-angle-relationships-in-parallel-lines-and-triangles",
+  "slug": "parallel-lines-and-triangles",
+  "title": "Angle relationships with parallel lines and triangles",
+  "grade": "8",
+  "wave": 4,
+  "level": 3,
+  "subgoals": 25,
+  "requires": [
+   "secondary-t5-18-expressions-expand-and-factor",
+   "secondary-t5-19-two-step-equations-and-inequalities",
+   "secondary-t5-22-angle-relationships",
+   "secondary-t5-34-transformations-translations-reflections-rotations"
+  ]
+ },
+ {
+  "id": "secondary-t5-39-volume-cones-cylinders-spheres",
+  "slug": "cylinders-cones-spheres",
+  "title": "Volume of cylinders, cones, and spheres",
+  "grade": "8",
+  "wave": 4,
+  "level": 3,
+  "subgoals": 25,
+  "requires": [
+   "primary.geometry.enlarge-reduce-scale-factor",
+   "secondary-t5-21-area-and-circumference-of-circles",
+   "secondary-t5-23-cross-sections-and-composite-area-volume"
+  ]
+ },
+ {
+  "id": "secondary-t5-44-multi-step-equations-with-rational-coefficients",
+  "slug": "multi-step-equations",
+  "title": "Multi-step linear equations with rational coefficients",
+  "grade": "8",
+  "wave": 4,
+  "level": 3,
+  "subgoals": 22,
+  "requires": [
+   "secondary-t5-17-operations-with-rational-numbers",
+   "secondary-t5-30-solving-linear-equations"
+  ]
+ },
+ {
+  "id": "secondary-t5-36-dilations-and-similarity",
+  "slug": "dilations-and-similarity",
+  "title": "Dilations and similarity",
+  "grade": "8",
+  "wave": 4,
+  "level": 4,
+  "subgoals": 23,
+  "requires": [
+   "primary.geometry.enlarge-reduce-scale-factor",
+   "secondary-t5-17-operations-with-rational-numbers",
+   "secondary-t5-35-congruence-via-transformations",
+   "secondary-t5-37-angle-relationships-in-parallel-lines-and-triangles"
+  ]
+ },
+ {
+  "id": "secondary-t5-38-pythagorean-theorem",
+  "slug": "pythagorean-theorem",
+  "title": "Pythagorean theorem",
+  "grade": "8",
+  "wave": 4,
+  "level": 4,
+  "subgoals": 22,
+  "requires": [
+   "secondary-t5-20-scale-drawings-and-geometric-constructions",
+   "secondary-t5-28-square-roots-and-cube-roots",
+   "secondary-t5-37-angle-relationships-in-parallel-lines-and-triangles"
+  ]
+ },
+ {
+  "id": "secondary-t5-29-proportional-relationships-lines-and-linear-equations",
+  "slug": "slope-and-lines",
+  "title": "Proportional and linear relationships: slope, graphs, and equations",
+  "grade": "8",
+  "wave": 4,
+  "level": 5,
+  "subgoals": 27,
+  "requires": [
+   "secondary-t5-16-proportional-relationships",
+   "secondary-t5-17-operations-with-rational-numbers",
+   "secondary-t5-19-two-step-equations-and-inequalities",
+   "secondary-t5-32-functions-concept-and-representations",
+   "secondary-t5-36-dilations-and-similarity",
+   "secondary-t5-37-angle-relationships-in-parallel-lines-and-triangles"
+  ]
+ },
+ {
+  "id": "secondary-t5-31-systems-of-linear-equations",
+  "slug": "systems-of-equations",
+  "title": "Systems of linear equations",
+  "grade": "8",
+  "wave": 4,
+  "level": 6,
+  "subgoals": 23,
+  "requires": [
+   "secondary-t5-29-proportional-relationships-lines-and-linear-equations",
+   "secondary-t5-30-solving-linear-equations"
+  ]
+ },
+ {
+  "id": "secondary-t5-33-linear-functions-and-slope-intercept-form",
+  "slug": "linear-functions",
+  "title": "Linear functions and slope-intercept form",
+  "grade": "8",
+  "wave": 4,
+  "level": 6,
+  "subgoals": 24,
+  "requires": [
+   "secondary-t5-17-operations-with-rational-numbers",
+   "secondary-t5-29-proportional-relationships-lines-and-linear-equations",
+   "secondary-t5-32-functions-concept-and-representations"
+  ]
+ },
+ {
+  "id": "secondary-t5-40-scatter-plots-and-bivariate-data",
+  "slug": "scatter-plots",
+  "title": "Scatter plots and bivariate data",
+  "grade": "8",
+  "wave": 4,
+  "level": 7,
+  "subgoals": 22,
+  "requires": [
+   "secondary-t5-33-linear-functions-and-slope-intercept-form"
+  ]
+ },
+ {
+  "id": "us.statistics.two-way-tables-relative-frequencies-and-segmented-bar-graphs",
+  "slug": "two-way-tables",
+  "title": "Two-way tables, relative frequencies and segmented bar graphs",
+  "grade": "8",
+  "wave": 4,
+  "level": 8,
+  "subgoals": 15,
+  "requires": [
+   "primary.data.make-pie-chart",
+   "secondary-t5-24-probability-concepts",
+   "secondary-t5-40-scatter-plots-and-bivariate-data"
+  ]
+ }
+]
