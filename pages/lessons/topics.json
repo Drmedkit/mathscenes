@@ -52,7 +52,8 @@
   "wave": 1,
   "level": 0,
   "subgoals": 6,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t5-24-probability-concepts",

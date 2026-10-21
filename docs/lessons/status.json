@@ -78,10 +78,10 @@
   "commit": "3146944"
  },
  "cross-sections": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 07:29",
-  "commit": "3146944"
+  "state": "live",
+  "note": "6 sub-goals, 44 voice lines",
+  "at": "2026-10-21 08:35",
+  "commit": "894ccd8"
  },
  "discounts": {
   "state": "live",
@@ -178,5 +178,11 @@
   "note": "agent",
   "at": "2026-10-21 08:33",
   "commit": "d2b0ed6"
+ },
+ "coordinate-transformations": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:34",
+  "commit": "facb242"
  }
 }
