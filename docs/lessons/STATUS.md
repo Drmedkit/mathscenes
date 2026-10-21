@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 17, live 11, queued 35 (of 63)
+Totals: building 17, live 12, queued 34 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -28,9 +28,9 @@ Totals: building 17, live 11, queued 35 (of 63)
 | 7 | Make a circle graph (pie chart) with percents | `pie-charts` | 7 | 18 | live | 18 sub-goals, 42 voice lines |
 | 8 | Enlarge and reduce with a scale factor (scaled copies) | `scale-factor` | 7 | 18 | building | agent |
 | 9 | Enlarge and reduce shapes informally on grid paper | `enlarge-on-grids` | 7 | 14 | queued |  |
-| 10 | Relationships between quantities: ratio tables and proportional relationships | `ratio-tables-and-proportions` | 7 | 20 | queued |  |
+| 10 | Relationships between quantities: ratio tables and proportional relationships | `ratio-tables-and-proportions` | 7 | 20 | building | agent |
 | 11 | Percent increase and decrease: find and apply percent change | `percent-change` | 7 | 19 | live | 19 sub-goals, 42 voice lines |
-| 12 | Calculate a discount | `discounts` | 7 | 13 | building | agent |
+| 12 | Calculate a discount | `discounts` | 7 | 13 | live | 13 sub-goals, 44 voice lines |
 | 13 | Understand scale: drawings and actual lengths | `scale-basics` | 7 | 15 | queued |  |
 | 14 | Solve ratio problems with fractions and decimals | `ratio-problems` | 7 | 21 | queued |  |
 | 15 | Reflect shapes and points across a line | `reflections` | 8 | 23 | building | agent |
