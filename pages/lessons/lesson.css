@@ -66,7 +66,7 @@ ol.plan li button { margin-top: 8px; }
 
 /* inputs */
 .ans { display: flex; align-items: center; gap: 10px; margin: 12px 0 4px; flex-wrap: wrap; }
-.ans input { width: 58px; height: 46px; text-align: center; font: 600 22px/1 inherit; font-family: inherit; color: var(--text); background: #11142b; border: 1.5px solid var(--line); border-radius: 10px; }
+.ans input { width: 58px; height: 46px; text-align: center; font-family: inherit; font-weight: 600; font-size: 22px; line-height: 1; color: var(--text); background: #11142b; border: 1.5px solid var(--line); border-radius: 10px; }
 .ans input:focus { outline: none; border-color: var(--pick); }
 .ans .stack { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; }
 .ans .stack hr { width: 64px; margin: 0; border: 0; border-top: 2px solid var(--text); }
