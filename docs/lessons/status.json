@@ -102,10 +102,10 @@
   "commit": "ff2e4bd"
  },
  "two-step-equations": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 07:29",
-  "commit": "3146944"
+  "state": "live",
+  "note": "10 sub-goals, 39 voice lines",
+  "at": "2026-10-21 08:20",
+  "commit": "06b2818"
  },
  "expand-and-factor": {
   "state": "building",

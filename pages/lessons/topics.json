@@ -248,7 +248,8 @@
   "subgoals": 10,
   "requires": [
    "secondary-t5-17-operations-with-rational-numbers"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-20-scale-drawings-and-geometric-constructions",
