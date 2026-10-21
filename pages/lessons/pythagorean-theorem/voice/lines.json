@@ -1,0 +1,128 @@
+{
+ "q.intro": {
+  "text": "A drone flies in a straight line from A to B on a map. Each grid unit is one mile. How far does it fly? Pick an answer, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one. The picture moves first, then the notation."
+ },
+ "e.s0": {
+  "text": "Go across from A, then up to B. The corner C is a right angle, because grid lines are perpendicular. So A B is the hypotenuse."
+ },
+ "e.s1": {
+  "text": "The legs are how far you move. The run is nine minus three, six. The rise is twelve minus four, eight."
+ },
+ "e.s2": {
+  "text": "A B squared is six squared plus eight squared: thirty six plus sixty four, one hundred."
+ },
+ "e.s3": {
+  "text": "A B is the square root of one hundred: ten miles. It is longer than each leg, and shorter than the trip around the corner. A sensible size."
+ },
+ "e.why": {
+  "text": "Quick check. Why are the legs six and eight, and not nine and twelve?"
+ },
+ "e.why-ok": {
+  "text": "Yes. A leg is how far you move from A to B: nine minus three across, and twelve minus four up."
+ },
+ "e.why-coord": {
+  "text": "Nine and twelve say where B is, measured from the origin, not from A. That triangle would start at zero, zero."
+ },
+ "e.why-add": {
+  "text": "Adding the coordinates gives no distance at all. Distance along a line is a difference, so subtract."
+ },
+ "t.intro": {
+  "text": "Now in three D. A box is three inches by four inches by twelve inches. How long is the longest stick that fits, from corner A to corner G? The first triangle is done for you."
+ },
+ "t.tri": {
+  "text": "A G goes through the inside of the box. Which right triangle has A G as its hypotenuse?"
+ },
+ "t.tri-ok": {
+  "text": "Yes. A C on the floor, C G straight up, A G across. The right angle is at C, because C G is perpendicular to the whole floor."
+ },
+ "t.tri-floor": {
+  "text": "A B C lies flat on the floor. Its hypotenuse is the floor diagonal, A C. A G also climbs the height."
+ },
+ "t.tri-front": {
+  "text": "A B F lies on the front face. Its hypotenuse is A F, a face diagonal, not A G."
+ },
+ "t.sq": {
+  "text": "In triangle A C G, the legs are A C, five, and C G, twelve. What is A G squared?"
+ },
+ "t.sq-ok": {
+  "text": "Yes. Twenty five plus one hundred forty four is one hundred sixty nine."
+ },
+ "t.sq-face": {
+  "text": "Twenty five is the floor diagonal squared. A G also climbs twelve inches, so add twelve squared."
+ },
+ "t.sq-add": {
+  "text": "That adds lengths. Square the legs first: five squared plus twelve squared."
+ },
+ "t.sq-no": {
+  "text": "Square each leg, then add. Five times five, plus twelve times twelve."
+ },
+ "t.len": {
+  "text": "A G squared is one hundred sixty nine. How long is A G?"
+ },
+ "t.len-ok": {
+  "text": "Yes. The square root of one hundred sixty nine is thirteen inches. A thirteen inch stick just fits, corner to corner."
+ },
+ "t.len-root": {
+  "text": "One hundred sixty nine is A G squared. The length is its square root. Which number times itself makes one hundred sixty nine?"
+ },
+ "t.len-half": {
+  "text": "A square root is not half. Eighty four and a half times itself is far more than one hundred sixty nine."
+ },
+ "t.len-face": {
+  "text": "Five is the floor diagonal, A C. A G climbs twelve inches more, so it is longer."
+ },
+ "t.len-add": {
+  "text": "Adding lengths walks along the edges. The straight stick is shorter."
+ },
+ "t.len-no": {
+  "text": "Which number times itself makes one hundred sixty nine?"
+ },
+ "t.empty": {
+  "text": "Type a number first."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked ten miles, and you were right. On the plane and in a box it is the same move: find the right triangle, square, add, take the root."
+ },
+ "t.cb-add": {
+  "text": "At the start you picked fourteen miles. That is the trip along the grid. The straight line is shorter: the squares add, not the lengths."
+ },
+ "t.cb-coord": {
+  "text": "At the start you picked fifteen miles. That used the coordinates of B as the legs. The legs are how far you move: six and eight."
+ },
+ "t.cb-none": {
+  "text": "Find the right triangle, square, add, take the root. On a map, in a box, anywhere."
+ },
+ "p.intro": {
+  "text": "Lena’s triangle has sides five, twelve and thirteen, and twenty five plus one hundred forty four is one hundred sixty nine. Lena says: a right triangle gives a squared plus b squared equals c squared, so the equation gives a right triangle. Rules work backward. Is her reason good?"
+ },
+ "p.flip": {
+  "text": "Test it. A square has four right angles. Backward it fails: a two by five rectangle has four too. So the converse needs a proof. Pick each reason."
+ },
+ "p.build": {
+  "text": "Right. Rules do not always flip. So prove the converse: pick each reason."
+ },
+ "p.c1": {
+  "text": "Right. Draw a right angle, and mark five and twelve along its sides."
+ },
+ "p.c2": {
+  "text": "Right. The new triangle is right, so its hypotenuse is the square root of one hundred sixty nine: thirteen."
+ },
+ "p.c3": {
+  "text": "Right. Same three sides: it fits exactly on Lena’s triangle."
+ },
+ "p.no-flip": {
+  "text": "That is the reason we just tested. Rules do not always flip."
+ },
+ "p.no-looks": {
+  "text": "Looks are not a reason. Eighty nine degrees looks square too. Use the three lengths."
+ },
+ "p.no-other": {
+  "text": "True, but it is the reason for a different line."
+ },
+ "p.done": {
+  "text": "That proves the converse. Same legs, the theorem gives the hypotenuse, and same three sides give the same right angle."
+ }
+}
