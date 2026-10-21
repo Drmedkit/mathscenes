@@ -294,10 +294,10 @@
   "commit": "a7a0b5e"
  },
  "scale-and-area": {
-  "state": "building",
-  "note": "wave 5: Opus builder + Haiku QA",
-  "at": "2026-10-21 14:23",
-  "commit": "a7a0b5e"
+  "state": "live",
+  "note": "16 sub-goals; practice pictures added in review; VOICE PENDING",
+  "at": "2026-10-21 15:27",
+  "commit": "e861a9c"
  },
  "pythagoras-intro": {
   "state": "building",

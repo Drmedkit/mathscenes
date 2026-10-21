@@ -578,7 +578,8 @@
   "requires": [
    "primary.geometry.enlarge-reduce-scale-factor",
    "primary.ratios.scale-drawing-reality-calculations"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "primary.geometry.pythagorean-theorem-introduction",
