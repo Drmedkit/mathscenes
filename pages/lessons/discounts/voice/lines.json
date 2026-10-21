@@ -1,0 +1,134 @@
+{
+  "q.intro": {
+    "text": "Headphones cost eighty dollars. This week they are fifteen percent off."
+  },
+  "q.ask": {
+    "text": "What do you pay?"
+  },
+  "q.sure": {
+    "text": "How sure are you?"
+  },
+  "e.intro": {
+    "text": "Four steps. Press each one: the picture moves first, then the notation."
+  },
+  "e.s1": {
+    "text": "The original price, eighty dollars, is the whole: one hundred percent. The bar under the tag is the same eighty dollars."
+  },
+  "e.s2": {
+    "text": "Ten percent of eighty dollars is eight dollars. Five percent is half of that, four dollars. So fifteen percent off is twelve dollars."
+  },
+  "e.s3": {
+    "text": "Eighty dollars minus twelve dollars is sixty-eight dollars. That is the sale price, what is left to pay."
+  },
+  "e.s4": {
+    "text": "Fifteen percent off leaves eighty-five percent of the bar. Eighty-five percent of eighty dollars is sixty-eight dollars: the same price, in one step."
+  },
+  "e.why": {
+    "text": "Quick check: why do both ways give sixty-eight dollars?"
+  },
+  "e.w-ok": {
+    "text": "Yes. Fifteen percent off and eighty-five percent paid fill one hundred percent of the same price, so the two ways always agree."
+  },
+  "e.w-luck": {
+    "text": "Both ways find the same part of the same bar, so they cannot disagree. Try any price."
+  },
+  "e.w-15": {
+    "text": "Fifteen dollars off would leave sixty-five dollars. But fifteen percent of eighty dollars is twelve dollars."
+  },
+  "t.intro": {
+    "text": "Now a forty-five dollar hoodie is thirty-five percent off. The first two steps are done for you."
+  },
+  "t.disc": {
+    "text": "The discount: thirty-five percent of forty-five dollars is fifteen dollars and seventy-five cents."
+  },
+  "t.sub": {
+    "text": "Your step: subtract. What is the sale price?"
+  },
+  "t.s-ok": {
+    "text": "Yes: forty-five dollars minus fifteen seventy-five is twenty-nine dollars and twenty-five cents."
+  },
+  "t.s-disc": {
+    "text": "Fifteen seventy-five is the discount, the part that comes off. What is left?"
+  },
+  "t.s-pct": {
+    "text": "That takes thirty-five dollars off. The discount is thirty-five percent of the price: fifteen seventy-five."
+  },
+  "t.s-add": {
+    "text": "A discount makes the price lower. Subtract the fifteen seventy-five."
+  },
+  "t.s-zero": {
+    "text": "Check the subtraction across the zeros: forty-five dollars is forty-five dollars and zero cents."
+  },
+  "t.s-other": {
+    "text": "Take the discount away from the original price: forty-five dollars minus fifteen seventy-five."
+  },
+  "t.check": {
+    "text": "Now check it in one step. Which calculation gives the sale price?"
+  },
+  "t.c-ok": {
+    "text": "Yes: you pay sixty-five percent of the original. Point six five times forty-five dollars is twenty-nine twenty-five, the same price."
+  },
+  "t.c-disc": {
+    "text": "Point three five times forty-five dollars is the discount, the part you do not pay."
+  },
+  "t.c-base": {
+    "text": "Sixty-five percent of what? The percent is always of the original price, forty-five dollars."
+  },
+  "t.c-twice": {
+    "text": "Point six five times forty-five dollars already leaves the discount out. Taking it off again counts it twice."
+  },
+  "t.half": {
+    "text": "Is the sale price more or less than half of the original price?"
+  },
+  "t.h-ok": {
+    "text": "Right: thirty-five percent is less than half, so more than half is left. Twenty-nine twenty-five is more than twenty-two fifty."
+  },
+  "t.h-no": {
+    "text": "Look at the bar: less than half comes off, so more than half is left."
+  },
+  "t.cb-right": {
+    "text": "At the start you picked sixty-eight dollars, and you were right. Now you can show why."
+  },
+  "t.cb-65": {
+    "text": "At the start you picked sixty-five dollars: that takes fifteen dollars off, not fifteen percent. You pay sixty-eight dollars."
+  },
+  "t.cb-12": {
+    "text": "At the start you picked twelve dollars: that is the discount, not the price. You pay sixty-eight dollars."
+  },
+  "t.cb-none": {
+    "text": "At the start: fifteen percent off eighty dollars is twelve dollars off, so you pay sixty-eight dollars."
+  },
+  "p.intro": {
+    "text": "Riley buys a fifty dollar jacket at seventy percent off and says the sale price is thirty-five dollars. Is Riley right?"
+  },
+  "p.test": {
+    "text": "Let's test it. Build the argument and see where it leads."
+  },
+  "p.prove": {
+    "text": "Now prove it. Fill each because with the reason that makes the line true."
+  },
+  "p.c1": {
+    "text": "You pay only thirty percent of the original price, because seventy percent off leaves one hundred minus seventy, thirty percent of the bar."
+  },
+  "p.c2": {
+    "text": "so the sale price is less than half of fifty dollars, less than twenty-five dollars, because thirty percent is less than half of the bar."
+  },
+  "p.c3": {
+    "text": "so it is thirty percent of fifty dollars, fifteen dollars, and Riley's thirty-five dollars is the discount, because thirty-five and fifteen make the whole fifty."
+  },
+  "p.x-bound": {
+    "text": "Being less than fifty dollars is not enough: every part of the bar is less than fifty dollars, the discount too."
+  },
+  "p.x-small": {
+    "text": "Not here. Seventy percent comes off, so the discount is the bigger part."
+  },
+  "p.x-disagree": {
+    "text": "Two correct ways to the same price cannot disagree. If they do, one has a slip."
+  },
+  "p.x-other": {
+    "text": "True, but it is the reason for a different line."
+  },
+  "p.done": {
+    "text": "That's a proof: three claims, each with its reason, and the picture backs every one. Riley gave the discount, not the sale price."
+  }
+}

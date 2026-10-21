@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calculate a Discount</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* money answers need room for cents (12.50) */
+    .panel .ans input { width: 104px; font-size: 22px; font-weight: 600; }
+    .panel .ans .money { display: inline-flex; align-items: center; gap: 6px; font-size: 22px; color: var(--dim); }
+    .panel .calc { display: block; margin-top: 6px; font-size: 14px; color: var(--faint); }
+    .cards button b { font-weight: 600; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Calculate a discount</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The price tag, the price bar and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./discounts.ts"></script>
+</body>
+</html>
