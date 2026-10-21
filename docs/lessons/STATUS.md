@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 4, live 41, queued 18 (of 63)
+Totals: building 3, live 42, queued 18 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -27,7 +27,7 @@ Totals: building 4, live 41, queued 18 (of 63)
 | 6 | Judge sample representativeness and limit conclusions | `judging-samples` | 7 | 6 | live | 6 sub-goals, 12 families |
 | 7 | Make a circle graph (pie chart) with percents | `pie-charts` | 7 | 18 | live | 18 sub-goals, 42 voice lines |
 | 8 | Enlarge and reduce with a scale factor (scaled copies) | `scale-factor` | 7 | 18 | live | 18 sub-goals, 49 voice lines |
-| 9 | Enlarge and reduce shapes informally on grid paper | `enlarge-on-grids` | 7 | 14 | building | Opus builder + Haiku QA (pilot) |
+| 9 | Enlarge and reduce shapes informally on grid paper | `enlarge-on-grids` | 7 | 14 | live | 14 sub-goals, 43 voice lines; pilot Opus builder + Haiku QA; VOICE PENDING |
 | 10 | Relationships between quantities: ratio tables and proportional relationships | `ratio-tables-and-proportions` | 7 | 20 | live | 20 sub-goals, 47 voice lines; one leader runs close to 1.5 |
 | 11 | Percent increase and decrease: find and apply percent change | `percent-change` | 7 | 19 | live | 19 sub-goals, 42 voice lines |
 | 12 | Calculate a discount | `discounts` | 7 | 13 | live | 13 sub-goals, 44 voice lines |

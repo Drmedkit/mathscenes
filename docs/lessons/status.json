@@ -246,10 +246,10 @@
   "commit": "7cc7201"
  },
  "enlarge-on-grids": {
-  "state": "building",
-  "note": "Opus builder + Haiku QA (pilot)",
-  "at": "2026-10-21 13:15",
-  "commit": "8e7037d"
+  "state": "live",
+  "note": "14 sub-goals, 43 voice lines; pilot Opus builder + Haiku QA; VOICE PENDING",
+  "at": "2026-10-21 13:59",
+  "commit": "710654a"
  },
  "scale-basics": {
   "state": "building",
