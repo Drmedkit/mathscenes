@@ -491,7 +491,8 @@
   "subgoals": 14,
   "requires": [
    "secondary-t5-19-two-step-equations-and-inequalities"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-26-the-number-system-rational-and-irrational-numbers",
