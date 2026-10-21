@@ -355,7 +355,8 @@
   "requires": [
    "primary.numbers.square-roots-of-perfect-squares",
    "secondary-t5-17-operations-with-rational-numbers"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-32-functions-concept-and-representations",

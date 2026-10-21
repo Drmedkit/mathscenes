@@ -138,10 +138,10 @@
   "commit": "1647b4d"
  },
  "square-and-cube-roots": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 08:20",
-  "commit": "e6dad26"
+  "state": "live",
+  "note": "21 sub-goals, 46 voice lines",
+  "at": "2026-10-21 09:22",
+  "commit": "3b31984"
  },
  "rigid-transformations": {
   "state": "live",
