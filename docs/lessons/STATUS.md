@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: building 17, live 3, queued 43 (of 63)
+Totals: building 16, live 5, queued 42 (of 63)
 
 ## Lead-in (grade 5 fractions)
 
@@ -20,11 +20,11 @@ Totals: building 17, live 3, queued 43 (of 63)
 | # | topic | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
 | 1 | Proportional relationships | `proportional-relationships` | 7 | 17 | building | agent |
-| 2 | Add and subtract rational numbers | `add-subtract-rational-numbers` | 7 | 19 | building | agent |
+| 2 | Add and subtract rational numbers | `add-subtract-rational-numbers` | 7 | 19 | live | 19 sub-goals, 27 families, 41 voice lines |
 | 3 | Cross-sections of right rectangular prisms and pyramids | `cross-sections` | 7 | 6 | building | agent |
 | 4 | Probability concepts | `probability` | 7 | 20 | building | agent |
 | 5 | Draw triangles from given conditions | `draw-triangles` | 7 | 11 | building | agent |
-| 6 | Judge sample representativeness and limit conclusions | `judging-samples` | 7 | 6 | building | agent |
+| 6 | Judge sample representativeness and limit conclusions | `judging-samples` | 7 | 6 | live | 6 sub-goals, 12 families |
 | 7 | Make a circle graph (pie chart) with percents | `pie-charts` | 7 | 18 | building | agent |
 | 8 | Enlarge and reduce with a scale factor (scaled copies) | `scale-factor` | 7 | 18 | building | agent |
 | 9 | Enlarge and reduce shapes informally on grid paper | `enlarge-on-grids` | 7 | 14 | queued |  |
@@ -50,7 +50,7 @@ Totals: building 17, live 3, queued 43 (of 63)
 | 4 | Sampling and comparative inferences | `sampling-and-inference` | 7 | 17 | queued |  |
 | 5 | Percent applications | `percent-applications` | 7 | 25 | queued |  |
 | 6 | Multiply and divide rational numbers | `multiply-divide-rational-numbers` | 7 | 23 | building | agent |
-| 7 | One-step inequalities and signed one-step equations | `one-step-inequalities` | 7 | 11 | queued |  |
+| 7 | One-step inequalities and signed one-step equations | `one-step-inequalities` | 7 | 11 | building | agent |
 | 8 | Integer exponents | `integer-exponents` | 8 | 17 | queued |  |
 | 9 | Square roots and cube roots | `square-and-cube-roots` | 8 | 21 | queued |  |
 | 10 | Function concept and identifying functions | `functions` | 8 | 18 | queued |  |

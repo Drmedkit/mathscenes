@@ -41,7 +41,8 @@
   "wave": 1,
   "level": 0,
   "subgoals": 19,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t5-23-cross-sections-and-composite-area-volume",
@@ -81,7 +82,8 @@
   "wave": 1,
   "level": 0,
   "subgoals": 6,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "primary.data.make-pie-chart",

@@ -24,10 +24,10 @@
   "commit": "3146944"
  },
  "add-subtract-rational-numbers": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 07:28",
-  "commit": "3146944"
+  "state": "live",
+  "note": "19 sub-goals, 27 families, 41 voice lines",
+  "at": "2026-10-21 08:14",
+  "commit": "ff2e4bd"
  },
  "probability": {
   "state": "building",
@@ -96,10 +96,10 @@
   "commit": "3146944"
  },
  "judging-samples": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 07:29",
-  "commit": "3146944"
+  "state": "live",
+  "note": "6 sub-goals, 12 families",
+  "at": "2026-10-21 08:14",
+  "commit": "ff2e4bd"
  },
  "two-step-equations": {
   "state": "building",
@@ -118,5 +118,11 @@
   "note": "agent",
   "at": "2026-10-21 07:52",
   "commit": "efb9561"
+ },
+ "one-step-inequalities": {
+  "state": "building",
+  "note": "agent",
+  "at": "2026-10-21 08:09",
+  "commit": "6f77845"
  }
 }
