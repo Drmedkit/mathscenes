@@ -342,10 +342,10 @@
   "commit": "b0788c1"
  },
  "pythagorean-theorem": {
-  "state": "building",
-  "note": "wave 7: Opus builder, lead QA",
-  "at": "2026-10-21 16:51",
-  "commit": "8f2a4d0"
+  "state": "live",
+  "note": "22 sub-goals, 42 voice lines; VOICE PENDING",
+  "at": "2026-10-21 17:55",
+  "commit": "5339429"
  },
  "slope-and-lines": {
   "state": "building",

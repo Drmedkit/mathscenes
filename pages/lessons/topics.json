@@ -726,7 +726,8 @@
    "secondary-t5-20-scale-drawings-and-geometric-constructions",
    "secondary-t5-28-square-roots-and-cube-roots",
    "secondary-t5-37-angle-relationships-in-parallel-lines-and-triangles"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-29-proportional-relationships-lines-and-linear-equations",
