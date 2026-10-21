@@ -274,7 +274,8 @@
   "requires": [
    "primary.geometry.enlarge-reduce-scale-factor",
    "primary.ratios.scale-introduction"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t5-25-sampling-and-comparative-inferences",

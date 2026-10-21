@@ -162,10 +162,10 @@
   "commit": "018e193"
  },
  "scale-drawings": {
-  "state": "building",
-  "note": "agent",
-  "at": "2026-10-21 08:29",
-  "commit": "85ec531"
+  "state": "live",
+  "note": "13 sub-goals",
+  "at": "2026-10-21 09:07",
+  "commit": "0caf08b"
  },
  "ratio-tables-and-proportions": {
   "state": "building",
