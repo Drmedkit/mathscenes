@@ -1,0 +1,140 @@
+{
+ "q.intro": {
+  "text": "The temperature falls two degrees every hour. After h hours, the change is negative two h degrees."
+ },
+ "q.ava": {
+  "text": "Ava writes: negative two h is less than negative six. That means: it has fallen more than six degrees."
+ },
+ "q.ask": {
+  "text": "Which numbers of hours make Ava's inequality true?"
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the picture moves first, then the notation."
+ },
+ "e.s1": {
+  "text": "The change, negative two h, must be less than negative six: every number to the left of negative six. That is more than six degrees down."
+ },
+ "e.s2": {
+  "text": "Divide both sides by negative two. The arrows cross: negative eight was left of negative six, but four lands to the right of three. Dividing by a negative turns the line around, so less than becomes greater than."
+ },
+ "e.s3": {
+  "text": "h is greater than three: an open dot at three, because three hours gives exactly negative six, not less. Then every number to its right."
+ },
+ "e.s4": {
+  "text": "Check: five hours gives negative ten, and negative ten is less than negative six: true. One hour gives negative two, and negative two is less than negative six: false. So, more than three hours."
+ },
+ "e.why": {
+  "text": "Quick check: why did less than turn into greater than?"
+ },
+ "e.w-ok": {
+  "text": "Yes. Dividing by a negative mirrors the line through zero: negative eight is left of negative six, but four is right of three. Every pair swaps its order."
+ },
+ "e.w-any": {
+  "text": "Not the reason: x plus negative five is less than negative six has negatives too, and its symbol stays. Only multiplying or dividing by a negative flips it."
+ },
+ "e.w-small": {
+  "text": "Dividing by two makes numbers smaller too, but eight is less than twelve stays four is less than six. It is the negative sign that turns the line around."
+ },
+ "t.intro": {
+  "text": "Now solve: x divided by negative three is at least two. The first step is done for you."
+ },
+ "t.read": {
+  "text": "The top line shows x divided by negative three: the number two, with a filled dot because it is included, and every number to its right."
+ },
+ "t.undo": {
+  "text": "What do you do to both sides to get x alone?"
+ },
+ "t.u-ok": {
+  "text": "Yes: multiply both sides by negative three. Watch where the numbers land."
+ },
+ "t.u-nosign": {
+  "text": "Keep the sign: x was divided by negative three, so multiply by negative three, not by three."
+ },
+ "t.u-div": {
+  "text": "Dividing again does not undo a division. To undo dividing, multiply."
+ },
+ "t.land": {
+  "text": "Follow the arrow from two. Where does it land?"
+ },
+ "t.fill": {
+  "text": "Type a number first."
+ },
+ "t.l-ok": {
+  "text": "Yes: two times negative three is negative six."
+ },
+ "t.l-nosign": {
+  "text": "Two times three is six, but you multiply by negative three. Two times negative three is negative six."
+ },
+ "t.l-other": {
+  "text": "Multiply two by negative three: a positive times a negative is negative."
+ },
+ "t.sym": {
+  "text": "So which numbers are the solutions?"
+ },
+ "t.s-ok": {
+  "text": "Yes: x is at most negative six. A filled dot at negative six, because it is included, and every number to its left."
+ },
+ "t.s-keep": {
+  "text": "Look at the arrows: the numbers to the right of two landed to the left of negative six. Multiplying by a negative reverses the symbol."
+ },
+ "t.s-eq": {
+  "text": "Negative six is only the boundary. Every number to the left of negative six works too."
+ },
+ "t.s-strict": {
+  "text": "At least includes the boundary: x equals negative six gives two, and two is at least two. Keep the or equal."
+ },
+ "t.test": {
+  "text": "Test a value on the other side: is x equal to zero a solution?"
+ },
+ "t.t-ok": {
+  "text": "Right: zero divided by negative three is zero, and zero is at least two is false. And negative nine gives three, and three is at least two is true. The answer checks out."
+ },
+ "t.t-no": {
+  "text": "Put it in: zero divided by negative three is zero, and zero is at least two is false. So zero is not a solution, just as the graph says."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked h greater than three, and you were right. Now you know why the symbol turned."
+ },
+ "t.cb-keep": {
+  "text": "At the start you picked h less than three: that keeps the symbol. Dividing by negative two reverses it: h greater than three, more than three hours."
+ },
+ "t.cb-eq": {
+  "text": "At the start you picked h equals three: that is only the boundary. Every time after three hours works: h greater than three."
+ },
+ "p.intro": {
+  "text": "Jordan solves negative three plus x is at most five, and writes: there is a negative, so I flip the symbol. x is at least eight."
+ },
+ "p.test": {
+  "text": "Let's test it. Build the argument and see where it leads."
+ },
+ "p.prove": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "To undo the negative three, add three to both sides,"
+ },
+ "p.c2": {
+  "text": "so the order stays: x is at most eight,"
+ },
+ "p.c3": {
+  "text": "and Jordan's answer, x is at least eight, is wrong,"
+ },
+ "p.x-any": {
+  "text": "That is Jordan's idea, the one being tested. A negative number in the problem does not flip the symbol."
+ },
+ "p.x-add": {
+  "text": "Watch the arrows: adding three slides every number the same way. The order stays."
+ },
+ "p.x-boundary": {
+  "text": "Eight is the boundary of both answers, so it cannot tell them apart. Test a value on one side."
+ },
+ "p.x-other": {
+  "text": "True, but it is the reason for a different line."
+ },
+ "p.done": {
+  "text": "That's a proof: three claims, each with its reason, and the number line backs every one. Only multiplying or dividing by a negative reverses the symbol."
+ }
+}
