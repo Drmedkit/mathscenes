@@ -95,5 +95,5 @@ export function wrongTyped(it) {
 }
 /** a one-line picture of an item for reports */
 export function show(it) {
-  return `${plainText(it.prompt)} | board: ${it.board ?? ''}${it.choices ? ` | choices: ${it.choices.map((c, i) => `(${i}) ${plainText(c)}`).join(' ')}` : ''} | answer: ${JSON.stringify(it.answer)}`.slice(0, 600);
+  return `${plainText(it.prompt)} | board: ${it.board ?? ''}${it.choices ? ` | choices: ${it.choices.map((c, i) => `(${i}) ${plainText(c)}`).join(' ')}` : ''} | answer: ${JSON.stringify(it.answer, (k, v) => (typeof v === 'bigint' ? Number(v) : v))}`.slice(0, 600);
 }

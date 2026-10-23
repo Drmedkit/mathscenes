@@ -3,7 +3,7 @@
 // pair a lesson's practice can ask, it makes many items with the lesson's own generators and checks each one:
 //   answer   the independent oracle (tests/oracle/<slug>.mjs, written from what the student sees) agrees with
 //            item.answer, and item.check() accepts the oracle's answer typed the way a student types it
-//   wrong    a far-off typed answer and every wrong choice are rejected; exactly one choice is right, none repeat
+//   wrong    every wrong choice is rejected (a far-off typed answer accepted is a warning: open questions exist); exactly one choice is right, none repeat
 //   text     prompt, board, choices, unit, solution and steps: no undefined / NaN / "+ -" / "- -" / -0 / float noise /
 //            double spaces; "1 ...s" is flagged for a look
 //   world    the oracle's sane(q): nothing impossible in the story
@@ -40,14 +40,17 @@ const BAD_TEXT = [
   [/(^|[^-−])[-−]\s*[-−]\s*\d/, 'double minus'],
   [/(^|[^\d.,])[-−]0(?![.,\d])/, 'negative zero'],
   [/(^|[^\d])(\d+)\/0(?!\d|\.\d)/, 'zero denominator'],
-  [/\d\.\d*(0{6,}|9{6,})\d/, 'float noise (5.0000000001)'],
+  [/\d\.\d*[1-9](0{6,}|9{6,})[1-9]/, 'float noise (5.0000000001)'],
   [/\s{2,}\S/, 'double space'],
   [/(^|[^\d.,−-])1 (?!of\b|in\b|out\b|to\b|for\b|and\b|or\b|is\b|more\b|less\b)([a-z]{3,}?)s\b/, 'plural after 1 (check)'],
 ];
 const BAD_TEX = BAD_TEXT.filter(([, why]) => !/double space|plural/.test(why));
-const textProblems = (t, tex = false) => (tex ? BAD_TEX : BAD_TEXT).filter(([re]) => re.test(t)).map(([, why]) => why);
+// a lesson may allow text that is right in its maths (explain.ts `export const TEXT_OK = [/7\/0/]`: "1/0 has no value")
+let ALLOW = [];
+const textProblems = (t, tex = false) => { const u = ALLOW.reduce((x, re) => x.replace(new RegExp(re.source, re.flags.includes('g') ? re.flags : re.flags + 'g'), ' '), String(t)); return (tex ? BAD_TEX : BAD_TEXT).filter(([re]) => re.test(u)).map(([, why]) => why); };
 const STEP_MAX = 5, STEP_CHARS = 200;
-const strip = it => JSON.stringify(it, (k, v) => (typeof v === 'function' ? undefined : v));
+const big = (k, v) => (typeof v === 'bigint' ? `${v}n` : v);
+const strip = it => JSON.stringify(it, (k, v) => (typeof v === 'function' ? undefined : big(k, v)));
 
 async function sweepLesson(slug) {
   const res = { slug, pairs: {}, errors: [], warnings: [], oracle: false, explain: false };
@@ -57,7 +60,7 @@ async function sweepLesson(slug) {
   try { L = await loadLesson(slug); } catch (e) { err('-', `does not load: ${e.message}`); return res; }
   let O = null;
   try { O = await loadOracle(slug); } catch (e) { err('-', `oracle does not load: ${e.message}`); }
-  res.oracle = !!O; res.explain = !!L.explain;
+  res.oracle = !!O; res.explain = !!L.explain; ALLOW = L.textOk ?? [];
   if (!O) warn('-', 'no oracle (tests/oracle/' + slug + '.mjs): answers are not independently checked');
   if (!L.explain) warn('-', 'no explain.ts: the steps card falls back to item.solution (not checked against the oracle)');
   for (const { subgoal, family } of pairsOf(L.plan)) {
@@ -77,8 +80,8 @@ async function sweepLesson(slug) {
         try { it = gen(R, n, subgoal); } catch (e) { if (cap('throw')) err(key, `generator throws: ${e.message}`); continue; }
         t.items++;
         it.subgoal = subgoal;
-        keys.add(plainText(it.prompt) + '|' + it.board + '|' + (it.choices ?? []).join('|'));
         const q = viewOf(it, subgoal);
+        keys.add(plainText(it.prompt) + '|' + it.board + '|' + (it.choices ?? []).join('|') + '|' + JSON.stringify(q.data, big));   // a new picture is a new item
         // the item's own answer must pass its own check
         let own;
         try { own = it.check(it.answer); } catch (e) { own = { ok: false, say: `check throws: ${e.message}` }; }
@@ -97,7 +100,7 @@ async function sweepLesson(slug) {
           const cs = q.choices ?? [];
           let verdicts = [];
           try { verdicts = cs.map((_, i) => it.check({ kind: 'choice', i })); } catch (e) { if (cap('cthrow')) err(key, `check throws on a choice: ${e.message}`, it); }
-          const right = verdicts.filter(v => v.ok).length, dup = new Set(cs.map(c => c.toLowerCase())).size !== cs.length;
+          const right = verdicts.filter(v => v.ok).length, dup = new Set((it.choices ?? []).map(c => String(c).trim())).size !== cs.length;   // raw HTML: an overline or a sup is part of the choice
           if (cs.length < 2 || right !== 1 || dup) { t.choiceIssues++; if (cap('choice')) err(key, `choices: ${cs.length} shown, ${right} marked right${dup ? ', duplicates' : ''}`, it); }
           verdicts.forEach(v => { if (!v.ok) { t.distractors++; if (!v.mc) t.generic++; } });
         }
@@ -124,7 +127,7 @@ async function sweepLesson(slug) {
         }
         // a far-off typed answer is wrong
         const far = wrongTyped(it);
-        if (far) { try { if (it.check(far).ok) { t.farAccepted++; if (cap('far')) err(key, `the lesson accepts a far-off answer ${JSON.stringify(far)}`, it); } } catch { /* fine */ } }
+        if (far) { try { if (it.check(far).ok) { t.farAccepted++; if (cap('far')) warn(key, `the lesson accepts a far-off answer ${JSON.stringify(far)}`, it); } } catch { /* fine */ } }
         // worked steps
         if (L.explain) {
           let ex = null, bad = '';

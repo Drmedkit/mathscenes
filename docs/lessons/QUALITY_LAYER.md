@@ -105,35 +105,42 @@ Rules:
 ### 1. `explain(it)` in `src/lesson/topics/<slug>/explain.ts`
 
 ```ts
-import type { Explained, Item } from '../../runtime/item';
-export function explain(it: Item): Explained | null { ... }   // Explained = { steps: string[]; result: Response }
+import type { Explain } from '../../runtime/item';
+import { stepsFrom } from '../../runtime/explain';
+export const explain: Explain = it => stepsFrom(it);          // + per-family overrides where needed
+export const TEXT_OK = [/1\/0/];                              // optional: text the sweep must not flag ("1/0 has no value")
 ```
 Hook it into the page: `import { explain } from '../../src/lesson/topics/<slug>/explain';` and pass `explain,` to
-`startPractice({...})`. The runtime shows the steps on the "Step by step" card after a miss (falls back to
-`it.solution` when `explain` is missing, returns `null` or throws), and the topic's canvas replay still runs.
+`startPractice({...})`. After a miss the runtime shows the "Step by step" card (`panel.ts` `stepsCard`, steps appear
+one after another; falls back to `it.solution` when `explain` is missing, returns `null` or throws), and the topic's
+canvas replay still runs.
 
-- Every family gets steps (the sweep errors on `null`). 2-5 steps, each at most ~200 characters as plain text, HTML
-  allowed (`fr()`, `<i>x</i>`, `<b class="s">` for the answer). Grade 7-8 words.
-- **The lesson's own method** (DESIGN.md, the worked example and "Your turn"): undo the last step first on the
-  balance, the double number line of percent and degrees, count over total... Never a method or word the lesson has
-  not taught.
-- **The item's own numbers.** No `undefined`, `NaN`, float noise, `+ −`, double spaces.
-- `result` is the answer the steps arrive at, as a `Response` of the item's input kind, **computed by the steps'
-  own arithmetic**, never copied from `it.answer`. For a choice item: the index of the choice the steps pick out
-  (find it by value or by the claim the steps prove).
-- The existing `it.solution` lines are often a good start: reuse them when they already are 2-5 short steps in the
-  lesson's method, end on the answer and use the item's numbers; then only `result` needs computing. If explain
-  needs numbers the item does not carry, store them on the item as `it.ex = {...}` in the generator (`ex` is hidden
-  from oracles; never put them in a field the oracle sees).
+`Explained = { steps: string[]; result: Response }`. **`result` is read from the steps, never copied from
+`it.answer`** (`src/lesson/runtime/explain.ts`): the last value marked `<b class="s">…</b>` (or `<b class="a ans">`
+when the lesson keeps a colour class), else the last number of the last step; for a choice, the one choice whose text
+a step names or marks. So the sweep checks that **the card ends on the answer the oracle computes**: a solution line
+that says 45° while the answer is 54° is an error.
+
+What B does per lesson (the pilot pattern):
+- Start with `stepsFrom(it)` and run the sweep: every pair whose steps "give nothing" or "end in X" needs work.
+- Mark the answer in the solution line that reaches it: `<b class="s">${x}</b>` (or add ` ans` to the lesson's own
+  colour class: `<b class="b ans">`). Use `ans()` from `runtime/explain.ts`.
+- Choice items: in the lesson's choice helper, `solution: endOnChoice(base.solution, right.t)` adds `So: <right
+  choice>` when no step names it yet (pilot: one line in each lesson's helper).
+- Steps: 2-5, each at most ~200 characters plain, grade 7-8 words, **the lesson's own method** (DESIGN.md, the worked
+  example), **the item's own numbers**, no `undefined`/`NaN`/float noise/`+ −`/double spaces. Rewrite the solution
+  lines that break this, or override per family in explain.ts (`OVERRIDES[it.family]?.(it) ?? stepsFrom(it)`); if an
+  override needs the generator's numbers, store them on the item as `it.ex = {...}` (`ex` is hidden from oracles).
 
 ### 2. `placement.ts`: the check-in adapter
 
 ```ts
 import type { Placement } from '../../placement/types';
 export const PLACEMENT: Placement = {
-  picks: [{ subgoal: 'solve-whole-positive', family: 'solve' }, { subgoal: 'solve-signed', family: 'solve' }],
-  figure: it => null,                  // optional: a small SVG string when an item needs its picture
-  errorLabel: { 'mc.linear-equations.undoes-in-wrong-order': 'Undoes the two steps in the wrong order' },
+  picks: [{ subgoal: 'solve-whole-positive', family: 'solve', standalone: true }, { subgoal: 'solve-signed', family: 'solve', standalone: true }],
+  use: it => !/calculator/.test(it.prompt),   // optional: which items may be asked (no calculator on the check-in)
+  figure: it => null,                          // optional: a small SVG string when an item needs its picture
+  errorLabel: { 'mc.linear-equations.undoes-in-wrong-order': 'Undoes the two steps in the wrong order' },   // optional
 };
 ```
 - 1-3 picks: practice families at the lesson's test level (the core skill of the later sub-goals), answerable
@@ -144,12 +151,16 @@ export const PLACEMENT: Placement = {
   no external refs, no script, at most 6 KB) in the lesson-page colours (lines `#efe6f7`, fills `#232850`, highlight
   `#ffbe5c`, second `#4fd3cf`). Otherwise pick a family that stands alone; set `standalone: true` on a pick whose
   items carry picture data the question does not need.
-- `errorLabel`: one line per misconception id the picks' `check()` returns, for the end report ("Undoes the steps in
-  the wrong order"). Ids must exist in `misconceptions.json`.
+- `errorLabel` (optional): wording per misconception id for the end report; without it the report uses the
+  catalogue's `name` (`pages/lessons/placement/mc-names.json`). `check-placement` probes the picks with typical wrong
+  answers and lists the ids it sees; they must exist in `misconceptions.json`.
 
 ### 3. Fix what the sweep finds
 
-When the oracle of your lesson exists, run the sweep. Fix every real error in the lesson (generator, answer, check,
+When the oracle of your lesson exists, run the sweep. Lessons without an oracle are already swept for text, choices
+and variety (`sweep.mjs --all`): on 2026-10-23, 56 errors in 9 lessons (notation like `2 + −5`, `b = −6 − −1 × 3`,
+`−0`, `undefined`/`1/0` used as maths: allow those with `TEXT_OK`), 449 "plural after 1" warnings to look at, and 21
+families whose same seed gives different items. Then run the sweep. Fix every real error in the lesson (generator, answer, check,
 text, world, choices) and add a regression probe to `tests/lesson-<slug>.test.ts`. **Never edit an oracle.** If you are
 sure an oracle is wrong, say so in your report with the item and the reasoning; the lead decides.
 
@@ -171,3 +182,31 @@ A short adaptive check (about 20 questions) that finds where a student should st
   seen (`errorLabel`).
 - `placement-sim.mjs`: simulated students (hidden knowledge, slips, guesses) on the real adapters; run it after any
   model or graph change.
+
+## Pilot (2026-10-23): two-step-equations, circles, pie-charts
+
+Oracles written blind by three separate agents; explain, adapters and fixes by B. Sweep at `--n=600`: all three 0
+errors (about 85,000 items, every one answered by an oracle). The oracles agreed with every lesson answer; what they
+found was in the items' **worlds and choices**:
+- two-step-equations: "what does the 4 stand for" with 4 bags AND 4 pears; "Each friend paid $9" (meant as wrong) true
+  when x equalled the per-friend amount; "1 marbles / 1 cones / 1 pears".
+- circles: sizes that ignore the object (38 ft tabletop, 1.5-inch pizza, 0.8 cm jar lid, 2 m field, 4-inch coin, 40-inch
+  can); areaBack called the bigger circle "a smaller one"; frac answers stored as a decimal whole (`w: 5.5`).
+- pie-charts: "close the circle" had two valid lists in ~80% of items (the "fix only the last angle" distractor was
+  within 1° too); "relabel the slice" was an honest fix when the exact share was x.5%. Lead decision: a 0-count
+  category asked as a percent is intended (the topic JSON names zero-frequency cases), not a world error.
+- The steps check found solution lines whose answer was not marked or not stated (flowBack box, convertRD, propCheck)
+  and one family (solve-rational/firstMove) whose solution named a wrong choice's text.
+
+The check-in: `placement-sim.mjs --all` (every lesson as if it had an adapter): 20 questions, 90% of lessons decided,
+87% of those right; the single start lesson on a 63-lesson path is exact for only ~23% (within 2 lessons ~33%),
+because one early gap moves it. Before the check-in goes live: per-strand starts (number, ratio and percent, geometry,
+statistics, expressions and equations) like the Kubo themes, and a re-run of the simulation.
+
+## Rolling out the other 60 lessons
+
+Per lesson, measured on the pilot: O about 30-45 minutes of agent time (20-25 families; conceptual choice families
+take longest), B about 30-60 minutes (mark answers, choice helper, adapter, fix 1-3 real bugs + regression probes).
+Work in waves of about 6 lessons, two agents per lesson that never share files: O writes only `tests/oracle/<slug>.mjs`,
+B writes only that lesson's topic folder, page hook and test; the lead runs `sweep --all --quiet`, `check-placement`,
+`quality-layer.test.ts`, commits and pushes. Start with the 9 lessons the baseline sweep already flags.

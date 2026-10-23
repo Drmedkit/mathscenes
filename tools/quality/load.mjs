@@ -38,7 +38,7 @@ export async function loadLesson(slug) {
   const names = items.FAMILY_NAMES ?? {};
   const opt = async f => (fs.existsSync(path.join(dir, f)) ? loadTs(path.join(dir, f)) : null);
   const ex = await opt('explain.ts'), pl = await opt('placement.ts');
-  return { slug, dir, plan, gens, names, explain: ex?.explain ?? null, placement: pl?.PLACEMENT ?? null };
+  return { slug, dir, plan, gens, names, explain: ex?.explain ?? null, textOk: ex?.TEXT_OK ?? [], placement: pl?.PLACEMENT ?? null };
 }
 
 /** the independent oracle of a lesson (tests/oracle/<slug>.mjs), or null */

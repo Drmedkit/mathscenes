@@ -3,7 +3,8 @@
 Read this, then `docs/lessons/TOPIC_BRIEF.md` (owner decisions, rules) and ONE reference topic:
 `two-step-equations` (`pages/lessons/two-step-equations.ts`, `src/lesson/topics/two-step-equations/`). Do not read
 other topics unless you need a specific trick. The runtime is `src/lesson/runtime/` (read `practice.ts`, `item.ts`,
-`stage.ts`, `shell.ts` headers; skim the rest).
+`stage.ts`, `shell.ts` headers; skim the rest). After the topic is live: the quality layer (independent oracle,
+worked steps, check-in adapter) in `docs/lessons/QUALITY_LAYER.md`.
 
 ## Division of work
 - **Lead** runs `python tools/lesson-scaffold.py <slug>` before you start: the html shell, `plan.ts` with every

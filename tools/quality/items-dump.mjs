@@ -28,14 +28,14 @@ for (const { subgoal, family } of pairsOf(L.plan)) {
     out.push(v);
   }
 }
-if (JSON_OUT) console.log(JSON.stringify(out, null, 1));
+if (JSON_OUT) console.log(JSON.stringify(out, (k, v) => (typeof v === 'bigint' ? Number(v) : v), 1));
 else for (const v of out) {
   console.log(`\n[${v.subgoal} / ${v.family}] ${v.familyName}  (${v.id})`);
   console.log(`  prompt: ${v.prompt}`);
   if (v.board) console.log(`  board : ${v.board}`);
   console.log(`  input : ${v.input}${v.unit ? ` (unit: ${v.unit})` : ''}${v.pair ? `  ${v.pair.lead} [ ] ${v.pair.op} [ ] ${v.pair.tail}` : ''}`);
   if (v.choices) v.choices.forEach((c, i) => console.log(`    (${i}) ${c}`));
-  if (Object.keys(v.data).length) console.log(`  data  : ${JSON.stringify(v.data).slice(0, 700)}`);
+  if (Object.keys(v.data).length) console.log(`  data  : ${JSON.stringify(v.data, (k, x) => (typeof x === 'bigint' ? Number(x) : x)).slice(0, 700)}`);
   if (v.answer) console.log(`  answer: ${JSON.stringify(v.answer)}\n  solution: ${v.solution.join(' | ')}`);
 }
 await closeLoader();
