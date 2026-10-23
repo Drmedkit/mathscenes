@@ -104,6 +104,15 @@ ol.plan li button { margin-top: 8px; }
 .fb.no { border-left-color: var(--wrong); }
 .fb .solution { margin: 8px 0 0; padding-left: 18px; color: var(--dim); }
 .fb .solution li { margin: 3px 0; }
+/* practice: the "Step by step" card after a miss (runtime/panel.ts stepsCard); steps appear one after another */
+.fb .steps { margin: 10px 0 2px; padding: 10px 12px 8px; background: #171b38; border: 1px solid var(--line); border-radius: 10px; }
+.fb .steps-h { font-size: 13px; font-weight: 600; letter-spacing: .3px; color: var(--faint); text-transform: uppercase; margin-bottom: 4px; }
+.fb .steps ol { margin: 0; padding-left: 22px; color: var(--text); }
+.fb .steps li { margin: 5px 0; line-height: 1.45; animation: stepIn .35s ease-out both; }
+.fb .steps li::marker { color: var(--faint); }
+.fb .steps b.s { color: var(--s); }
+@keyframes stepIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .fb .steps li { animation: none; } }
 .fb .tag { display: block; font-size: 12.5px; color: var(--faint); margin-top: 6px; font-family: ui-monospace, Consolas, monospace; }
 
 .meter { display: flex; align-items: center; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 14px; color: var(--dim); flex-wrap: wrap; }

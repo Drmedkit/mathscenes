@@ -3,6 +3,7 @@
 // tagged with its misconception id (math-curriculum-essentials/misconceptions.json). A generator gets the SUB-GOAL it
 // practises (plan.ts) and uses that sub-goal's number ranges from the topic JSON. Pure: no DOM, no canvas.
 import { type Item, type Response, type Verdict, fr, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import { type Look, type Pic, type Seg, PI, dec, layoutPic, near, piTex, roundTo } from './circleMaths';
 
 export type FamilyId = 'whichSeg' | 'convertRD' | 'aroundAcross' | 'lengthOrArea' | 'gridBound' | 'piRatio' | 'cFromD' | 'cFromR'
@@ -123,7 +124,7 @@ function choice(R: () => number, base: Base, opts: Opt[], keepOrder = false): Ci
   const o = keepOrder ? opts.slice() : shuffle(R, opts.slice());
   const i = o.findIndex(x => x.ok);
   const it: CircleItem = {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i }, solution: endOnChoice(base.solution, o[i]!.t),
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const c = o[r.i]!;
@@ -571,7 +572,7 @@ const cFromD: Gen = (R, n) => {
     id: `cFromD-${n}`, family: 'cFromD',
     prompt: `${Cap(ctx.diam(dHtml))} ${ctx.aroundQ} Give the exact answer in terms of π. ${NOCALC}`, unit: `π ${u}`,
     board: `C = \\pi d`,
-    solution: [`Around the edge is the circumference: C = π × d.`, `C = π × ${dHtml} = <b class="b">${kind === 'frac' ? `${fr(d * 2, 2)}π` : piH(d)} ${u}</b>${kind === 'frac' ? ` (or ${dec(d)}π)` : ''}.`],
+    solution: [`Around the edge is the circumference: C = π × d.`, `C = π × ${dHtml} = <b class="b ans">${kind === 'frac' ? `${fr(d * 2, 2)}π` : piH(d)} ${u}</b>${kind === 'frac' ? ` (or ${dec(d)}π)` : ''}.`],
     pict: { pic, solve: { show: ['C'], tex: `C = \\pi \\times ${kind === 'frac' ? `\\tfrac{${d * 2}}{2}` : dec(d)} = ${kind === 'frac' ? `\\tfrac{${d * 2}}{2}\\pi` : piTex(d)}` } },
   }, {
     ans: d, input: kind === 'whole' ? 'num' : 'frac', frac: kind === 'frac' ? [d * 2, 2] : undefined,
@@ -594,7 +595,7 @@ const cFromR: Gen = (R, n) => {
     const ans = roundTo(2 * PI * r, 1);
     return numeric({
       ...base, prompt: `${Cap(ctx.rad(dec(r)))} ${ctx.aroundQ} Use the π key and round to the nearest tenth. ${CALC}`, unit: u,
-      solution: [`Estimate first: 2 × ${Math.round(r)} × 3 ≈ ${6 * Math.round(r)}.`, `C = 2 × π × ${dec(r)} ≈ <b class="b">${dec(ans)} ${u}</b>.`],
+      solution: [`Estimate first: 2 × ${Math.round(r)} × 3 ≈ ${6 * Math.round(r)}.`, `C = 2 × π × ${dec(r)} ≈ <b class="b ans">${dec(ans)} ${u}</b>.`],
     }, {
       ans, tol: 0.051, right: `Yes: C = 2π × ${dec(r)} ≈ ${dec(ans)} ${u}. Close to the estimate ${6 * Math.round(r)}.`,
       wrongs: [{ v: roundTo(PI * r, 1), mc: MC.rForD, say: `π × ${dec(r)} uses the radius as if it were the diameter: half the answer. C = 2πr.` },
@@ -604,7 +605,7 @@ const cFromR: Gen = (R, n) => {
   }
   return numeric({
     ...base, prompt: `${Cap(ctx.rad(dec(r)))} ${ctx.aroundQ} Give the exact answer in terms of π. ${NOCALC}`, unit: `π ${u}`,
-    solution: [`Around the edge is the circumference: C = 2πr (two radii make the diameter).`, `C = 2 × ${dec(r)} × π = <b class="b">${piH(2 * r)} ${u}</b>.`],
+    solution: [`Around the edge is the circumference: C = 2πr (two radii make the diameter).`, `C = 2 × ${dec(r)} × π = <b class="b ans">${piH(2 * r)} ${u}</b>.`],
   }, {
     ans: 2 * r, right: `Yes: C = 2π × ${dec(r)} = ${dec(2 * r)}π ${u}.`,
     wrongs: [{ v: r, mc: MC.rForD, say: `π × ${dec(r)} treats the radius as the whole way across. C = 2πr: double the radius first.` },
@@ -627,7 +628,7 @@ const aFromR: Gen = (R, n) => {
     return numeric({
       id: `aFromR-${n}`, family: 'aFromR', prompt: `${Cap(ctx.rad(dec(r)))} ${ctx.coverQ} Use the π key and round to the nearest tenth. ${CALC}`, unit: sq(u),
       board: 'A = \\pi r^2',
-      solution: [`Square the radius first: ${dec(r)}² = ${dec(r * r)} (between ${lo} and ${hi}).`, `A = π × ${dec(r * r)} ≈ <b class="a">${dec(ans)} ${sq(u)}</b>. About 3 × ${dec(r * r)} ≈ ${dec(roundTo(3 * r * r, 1))}: close.`],
+      solution: [`Square the radius first: ${dec(r)}² = ${dec(r * r)} (between ${lo} and ${hi}).`, `A = π × ${dec(r * r)} ≈ <b class="a ans">${dec(ans)} ${sq(u)}</b>. About 3 × ${dec(r * r)} ≈ ${dec(roundTo(3 * r * r, 1))}: close.`],
       pict: { pic, solve: { show: ['A'], tex: `A = \\pi \\times ${dec(r)}^2 \\approx ${dec(ans)}` } },
     }, {
       ans, tol: 0.051, right: `Yes: A = π × ${dec(r * r)} ≈ ${dec(ans)} ${sq(u)}.`,
@@ -642,7 +643,7 @@ const aFromR: Gen = (R, n) => {
     return numeric({
       id: `aFromR-${n}`, family: 'aFromR', prompt: `A circle has a radius of ${fr(p, 2)} ${u}. What is its exact area, in terms of π? ${NOCALC}`, unit: `π ${sq(u)}`,
       board: 'A = \\pi r^2',
-      solution: [`Square the radius: (${fr(p, 2)})² = ${fr(p * p, 4)}.`, `A = <b class="a">${fr(p * p, 4)}π ${sq(u)}</b> (or ${dec(p * p / 4)}π).`],
+      solution: [`Square the radius: (${fr(p, 2)})² = ${fr(p * p, 4)}.`, `A = <b class="a ans">${fr(p * p, 4)}π ${sq(u)}</b> (or ${dec(p * p / 4)}π).`],
       pict: { pic, solve: { show: ['A'], tex: `A = \\pi \\left(\\tfrac{${p}}{2}\\right)^2 = \\tfrac{${p * p}}{4}\\pi` } },
     }, {
       ans: r * r, input: 'frac', frac: [p * p, 4], right: `Yes: (${p}/2)² = ${p * p}/4, so A = ${p * p}/4 π ${sq(u)}.`,
@@ -656,7 +657,7 @@ const aFromR: Gen = (R, n) => {
   return numeric({
     id: `aFromR-${n}`, family: 'aFromR', prompt: `${Cap(ctx.rad(String(r)))} ${ctx.coverQ} Give the exact area in terms of π. ${NOCALC}`, unit: `π ${sq(u)}`,
     board: 'A = \\pi r^2',
-    solution: [`Covering the inside is the area: A = π × r × r.`, `A = π × ${r} × ${r} = <b class="a">${piH(r * r)} ${sq(u)}</b>. Check: about 3 × ${r * r} = ${3 * r * r}.`],
+    solution: [`Covering the inside is the area: A = π × r × r.`, `A = π × ${r} × ${r} = <b class="a ans">${piH(r * r)} ${sq(u)}</b>. Check: about 3 × ${r * r} = ${3 * r * r}.`],
     pict: { pic, solve: { show: ['A'], tex: `A = \\pi \\times ${r}^2 = ${piTex(r * r)}` } },
   }, {
     ans: r * r, right: `Yes: A = π × ${r}² = ${r * r}π ${sq(u)}.`,
@@ -673,7 +674,7 @@ const aFromD: Gen = (R, n) => {
     return numeric({
       id: `aFromD-${n}`, family: 'aFromD', prompt: `${Cap(ctx.diam(dec(d)))} ${ctx.coverQ} Use the π key and round to the nearest tenth. ${CALC}`, unit: sq(u),
       board: `d = ${unitTex(dec(d), u)}\\quad A = \\pi r^2`,
-      solution: [`Write the radius first: r = ${dec(d)} ÷ 2 = ${dec(r)}.`, `A = π × ${dec(r)}² = π × ${dec(r * r)} ≈ <b class="a">${dec(ans)} ${sq(u)}</b>. About 3 × ${dec(roundTo(r * r, 1))} ≈ ${dec(roundTo(3 * r * r, 0))}.`],
+      solution: [`Write the radius first: r = ${dec(d)} ÷ 2 = ${dec(r)}.`, `A = π × ${dec(r)}² = π × ${dec(r * r)} ≈ <b class="a ans">${dec(ans)} ${sq(u)}</b>. About 3 × ${dec(roundTo(r * r, 1))} ≈ ${dec(roundTo(3 * r * r, 0))}.`],
       pict: { pic, solve: { show: ['seg1', 'seg1A', 'A'], tex: `r = ${dec(r)}\\quad A \\approx ${dec(ans)}` } },
     }, {
       ans, tol: 0.051, right: `Yes: r = ${dec(r)}, A = π × ${dec(r * r)} ≈ ${dec(ans)} ${sq(u)}.`,
@@ -688,8 +689,8 @@ const aFromD: Gen = (R, n) => {
     id: `aFromD-${n}`, family: 'aFromD', prompt: `${Cap(ctx.diam(String(d)))} ${ctx.coverQ} Give the exact area in terms of π, and write the radius down first. ${NOCALC}`, unit: `π ${sq(u)}`,
     board: `d = ${unitTex(String(d), u)}\\quad A = \\pi r^2`,
     solution: kind === 'even'
-      ? [`The radius is half the diameter: r = ${d} ÷ 2 = ${r}.`, `A = π × ${r}² = <b class="a">${piH(r * r)} ${sq(u)}</b>.`]
-      : [`The radius is half the diameter: r = ${fr(d, 2)}.`, `A = π × (${fr(d, 2)})² = <b class="a">${fr(d * d, 4)}π ${sq(u)}</b> (or ${dec(d * d / 4)}π).`],
+      ? [`The radius is half the diameter: r = ${d} ÷ 2 = ${r}.`, `A = π × ${r}² = <b class="a ans">${piH(r * r)} ${sq(u)}</b>.`]
+      : [`The radius is half the diameter: r = ${fr(d, 2)}.`, `A = π × (${fr(d, 2)})² = <b class="a ans">${fr(d * d, 4)}π ${sq(u)}</b> (or ${dec(d * d / 4)}π).`],
     pict: { pic, solve: { show: ['seg1', 'seg1A', 'A'], tex: kind === 'even' ? `A = \\pi \\times ${r}^2 = ${piTex(r * r)}` : `A = \\pi \\left(\\tfrac{${d}}{2}\\right)^2 = \\tfrac{${d * d}}{4}\\pi` } },
   }, {
     ans: r * r, input: kind === 'even' ? 'num' : 'frac', frac: kind === 'odd' ? [d * d, 4] : undefined,
@@ -788,7 +789,7 @@ const chooseMeasure: Gen = (R, n) => {
     board: byD ? `d = ${unitTex(String(d), u)}` : `r = ${unitTex(String(r), u)}`,
     solution: [around ? `${ctx.around[0]!.toUpperCase()}${ctx.around.slice(1)}: a length around the edge, the circumference.` : `${ctx.cover[0]!.toUpperCase()}${ctx.cover.slice(1)}: the inside, the area.`,
       `${byD ? `r = ${d} ÷ 2 = ${r}. ` : ''}Estimate with π ≈ 3: about ${est}.`,
-      around ? `C = 2π × ${r} = ${exact ? `<b class="b">${C}π ${u}</b>` : `${C}π ≈ <b class="b">${dec(val(C))} ${u}</b>`}.` : `A = π × ${r}² = ${exact ? `<b class="a">${A}π ${sq(u)}</b>` : `${A}π ≈ <b class="a">${dec(val(A))} ${sq(u)}</b>`}.`],
+      around ? `C = 2π × ${r} = ${exact ? `<b class="b ans">${C}π ${u}</b>` : `${C}π ≈ <b class="b ans">${dec(val(C))} ${u}</b>`}.` : `A = π × ${r}² = ${exact ? `<b class="a ans">${A}π ${sq(u)}</b>` : `${A}π ≈ <b class="a ans">${dec(val(A))} ${sq(u)}</b>`}.`],
     pict: { pic, solve: { show: [around ? 'C' : 'A'], tex: around ? `C = 2\\pi \\times ${r} = ${C}\\pi` : `A = \\pi \\times ${r}^2 = ${A}\\pi` } },
   }, {
     ans: val(ansC), tol: exact ? 1e-6 : 0.006,
@@ -815,7 +816,7 @@ const wedgeRead: Gen = (R, n) => {
     return numeric({
       id: `wedgeRead-${n}`, family: 'wedgeRead', prompt: `A circle with r = ${r} ${u} is cut into ${nW} wedges and laid out like this. How long are the arcs along the top, all together? Answer in terms of π.`, unit: `π ${u}`,
       board: `C = 2\\pi \\times ${r} = ${2 * r}\\pi`,
-      solution: [`The whole crust is the circumference: C = 2π × ${r} = ${2 * r}π.`, `Half of the wedges point up, half point down: the top gets half of it, <b class="b">${r}π ${u}</b>.`],
+      solution: [`The whole crust is the circumference: C = 2π × ${r} = ${2 * r}π.`, `Half of the wedges point up, half point down: the top gets half of it, <b class="b ans">${r}π ${u}</b>.`],
       pict: { pic, solve: { show: ['top'], tex: `\\tfrac{1}{2} \\times ${2 * r}\\pi = ${piTex(r)}` } },
     }, {
       ans: r, right: `Yes: the top is half the circumference, ${r}π ${u}.`,
@@ -827,7 +828,7 @@ const wedgeRead: Gen = (R, n) => {
   const base = { id: `wedgeRead-${n}`, family: 'wedgeRead' as const, board: `${nW}\\ \\text{wedges}` };
   if (v === 'top') return choice(R, {
     ...base, prompt: `A circle with radius r is cut into ${nW} wedges and laid out like this. All the arcs along the top together are how long?`,
-    solution: ['Every wedge brings its piece of the crust. Half the wedges point down, half point up.', 'So the top gets half of the circumference: ½ × 2πr = <b class="b">πr</b>.'],
+    solution: ['Every wedge brings its piece of the crust. Half the wedges point down, half point up.', 'So the top gets half of the circumference: ½ × 2πr = <b class="b ans">πr</b>.'],
     pict: { pic, solve: { show: ['top'], tex: `\\tfrac{1}{2}C = \\pi r` } },
   }, [
     { t: 'half the circumference: πr', ok: true, say: 'Yes: half the crust is on top, half at the bottom. ½ × 2πr = πr.' },
@@ -863,7 +864,7 @@ const deriveArea: Gen = (R, n) => {
     return numeric({
       id: `deriveArea-${n}`, family: 'deriveArea', prompt: `The wedges of a circle with r = ${r} ${u} make a shape about ${r}π long and ${r} tall. What is the circle's area? Answer in terms of π.`, unit: `π sq ${u}`,
       board: `A \\approx \\text{long} \\times \\text{tall}`,
-      solution: [`Long side: half of C = ½ × 2π × ${r} = ${r}π. Height: r = ${r}.`, `A = ${r}π × ${r} = <b class="a">${r * r}π sq ${u}</b>, which is πr².`],
+      solution: [`Long side: half of C = ½ × 2π × ${r} = ${r}π. Height: r = ${r}.`, `A = ${r}π × ${r} = <b class="a ans">${r * r}π sq ${u}</b>, which is πr².`],
       pict: { pic, solve: { show: ['top', 'ht', 'A'], tex: `A = ${piTex(r)} \\times ${r} = ${piTex(r * r)}` } },
     }, {
       ans: r * r, right: `Yes: ${r}π × ${r} = ${r * r}π, which is π × ${r}².`,
@@ -875,7 +876,7 @@ const deriveArea: Gen = (R, n) => {
   if (v === 'step') return choice(R, {
     id: `deriveArea-${n}`, family: 'deriveArea', prompt: 'The wedges make a near-rectangle: ½C long, r tall. Fill the gap: A = ½C × r = ▢ = πr². What goes in the gap?',
     board: 'A = \\tfrac{1}{2}C \\times r = \\ \\square\\ = \\pi r^2',
-    solution: ['Put C = 2πr in: A = ½ × 2πr × r.', 'Regroup (you may multiply in any order): ½ × 2 = 1 and r × r = r², so A = <b class="a">πr²</b>.'],
+    solution: ['Put C = 2πr in: A = ½ × 2πr × r.', 'Regroup (you may multiply in any order): ½ × 2 = 1 and r × r = r², so A = <b class="a ans">πr²</b>.'],
     pict: { pic, solve: { show: ['top', 'ht'], tex: '\\tfrac{1}{2} \\times 2\\pi r \\times r' } },
   }, [
     { t: '½ × 2πr × r', ok: true, say: 'Yes: put C = 2πr into ½C × r. Then ½ × 2 = 1 and r × r = r².' },
@@ -907,7 +908,7 @@ const scaleC: Gen = (R, n) => {
     return numeric({
       id: `scaleC-${n}`, family: 'scaleC', prompt: `A circle's radius goes from ${r} ${u} to ${r2} ${u}. Its circumference was ${piH(2 * r)} ${u}. What is the new circumference? Answer in terms of π. ${NOCALC}`, unit: `π ${u}`,
       board: `r: ${r} \\to ${r2}\\quad (\\times ${k})`,
-      solution: [`The radius is multiplied by ${r2} ÷ ${r} = ${k}.`, `C = 2πr, so C is multiplied by ${k} too: ${2 * r}π × ${k} = <b class="b">${2 * r2}π ${u}</b>. Check: 2π × ${r2} = ${2 * r2}π.`],
+      solution: [`The radius is multiplied by ${r2} ÷ ${r} = ${k}.`, `C = 2πr, so C is multiplied by ${k} too: ${2 * r}π × ${k} = <b class="b ans">${2 * r2}π ${u}</b>. Check: 2π × ${r2} = ${2 * r2}π.`],
       pict: { pic: pairPic(look, r, r2, u), solve: { show: ['C'], tex: `2\\pi \\times ${r2} = ${2 * r2}\\pi` } },
     }, {
       ans: 2 * r2, right: `Yes: radius × ${k}, circumference × ${k}: ${2 * r2}π ${u}.`,
@@ -934,7 +935,7 @@ const scaleA: Gen = (R, n) => {
     return numeric({
       id: `scaleA-${n}`, family: 'scaleA', prompt: `A circle's radius goes from ${r} ${u} to ${r2} ${u}. Its area was ${piH(r * r)} sq ${u}. What is the new area? Answer in terms of π. ${NOCALC}`, unit: `π sq ${u}`,
       board: `r: ${r} \\to ${r2}\\quad (\\times ${k})`,
-      solution: [`The radius is × ${k}. A = π × r × r uses r twice, so the area is × ${k} × ${k} = ${k * k}.`, `${r * r}π × ${k * k} = <b class="a">${r2 * r2}π sq ${u}</b>. Check: π × ${r2}² = ${r2 * r2}π.`],
+      solution: [`The radius is × ${k}. A = π × r × r uses r twice, so the area is × ${k} × ${k} = ${k * k}.`, `${r * r}π × ${k * k} = <b class="a ans">${r2 * r2}π sq ${u}</b>. Check: π × ${r2}² = ${r2 * r2}π.`],
       pict: { pic: pairPic(look, r, r2, u), solve: { show: ['quad'], tex: `\\pi \\times ${r2}^2 = ${r2 * r2}\\pi` } },
     }, {
       ans: r2 * r2, right: `Yes: radius × ${k}, area × ${k * k}: ${r2 * r2}π sq ${u}. ${k * k} small circles fit the big one's square the same way.`,
@@ -1004,7 +1005,7 @@ const propCheck: Gen = (R, n) => {
   const base = { id: `propCheck-${n}`, family: 'propCheck' as const, board: '\\tfrac{C}{r} \\qquad \\tfrac{A}{r}' };
   if (v === 'which') return choice(R, {
     ...base, prompt: `Look at the table. Which one is proportional to the radius r?${table}`,
-    solution: ['Proportional: the ratio is the same in every row (and the graph is a straight line through the origin).', `C ÷ r = 2π every time. A ÷ r = ${rs.map(r => piH(r)).join(', ')}: it changes. So only <b class="b">C</b> is proportional to r.`],
+    solution: ['Proportional: the ratio is the same in every row (and the graph is a straight line through the origin).', `C ÷ r = 2π every time. A ÷ r = ${rs.map(r => piH(r)).join(', ')}: it changes. So only <b class="b ans">C</b> is proportional to r.`],
   }, [
     { t: 'C only', ok: true, say: 'Yes: C ÷ r is always 2π. A ÷ r keeps growing, so A is not proportional to r.' },
     { t: 'C and A: both are 0 when r is 0', mc: MC.origin, say: 'Starting at 0 is not enough. The ratio must stay the same: A ÷ r keeps changing.' },

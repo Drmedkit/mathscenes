@@ -20,6 +20,7 @@ import { CircleGraph, BarGraph, type CircleBlock, type CircleFocus, type CircleP
 import { drawWords } from '../../src/lesson/words';
 import { FAMILY_NAMES, GENERATORS, MC, type PieItem } from '../../src/lesson/topics/pie-charts/items';
 import { PLAN } from '../../src/lesson/topics/pie-charts/plan';
+import { explain } from '../../src/lesson/topics/pie-charts/explain';
 import { SCRIPT } from '../../src/lesson/topics/pie-charts/script';
 import type { Cat } from '../../src/lesson/topics/pie-charts/pieMaths';
 
@@ -423,7 +424,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as PieItem),
   });

@@ -22,6 +22,7 @@ import { BALANCE_FRAME } from '../../src/lesson/topics/two-step-equations/balanc
 import { Balance, type BalanceBlock, type BalanceFocus, type BalanceStep, type LabelPart } from '../../src/lesson/topics/two-step-equations/Balance';
 import { FAMILY_NAMES, GENERATORS, MC, type EqItem } from '../../src/lesson/topics/two-step-equations/items';
 import { PLAN } from '../../src/lesson/topics/two-step-equations/plan';
+import { explain } from '../../src/lesson/topics/two-step-equations/explain';
 import LINES from './two-step-equations/voice/lines.json';
 
 const SLUG = 'two-step-equations';
@@ -488,7 +489,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as EqItem),
   });

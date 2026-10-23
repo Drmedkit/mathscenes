@@ -3,11 +3,12 @@
 //                   (at most 5; a sub-goal that is not reached is flagged and comes back more often later).
 //   2 Mixed         interleaved over all sub-goals, never the same family twice in a row, the weakest sub-goal first.
 //   Mastery         5 of the last 6 right, from at least 4 families, and every sub-goal right at least twice.
-// After a miss: the worked solution (panel + the topic's own canvas replay), then a twin (same sub-goal and family).
+// After a miss: the "Step by step" card (the topic's explain(it), else item.solution) + the topic's own canvas replay,
+// then a twin (same sub-goal and family).
 // Every answer goes to the diagnosis log (store.ts) with its sub-goal, family, item, response and misconception.
-import { type Gen, type Item, plain, rng } from './item';
+import { type Explain, type Gen, type Item, plain, rng } from './item';
 import { type LessonStore } from './store';
-import { btn, feedback, fracInput, h, html, type Input, numInput, pairInput, choiceInput, solutionList, type Kid } from './panel';
+import { btn, feedback, fracInput, h, html, type Input, numInput, pairInput, choiceInput, stepsCard, type Kid } from './panel';
 import { newEpoch, seq } from './stage';
 
 export interface SubgoalPlan { id: string; title: string; families: string[] }
@@ -20,12 +21,20 @@ export interface PracticeOpts {
   familyNames: Readonly<Record<string, string>>;
   /** draw the item on the canvas; `solve` replays the worked solution there after a miss */
   show(item: Item): { solve?: (alive: () => boolean) => Promise<void> };
+  /** worked steps for the "Step by step" card (topic explain.ts); without it the card shows item.solution */
+  explain?: Explain;
   seed?: number;
 }
 export const MASTERY = { window: 6, need: 5, families: 4, perSubgoal: 2 } as const;
 const WALK_NEED = 2, WALK_MAX = 5;
 
 interface Rec { subgoal: string; family: string; ok: boolean }
+
+/** the steps the card shows: the topic's explain(it) when it gives any, else the item's own solution lines */
+export function stepsOf(item: Item, explain?: Explain): string[] {
+  if (explain) { try { const ex = explain(item); if (ex && ex.steps.length) return ex.steps; } catch (e) { console.warn('explain failed', item.id, e); } }
+  return item.solution;
+}
 
 export function startPractice(o: PracticeOpts): void {
   const R = rng(o.seed ?? Math.floor(Math.random() * 1e9));
@@ -118,7 +127,7 @@ export function startPractice(o: PracticeOpts): void {
         else if (triedBy(subgoal.id) >= WALK_MAX) { flagged.add(subgoal.id); walk++; }
       }
       if (!v.ok) twin = { subgoal: subgoal.id, family };
-      const extra: Kid[] = v.ok ? [] : [solutionList(item.solution)];
+      const extra: Kid[] = v.ok ? [] : [stepsCard(stepsOf(item, o.explain))];
       fb.replaceChildren(feedback(v.ok, v.say, extra), h('div', { class: 'row' }, btn(v.ok ? 'Next' : 'Try one like it', () => next(), 'go')));
       if (!v.ok && view.solve) seq(view.solve);
       drawMap(subgoal.id); drawMeter();

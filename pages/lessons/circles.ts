@@ -23,6 +23,7 @@ import { Disc, type DiscBlock, type DiscFocus, restSteps } from '../../src/lesso
 import { LF, PIZZA, PIZZAS, RUG } from '../../src/lesson/topics/circles/lessonPics';
 import { FAMILY_NAMES, GENS, MC, PF, type CircleItem } from '../../src/lesson/topics/circles/items';
 import { PLAN } from '../../src/lesson/topics/circles/plan';
+import { explain } from '../../src/lesson/topics/circles/explain';
 import { SCRIPT } from '../../src/lesson/topics/circles/script';
 import type { Pic } from '../../src/lesson/topics/circles/circleMaths';
 
@@ -422,7 +423,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as CircleItem),
   });

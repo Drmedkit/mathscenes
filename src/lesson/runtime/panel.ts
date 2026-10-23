@@ -19,6 +19,12 @@ export function feedback(ok: boolean, say: string, extra: Kid[] = []): HTMLEleme
 }
 /** the worked solution after a miss */
 export function solutionList(lines: readonly string[]): HTMLElement { const ol = h('ol', { class: 'solution' }); lines.forEach(s => ol.append(html('li', '', s))); return ol; }
+/** the "Step by step" card after a miss in practice: the worked steps, appearing one after another */
+export function stepsCard(lines: readonly string[]): HTMLElement {
+  const ol = h('ol');
+  lines.forEach((s, i) => { const li = html('li', '', s); li.style.animationDelay = `${0.15 + i * 0.45}s`; ol.append(li); });
+  return h('div', { class: 'steps', role: 'group', 'aria-label': 'Step by step' }, h('div', { class: 'steps-h' }, 'Step by step'), ol);
+}
 
 export interface Input { node: HTMLElement; read(): Response | null; focus(): void }
 const numBox = (cls: string, label: string, onEnter: () => void) => {

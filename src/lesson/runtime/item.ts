@@ -34,6 +34,11 @@ export interface Item {
   answer: Response;
   check(r: Response): Verdict;
 }
+/** worked steps for the "Step by step" card after a miss (src/lesson/topics/<slug>/explain.ts, docs/lessons/QUALITY_LAYER.md):
+ *  2-5 HTML lines in the lesson's own method with the item's numbers, and the answer the steps arrive at (computed by
+ *  the steps, not copied from item.answer; the practice sweep checks it against the independent oracle) */
+export interface Explained { steps: string[]; result: Response }
+export type Explain = (it: Item) => Explained | null;
 /** a family generator; `subgoal` lets one family make the number ranges of a specific sub-goal */
 export type Gen = (R: () => number, n: number, subgoal?: string) => Item;
 

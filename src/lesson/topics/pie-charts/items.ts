@@ -4,6 +4,7 @@
 // Pure: no DOM, no canvas. A seeded rng makes sessions repeatable.
 import { type Item, type Response, type Verdict, fr, gcd, int, pick, shuffle } from '../../runtime/item';
 import { type Q, rat, qNum } from '../../../core/math';
+import { ans as mark, endOnChoice } from '../../runtime/explain';
 import { type Cat, computePie, fmt1, round1, roundQ } from './pieMaths';
 
 export type FamilyId = 'whole' | 'sameShare' | 'toDeg' | 'toPct' | 'estimate' | 'share' | 'pct' | 'roundPct' | 'angle' | 'exact'
@@ -106,7 +107,7 @@ function choiceItem(R: () => number, base: Omit<PieItem, 'input' | 'choices' | '
   const ts = new Set(O.map(o => o.t));
   if (ts.size !== O.length) throw new Error(`choices not unique: ${O.map(o => o.t).join(' | ')}`);
   return {
-    ...base, input: 'choice', choices: O.map(o => o.t), answer: { kind: 'choice', i: O.findIndex(o => o.ok) },
+    ...base, input: 'choice', choices: O.map(o => o.t), answer: { kind: 'choice', i: O.findIndex(o => o.ok) }, solution: endOnChoice(base.solution, O.find(o => o.ok)!.t),
     check: (r: Response): Verdict => {
       const o = r.kind === 'choice' ? O[r.i] : undefined;
       if (!o) return { ok: false, say: 'Pick one.' };
@@ -170,7 +171,7 @@ const wholeFam: Gen = (R, n) => {
       prompt: `In a circle graph, the ${B(cats[0]!.name)} slice is ${S(`${p}%`)} of the circle and stands for ${B(qty(c, f))}. How many ${c.who} does the whole circle stand for?`,
       board: `${p}\\% \\to ${f}`, work: `100\\% \\to \\cssId{n}{${N}}`,
       picture: { kind: 'graph', cats, labels, focus: 0 },
-      solution: [`${p}% is ${fr(p, 100)} = ${fr(1, 100 / p)} of the whole.`, `So the whole is ${100 / p} × ${f} = ${A(N)} ${c.who}: that group is 100%.`],
+      solution: [`${p}% is ${fr(p, 100)} = ${fr(1, 100 / p)} of the whole.`, `So the whole is ${100 / p} × ${f} = ${mark(`${N} ${c.who}`)}: that group is 100%.`],
       answer: { kind: 'num', v: N },
       check: numCheck(N, `Yes: ${f} ${c.who} are ${p}%, so 100% is ${N} ${c.who}.`, [
         { v: p, mc: MC.fixed, say: `${p}% is not ${p} ${c.who}: a percent is a share of the whole, and here the whole is not 100 people. ${p}% stands for ${f}, so 100% stands for ${N}.` },
@@ -188,7 +189,7 @@ const wholeFam: Gen = (R, n) => {
     prompt: `${A(N)} ${c.who} were asked one question. ${B(answered)} answered and ${miss} gave no answer. The graph is titled "${c.title} of the ${N} ${c.who} asked". What does the whole circle stand for?`,
     board: table(cats, N, c),
     picture: { kind: 'graph', cats, title: `${c.title}, ${N} asked` },
-    solution: [`The title names the whole: the ${A(N)} ${c.who} asked.`, `Every one of them is in a slice, the ${miss} who gave no answer too, so the circle is ${N} = 100%.`],
+    solution: [`The title names the whole: the ${A(N)} ${c.who} asked.`, `Every one of them is in a slice, the ${miss} who gave no answer too, so the circle is ${mark(N)} = 100%.`],
   }, [
     { t: `All ${N} ${c.who} asked: 100%`, ok: true, say: `Yes. The title names the whole, and the "No answer" slice keeps all ${N} in the circle.` },
     { t: `Only the ${answered} who answered`, ok: false, mc: MC.subtotal, say: `The title says the ${N} asked, and the ${miss} who gave no answer have their own slice. The whole is ${N}.` },
@@ -325,7 +326,7 @@ const share: Gen = (R, n) => {
     prompt: `${c.title}: what fraction of ${A(showTotal ? whole(c, N) : `all the ${c.who}`)} is ${B(cats[i]!.name)}?${showTotal ? '' : ' The total is not given: add it up.'}`,
     board: table(cats, showTotal ? N : null, c, { col: i }), work: `\\frac{\\cssId{f}{${f}}}{\\cssId{n}{${N}}}`,
     picture: { kind: 'graph', cats, labels: cats.map(t => [t.name, (c.money ? '$' : '') + t.count]), focus: i, title: c.title },
-    solution: [showTotal ? `The total is ${A(N)}.` : `First the total: ${cats.map(t => t.count).join(' + ')} = ${A(N)}.`, `${cats[i]!.name} is ${B(f)} of the ${N}: ${fr(f, N)} (any equal fraction is fine).`],
+    solution: [showTotal ? `The total is ${A(N)}.` : `First the total: ${cats.map(t => t.count).join(' + ')} = ${A(N)}.`, `${cats[i]!.name} is ${B(f)} of the ${N}: ${mark(fr(f, N))} (any equal fraction is fine).`],
     answer: { kind: 'frac', w: 0, n: f, d: N },
     check: r => {
       if (r.kind !== 'frac' || r.d <= 0 || r.w < 0 || r.n < 0) return { ok: false, say: 'Type a fraction: the count on top, the total underneath.' };
@@ -401,7 +402,7 @@ const angle: Gen = (R, n) => {
     prompt: `${c.title} of ${A(whole(c, N))}. What central angle does ${B(cats[i]!.name)} get${tenth ? ', to the nearest tenth of a degree' : ''}?`,
     board: table(cats, N, c, { col: i }), work: `\\tfrac{${f}}{${N}} \\times 360^\\circ ${tenth ? '\\approx' : '='} \\cssId{s}{${fmt1(ans)}^\\circ}`,
     picture: { kind: 'graph', cats, labels: cats.map(t => [t.name, (c.money ? '$' : '') + t.count]), focus: i, show: i, title: titleOf(c, N) },
-    solution: [`${cats[i]!.name} is ${fr(f, N)} of the whole circle.`, `${fr(f, N)} × 360° = ${tenth ? `${fmt1(ans)}° (exactly ${Math.floor(av)} ${fr(a.p % a.q, a.q)}°)` : `${av}°`}.`],
+    solution: [`${cats[i]!.name} is ${fr(f, N)} of the whole circle.`, `${fr(f, N)} × 360° = ${tenth ? `${mark(`${fmt1(ans)}°`)} (exactly ${Math.floor(av)} ${fr(a.p % a.q, a.q)}°)` : mark(`${av}°`)}.`],
     answer: { kind: 'num', v: ans },
     check: numCheck(ans, `Yes: ${fr(f, N)} of 360° is ${fmt1(ans)}°.`, [
       { v: f * 360, mc: MC.times360, say: `That is ${f} × 360°, ${f} whole circles. Take ${fr(f, N)} OF 360°: ${fmt1(ans)}°.` },

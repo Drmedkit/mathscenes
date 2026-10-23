@@ -4,6 +4,7 @@
 // Pure: no DOM, no canvas; a seeded rng makes sessions repeatable.
 import { type Item, type Response, type Verdict, fr, int, pick, shuffle } from '../../runtime/item';
 import { balanceFits } from './balanceMaths';
+import { endOnChoice } from '../../runtime/explain';
 
 export type FamilyId = 'chainOrder' | 'chainRun' | 'thinkNumber' | 'flowBack' | 'sameSolution' | 'safeMove' | 'writtenChain' | 'matchSteps'
   | 'solve' | 'balance' | 'negCheck' | 'firstMove' | 'writeEq' | 'storySolve' | 'storyFor' | 'meaning';
@@ -243,7 +244,7 @@ function choiceItem(R: () => number, base: Omit<EqItem, 'input' | 'choices' | 'a
   const o = shuffle(R, opts.slice());
   const i = o.findIndex(x => x.ok);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i }, solution: endOnChoice(base.solution, o[i]!.t),
     check: (r: Response) => {
       if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const c = o[r.i]!;
@@ -371,7 +372,7 @@ const flowBack: Gen = (R, n) => {
     id: `flowBack-${n}`, family: 'flowBack', input: 'pair', pairLead: '□ =', pairOp: 'x =',
     prompt: `Work the chain backward from <b class="a">${r}</b>. What number is in the box, and what is ${X}?`,
     board: `x \\xrightarrow{${opTex(o1)}} \\square \\xrightarrow{${opTex(o2)}} ${r}`,
-    solution: [`The last arrow is ${opTex(o2).replace('\\times', '×').replace('\\div', '÷')}. Backward: ${r} ${invWord(o2)} = ${mid}, so the box is ${mid}.`, `The first arrow is ${opTex(o1).replace('\\times', '×').replace('\\div', '÷')}. Backward: ${mid} ${invWord(o1)} = <b class="s">${x}</b>.`],
+    solution: [`The last arrow is ${opTex(o2).replace('\\times', '×').replace('\\div', '÷')}. Backward: ${r} ${invWord(o2)} = ${mid}, so the box is <b class="s">${mid}</b>.`, `The first arrow is ${opTex(o1).replace('\\times', '×').replace('\\div', '÷')}. Backward: ${mid} ${invWord(o1)} = <b class="s">${x}</b>.`],
     answer: { kind: 'pair', x: mid, y: x },
     check: (rr: Response) => {
       if (rr.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
