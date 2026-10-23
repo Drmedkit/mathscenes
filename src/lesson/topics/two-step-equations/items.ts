@@ -74,6 +74,8 @@ export const H = (v: number, money = false) => (v < 0 ? '−' + num(-v, money) :
 /** TeX of a number */
 const T = (v: number, money = false) => (v < 0 ? '-' + num(-v, money) : num(v, money));
 const X = '<i>x</i>';
+/** "1 cone", "3 cones" */
+const pl = (k: number, one: string, many = one + 's') => `${k} ${k === 1 ? one : many}`;
 const round3 = (v: number) => Math.round(v * 1000) / 1000;
 
 // ---------- equations ----------
@@ -513,12 +515,12 @@ const balance: Gen = (R, n, sg) => {
     const e = grouped ? makeEq('grp', 'p(x+q)', p, q, x) : makeEq('lin', 'px+q', p, q, x);
     if (!balanceFits(p, q, e.R, grouped)) continue;
     const prompt = grouped
-      ? `On the left pan are <b class="b">${p} groups</b>, each <b class="b">one bag</b> and <b class="a">${q} marbles</b>. They balance <b class="a">${e.R} marbles</b>. Every bag holds the same number. How many marbles are in one bag?`
+      ? `On the left pan are <b class="b">${p} groups</b>, each <b class="b">one bag</b> and <b class="a">${pl(q, 'marble')}</b>. They balance <b class="a">${e.R} marbles</b>. Every bag holds the same number. How many marbles are in one bag?`
       : `<b class="b">${p} bags</b> (each holding the same number of marbles) and <b class="a">${q} loose marbles</b> balance <b class="a">${e.R} marbles</b>. How many marbles are in one bag?`;
     return numItem({
       id: `balance-${n}`, family: 'balance', prompt, board: e.tex, unit: 'marbles', picture: { balance: { p, q, r: e.R, grouped } },
       solution: grouped
-        ? [`Split both pans into ${p} equal shares: one group balances ${e.R} ÷ ${p} = ${x + q} marbles.`, `Take ${q} off both sides: one bag balances <b class="s">${x}</b> marbles.`, `Check: ${p} × (${x} + ${q}) = ${e.R}. ✓`]
+        ? [`Split both pans into ${p} equal shares: one group balances ${e.R} ÷ ${p} = ${x + q} marbles.`, `Take ${q} off both sides: one bag balances <b class="s">${x}</b> ${x === 1 ? 'marble' : 'marbles'}.`, `Check: ${p} × (${x} + ${q}) = ${e.R}. ✓`]
         : [`Take the ${q} loose marbles off both pans: ${p} bags balance ${e.R - q}.`, `Split both pans into ${p} equal shares: one bag balances ${e.R - q} ÷ ${p} = <b class="s">${x}</b>.`, `Check: ${p} × ${x} + ${q} = ${e.R}. ✓`],
     }, x, v => classifySolve(e, v, 'marbles'));
   }
@@ -627,8 +629,8 @@ function story(R: () => number): Story {
   if (k === 'bags') {
     const p = int(R, 3, 8), q = int(R, 1, 4), b = int(R, 2, 9), e = makeEq('grp', 'p(x+q)', p, q, b);
     return { tex: `${p}(b + ${q}) = ${e.R}`, html: `${p}(<i>b</i> + ${q}) = ${e.R}`, eq: e, v: 'b', vDesc: 'the number of balls in a bag', unit: 'balls',
-      story: `A coach packs <b class="b">${p} bags</b>. Each bag holds the same number of balls and <b class="a">${q} cones</b>. There are <b class="a">${e.R} items</b> in all.`, ask: 'How many balls are in each bag?',
-      inter: e.R / p, interSay: `${e.R / p} is everything in ONE bag, balls and cones. Take off the ${q} cones: ${b} balls.` };
+      story: `A coach packs <b class="b">${p} bags</b>. Each bag holds the same number of balls and <b class="a">${pl(q, 'cone')}</b>. There are <b class="a">${e.R} items</b> in all.`, ask: 'How many balls are in each bag?',
+      inter: e.R / p, interSay: `${e.R / p} is everything in ONE bag, balls and cones. Take off the ${pl(q, 'cone')}: ${b} balls.` };
   }
   const g = int(R, 2, 5), h0 = pick(R, [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].filter(h => h !== g)), w = int(R, 2, 10), e = makeEq('lin', 'px+q', g, h0, w);
   return { tex: `${g}w + ${h0} = ${e.R}`, html: `${g}<i>w</i> + ${h0} = ${e.R}`, eq: e, v: 'w', vDesc: 'the number of weeks', unit: 'weeks',
@@ -693,18 +695,20 @@ function tale(R: () => number): Tale {
       xMeaning: `${who} took ${x} classes.`, xWrong: `${who} paid $${x}.` };
   }
   if (k === 'groups') {
-    const p = int(R, 3, 6), q = int(R, 1, 4), x = int(R, 2, 8), r = p * (x + q);
+    const p = int(R, 3, 6), q = pick(R, [1, 2, 3, 4].filter(v => v !== p)), x = int(R, 2, 8), r = p * (x + q);
     return { html: `${p}(${X} + ${q}) = ${r}`, tex: `${p}(x + ${q}) = ${r}`,
-      right: `${p} bags each hold some apples and ${q} pears. There are ${r} pieces of fruit in all. How many apples are in each bag?`,
-      swap: `${p} bags each hold some apples, and ${q} more pears sit on the table. There are ${r} pieces of fruit in all. How many apples are in each bag?`,
-      swapSay: `In that story the ${q} pears are outside the bags: that is ${p}${X} + ${q}. The bracket in ${p}(${X} + ${q}) puts ${q} pears in EACH bag.`,
-      mismatch: `${p} bags each hold ${x} apples and ${q} pears. How many pieces of fruit are there in all?`,
+      right: `${p} bags each hold some apples and ${pl(q, 'pear')}. There are ${r} pieces of fruit in all. How many apples are in each bag?`,
+      swap: `${p} bags each hold some apples, and ${q} more ${q === 1 ? 'pear sits' : 'pears sit'} on the table. There are ${r} pieces of fruit in all. How many apples are in each bag?`,
+      swapSay: `In that story the ${pl(q, 'pear')} ${q === 1 ? 'is' : 'are'} outside the bags: that is ${p}${X} + ${q}. The bracket in ${p}(${X} + ${q}) puts ${pl(q, 'pear')} in EACH bag.`,
+      mismatch: `${p} bags each hold ${x} apples and ${pl(q, 'pear')}. How many pieces of fruit are there in all?`,
       omit: `${p} bags each hold the same number of apples. There are ${r} apples in all. How many are in each bag?`,
       q: String(q), x: String(x),
-      constMeaning: `the ${q} pears in EACH bag`, constWrong: `${q} pears in all`,
+      constMeaning: `the ${pl(q, 'pear')} in EACH bag`, constWrong: `${pl(q, 'pear')} in all`,
       xMeaning: `Each bag holds ${x} apples.`, xWrong: `There are ${x} apples in all.` };
   }
-  const p = pick(R, [2, 3, 4, 5]), q = pick(R, [2, 3, 4, 6].filter(v => v !== p)), s = int(R, 3, 9), x = p * s, r = s + q;
+  const p = pick(R, [2, 3, 4, 5]), q = pick(R, [2, 3, 4, 6].filter(v => v !== p));
+  let s = int(R, 3, 9); if (p * s === s + q) s++;   // the pizza price never equals what each friend pays ("Each friend paid $x" would be true too)
+  const x = p * s, r = s + q;
   return { html: `${fr(X, p)} + ${q} = ${r}`, tex: `\\frac{x}{${p}} + ${q} = ${r}`,
     right: `${p} friends split the cost of a pizza equally. Each also pays $${q} for a drink. Each friend pays $${r}. What did the pizza cost?`,
     swap: `${q} friends split the cost of a pizza equally. Each also pays $${p} for a drink. Each friend pays $${r}. What did the pizza cost?`,
