@@ -224,3 +224,34 @@ describe('the page', () => {
     }
   });
 });
+
+describe('systems-of-equations: quality layer regressions', () => {
+  it('the steps card: at most 5 steps, the pair read from the last point, the multiplier marked', async () => {
+    const { explain } = await import('../src/lesson/topics/systems-of-equations/explain');
+    const cases: [string, string][] = [['subSolve', 'isolate-then-substitute'], ['elimSolve', 'scale-both-equations'], ['ratSolve', 'clear-rational-coefficients'], ['readCross', 'intersection-as-solution'], ['twoPoints', 'systems-from-lines'], ['graphRead', 'graph-solve-estimate'], ['pickMult', 'scale-one-equation'], ['makeSolution', 'pair-on-one-line']];
+    for (const [f, sg] of cases) for (let s = 1; s <= 80; s++) {
+      const item = GEN[f]!(rng(s * 31 + 17), s, sg);
+      const ex = explain(item)!;
+      expect(ex.steps.length, `${f}: ${item.prompt}`).toBeLessThanOrEqual(5);
+      expect(item.check(ex.result).ok, `${f}: ${JSON.stringify(ex.result)} for ${item.prompt}`).toBe(true);
+    }
+  });
+  it('a check never writes "−0" (−x with x = 0 is −(0))', () => {
+    for (let s = 1; s <= 400; s++) for (const [f, sg] of [['solOrNot', 'identity-infinite'], ['solOrNot', 'infinite-coincident'], ['onLine', 'pair-on-one-line']] as const)
+      for (const l of GEN[f]!(rng(s * 7 + 2), s, sg).solution) expect(l).not.toMatch(/(^|[^\d.,(])[−-]0(?![.,\d])/);
+  });
+});
+
+describe('systems-of-equations: sweep regressions (oracle findings)', () => {
+  it('chooseMethod one best method, viable whole totals, setEqual flip never equivalent: the oracle agrees', async () => {
+    // @ts-expect-error: the oracle is an untyped .mjs module
+    const O = (await import('./oracle/systems-of-equations.mjs')).default;
+    // @ts-expect-error: an untyped .mjs module
+    const { viewOf } = await import('../tools/quality/view.mjs');
+    for (const [f, sg] of [['chooseMethod', 'choose-method'], ['viable', 'interpret-viability'], ['setEqual', 'substitute-expression']] as const) for (let s = 1; s <= 400; s++) {
+      const it = GEN[f]!(rng(s * 37 + 5), s, sg), q = viewOf(it, sg);
+      expect(O.sane ? O.sane(q) : '', `${f}: ${it.prompt}`).toBe('');
+      expect(O.solve(q), `${f}: ${it.prompt} | ${(it.choices ?? []).join(' | ')}`).toBe((it.answer as { i: number }).i);
+    }
+  });
+});

@@ -23,6 +23,7 @@ import { rng } from '../../src/lesson/runtime/item';
 import { Vessels, VesselsSafe, type VesselsBlock, type VesselsParams } from '../../src/lesson/topics/cylinders-cones-spheres/Vessels';
 import { Net } from '../../src/lesson/topics/cylinders-cones-spheres/Net';
 import { FAMILY_NAMES, GENERATORS, MC, type CcsPicture } from '../../src/lesson/topics/cylinders-cones-spheres/items';
+import { explain } from '../../src/lesson/topics/cylinders-cones-spheres/explain';
 import { PLAN } from '../../src/lesson/topics/cylinders-cones-spheres/plan';
 import { SCRIPT } from '../../src/lesson/topics/cylinders-cones-spheres/script';
 
@@ -363,7 +364,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed), show: it => showItem(it),
   });
 }

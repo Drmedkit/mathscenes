@@ -21,6 +21,7 @@ import { type LessonCtx, runLesson, SURE } from '../../src/lesson/runtime/shell'
 import { startPractice } from '../../src/lesson/runtime/practice';
 import { LineModel, type LMFocus, type LMParams, type LMStep } from '../../src/lesson/topics/linear-functions/LineModel';
 import { FAMILY_NAMES, GENERATORS, MC, type LFItem } from '../../src/lesson/topics/linear-functions/items';
+import { explain } from '../../src/lesson/topics/linear-functions/explain';
 import { PLAN } from '../../src/lesson/topics/linear-functions/plan';
 import { LINES } from '../../src/lesson/topics/linear-functions/script';
 
@@ -359,7 +360,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as LFItem),
   });

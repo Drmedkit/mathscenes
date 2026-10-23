@@ -4,6 +4,7 @@
 // sub-goal's cases from the topic JSON. Every item with a figure carries it (picture.fig) with the answer hidden
 // (labels 'x' / '?' that turn into the value only in the worked solution). Pure: no DOM, no canvas.
 import { type Item, type Response, type Verdict, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import {
   type Fig, type FAngle, type FSeg, type MarkCol, type Rel, type Slot, type TransMark, type TriMark, type V3, angOf,
   POLY_NAME, REL_NAME, SLOT, SLOTS, add, dirv, figProblems, mapFig, measure, meet, mul, partner, poly, polySum as pSum,
@@ -143,7 +144,7 @@ function choiceItem(R: () => number, b: Base, opts: Opt[], okSay: string, hint: 
   const o = keepOrder ? opts : shuffle(R, opts.slice());
   const right = o.findIndex(x => x.ok);
   return {
-    ...b, board: b.board ?? (b.givens.join(',\\ ') || '?'), input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right },
+    ...b, board: b.board ?? (b.givens.join(',\\ ') || '?'), input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right }, solution: endOnChoice(b.solution, o[right]!.t),
     check(r: Response): Verdict {
       if (r.kind !== 'choice') return { ok: false, say: 'Pick one answer.' };
       const x = o[r.i];
@@ -621,15 +622,20 @@ const extWrite: Gen = G((R, n) => {
     { t: `180° − ${d(q)}`, mc: MC.assumes180, say: 'x is not on a straight line with that angle. Use the two remote interior angles.' },
     { t: `${d(p)} + ${d(q)} + ${d(yv)}`, mc: MC.extUsesAdj, say: 'That adds all three interior angles (180°). x uses only the two far ones.' },
   ];
+  // a distractor that happens to equal x (180° − q when the third angle is q too, 180° − p − q at a right angle) is
+  // no wrong answer: left out
+  const value = [p + q, 180 - p - q, 180 - q, 180];
+  const fair = opts.filter((o, i) => o.ok || value[i] !== p + q);
   return choiceItem(R, {
     id: `extWrite-${n}`, family: 'extWrite', prompt: `Which expression equals the exterior angle ${Sx('x')}?`,
     givens: [`${D(p)},\\ ${D(q)}`], work: [`x = ${D(p)} + ${D(q)}`], board: `${D(p)},\\ ${D(q)},\\ x = \\,?`,
     solution: ['An exterior angle equals the sum of the two remote interior angles.', `x = ${d(p)} + ${d(q)}.`],
     picture: { fig: T.fig, focus: ['x'] },
-  }, opts, `Yes: x = ${d(p)} + ${d(q)}.`, 'An exterior angle = the two far interior angles added.');
+  }, fair, `Yes: x = ${d(p)} + ${d(q)}.`, 'An exterior angle = the two far interior angles added.');
 });
 
-const extValue: Gen = G((R, n) => {
+const extValue
+: Gen = G((R, n) => {
   const [a, b, c] = triAngles(R, 38, 0.2), vals = { A: a, B: b, C: c };
   const [Y, X] = pick(R, EXT_PICK), Z = other3(Y, X), p = vals[X], q = vals[Z], ans = p + q;
   const T = tri({ A: a, B: b, C: c, rot: int(R, -30, 30), mirror: R() < 0.5, size: 580, marks: { [X]: { text: d(p), col: 'second' }, [Z]: { text: d(q), col: 'second' }, [Y]: { text: '', col: 'plain', id: 'adj' } }, ext: { at: Y, from: X, mark: { text: 'x', alt: d(ans), col: 'link', id: 'x' }, len: 280 } });
@@ -740,7 +746,7 @@ const polyTriangles: Gen = G((R, n) => {
     id: `polyTriangles-${n}`, family: 'polyTriangles', prompt: `Draw every diagonal from vertex ${Lt} of this ${POLY_NAME[k]} (${k} sides). How many triangles do you get?`,
     givens: [`n = ${k}`], work: [`${k} - 2 = ${k - 2}\\ \\text{triangles}`, `${k - 2} \\times 180^\\circ = ${DT(pSum(k))}`],
     board: `\\text{${POLY_NAME[k]}},\\ n = ${k}`,
-    solution: [`From ${Lt}, diagonals go to every vertex except ${Lt} and its two neighbors: ${k - 3} diagonals.`, `They cut the ${POLY_NAME[k]} into ${k} − 2 = ${k - 2} triangles.`],
+    solution: [`From ${Lt}, diagonals go to every vertex except ${Lt} and its two neighbors: ${k - 3} ${k - 3 === 1 ? 'diagonal' : 'diagonals'}.`, `They cut the ${POLY_NAME[k]} into ${k} − 2 = ${k - 2} triangles.`],
     picture: { fig: P.fig, fills: tf },
   }, k - 2, [[k, MC.nTimes180, `The two sides at ${Lt} are not diagonals, so the triangles number ${k} − 2.`], [k - 3, undefined, `${k - 3} is the number of diagonals; they make one more triangle than that.`]],
   `Yes: ${k - 2} triangles.`, `Count the triangles the diagonals from ${Lt} make.`, 'triangles');
@@ -932,6 +938,7 @@ const exprPair: Gen = G((R, n) => {
   const e2 = kind === 'suppBoth' ? `(${lin(p2, q2)})°` : d(a2), e2T = kind === 'suppBoth' ? `(${linT(p2, q2)})^\\circ` : D(a2);
   const equation = eq ? `${linT(p1, q1)} = ${a2}` : kind === 'suppNum' ? `${linT(p1, q1)} + ${a2} = 180` : `(${linT(p1, q1)}) + (${linT(p2, q2)}) = 180`;
   const collected = kind === 'suppBoth' ? `${p1 + p2}x ${q1 + q2 >= 0 ? '+' : '-'} ${Math.abs(q1 + q2)} = 180` : equation;
+  const equationH = eq ? `${lin(p1, q1)} = ${a2}` : kind === 'suppNum' ? `${lin(p1, q1)} + ${a2} = 180` : `(${lin(p1, q1)}) + (${lin(p2, q2)}) = 180`;
   // the x a kid gets by setting a supplementary pair equal, or by collecting only the x terms
   const xEqual = kind === 'suppNum' ? (a2 - q1) / p1 : kind === 'suppBoth' ? (q2 - q1) / (p1 - p2 || NaN) : NaN;
   const xSupp = eq ? (180 - a2 - q1) / p1 : NaN;
@@ -941,8 +948,8 @@ const exprPair: Gen = G((R, n) => {
     prompt: `${iN(N.l)} ∥ ${iN(N.m)}. ${ang(1)} = ${A(e1)} and ${ang(2)} = ${A(e2)}. Find ${Sx('x')} and the measure of ${ang(1)}.`,
     givens: [parT(N), `${tang(1)} = ${e1T}`, `${tang(2)} = ${e2T}`],
     work: [equation, ...(kind === 'suppBoth' ? [collected] : []), `x = ${x}`, `${tang(1)} = ${D(a1)}`],
-    solution: [`∠1 and ∠2 are ${REL_NAME[r]}, so they ${eq ? 'are equal' : 'add to 180°'}: ${equation.replace(/\\/g, '')}.`,
-      ...(kind === 'suppBoth' ? [`Collect like terms: ${collected}.`] : []), `Solve: x = ${x}.`, `Then ∠1 = ${lin(p1, q1).replace('x', `(${x})`)} = ${d(a1)}.`],
+    solution: [`∠1 and ∠2 are ${REL_NAME[r]}, so they ${eq ? 'are equal' : 'add to 180°'}: ${equationH}.`,
+      ...(kind === 'suppBoth' ? [`Collect like terms: ${collected.replace(' - ', ' − ')}.`] : []), `Solve: x = ${Sx(x)}.`, `Then ∠1 = ${lin(p1, q1).replace('x', `(${x})`)} = ${Sx(d(a1))}.`],
     picture: { fig: T.fig, reveal: ['one', 'two'], focus: ['one', 'two'] },
   }, x, a1, '<i>x</i> =', '&ensp;m∠1 =', '°', (rx, ry) => {
     if (near(rx, x) && near(ry, x)) return { ok: false, mc: MC.reportsX, say: `x = ${x} is right. Now put it into ∠1: ${lin(p1, q1).replace('x', `(${x})`)}.` };
@@ -975,7 +982,7 @@ const exprTri: Gen = G((R, n) => {
     prompt: `In triangle ${N.join('')}: m∠${N[0]} = ${A(`(${lin(pp[0]!, qq[0]!)})°`)}, m∠${N[1]} = ${A(`(${lin(pp[1]!, qq[1]!)})°`)}, m∠${N[2]} = ${A(`(${lin(pp[2]!, qq[2]!)})°`)}. Find ${Sx('x')} and the largest angle, m∠${N[big]}.`,
     givens: [0, 1, 2].map(j => `m\\angle ${N[j]} = ${ex(j)}`),
     work: [`${P}x ${Q >= 0 ? '+' : '-'} ${Math.abs(Q)} = 180`, `x = ${x}`, `m\\angle ${N[big]} = ${D(vals[big]!)}`],
-    solution: [`The three angles add to 180°: ${[0, 1, 2].map(j => `(${lin(pp[j]!, qq[j]!)})`).join(' + ')} = 180.`, `Collect like terms: ${P}x ${Q >= 0 ? '+' : '−'} ${Math.abs(Q)} = 180, so x = ${x}.`, `m∠${N[big]} = ${lin(pp[big]!, qq[big]!).replace('x', `(${x})`)} = ${d(vals[big]!)}.`],
+    solution: [`The three angles add to 180°: ${[0, 1, 2].map(j => `(${lin(pp[j]!, qq[j]!)})`).join(' + ')} = 180.`, `Collect like terms: ${P}x ${Q >= 0 ? '+' : '−'} ${Math.abs(Q)} = 180, so x = ${Sx(x)}.`, `m∠${N[big]} = ${lin(pp[big]!, qq[big]!).replace('x', `(${x})`)} = ${Sx(d(vals[big]!))}.`],
     picture: { fig: T.fig, focus: ['A', 'B', 'C'] },
   }, x, vals[big]!, '<i>x</i> =', `&ensp;m∠${N[big]} =`, '°', (rx, ry) => {
     if (near(rx, x) && near(ry, x)) return { ok: false, mc: MC.reportsX, say: `x = ${x} is right. Now find m∠${N[big]} by putting ${x} in for x.` };
@@ -1011,7 +1018,7 @@ const polyExpr: Gen = G((R, n) => {
     id: `polyExpr-${n}`, family: 'polyExpr', prompt: `Find ${Sx('x')} and m∠${Nm[askV]} in this ${POLY_NAME[k]}.`,
     givens: [`\\text{${POLY_NAME[k]}}`, ...Array.from({ length: Math.ceil(k / 3) }, (_, r) => Nm.slice(r * 3, r * 3 + 3).map((v, j) => `${v}{:}\\ ${lab[r * 3 + j]!.replace('°', '^\\circ')}`).join(',\\ '))],
     work: [`${sumC}x + ${sumN} = ${S}`, `${sumC}x = ${S - sumN}`, `x = ${x}`, `m\\angle ${Nm[askV]} = ${D(askC * x)}`],
-    solution: [`A ${POLY_NAME[k]} has ${k} − 2 = ${k - 2} triangles inside: the angles add to ${d(S)}.`, `${sumC}x + ${sumN} = ${S}, so ${sumC}x = ${S - sumN} and x = ${x}.`, `m∠${Nm[askV]} = ${askC === 1 ? '' : askC}x = ${d(askC * x)}.`],
+    solution: [`A ${POLY_NAME[k]} has ${k} − 2 = ${k - 2} triangles inside: the angles add to ${d(S)}.`, `${sumC}x + ${sumN} = ${S}, so ${sumC}x = ${S - sumN} and x = ${Sx(x)}.`, `m∠${Nm[askV]} = ${askC === 1 ? '' : askC}x = ${Sx(d(askC * x))}.`],
     picture: { fig: P.fig, reveal: Array.from({ length: k }, (_, i) => `v${i}`).filter((_, i) => isExpr[i]), focus: [`v${askV}`] },
   }, x, askC * x, '<i>x</i> =', `&ensp;m∠${Nm[askV]} =`, '°', (rx, ry) => {
     if (near(rx, x) && near(ry, x) && askC !== 1) return { ok: false, mc: MC.reportsX, say: `x = ${x} is right. m∠${Nm[askV]} is ${askC}x.` };
@@ -1086,8 +1093,14 @@ const findBadStep: Gen = G((R, n, sg) => {
   let mcMiss: string | undefined;
   if (kind === 'name') {
     const st = steps[bad]!, prev = bad === 0 ? g : steps[bad - 1]!.s, rr = relation(prev, st.s);
-    const alt: Rel[] = rr === 'vertical' || rr === 'linear' ? (rr === 'vertical' ? ['corresponding', 'altInt'] : ['ssInt', 'corresponding']) : (['corresponding', 'altInt', 'altExt', 'ssInt'] as Rel[]).filter(x => x !== rr && relFact(x).eq === relFact(rr).eq);
-    const wr = alt[0] ?? 'vertical';
+    // the wrong name must be wrong for EVERY angle known so far (the given one and the earlier steps): "∠4 = 119°
+    // (alternate interior)" is a right step when ∠4 is alternate interior to the given 119°, even if not to ∠8
+    const known = [g, ...steps.slice(0, bad).map(x => x.s)];
+    const holds = (x: Rel) => known.some(k => relation(k, st.s) === x);
+    const pref: Rel[] = rr === 'vertical' || rr === 'linear' ? (rr === 'vertical' ? ['corresponding', 'altInt', 'altExt'] : ['ssInt', 'corresponding', 'altInt']) : (['corresponding', 'altInt', 'altExt', 'ssInt'] as Rel[]).filter(x => x !== rr && relFact(x).eq === relFact(rr).eq);
+    const all: Rel[] = ['corresponding', 'altInt', 'altExt', 'ssInt', 'vertical', 'linear'];
+    const wr = pref.find(x => !holds(x)) ?? all.find(x => x !== rr && !holds(x)) ?? 'vertical';
+
     st.why = rs(wr); mcMiss = MC.wrongName;
   } else if (kind === 'apply') {
     const st = steps[bad]!; st.v = 180 - st.v;

@@ -22,6 +22,7 @@ import { type LessonCtx, runLesson, SURE } from '../../src/lesson/runtime/shell'
 import { startPractice } from '../../src/lesson/runtime/practice';
 import { rng } from '../../src/lesson/runtime/item';
 import { FAMILY_NAMES, GENERATORS, MC, type DItem } from '../../src/lesson/topics/dilations-and-similarity/items';
+import { explain } from '../../src/lesson/topics/dilations-and-similarity/explain';
 import { PLAN } from '../../src/lesson/topics/dilations-and-similarity/plan';
 import { LINES, THREE_HALVES } from '../../src/lesson/topics/dilations-and-similarity/script';
 import { type DFig, type DilPic, type V, dilateAll, kk } from '../../src/lesson/topics/dilations-and-similarity/dilMaths';
@@ -412,7 +413,7 @@ function partPractice(): void {
   if (one) { reviewItem(one); return; }
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as DItem),
   });

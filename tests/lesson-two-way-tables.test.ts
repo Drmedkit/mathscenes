@@ -218,3 +218,38 @@ describe('two-way-tables: parts 1-4 text and voice', () => {
     for (const m of page.matchAll(/(?:say|fbk)\((?:[a-z]+, )?'([a-z]\.[a-z0-9.]+)'/g)) expect(lines[m[1]!], m[1]).toBeDefined();
   });
 });
+
+describe('two-way-tables: quality layer regressions', () => {
+  it('every choice family ends its steps on the right choice; countUnknown has 2+ steps', async () => {
+    const { explain } = await import('../src/lesson/topics/two-way-tables/explain');
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 30; s++) {
+      const item = GEN[f]!(rng(s * 59 + 3), s, p.id);
+      const ex = explain(item);
+      expect(ex?.result, `${p.id}/${f}: ${item.prompt}`).toEqual(item.answer);
+      expect(ex!.steps.length, `${p.id}/${f}`).toBeGreaterThanOrEqual(2);
+    }
+  });
+  it('screenWord never asks about "the 1 bags"', () => {
+    for (let s = 1; s <= 400; s++) expect(GEN.screenWord!(rng(s), s, 'screening-test-frequencies').prompt).not.toMatch(/the (<[^>]+>)?1(<\/b>)? \w+s that/);
+  });
+  it('the check-in figure is a small self-contained SVG of the table', async () => {
+    const { PLACEMENT } = await import('../src/lesson/topics/two-way-tables/placement');
+    for (let s = 1; s <= 40; s++) {
+      const svg = PLACEMENT.figure!(GEN.rowPct!(rng(s), s, 'conditional-both-directions'))!;
+      expect(svg).toMatch(/^<svg[\s>].*viewBox=/);
+      expect(svg.length).toBeLessThanOrEqual(6144);
+      expect(svg).not.toMatch(/href=|<script|NaN|undefined/);
+    }
+  });
+});
+describe('two-way-tables: one full stop after "p.m."', () => {
+  it('assocTable and fromConditional never print "p.m.."', () => {
+    let seen = 0;
+    for (let s = 1; s <= 600; s++) for (const [f, sg] of [['assocTable', 'association-compare-distributions'], ['fromConditional', 'complete-rf-table']] as const) {
+      const it = GEN[f]!(rng(s), s, sg), all = [it.prompt, ...(it.choices ?? []), ...it.solution].join(' ');
+      if (/p\.m\./.test(all)) seen++;
+      expect(all).not.toMatch(/p\.m\.\./);
+    }
+    expect(seen).toBeGreaterThan(0);
+  });
+});

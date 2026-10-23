@@ -3,6 +3,7 @@
 // catalogue (math-curriculum-essentials ids) where that is honest. A generator gets the SUB-GOAL it practises
 // (plan.ts) and makes that sub-goal's cases. Pure: no DOM, no canvas.
 import { type Item, type Response, type Verdict, fracValue, int, pick, same, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import {
   type ClusterCtx, type Ctx, type P2, type PlotSpec, type TableSpec, type TLine, type TwoWay,
   CLUSTERS, CONTEXTS, CURVED, LINEAR, NEGATIVE, NONE, POSITIVE, SURVEYS,
@@ -165,7 +166,7 @@ function choiceItem(R: () => number, base: Base, opts: Opt[], keepOrder = false)
   const o = keepOrder ? opts.slice() : shuffle(R, opts.slice());
   const i = o.findIndex(x => x.ok);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i }, solution: endOnChoice(base.solution, o[i]!.t),
     check: (r: Response) => {
       if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const c = o[r.i]!;
@@ -218,7 +219,8 @@ const keepPairs: Gen = (R, n) => {
   for (;;) {
     const c = pick(R, LINEAR), k = int(R, 6, 8), P = cloud(R, c, { n: k }), names = shuffle(R, NAMES.slice());
     const ys = P.map(p => p.y).sort((a, b) => a - b);
-    const cand = P.map((p, i) => i).filter(i => Math.abs(ys[i]! - P[i]!.y) > 1e-6 && P.filter(q => near(q.y, ys[i]!)).length === 1);
+    // the asked case is the ONLY one with its x value ("the student with 6 hours" must name one student)
+    const cand = P.map((p, i) => i).filter(i => Math.abs(ys[i]! - P[i]!.y) > 1e-6 && P.filter(q => near(q.y, ys[i]!)).length === 1 && P.filter(q => near(q.x, P[i]!.x)).length === 1);
     if (!cand.length) continue;
     const i = pick(R, cand), p = P[i]!, wrongY = ys[i]!;
     const order = shuffle(R, P.map((_, j) => j));
@@ -494,7 +496,7 @@ const readScaleY: Gen = (R, n) => {
     const i = spec.pts.length - 1;
     return numItem({ id: `readScaleY-${n}`, family: 'readScaleY', board: '', unit: c.yUnit === 'thousand dollars' ? 'thousand $' : c.yUnit === '°F' ? '°F' : c.yUnit,
       prompt: `The x-axis of this plot of ${spec.pts.length} ${c.many} counts by ${fmt(spec.xStep)}. What is the ${c.yName} of dot <b class="a">A</b>?`,
-      solution: [`Across from A to the y-axis: halfway between ${fmt(spec.y0 + j * spec.yStep)} and ${fmt(spec.y0 + (j + 1) * spec.yStep)}.`, `Half of ${fmt(spec.yStep)} is ${fmt(spec.yStep / 2)}, so A is at <b>${fmt(y)}</b>.`],
+      solution: [`Across from A to the y-axis: halfway between ${fmt(spec.y0 + j * spec.yStep)} and ${fmt(spec.y0 + (j + 1) * spec.yStep)}.`, `Half of ${fmt(spec.yStep)} is ${fmt(spec.yStep / 2, 3)}, so A is at <b>${fmt(y, 3)}</b>.`],
       picture: { pic: { kind: 'plot', plot: spec, solve: [{ a: 'ring', i: [i], col: 'link' }] } } }, y, spec.yStep / 8,
     v => (Math.abs(v - wrong) <= spec.yStep / 8 ? { ok: false, mc: MC.sameScale, say: `That uses the x-axis step (${fmt(spec.xStep)}). The y-axis has its own step: ${fmt(spec.yStep)}.` }
       : near(v, x) ? { ok: false, say: `${fmt(x)} is A’s x-value. Read across to the y-axis.` } : { ok: false, say: `Read across from A to the y-axis. Each y grid line is ${fmt(spec.yStep)} more.` }));

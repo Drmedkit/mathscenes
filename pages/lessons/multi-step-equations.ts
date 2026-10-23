@@ -28,6 +28,7 @@ import { ClearBalance, type ClearBlock, type ClearFocus, type ClearStep } from '
 import { type ClearPic, type Eq, type Q, type Side, N, X, eq, lin, nT, sideT, valueAt } from '../../src/lesson/topics/multi-step-equations/msMaths';
 import { pictureOf } from '../../src/lesson/topics/multi-step-equations/clearLayout';
 import { FAMILY_NAMES, GENERATORS, MC, type MsItem, readQ } from '../../src/lesson/topics/multi-step-equations/items';
+import { explain } from '../../src/lesson/topics/multi-step-equations/explain';
 import { PLAN } from '../../src/lesson/topics/multi-step-equations/plan';
 import { qEq, rat } from '../../src/core/math';
 import LINES from './multi-step-equations/voice/lines.json';
@@ -495,7 +496,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as MsItem),
   });

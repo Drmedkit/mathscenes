@@ -4,6 +4,7 @@
 // math-curriculum-essentials/misconceptions.json (the MC table, checked in the test). A generator gets the SUB-GOAL it
 // practises (plan.ts) and uses that sub-goal's cases from the topic JSON. Pure: no DOM, no canvas.
 import { type Item, type Response, type Verdict, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import type { Pt } from '../../../core/math';
 import type { SideId } from '../pythagoras-intro/SideSquares';
 import { rightPts } from '../pythagoras-intro/pythag';
@@ -138,7 +139,7 @@ function choiceItem(R: () => number, base: Omit<PtItem, 'input' | 'choices' | 'a
   const right = o.findIndex(x => x.ok);
   if (right < 0 || o.filter(x => x.ok).length !== 1) throw new Error(`${base.family}: exactly one right option`);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right }, solution: endOnChoice(base.solution, o[right]!.t),
     check: (r: Response): Verdict => {
       const x = r.kind === 'choice' ? o[r.i] : undefined;
       if (!x) return { ok: false, say: 'Pick one of the options.' };
@@ -745,7 +746,8 @@ function context(R: () => number): Ctx {
     return { shape: 'walk', u: 'mi', h: e!, v: nn!, c: d!, ask: 'c', what: 'the straight-line distance', text: (h, v) => `Jo walks ${h} east, then ${v} north. How far is Jo from the start in a straight line?${!Number.isInteger(d! * 10) ? ' Round to the nearest tenth.' : ''}` };
   }
   if (k === 3) {
-    const [r, up, L] = R() < 0.25 ? [11, Math.sqrt(23), 12] : pick(R, [[12, 5, 13], [8, 6, 10], [24, 7, 25], [15, 8, 17]] as const);
+    // a real wheelchair ramp is gentle (about 1 ft up for every 12 ft along the ground): a run and a length just longer
+    const [r, L] = pick(R, [[16, 16.1], [20, 20.1], [24, 24.1], [30, 30.1], [36, 36.1], [30, 30.2]] as const), up = Math.sqrt(L * L - r * r);
     return { shape: 'ramp', u: 'ft', h: r, v: up, c: L, ask: 'v', what: 'the height of the ramp', text: (h, _v, c) => `A wheelchair ramp is ${c} long and covers ${h} along the ground. How high does it rise?${!Number.isInteger(up) ? ' Round to the nearest tenth.' : ''}` };
   }
   const [w, l, d] = pick(R, [[60, 80, 100], [30, 40, 50], [90, 120, 150], [50, 120, 130], [80, 150, 170]] as const);
@@ -1021,11 +1023,14 @@ const keepExact: Gen = (R, n) => {
 // ===================== 17. critique-hypotenuse-assignment =====================
 const findError: Gen = (R, n) => {
   const [x, y, c] = pick(R, [...FLUENT, ...APPLIED]);
-  const [a, b] = R() < 0.5 ? [x, y] : [y, x];   // a known leg, b the leg Jo should get
+  let [a, b] = R() < 0.5 ? [x, y] : [y, x];   // a known leg, b the leg Jo should get
   const name = pick(R, ['Jo', 'Max', 'Priya', 'Dev', 'Zoe', 'Luis']);
   const u = pick(R, UNITS_US);
+  const ctx0 = pick(R, ['tri', 'ladder', 'ramp'] as const);
+  // a ladder at a real size (in feet, 3 to 50 ft) stands steeper than 45°: its foot is the shorter leg
+  const ctx = ctx0 === 'ladder' && (u !== 'ft' || c > 50) ? 'tri' : ctx0;
+  if (ctx === 'ladder' && a > b) [a, b] = [b, a];
   const wrong = Math.sqrt(a * a + c * c);
-  const ctx = pick(R, ['tri', 'ladder', 'ramp'] as const);
   const lead = ctx === 'ladder' ? `A ${c} ${u} ladder leans on a wall with its foot ${a} ${u} out. ${name} finds the height x like this:`
     : ctx === 'ramp' ? `A ramp is ${c} ${u} long and covers ${a} ${u} along the ground. ${name} finds its rise x like this:`
       : `A right triangle has sides ${a} ${u} and ${c} ${u}, and x (see the picture). ${name} writes:`;
@@ -1098,9 +1103,10 @@ const enough: Gen = (R, n) => {
 const deckBrace: Gen = (R, n) => {
   const [a, b, c] = pick(R, [[6, 8, 10], [9, 12, 15], [12, 16, 20], [5, 12, 13], [8, 15, 17]] as const);
   const v = pick(R, ['square', 'checked', 'looks', 'off', 'looks'] as const);
-  const name = pick(R, ['Rosa', 'Mr. Kim', 'Dana', 'Ali']);
-  const why = v === 'square' ? `She checked the corner with a carpenter's square: it is 90°.`
-    : v === 'checked' ? `Before, she measured exactly ${a} ft and ${b} ft from the corner and exactly ${c} ft between the marks.`
+  const [name, she] = pick(R, [['Rosa', 'she'], ['Mr. Kim', 'he'], ['Dana', 'she'], ['Ali', 'he']] as const);   // the pronoun fits the name
+  const She = she[0]!.toUpperCase() + she.slice(1);
+  const why = v === 'square' ? `${She} checked the corner with a carpenter's square: it is 90°.`
+    : v === 'checked' ? `Before, ${she} measured exactly ${a} ft and ${b} ft from the corner and exactly ${c} ft between the marks.`
       : v === 'looks' ? `Nobody checked the corner; it looks square.` : `The corner was measured: it is ${pick(R, [85, 95, 93, 87])}°.`;
   const ok = v === 'square' || v === 'checked' ? 0 : v === 'looks' ? 1 : 2;
   return choiceItem(R, {

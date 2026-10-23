@@ -22,6 +22,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import { PLANE_AREA, WIDE_BOARD, SysPlane, type SysBlock, type SysMark, type SysState } from '../../src/lesson/topics/systems-of-equations/SysPlane';
 import { lin, pairP, ySlope, type V } from '../../src/lesson/topics/systems-of-equations/sysMaths';
 import { FAMILY_NAMES, GENERATORS, MC, type SysItem } from '../../src/lesson/topics/systems-of-equations/items';
+import { explain } from '../../src/lesson/topics/systems-of-equations/explain';
 import { PLAN } from '../../src/lesson/topics/systems-of-equations/plan';
 import LINES from './systems-of-equations/voice/lines.json';
 
@@ -440,7 +441,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as SysItem),
   });

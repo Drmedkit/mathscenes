@@ -25,6 +25,7 @@ import { PlaneDist, type PlaneStep } from '../../src/lesson/topics/pythagorean-t
 import { Sketch } from '../../src/lesson/topics/pythagorean-theorem/Sketch';
 import { boxSketch, converseSketch } from '../../src/lesson/topics/pythagorean-theorem/sketches';
 import { FAMILY_NAMES, GENERATORS, MC, type PtItem } from '../../src/lesson/topics/pythagorean-theorem/items';
+import { explain } from '../../src/lesson/topics/pythagorean-theorem/explain';
 import { PLAN } from '../../src/lesson/topics/pythagorean-theorem/plan';
 import { LINES } from '../../src/lesson/topics/pythagorean-theorem/script';
 import { PIC_FRAME as MF, WIDE_SLATE, buildPic } from '../../src/lesson/topics/pythagorean-theorem/pictures';
@@ -357,7 +358,7 @@ function partPractice(): void {
   tr.reset('X.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as PtItem),
   });

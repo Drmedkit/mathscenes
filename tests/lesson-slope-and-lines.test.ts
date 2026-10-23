@@ -169,7 +169,7 @@ describe('slope-and-lines: misconception probes', () => {
   });
   it('scaled axes: counting squares is caught', () => {
     const it = find('squaresToScale', 'scaled-axes-slope', () => true);
-    const m = /(\d+) squares across.*?(\d+) squares up/.exec(it.prompt.replace(/<[^>]+>/g, ''))!;
+    const m = /(\d+) squares? across.*?(\d+) squares? up/.exec(it.prompt.replace(/<[^>]+>/g, ''))!;
     expect(mcOf(it, { kind: 'num', v: Number(m[2]) / Number(m[1]) })).toBe(MC.steep);
   });
   it('paired changes: one sign flipped is inconsistent order', () => {
@@ -191,5 +191,36 @@ describe('slope-and-lines: misconception probes', () => {
     const it = find('wordsToMB', 'write-y-mx-plus-b', () => true);
     const a = it.answer as { x: number; y: number };
     expect(mcOf(it, { kind: 'pair', x: a.y, y: a.x })).toBe(MC.swapMB);
+  });
+});
+
+describe('slope-and-lines: quality layer regressions', () => {
+  it('pair answers read from the amber and teal values (a "+8" change too); a marked point splits into two', async () => {
+    const { explain } = await import('../src/lesson/topics/slope-and-lines/explain');
+    const cases: [string, string][] = [['changes', 'paired-changes'], ['tableChanges', 'paired-changes'], ['tableChanges', 'uneven-table-rate'], ['graphStep', 'graph-y-equals-kx'], ['graphStep', 'graph-y-mx-plus-b'], ['wordsToMB', 'write-y-mx-plus-b'], ['lineFromTwo', 'recover-b'], ['yOverX', 'ratio-vs-slope']];
+    for (const [f, sg] of cases) for (let s = 1; s <= 80; s++) {
+      const item = GEN[f]!(rng(s * 23 + 9), s, sg);
+      expect(explain(item)?.result, `${f}: ${item.prompt}`).toEqual(item.answer);
+    }
+  });
+  it('no "− −" in b = y − m·x, no "1 squares"', () => {
+    for (let s = 1; s <= 300; s++) {
+      for (const l of GEN.lineFromTwo!(rng(s), s, 'recover-b').solution) expect(l).not.toMatch(/[−-]\s*[−-]\s*\d/);
+      const it2 = GEN.squaresToScale!(rng(s), s, 'scaled-axes-slope');
+      expect(it2.prompt).not.toMatch(/\b1 squares\b/);
+    }
+  });
+});
+
+describe('slope-and-lines: sweep regressions (oracle findings)', () => {
+  it('meaningMB with the slope equal to the start, varyingRate with a proportional table: one right choice (oracle agrees)', async () => {
+    // @ts-expect-error: the oracle is an untyped .mjs module
+    const O = (await import('./oracle/slope-and-lines.mjs')).default;
+    // @ts-expect-error: an untyped .mjs module
+    const { viewOf } = await import('../tools/quality/view.mjs');
+    for (const [f, sg] of [['meaningMB', 'interpret-m-b-in-context'], ['varyingRate', 'nonlinear-varying-rate']] as const) for (let s = 1; s <= 400; s++) {
+      const it = GEN[f]!(rng(s * 29 + 1), s, sg), q = viewOf(it, sg);
+      expect(O.solve(q), `${f}: ${it.prompt} | ${(it.choices ?? []).join(' | ')}`).toBe((it.answer as { i: number }).i);
+    }
   });
 });

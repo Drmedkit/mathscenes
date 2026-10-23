@@ -138,3 +138,42 @@ describe('multi-step-equations: misconceptions are classified', () => {
     expect(typedMcs('evalTerm', 'coefficient-as-multiplier', nums(-60, 60)).has(MC.minusNeg)).toBe(true);
   });
 });
+
+describe('multi-step-equations: quality layer regressions', () => {
+  it('the steps card: at most 5 steps, a negative fraction answer read exactly, mixed numbers and checks in 2+ steps', async () => {
+    const { explain } = await import('../src/lesson/topics/multi-step-equations/explain');
+    const cases: [string, string][] = [['planSolve', 'plan-multi-step-strategy'], ['barSolve', 'clear-binomial-numerators'], ['distSolve', 'distribute-rational-factor'], ['clearSolve', 'clear-every-term-two-step'], ['checkSide', 'check-in-original'], ['mixedCoef', 'equivalent-coefficient-forms']];
+    let neg = 0;
+    for (const [f, sg] of cases) for (let s = 1; s <= 150; s++) {
+      const item = GEN[f]!(rng(s * 37 + 11), s, sg);
+      const ex = explain(item)!;
+      expect(ex.steps.length, `${f}: ${item.prompt}`).toBeLessThanOrEqual(5);
+      expect(ex.steps.length, `${f}: ${item.prompt}`).toBeGreaterThanOrEqual(2);
+      expect(item.check(ex.result).ok, `${f}: ${JSON.stringify(ex.result)} for ${item.prompt}`).toBe(true);
+      if (item.answer.kind === 'frac' && item.answer.n < 0) neg++;
+    }
+    expect(neg).toBeGreaterThan(0);
+  });
+  it('barClear never runs out of draws', () => {
+    for (let s = 1; s <= 2000; s++) expect(() => GEN.barClear!(rng(s * 7919 + 9), s, 'fraction-bar-grouping')).not.toThrow();
+  });
+  it('no "1 wholes" / "1 tickets"', () => {
+    for (let s = 1; s <= 300; s++) for (const f of ['mixedCoef', 'feasible']) for (const l of GEN[f]!(rng(s), s).solution) expect(l).not.toMatch(/\b1 (wholes|tickets)\b/);
+  });
+});
+
+describe('multi-step-equations: sweep regressions (oracle findings)', () => {
+  it('barClear, estimate: the independent oracle agrees and finds nothing wrong; minus signs are real', async () => {
+    // @ts-expect-error: the oracle is an untyped .mjs module
+    const O = (await import('./oracle/multi-step-equations.mjs')).default;
+    // @ts-expect-error: an untyped .mjs module
+    const { viewOf } = await import('../tools/quality/view.mjs');
+    for (const [f, sg] of [['barClear', 'fraction-bar-grouping'], ['barClear', 'clear-binomial-numerators'], ['estimate', 'estimate-reasonableness']] as const)
+      for (let s = 1; s <= 400; s++) {
+        const it = GEN[f]!(rng(s * 17 + f.length), s, sg), q = viewOf(it, sg);
+        expect(O.sane ? O.sane(q) : '', `${f}: ${it.prompt}`).toBe('');
+        expect(O.solve(q), `${f}: ${it.prompt}`).toBe((it.answer as { i: number }).i);
+        expect([it.prompt, ...(it.choices ?? []), ...it.solution].join(' ')).not.toMatch(/= -\d/);
+      }
+  });
+});

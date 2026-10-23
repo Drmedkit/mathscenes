@@ -125,3 +125,50 @@ describe('parallel-lines-and-triangles: lesson figures and voice', () => {
     for (const [id, l] of Object.entries(lines)) expect(/[0-9°=+−×÷<>]/.test(l.text), `${id}: ${l.text}`).toBe(false);
   });
 });
+
+describe('parallel-lines-and-triangles: quality layer regressions', () => {
+  it('exprPair/exprTri/polyExpr mark x and the angle in the steps; the equation uses a real minus sign', async () => {
+    const { explain } = await import('../src/lesson/topics/parallel-lines-and-triangles/explain');
+    for (const f of ['exprPair', 'exprTri', 'polyExpr']) for (let s = 1; s <= 80; s++) {
+      const item = GEN[f]!(rng(s * 13 + 5), s);
+      const ex = explain(item)!;
+      expect(ex.result, `${f}: ${item.prompt}`).toEqual(item.answer);
+      for (const l of item.solution) expect(l, f).not.toMatch(/\d\s-\s\d|x\s-\s\d/);
+    }
+  });
+  it('a quadrilateral has 1 diagonal from a vertex, not "1 diagonals"', () => {
+    for (let s = 1; s <= 200; s++) for (const l of GEN.polyTriangles!(rng(s), s).solution) expect(l).not.toMatch(/\b1 diagonals/);
+  });
+  it('every choice family ends its steps on the right choice', async () => {
+    const { explain } = await import('../src/lesson/topics/parallel-lines-and-triangles/explain');
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 20; s++) {
+      const item = GEN[f]!(rng(s * 7 + 3), s, p.id);
+      if (item.input === 'choice') expect(explain(item)?.result, `${p.id}/${f}`).toEqual(item.answer);
+    }
+  });
+});
+
+describe('parallel-lines-and-triangles: sweep regressions (oracle findings)', () => {
+  it('extWrite: exactly one expression equals x, also when the third angle equals a given one', () => {
+    let seen = 0;
+    for (let s = 1; s <= 2000; s++) {
+      const it = GEN.extWrite!(rng(s * 7 + 1), s, 'exterior-angle-remote-sum');
+      const ev = (c: string) => { const ns = [...c.matchAll(/\d+/g)].map(m => Number(m[0])); return c.includes('180° −') ? 180 - ns.slice(1).reduce((a, b) => a + b, 0) : ns.reduce((a, b) => a + b, 0); };
+      const right = ev(it.choices![(it.answer as { i: number }).i]!);
+      expect(it.choices!.filter(c => ev(c) === right).length, it.choices!.join(' | ')).toBe(1);
+      if (it.choices!.length === 3) seen++;
+    }
+    expect(seen).toBeGreaterThan(0);
+  });
+  it('findBadStep: a wrongly named step is wrong for the given angle too (the independent oracle agrees)', async () => {
+    // @ts-expect-error: the oracle is an untyped .mjs module
+    const O = (await import('./oracle/parallel-lines-and-triangles.mjs')).default;
+    // @ts-expect-error: an untyped .mjs module
+    const { viewOf } = await import('../tools/quality/view.mjs');
+    for (let s = 1; s <= 400; s++) {
+      const it = GEN.findBadStep!(rng(s * 13 + 2), s, 'justify-step-with-condition');
+      const want = O.solve(viewOf(it, 'justify-step-with-condition'));
+      if (want !== undefined) expect(want, it.prompt).toBe((it.answer as { i: number }).i);
+    }
+  });
+});

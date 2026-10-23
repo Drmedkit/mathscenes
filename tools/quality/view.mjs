@@ -5,7 +5,8 @@
 /** HTML of a prompt / choice → plain text: fractions as a/b, x<sup>2</sup> as x^2, entities decoded, one space */
 export function plainText(h) {
   return String(h ?? '')
-    .replace(/<span class="fr"><span>([^<]*)<\/span><span>([^<]*)<\/span><\/span>/g, '$1/$2')
+    // a fraction's top and bottom may hold markup of their own (fr('<i>x</i>', 5) is x/5, not x5)
+    .replace(/<span class="fr"><span>((?:(?!<\/?span)[\s\S])*)<\/span><span>((?:(?!<\/?span)[\s\S])*)<\/span><\/span>/g, '$1/$2')
     .replace(/<sup>([^<]*)<\/sup>/g, '^$1').replace(/<sub>([^<]*)<\/sub>/g, '_$1')
     .replace(/<br\s*\/?>/g, ' ').replace(/<[^>]+>/g, '')
     .replace(/&#8202;|&#8201;|&thinsp;|&nbsp;|&#160;/g, ' ').replace(/&minus;/g, '−').replace(/&times;/g, '×').replace(/&divide;/g, '÷')

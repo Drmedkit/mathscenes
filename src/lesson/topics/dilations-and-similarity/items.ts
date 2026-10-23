@@ -2,6 +2,7 @@
 // DilPic picture (the page draws it with DilBoard and replays the worked solution there after a miss). The classifier
 // maps typical slips to misconception ids of math-curriculum-essentials/misconceptions.json.
 import { type Gen, type Item, type Response, A, B, S, fr, fracValue, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import { type Move, dil as dilM, flipX, flipY, mapPts, mv, slide, turn } from '../congruence/congMaths';
 import {
   type DFig, type DilPic, type K, type V, angles, at, bbox, centroid, dilate, dilateAll, fix, kH, kInv, kT, kk, kv, lenS, numH,
@@ -46,6 +47,8 @@ export const MC = {
 // helpers
 // ======================================================================================================
 const near = (a: number, b: number) => Math.abs(a - b) < 1e-6;
+/** "an" before a number said with a vowel sound (8, 11, 18, 80–89, 8.5), else "a" */
+const aN = (x: number | string) => (/^(8|1[18](?!\d))/.test(String(x)) ? 'an' : 'a');
 const tri = (s: string) => `△${s}`;
 const triT = (s: string) => `\\triangle ${s}`;
 const nameH = (s: string) => (s.length === 3 ? tri(s) : s);
@@ -66,6 +69,13 @@ function ratioH(a: number, b: number): string {
   }
   return numH(a / b);
 }
+/** a ratio a/b written as something new: lowest terms, else a short decimal ("6/5 = 1.2", never "6/5 = 6/5"); null
+ *  when neither works (the generator draws again) */
+function ratioShown(a: number, b: number): string | null {
+  const K = ratioK(a, b);
+  if (K.n !== a || K.d !== b) return kH(K);
+  return Number.isInteger(Math.round((a / b) * 1e6) / 1e6 * 100) ? numH(a / b) : null;
+}
 function ratioK(a: number, b: number): K {
   for (const m of [1, 10, 100]) { const A = Math.round(a * m), B = Math.round(b * m); if (near(A, a * m) && near(B, b * m)) return kk(A, B); }
   throw new Error('not a ratio of decimals');
@@ -78,7 +88,7 @@ function choice(R: () => number, base: Base, opts: Opt[]): DItem {
   const ai = o.findIndex(x => x.ok);
   if (ai < 0 || o.filter(x => x.ok).length !== 1) throw new Error(`${base.family}: exactly one right choice`);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: ai },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: ai }, solution: endOnChoice(base.solution, o[ai]!.t),
     check: (r: Response) => { if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one answer.' }; const x = o[r.i]!; return { ok: !!x.ok, mc: x.mc, say: x.say }; },
   };
 }
@@ -790,7 +800,7 @@ const witnessPick: Gen = (R, n) => fit(() => {
   return choice(R, {
     id: `witnessPick-${n}`, family: 'witnessPick', picture, board: simT(L1, L2),
     prompt: `${tri(L1)} has ${L1[0]}${ptH(P[0]!)}; ${tri(L2)} has ${L2[0]}${ptH(Q[0]!)}. Which sequence maps ${tri(L1)} onto ${tri(L2)}, every corner onto its partner (${L1[0]} → ${L2[0]}, ${L1[1]} → ${L2[1]}, ${L1[2]} → ${L2[2]})?`,
-    solution: [`Follow all three corners through each choice.`, `${seqH(ms)}: ${L1.split('').map((s, i) => `${s} → ${ptH(Q[i]!)}`).join(', ')}. Every corner lands, so this ${S('proves')} ${simH(L1, L2)}.`],
+    solution: [`Follow all three corners through each choice.`, `Try ${seqH(ms)}.`, `${L1.split('').map((s, i) => `${s} → ${ptH(Q[i]!)}`).join(', ')}: every corner lands on its partner, so this ${S('proves')} ${simH(L1, L2)}.`],
   }, [
     { t: seqH(ms), ok: true, say: 'Yes: every corner lands on its partner. That sequence is the proof.' },
     { t: seqH(partial), mc: MC.partial, say: `That puts ${L1[0]} on ${L2[0]}, but check ${L1[1]} and ${L1[2]}: they miss. One corner is not the whole figure.` },
@@ -912,10 +922,14 @@ const rectRhombus: Gen = (R, n) => {
     const w = int(R, 3, 8), h = int(R, 2, 6);
     if (w === h) return rectRhombus(R, n);
     let W: number, H: number;
-    if (sim) { const k = pick(R, [1.5, 2, 0.5, 2.5]); W = w * k; H = h * k; } else { W = w + pick(R, [1, 2, 3, 4]); H = h + pick(R, [-1, 1, 2, 3, 5]); if (near(W / w, H / h) || H < 2) return rectRhombus(R, n); }
+    // not similar also when turned: 5 × 6 and 6 × 5 (or 4 × 3 and 6 × 8) are similar rectangles
+    if (sim) { const k = pick(R, [1.5, 2, 0.5, 2.5]); W = w * k; H = h * k; } else { W = w + pick(R, [1, 2, 3, 4]); H = h + pick(R, [-1, 1, 2, 3, 5]); if (near(W / w, H / h) || near(W / h, H / w) || H < 2) return rectRhombus(R, n); }
     const pic = paperPair({ pts: rectP(w, h), role: 'first', labels: L1.split(''), lens: [lenS(w), lenS(h), null, null], rights: [0, 1, 2, 3] }, { pts: rectP(W, H), role: 'pick', labels: L2.split(''), lens: [lenS(W), lenS(H), null, null], rights: [0, 1, 2, 3] }, { sim });
     pic.hi = [{ fig: 0, side: 0 }, { fig: 1, side: 0 }, { fig: 0, side: 1 }, { fig: 1, side: 1 }];
     const r1 = ratioH(W, w), r2 = ratioH(H, h);
+    // each ratio is written as something new: lowest terms or a decimal ("6/5 = 1.2", never "6/5 = 6/5")
+    const s1 = sim ? '' : ratioShown(W, w), s2 = sim ? '' : ratioShown(H, h);
+    if (s1 === null || s2 === null) return rectRhombus(R, n);
     return choice(R, {
       id: `rectRhombus-${n}`, family: 'rectRhombus', picture: pic, board: `${lenS(w)} \\times ${lenS(h)}\\ \\ \\text{and}\\ \\ ${lenS(W)} \\times ${lenS(H)}`,
       prompt: `Rectangle ${L1} is ${lenS(w)} by ${lenS(h)}; rectangle ${L2} is ${lenS(W)} by ${lenS(H)}. Are they similar?`,
@@ -925,7 +939,7 @@ const rectRhombus: Gen = (R, n) => {
       { t: 'No: the sides grew by different amounts.', mc: MC.addKeep, say: `Compare by dividing, not subtracting: both ratios are ${r1}.` },
       { t: 'No: two rectangles are never similar.', say: `They can be, when one k works for both sides: here ${r1}.` },
     ] : [
-      { t: `No: ${lenS(W)}/${lenS(w)} = ${r1} but ${lenS(H)}/${lenS(h)} = ${r2}.`, ok: true, say: 'Yes. Right angles everywhere, but no single scale factor: not similar.' },
+      { t: `No: ${lenS(W)}/${lenS(w)} = ${s1} but ${lenS(H)}/${lenS(h)} = ${s2}.`, ok: true, say: 'Yes. Right angles everywhere, but no single scale factor: not similar.' },
       { t: 'Yes: all their angles are 90°.', mc: MC.equalAngles, say: `Equal angles are not enough for four-sided shapes. The ratios ${r1} and ${r2} differ.` },
       { t: 'Yes: rectangles always have the same shape.', mc: MC.equalAngles, say: `A long thin rectangle and a nearly square one have different shapes. Check: ${r1} vs ${r2}.` },
     ]);
@@ -938,7 +952,7 @@ const rectRhombus: Gen = (R, n) => {
   const r = ratioH(b, a);
   return choice(R, {
     id: `rectRhombus-${n}`, family: 'rectRhombus', picture: pic, board: `\\text{sides}\\ ${a}\\ \\text{and}\\ ${b},\\ \\ ${t1}^\\circ\\ \\text{and}\\ ${t2}^\\circ`,
-    prompt: `${L1} is a rhombus with sides ${a} and a ${t1}° angle; ${L2} is a rhombus with sides ${b} and a ${t2}° angle. Are they similar?`,
+    prompt: `${L1} is a rhombus with sides ${a} and ${aN(t1)} ${t1}° angle; ${L2} is a rhombus with sides ${b} and ${aN(t2)} ${t2}° angle. Are they similar?`,
     solution: sim ? [`Every side ratio is ${b} ÷ ${a} = ${r}.`, `The angles match too: ${S('similar')}.`] : [`Every side ratio is ${r}, BUT the angles differ: ${t1}° vs ${t2}°.`, `A dilation keeps angles, so ${S('not similar')}.`],
   }, sim ? [
     { t: `Yes: every side ratio is ${r} and the angles match.`, ok: true, say: 'Yes: one ratio and equal angles.' },
@@ -957,11 +971,13 @@ const allSimilar: Gen = (R, n) => {
   const who = pick(R, ['Lena', 'Omar', 'Kai', 'Rosa', 'Eli', 'Maya']);
   const s1 = int(R, 2, 4), kx = pick(R, [2, 1.5, 2.5, 3]);
   let a: V[], b: V[], counter: V[], dataH = '', bT = '', ok = false;
-  if (claim === 'rectangles') { const h = s1 + pick(R, [1, 2]); a = rectP(h, s1); b = rectP(h * kx, s1 * kx); counter = rectP(h * kx, s1); dataH = `a ${h} by ${s1} and a ${lenS(h * kx)} by ${lenS(s1 * kx)} rectangle`; bT = `${h} \\times ${s1},\\ ${lenS(h * kx)} \\times ${lenS(s1 * kx)}`; }
+  if (claim === 'rectangles') { const h = s1 + pick(R, [1, 2]); a = rectP(h, s1); b = rectP(h * kx, s1 * kx); counter = rectP(h * kx, s1); dataH = `${aN(h)} ${h} by ${s1} and ${aN(lenS(h * kx))} ${lenS(h * kx)} by ${lenS(s1 * kx)} rectangle`; bT = `${h} \\times ${s1},\\ ${lenS(h * kx)} \\times ${lenS(s1 * kx)}`; }
   else if (claim === 'rhombi') { const t = pick(R, [60, 70, 50]); a = paraP(s1, s1, t); b = paraP(s1 * kx, s1 * kx, t); counter = rectP(s1 * kx, s1 * kx); dataH = `two rhombi with ${t}° angles, sides ${s1} and ${lenS(s1 * kx)}`; bT = `${t}^\\circ:\\ ${s1},\\ ${lenS(s1 * kx)}`; }
   else if (claim === 'squares') { a = rectP(s1, s1); b = rectP(s1 * kx, s1 * kx); counter = []; ok = true; dataH = `squares with sides ${s1} and ${lenS(s1 * kx)}`; bT = `${s1} \\times ${s1},\\ ${lenS(s1 * kx)} \\times ${lenS(s1 * kx)}`; }
   else if (claim === 'equilateral triangles') { a = triAA(s1, 60, 60); b = triAA(s1 * kx, 60, 60); counter = []; ok = true; dataH = `equilateral triangles with sides ${s1} and ${lenS(s1 * kx)}`; bT = `${s1},\\ ${lenS(s1 * kx)}`; }
   else { a = [[0, 0], [s1 + 1, 0], [0, s1]]; b = a.map(q => [q[0] * kx, q[1] * kx] as V); counter = [[0, 0], [s1 * kx, 0], [0, s1 * kx * 1.8]]; dataH = `right triangles with legs ${s1 + 1}, ${s1} and ${lenS((s1 + 1) * kx)}, ${lenS(s1 * kx)}`; bT = `${s1 + 1},\\ ${s1};\\ ${lenS((s1 + 1) * kx)},\\ ${lenS(s1 * kx)}`; }
+  // no "an 8 by 4 rectangle" in this family: draw again (the sizes read more easily with "a")
+  if (/(^| )an [0-9]/.test(dataH)) return allSimilar(R, n);
   const figs: DFig[] = [{ pts: a, role: 'first', rights: claim === 'rectangles' || claim === 'squares' ? [0, 1, 2, 3] : claim === 'right triangles' ? [0] : undefined }, { pts: b, role: 'first', rights: claim === 'rectangles' || claim === 'squares' ? [0, 1, 2, 3] : claim === 'right triangles' ? [0] : undefined }];
   if (counter.length) figs.push({ pts: counter, role: 'wrong', hidden: true, rights: claim === 'right triangles' ? [0] : claim === 'rhombi' || claim === 'rectangles' ? [0, 1, 2, 3] : undefined });
   const laid = row(figs, 0.3);
@@ -972,7 +988,7 @@ const allSimilar: Gen = (R, n) => {
     { t: `False: ${claim} of different sizes are not similar.`, mc: MC.rigid, say: 'Similar figures may differ in size. One k for every side plus equal angles is all it takes.' },
     { t: `True: the two in the picture are similar, so all of them are.`, mc: MC.examples, say: 'Two examples do not prove a claim about ALL of them. The reason has to work for any pair.' },
   ]);
-  const cx = claim === 'rectangles' ? `a ${lenS(bbox(counter).x1)} by ${lenS(bbox(counter).y1)} rectangle is not similar to the ${bbox(a).x1} by ${bbox(a).y1} one` : claim === 'rhombi' ? 'a square is a rhombus too, but its angles are 90°' : `a right triangle with legs ${lenS(s1 * kx)} and ${lenS(s1 * kx * 1.8)} has a different shape`;
+  const cx = claim === 'rectangles' ? `${aN(lenS(bbox(counter).x1))} ${lenS(bbox(counter).x1)} by ${lenS(bbox(counter).y1)} rectangle is not similar to the ${bbox(a).x1} by ${bbox(a).y1} one` : claim === 'rhombi' ? 'a square is a rhombus too, but its angles are 90°' : `a right triangle with legs ${lenS(s1 * kx)} and ${lenS(s1 * kx * 1.8)} has a different shape`;
   return choice(R, { ...base, solution: [`One counterexample is enough to break an “all” claim.`, `${cx.replace(/^./, s => s.toUpperCase())}: ${S('false')}.`] }, [
     { t: `False: ${cx}.`, ok: true, say: 'Yes. A single counterexample disproves an “all” claim.' },
     { t: `True: ${claim === 'rhombi' ? 'all their sides are equal, so every side ratio matches' : claim === 'right triangles' ? 'they all have a right angle' : 'they all have four right angles'}.`, mc: claim === 'rhombi' ? MC.equalRatios : MC.equalAngles, say: claim === 'right triangles' ? 'One shared angle is not enough. The other angles can differ.' : 'Not enough for four-sided shapes: the angles AND the side ratios must match.' },
@@ -1110,7 +1126,7 @@ function thirdAngle(R: () => number, n: number, flipFam: boolean): DItem {
     solution: [`Partners have equal angles: ∠${L1[i2]} = ∠${qL[i2]} = ${ang[i2]}° and ∠${qL[i1]} = ∠${L1[i1]} = ${ang[i1]}°.`, `So ${askInImage ? tri(qL.join('')) : tri(L1)} has ${ang[i1]}° and ${ang[i2]}°; the angles of a triangle add to 180°.`, `∠${askN} = 180° − ${ang[i1]}° − ${ang[i2]}° = ${S(deg(ang[i3]!))}.`],
   }, ang[i3]!, '°', `Yes: 180 − ${ang[i1]} − ${ang[i2]} = ${ang[i3]}.`, [
     { v: 180 - ang[i1]!, say: `That uses only one angle. Copy the other one across first: the triangle has ${ang[i1]}° AND ${ang[i2]}°.` },
-    { v: 180 - ang[i2]!, say: `That uses only one angle. ${askInImage ? tri(qL.join('')) : tri(L1)} also has a ${askInImage ? ang[i1] : ang[i2]}° angle, copied from its partner.` },
+    { v: 180 - ang[i2]!, say: `That uses only one angle. ${askInImage ? tri(qL.join('')) : tri(L1)} also has ${aN(askInImage ? ang[i1]! : ang[i2]!)} ${askInImage ? ang[i1] : ang[i2]}° angle, copied from its partner.` },
     { v: ang[i1]!, mc: MC.letters, say: `That is ∠${L1[i1]}, a different corner. ${askN} corresponds to the third corner.` },
     { v: ang[i2]!, mc: MC.letters, say: `That is ∠${qL[i2]}, a different corner. Use the angle sum.` },
     { v: 180 - ang[i1]! - ang[i2]! * k, mc: MC.scalesAngles, say: 'Angles are not scaled by k: copy them across unchanged.' },
@@ -1129,6 +1145,8 @@ const ctxShadow: Gen = (R, n) => {
   const h = int(R, 3, 6), s = int(R, 2, 5), k = int(R, 3, 5);
   if (h === s) return ctxShadow(R, n);
   const H = h * k, Sh = s * k;
+  // the big thing at a real height: a tower is at least 15 ft, a building or flagpole 10 ft
+  if (H < ({ tree: 6, building: 10, tower: 15, flagpole: 10, 'light pole': 8 } as Record<string, number>)[big]!) return ctxShadow(R, n);
   const hIn = h * 12;
   const p1: V[] = [[0, 0], [s, 0], [0, h]], p2: V[] = [[0, 0], [Sh, 0], [0, H]];
   const hLab = mixed ? `${hIn} in` : `${h} ft`;
@@ -1136,7 +1154,7 @@ const ctxShadow: Gen = (R, n) => {
   pic.hi = [{ fig: 0, side: 0 }, { fig: 1, side: 0 }];
   return numItem({
     id: `ctxShadow-${n}`, family: 'ctxShadow', picture: pic, board: mixed ? `${hIn}\\ \\text{in} = \\,?\\ \\text{ft}` : `\\dfrac{${Sh}}{${s}} = ${k}`,
-    prompt: `At the same moment, a ${small} ${mixed ? `${hIn} inches tall` : `${h} ft tall`} casts a ${s} ft shadow, and the ${big} casts a ${Sh} ft shadow. The sun-ray triangles are similar. How tall is the ${big}, in feet?`,
+    prompt: `At the same moment, ${/^[A-Z]/.test(small) ? small : `a ${small}`} ${mixed ? `${hIn} inches tall` : `${h} ft tall`} casts ${aN(s)} ${s} ft shadow, and the ${big} casts ${aN(Sh)} ${Sh} ft shadow. The sun-ray triangles are similar. How tall is the ${big}, in feet?`,
     solution: mixed ? [`Convert first: ${hIn} in = ${h} ft.`, `Shadows: ${Sh} ÷ ${s} = ${k}, so the ${big} is ${k} times as tall.`, `${h} × ${k} = ${S(H + ' ft')}.`] : [`Shadows: ${Sh} ÷ ${s} = ${k}.`, `The ${big} is ${k} times as tall: ${h} × ${k} = ${S(H + ' ft')}.`],
   }, H, 'ft', `Yes: ${H} ft.`, [
     { v: hIn * k, mc: MC.units, say: `That mixes inches and feet. Convert ${hIn} in to ${h} ft first.` },
@@ -1145,9 +1163,11 @@ const ctxShadow: Gen = (R, n) => {
   ], `Scale factor from the shadows: ${Sh} ÷ ${s}. ${mixed ? 'Convert the inches to feet first. ' : ''}Then multiply the height.`);
 };
 const ctxMetric: Gen = (R, n) => {
-  const [what1, what2] = pick(R, [['photo', 'poster'], ['phone screen', 'wall screen'], ['model door', 'real door'], ['postcard', 'banner']]);
-  const w = pick(R, [4, 5, 6, 8, 10]), h = w + pick(R, [2, 3, 4, 5, 6]), k = pick(R, [5, 10, 4, 8, 6]);
-  if (w * k > 100 && k >= 8 && R() < 0.5) return ctxMetric(R, n);
+  // both things at real sizes (cm): a real door is 60 to 110 cm wide, never 0.2 m
+  const [what1, what2, ws, lo, hi] = pick(R, [['photo', 'poster', [8, 10], 20, 100], ['phone screen', 'wall screen', [5, 6, 8], 60, 200], ['model door', 'real door', [4, 5, 6, 8, 10], 60, 110], ['postcard', 'banner', [10], 50, 300]] as const);
+  const door = what1 === 'model door', w = pick(R, ws), h = door ? Math.round(w * 2.4) : w + pick(R, [2, 3, 4, 5, 6]), k = pick(R, [5, 10, 4, 8, 6]);
+  if (w * k < lo || w * k > hi || (door && (h * k < 180 || h * k > 240))) return ctxMetric(R, n);
+
   const Wm = (w * k) / 100;
   if (Math.abs(Wm * 100 - Math.round(Wm * 100)) > 1e-9) return ctxMetric(R, n);
   const Hc = h * k;
@@ -1195,18 +1215,20 @@ const resizeJudge: Gen = (R, n) => {
   if (near(H / h, k) !== ok || Math.abs(W * 4 - Math.round(W * 4)) > 1e-9 || Math.abs(H * 4 - Math.round(H * 4)) > 1e-9 || H <= 0) return resizeJudge(R, n);
   const pic = paperPair({ pts: rectP(w, h), role: 'first', rights: [0, 1, 2, 3], lens: [`${w} in`, `${h} in`, null, null], caption: 'before' }, { pts: rectP(W, H), role: ok ? 'pick' : 'pick', rights: [0, 1, 2, 3], lens: [`${lenS(W)} in`, `${lenS(H)} in`, null, null], caption: 'after' }, { sim: ok });
   pic.hi = [{ fig: 0, side: 1 }, { fig: 1, side: 1 }];
-  const rw = ratioH(W, w), rh = ratioH(H, h);
+  const rw = ratioH(W, w), rh = ratioH(H, h), sw = ratioShown(W, w), sh = ratioShown(H, h);
+  // "an 8 in by…" is avoided (the sizes read with "a"); each ratio is written as something new
+  if (aN(w) === 'an' || (!ok && (sw === null || sh === null))) return resizeJudge(R, n);
   return choice(R, {
     id: `resizeJudge-${n}`, family: 'resizeJudge', picture: pic, board: `${w} \\times ${h} \\to ${lenS(W)} \\times ${lenS(H)}`,
     prompt: `A ${w} in by ${h} in ${thing} is resized to ${lenS(W)} in by ${lenS(H)} in. Does it keep its shape?`,
     solution: [`Same shape means similar: width and height × the same k.`, `${lenS(W)} ÷ ${w} = ${rw}, ${lenS(H)} ÷ ${h} = ${rh}: ${ok ? S('same shape') : S('distorted')}.`],
   }, ok ? [
     { t: `Yes: both sides × ${rw}.`, ok: true, say: `Yes: one factor, ${rw}, for both sides.` },
-    { t: `No: the sides grew by different amounts (${lenS(W - w)} and ${lenS(H - h)}).`, mc: MC.addKeep, say: 'Similar copies grow by the same FACTOR, so the amounts differ. Both ratios are equal here.' },
+    { t: `No: the sides ${W > w ? 'grew' : 'shrank'} by different amounts (${lenS(Math.abs(W - w))} and ${lenS(Math.abs(H - h))}).`, mc: MC.addKeep, say: 'Similar copies grow by the same FACTOR, so the amounts differ. Both ratios are equal here.' },
     { t: 'No: any resized picture gets distorted.', say: `Not when both sides get the same factor: ${rw} and ${rh}.` },
   ] : [
-    { t: `No: ${lenS(W)}/${w} = ${rw} but ${lenS(H)}/${h} = ${rh}.`, ok: true, say: 'Right: two different factors, so the shape is stretched.' },
-    { t: `Yes: both sides grew by ${lenS(d)} in.`, mc: MC.addKeep, say: `Adding the same amount is not scaling: ${rw} is not ${rh}.` },
+    { t: `No: ${lenS(W)}/${w} = ${sw} but ${lenS(H)}/${h} = ${sh}.`, ok: true, say: 'Right: two different factors, so the shape is stretched.' },
+    { t: `Yes: both sides ${d > 0 ? 'grew' : 'shrank'} by ${lenS(Math.abs(d))} in.`, mc: MC.addKeep, say: `Adding the same amount is not scaling: ${rw} is not ${rh}.` },
     { t: 'Yes: it is still a rectangle with four right angles.', mc: MC.equalAngles, say: 'Equal angles are not enough for rectangles: the width and height need one factor.' },
   ]);
 };
@@ -1463,7 +1485,8 @@ const aaDecide: Gen = (R, n) => {
   const P0 = triAA(5, a, b);
   let ang2: number[];
   if (sim) ang2 = [a, b, c];
-  else { const d = pick(R, [8, 10, 12, 15]) * pick(R, [1, -1]); ang2 = [a, b + d, c - d]; if (ang2.some(x => x < 25 || x > 125)) return aaDecide(R, n); }
+  // "not similar" only when the angle sets really differ (b + d = c would just swap two angles)
+  else { const d = pick(R, [8, 10, 12, 15]) * pick(R, [1, -1]); ang2 = [a, b + d, c - d]; if (ang2.some(x => x < 25 || x > 125) || [...ang2].sort().join() === [a, b, c].sort().join()) return aaDecide(R, n); }
   const Q = place(triAA(5 * pick(R, [1.5, 2, 0.6]), ang2[0]!, ang2[1]!), look(R, R() < 0.4));
   // two angles shown in each triangle, sometimes not the same two
   const showA = [0, 1], showB = sim ? pick(R, [[0, 1], [0, 2], [1, 2]]) : pick(R, [[0, 1], [0, 2]]);
@@ -1485,7 +1508,7 @@ const aaDecide: Gen = (R, n) => {
     { t: 'Not similar: the angles are in different places.', mc: MC.letters, say: `Find the third angle first: both triangles have ${a}°, ${b}° and ${c}°.` },
   ] : [
     { t: `Not similar: the angles don't all match (${[a, b, c].join(', ')} vs ${ang2.join(', ')}).`, ok: true, say: 'Right: no corner can be matched with equal angles all round.' },
-    { t: `Similar: both have a ${a}° angle.`, say: 'One equal pair is not enough. AA needs two pairs.' },
+    { t: `Similar: both have ${aN(a)} ${a}° angle.`, say: 'One equal pair is not enough. AA needs two pairs.' },
     { t: "Can't tell without the side lengths.", say: 'The angles already decide it: the sets are different.' },
   ]);
 };

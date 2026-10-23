@@ -208,3 +208,36 @@ describe('linear-functions: voice lines', () => {
     }
   });
 });
+
+describe('linear-functions: quality layer regressions', () => {
+  it('(m, b) answers are read off the equation the steps build; a point splits into two marks', async () => {
+    const { explain } = await import('../src/lesson/topics/linear-functions/explain');
+    const cases: [string, string][] = [['storyPair', 'write-from-description'], ['eqTwoPoints', 'equation-from-two-points'], ['graphToEq', 'equation-from-graph'], ['slopeStep', 'graph-slope-step'], ['startGraph', 'back-solve-b']];
+    for (const [f, sg] of cases) for (let s = 1; s <= 80; s++) {
+      const item = GEN[f]!(rng(s * 43 + 1), s, sg);
+      expect(explain(item)?.result, `${f}: ${item.prompt}`).toEqual(item.answer);
+    }
+  });
+  it('one right choice when the rate is 1 or the fee equals the rate; a slope −1 line has no "moves left" twin', () => {
+    for (let s = 1; s <= 600; s++) for (const [f, sg] of [['rateSentence', 'verbal-rate-interpretation'], ['storyToEq', 'write-from-description'], ['predictShift', 'parameter-effects-on-graph']] as const) {
+      const item = GEN[f]!(rng(s * 11 + 3), s, sg);
+      expect(item.choices!.filter((_, i) => item.check({ kind: 'choice', i }).ok).length).toBe(1);
+      expect(item.choices!.join('|'), item.prompt).not.toMatch(/for every 1 (hours|weeks|minutes)\b/);
+    }
+    // the swapped equation only when it differs; slope −1: no sideways slide offered
+    for (let s = 1; s <= 600; s++) {
+      const it = GEN.predictShift!(rng(s), s, 'parameter-effects-on-graph');
+      if (/y<\/i> = −<i>x/.test(it.prompt)) expect(it.choices!.join('|')).not.toMatch(/moves (left|right)/);
+    }
+  });
+  it('no "in..", no "Let T is", no "− −", no negative water read off a graph', () => {
+    for (let s = 1; s <= 400; s++) {
+      const a = GEN.rateSentence!(rng(s), s, 'verbal-rate-interpretation');
+      expect(a.choices!.join('|')).not.toMatch(/\.\./);
+      expect(GEN.storyToEq!(rng(s), s, 'write-from-description').prompt).not.toMatch(/Let .{1,12} is /);
+      for (const f of ['startGraph', 'eqTwoPoints']) for (const l of GEN[f]!(rng(s), s).solution) expect(l).not.toMatch(/[−-]\s*[−-]\s*\d/);
+      const r = GEN.scaledRead!(rng(s), s, 'non-unit-scales');
+      if (/tank|drains/.test(r.prompt)) expect((r.answer as { v: number }).v).toBeGreaterThanOrEqual(0);
+    }
+  });
+});

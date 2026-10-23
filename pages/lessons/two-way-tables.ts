@@ -25,6 +25,7 @@ import { type BarsGeom, type BarsSpec, barsAlone, barsUnder, drawBars } from '..
 import { drawTree, treeLayout } from '../../src/lesson/topics/two-way-tables/Tree';
 import { ANCHOR, BUS, CURFEW, type Ctx, type Grid, MUSIC, PROVE, TURN, pct, totals } from '../../src/lesson/topics/two-way-tables/twoWayMaths';
 import { FAMILY_NAMES, GENERATORS, MC, PRACTICE_BOARD_W, type TwItem } from '../../src/lesson/topics/two-way-tables/items';
+import { explain } from '../../src/lesson/topics/two-way-tables/explain';
 import { PLAN } from '../../src/lesson/topics/two-way-tables/plan';
 import { CHIPS, CLAIMS, SCRIPT, TEX } from '../../src/lesson/topics/two-way-tables/script';
 import LINES from './two-way-tables/voice/lines.json';
@@ -370,7 +371,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as TwItem),
   });

@@ -8,6 +8,7 @@
 import { type Item, type Response, type Verdict, fr, int, pick, shuffle } from '../../runtime/item';
 import { type Q, qAdd, qDiv, qEq, qMul, rat } from '../../../core/math';
 import { classifySolve, workLines } from '../linear-equations/solving';
+import { endOnChoice } from '../../runtime/explain';
 import { type ClearPic, type Eq, type Fmt, type MGrp, type MTerm, type Side, BAR, G, N, X, ZERO, clears, collected, decQ, eq, eqH, eqT, kindOf, lcm, leastClear, lin, magH, mixedH, nH, nT, neg, pow10Clear, q, qAbs, qSub, scaleEq, scaleSide, scaleSome, sideH, sideLin, sideT, solOf, solve, subH, usd, valueAt } from './msMaths';
 import { pictureOf } from './clearLayout';
 
@@ -155,7 +156,7 @@ function choose(R: () => number, b: Base, opts: Opt[]): MsItem {
   if (new Set(ts).size !== ts.length || opts.filter(o => o.ok).length !== 1) throw new Error(`choose: bad options in ${b.family}: ${ts.join(' | ')}`);
   const order = shuffle(R, opts.map((_, i) => i));
   return {
-    ...b, input: 'choice', choices: order.map(i => opts[i]!.t), answer: { kind: 'choice', i: order.findIndex(i => opts[i]!.ok) },
+    ...b, input: 'choice', choices: order.map(i => opts[i]!.t), answer: { kind: 'choice', i: order.findIndex(i => opts[i]!.ok) }, solution: endOnChoice(b.solution, opts.find(o => o.ok)!.t),
     check: (r: Response): Verdict => {
       if (r.kind !== 'choice') return { ok: false, say: 'Pick one of the answers.' };
       const o = opts[order[r.i] ?? -1];
@@ -177,7 +178,7 @@ function typed(b: Base, v: Q, fmt: Fmt, unit: string, slips: [Q, string | undefi
   };
 }
 /** retry a generator body until it returns an item (some random draws do not fit) */
-function retry<T>(f: () => T | null): T { for (let i = 0; i < 60; i++) { const v = f(); if (v) return v; } throw new Error('retry: no fitting draw'); }
+function retry<T>(f: () => T | null): T { for (let i = 0; i < 400; i++) { const v = f(); if (v) return v; } throw new Error('retry: no fitting draw'); }
 const picOf = (e: Eq, replay: ClearPicItem['replay']) => { const pic = pictureOf(e); return pic ? { clear: { pic, e, replay } } : undefined; };
 /** solve an equation: typed answer, classified; topic-specific extra slips first */
 function solveItem(fam: FamilyId, n: number, sg: string | undefined, e: Eq, o: { prompt?: string; pic?: boolean; extra?: [Q, string, string][]; unit?: string; lines?: string[] } = {}): MsItem {
@@ -283,7 +284,7 @@ const mixedCoef: Gen = (R, n, sg) => {
   const c = rat(w * d + r, d), mh = `${w}&#8202;${fr(r, d)}`;
   if (R() < 0.45) {
     return typed(base('mixedCoef', n, sg, `Write ${mh}&#8202;${XH} with one fraction: ${mh}&#8202;${XH} = □${XH}. What goes in the box?`, `${w}\\tfrac{${r}}{${d}}\\,x = \\square\\, x`,
-      [`${mh} = ${w} + ${fr(r, d)} = ${fr(w * d, d)} + ${fr(r, d)} = ${fr(w * d + r, d)}.`]),
+      [`${mh} means ${w} + ${fr(r, d)}: ${w} ${w === 1 ? 'whole' : 'wholes'} and ${fr(r, d)} more.`, `${w} = ${fr(w * d, d)}, so ${fr(w * d, d)} + ${fr(r, d)} = <b class="s">${fr(w * d + r, d)}</b>.`]),
     c, 'frac', '', [[rat(w * r, d), MC.mixedProd, `${mh} means ${w} + ${fr(r, d)}, not ${w} × ${fr(r, d)}. So it is ${fr(w * d + r, d)}.`], [rat(w + r, d), undefined, `${w} wholes are ${fr(w * d, d)}: ${fr(w * d, d)} + ${fr(r, d)} = ${fr(w * d + r, d)}.`]],
     `${mh} = ${w} + ${fr(r, d)}. Write ${w} as ${d}ths first.`, `Yes: ${mh} = ${fr(w * d + r, d)}.`);
   }
@@ -345,7 +346,9 @@ const barClear: Gen = (R, n, sg) => retry(() => {
   const groupLoose: Side = [X(qMul(F, g0.e[0]!.c)), ...g0.e.slice(1), ...scaleSide(e.L.slice(1), rat(M))];
   const opts: Opt[] = [
     { t: eqH(good), ok: true, say: `Yes: × ${M} on every term, and each top stays together in parentheses.` },
-    { t: `${sumH(groupLoose)} = ${sumH(scaleSide(e.R, rat(M)))}`, mc: MC.grouping, say: `The bar groups the whole top: ${M} × ${sideH([e.L[0]!])} = ${sideH(scaleSide([e.L[0]!], rat(M)))}, so EVERY term in the parentheses is multiplied.` },
+    // when the multiplier equals the bar's denominator the top is multiplied by 1: "x + 3 + 2x" is then right too,
+    // so the dropped-parentheses line is only offered when the bar's top really gets multiplied
+    ...(qEq(F, rat(1)) ? [] : [{ t: `${sumH(groupLoose)} = ${sumH(scaleSide(e.R, rat(M)))}`, mc: MC.grouping, say: `The bar groups the whole top: ${M} × ${sideH([e.L[0]!])} = ${sideH(scaleSide([e.L[0]!], rat(M)))}, so EVERY term in the parentheses is multiplied.` }]),
   ];
   if (B.kind !== 'two') {
     opts.push({ t: `${sumH(scaleSide(e.L, rat(M)))} = ${sumH(e.R)}`, mc: MC.someTerms, say: `Every term on BOTH sides gets × ${M}: the ${sideH(e.R)} on the right too.` });
@@ -854,7 +857,8 @@ const checkSide: Gen = (R, n, sg) => retry(() => {
   const side = R() < 0.5 ? 'L' : 'R', S = side === 'L' ? e.L : e.R, v = valueAt(S, x), M = leastClear(e);
   const dv = qMul(v, rat(M));
   return typed(base('checkSide', n, sg, `Check ${XH} = ${nH(x)} in ${eqH(e)}. What is the ${side === 'L' ? 'left' : 'right'} side worth?`, `${eqT(e)},\\ x = ${nT(x)}`,
-    [`${sideH(S)} with ${XH} = ${nH(x)}: ${subH(S, x)} = <b class="s">${nH(v)}</b>.`], picOf(e, 'none')),
+    [`A check uses the original equation: put ${XH} = ${nH(x)} into its ${side === 'L' ? 'left' : 'right'} side, ${sideH(S)}.`, `${subH(S, x)} = <b class="s">${nH(v)}</b>.`], picOf(e, 'none')),
+
   v, 'frac', '', [[dv, MC.derived, `That is the side after × ${M}. A check uses the ORIGINAL side: divide by ${M}, or substitute again.`]], `Multiply first, then add: ${sideH(S)} with ${XH} = ${nH(x)}.`, `Yes: ${nH(v)}.`);
 });
 
@@ -862,9 +866,13 @@ const checkSide: Gen = (R, n, sg) => retry(() => {
 const estimate: Gen = (R, n, sg) => {
   const v = int(R, 0, 2);
   if (v === 0 || v === 1) {
-    const bm = pick(R, [[0.48, 0.5], [0.52, 0.5], [0.26, 0.25], [0.24, 0.25], [0.19, 0.2], [0.21, 0.2]] as const);
-    const k = pick(R, [2.98, 4.02, 1.97, 5.01, 3.03]), kr = Math.round(k), r = kr + int(R, 2, 9) * 2;
-    const est = Math.round((r - kr) / bm[1]), e = `${bm[0]}${XH} + ${k} = ${r}`;
+    const BM = [[0.48, 0.5], [0.52, 0.5], [0.26, 0.25], [0.24, 0.25], [0.19, 0.2], [0.21, 0.2]] as const, KS = [2.98, 4.02, 1.97, 5.01, 3.03];
+    let bm = pick(R, BM), k = pick(R, KS), kr = Math.round(k), r = kr + int(R, 2, 9) * 2, est = Math.round((r - kr) / bm[1]);
+    // the estimate must be clearly the best one: "forgot to take k off" (r ÷ bm) may not land as close to the true x
+    for (let t = 0; t < 200 && v === 0 && Math.abs(r / bm[1] - (r - k) / bm[0]) <= 2 * Math.abs(est - (r - k) / bm[0]) + 1; t++) {
+      bm = pick(R, BM); k = pick(R, KS); kr = Math.round(k); r = kr + int(R, 2, 9) * 2; est = Math.round((r - kr) / bm[1]);
+    }
+    const e = `${bm[0]}${XH} + ${k} = ${r}`;
     if (v === 0) return choose(R, base('estimate', n, sg, `Without solving exactly: which is the best estimate of ${XH} in ${e}?`, `${bm[0]}x + ${k} = ${r}`, [`${bm[0]} ≈ ${bm[1]}, ${k} ≈ ${kr}: ${bm[1]}${XH} ≈ ${r - kr}, so ${XH} ≈ ${est}.`]), [
       { t: `About ${est}`, ok: true, say: `Yes: ${r} − ${kr} = ${r - kr}, and ${r - kr} ÷ ${bm[1]} = ${est}.` },
       { t: `About ${Math.round((r - kr) * bm[1] * 100) / 100}`, mc: MC.noSizeCheck, say: `Size check: ${bm[1]} × ${Math.round((r - kr) * bm[1] * 100) / 100} is far less than ${r - kr}. Divide by ${bm[1]}, don't multiply.` },
@@ -877,9 +885,12 @@ const estimate: Gen = (R, n, sg) => {
       { t: `Yes: ${bm[0]} is close to ${bm[1]}`, say: `True, but use it: ${bm[1]}${XH} ≈ ${r - kr} means ${XH} ≈ ${est}.` },
     ]);
   }
-  const a = pick(R, [0.48, 0.52, 0.31, 0.74]), b = Math.round((a + 0.01) * 100) / 100, k1 = int(R, 1, 4), k2 = k1 + int(R, 1, 3);
-  const s = Math.round(((k2 - k1) / (a - b)) * 100) / 100, rb = Math.round(a * 2) / 2;
-  return choose(R, base('estimate', n, sg, `${a}${XH} + ${k1} = ${b}${XH} + ${k2}. Rounding ${a} and ${b} both to ${rb} first would make the ${XH}-terms equal. What is right?`, `${a}x + ${k1} = ${b}x + ${k2}`, [`Collect first, exactly: ${a}${XH} − ${b}${XH} = −0.01${XH}, so −0.01${XH} = ${k2 - k1} and ${XH} = ${s}.`, 'Estimate only after collecting: rounding first hides the small difference.']), [
+  // a and a + 0.01 round to the same tenth (0.74 and 0.75 would not), so the claim in the prompt is true
+  const a = pick(R, [0.41, 0.52, 0.31, 0.71, 0.63]), b = Math.round((a + 0.01) * 100) / 100, k1 = int(R, 1, 4), k2 = k1 + int(R, 1, 3);
+  const sv = Math.round(((k2 - k1) / (a - b)) * 100) / 100, rb = Math.round(a * 10) / 10;
+  const s = sv < 0 ? `−${-sv}` : String(sv);   // a real minus sign
+  return choose(R, base('estimate', n, sg, `${a}${XH} + ${k1} = ${b}${XH} + ${k2}. Rounding ${a} and ${b} both to the nearest tenth, ${rb}, first would make the ${XH}-terms equal. What is right?`,
+ `${a}x + ${k1} = ${b}x + ${k2}`, [`Collect first, exactly: ${a}${XH} − ${b}${XH} = −0.01${XH}, so −0.01${XH} = ${k2 - k1} and ${XH} = ${s}.`, 'Estimate only after collecting: rounding first hides the small difference.']), [
     { t: `Collect exactly first: −0.01${XH} = ${k2 - k1}, so ${XH} = ${s}`, ok: true, say: 'Right: the tiny difference in the x-coefficients decides everything.' },
     { t: `They round to the same number, so there is no solution`, mc: MC.roundEqual, say: `${a} and ${b} are NOT equal: rounding hid a difference of 0.01.` },
     { t: `${XH} is about ${k2 - k1}`, say: `Collect exactly: the ${XH}-coefficient left is −0.01, not 1.` },
@@ -1004,7 +1015,7 @@ const feasible: Gen = (R, n, sg) => {
   const fA = int(R, 10, 30), rA = pick(R, [6, 8]), fB = fA + int(R, 1, 5) * 2 + 1, rB = rA - 2;
   const x = (fB - fA) / (rA - rB);
   const e = eq([N(fA), X(rA)], [N(fB), X(rB)]);
-  return choose(R, base('feasible', n, sg, `Club A: ${usd(fA)} plus ${usd(rA)} a ticket. Club B: ${usd(fB)} plus ${usd(rB)} a ticket. Solving ${eqH(e)} gives ${XH} = ${x}. What does it mean for buying tickets?`, eqT(e), [`Tickets come in whole numbers. At ${Math.floor(x)} tickets A is cheaper, at ${Math.ceil(x)} B is cheaper: they are never exactly equal.`], { lines: [eqT(e), `x = ${x}`] }), [
+  return choose(R, base('feasible', n, sg, `Club A: ${usd(fA)} plus ${usd(rA)} a ticket. Club B: ${usd(fB)} plus ${usd(rB)} a ticket. Solving ${eqH(e)} gives ${XH} = ${x}. What does it mean for buying tickets?`, eqT(e), [`Tickets come in whole numbers. At ${Math.floor(x)} ${Math.floor(x) === 1 ? 'ticket' : 'tickets'} A is cheaper, at ${Math.ceil(x)} B is cheaper: they are never exactly equal.`], { lines: [eqT(e), `x = ${x}`] }), [
     { t: 'No whole number of tickets makes them cost the same', ok: true, say: `Right: ${x} tickets is not possible; the costs switch between ${Math.floor(x)} and ${Math.ceil(x)}.` },
     { t: `They cost the same at ${x} tickets`, mc: MC.domain, say: `You cannot buy ${x} tickets. The input must be a whole number here.` },
     { t: `Round: they cost the same at ${Math.round(x)} tickets`, say: `Try it: at ${Math.round(x)} tickets the costs differ. Rounding does not make them equal.` },

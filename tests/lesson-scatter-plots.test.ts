@@ -289,3 +289,38 @@ describe('scatter-plots: text hygiene', () => {
     expect(/colour|centre|metre|litre|favourite|behaviour|analyse/i.test(all)).toBe(false);
   });
 });
+
+describe('scatter-plots: quality layer regressions', () => {
+  it('the bold values of the lines are the answer on the steps card (counts, ranges, trend-line m and b, fractions)', async () => {
+    const { explain } = await import('../src/lesson/topics/scatter-plots/explain');
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 30; s++) {
+      const item = GEN[f]!(rng(s * 53 + 5), s, p.id);
+      const ex = explain(item);
+      expect(ex, `${p.id}/${f}: ${item.prompt}`).not.toBeNull();
+      expect(item.check(ex!.result).ok, `${p.id}/${f}: ${JSON.stringify(ex!.result)} for ${item.prompt}`).toBe(true);
+    }
+  });
+});
+describe('scatter-plots: readScaleY states the exact reading', () => {
+  it('a half step of 0.25 reads 7.125, not 7.13', async () => {
+    const { explain } = await import('../src/lesson/topics/scatter-plots/explain');
+    for (let s = 1; s <= 300; s++) {
+      const item = GEN.readScaleY!(rng(s * 3 + 7), s, 'axis-scales');
+      expect(explain(item)!.result, item.prompt).toEqual(item.answer);
+    }
+  });
+});
+
+describe('scatter-plots: sweep regressions (oracle findings)', () => {
+  it('keepPairs names one case only (no two students with the same x): the oracle agrees', async () => {
+    // @ts-expect-error: the oracle is an untyped .mjs module
+    const O = (await import('./oracle/scatter-plots.mjs')).default;
+    // @ts-expect-error: an untyped .mjs module
+    const { viewOf } = await import('../tools/quality/view.mjs');
+    for (let s = 1; s <= 600; s++) {
+      const it = GEN.keepPairs!(rng(s * 41 + 3), s, 'pair-case'), q = viewOf(it, 'pair-case');
+      expect(O.sane ? O.sane(q) : '', it.prompt).toBe('');
+      expect(O.solve(q), it.prompt).toBeCloseTo((it.answer as { v: number }).v, 9);
+    }
+  });
+});

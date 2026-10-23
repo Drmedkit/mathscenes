@@ -126,3 +126,36 @@ describe('dilations-and-similarity: voice', () => {
     expect(toSay('C′ (−1, 5)')).toBe('C prime negative one, five');
   });
 });
+
+describe('dilations-and-similarity: quality layer regressions', () => {
+  it('a marked point or "k = 2/3" reads as the answer on the steps card', async () => {
+    const { explain } = await import('../src/lesson/topics/dilations-and-similarity/explain');
+    const cases: [string, string][] = [['dilPoint', 'dilation-center-ray'], ['ruleImage', 'coordinate-dilation-origin'], ['simSeq', 'similarity-as-transformations'], ['ratioK', 'proportional-sides-common-ratio'], ['dilCenterOn', 'dilation-center-ray']];
+    for (const [f, sg] of cases) for (let s = 1; s <= 80; s++) {
+      const item = GEN[f]!(rng(s * 41 + 7), s, sg);
+      const r = explain(item)!.result;
+      expect(item.check(r).ok, `${f}: ${JSON.stringify(r)} for ${item.prompt}`).toBe(true);
+    }
+  });
+  it('witnessPick: every step fits the card (200 characters)', async () => {
+    const { plain } = await import('../src/lesson/runtime/item');
+    for (let s = 1; s <= 200; s++) for (const l of GEN.witnessPick!(rng(s * 3 + 1), s, 'transformation-witness').solution) expect(plain(l).length).toBeLessThanOrEqual(200);
+  });
+});
+
+describe('dilations-and-similarity: sweep regressions (oracle findings)', () => {
+  it('rectangles similar when turned, AA with the angles at other corners, articles, ratios and real sizes: the oracle agrees', async () => {
+    // @ts-expect-error: the oracle is an untyped .mjs module
+    const O = (await import('./oracle/dilations-and-similarity.mjs')).default;
+    // @ts-expect-error: an untyped .mjs module
+    const { viewOf } = await import('../tools/quality/view.mjs');
+    const fams: [string, string][] = [['rectRhombus', 'identify-similar-polygons'], ['rectRhombus', 'refute-universal-claim'], ['aaDecide', 'aa-apply'], ['allSimilar', 'refute-universal-claim'],
+      ['ctxShadow', 'context-missing-length-units'], ['ctxMetric', 'context-missing-length-units'], ['resizeJudge', 'practical-resizing-claim']];
+    for (const [f, sg] of fams) for (let s = 1; s <= 300; s++) {
+      const it = GEN[f]!(rng(s * 19 + f.length), s, sg), q = viewOf(it, sg);
+      expect(O.sane ? O.sane(q) : '', `${f}: ${it.prompt}`).toBe('');
+      const want = O.solve(q);
+      if (want !== undefined) expect(want, `${f}: ${it.prompt} | ${(it.choices ?? []).join(' | ')}`).toEqual(it.input === 'choice' ? (it.answer as { i: number }).i : (it.answer as { v: number }).v);
+    }
+  });
+});

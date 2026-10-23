@@ -26,6 +26,7 @@ import { fr } from '../../src/lesson/runtime/item';
 import { SlopeGrid, type GridFocus, type SlopeGridBlock } from '../../src/lesson/topics/slope-and-lines/SlopeGrid';
 import { TableCard } from '../../src/lesson/topics/slope-and-lines/TableCard';
 import { FAMILY_NAMES, GENERATORS, MC, PIC_FRAME, type SlItem } from '../../src/lesson/topics/slope-and-lines/items';
+import { explain } from '../../src/lesson/topics/slope-and-lines/explain';
 import { PLAN } from '../../src/lesson/topics/slope-and-lines/plan';
 import { LINES } from '../../src/lesson/topics/slope-and-lines/script';
 import { SCENES } from '../../src/lesson/topics/slope-and-lines/scenes';
@@ -394,7 +395,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as SlItem),
   });

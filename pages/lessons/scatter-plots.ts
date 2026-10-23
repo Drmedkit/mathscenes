@@ -26,6 +26,7 @@ import { type PlotSpec, type TableSpec, SM_LINE, SM_PLOT, SM_WIDE, SMOOTHIE } fr
 import { Scatter, type ScatterBlock, type ScatterFocus } from '../../src/lesson/topics/scatter-plots/Scatter';
 import { TableCard, type TableBlock, type TableFocus } from '../../src/lesson/topics/scatter-plots/TableCard';
 import { FAMILY_NAMES, GENERATORS, MC, type SPItem } from '../../src/lesson/topics/scatter-plots/items';
+import { explain } from '../../src/lesson/topics/scatter-plots/explain';
 import { PLAN } from '../../src/lesson/topics/scatter-plots/plan';
 import { BOARD_TEX as BT, PANEL } from '../../src/lesson/topics/scatter-plots/script';
 import LINES from './scatter-plots/voice/lines.json';
@@ -338,7 +339,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as SPItem),
   });

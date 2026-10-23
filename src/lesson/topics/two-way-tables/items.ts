@@ -5,6 +5,7 @@
 // writes when the solution is replayed, and what to light up (the whole in amber, the part in lime).
 // Pure: no DOM, no canvas.
 import { type Item, type Response, type Verdict, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import {
   type Ctx, type Grid, type RFKey, CONTEXTS_2x2, CONTEXTS_2x3 as CONTEXTS_3, RF_KEYS, ctxFor, exactAt, fmt, genCounts, htmlEq, htmlPct, pct, round,
   screen, screenOk, shapeFor, texEq, texPct, totals,
@@ -442,7 +443,7 @@ const countUnknown: Gen = (R, n) => {
     prompt: `This table shows joint relative frequencies: each cell is a percent of all the ${x.who} surveyed. ${q}`,
     board: variantGiven ? `${fmt(j)}\\% \\text{ of } ${N} = \\;?` : `${fmt(j)}\\% \\text{ of } \\;? = \\;?`, input: 'choice', ...choose(R, opts),
     picture: { pic: { kind: 'table', table: rfSpec(x, g, row, col, 1) }, focus: { part: { r, c } }, steps: variantGiven ? [`${fmt(j / 100, 4)} \\times ${N} = ${cnt}`] : [`${fmt(j)}\\% \\text{ of } \\;? \\text{ is unknown}`] },
-    solution: variantGiven ? [`${fmt(j)}% of the ${N} ${x.who}: ${fmt(j / 100, 4)} × ${N} = <b class="s">${cnt}</b>.`] : ['A percent is a share of some total. The table never says how many were surveyed, so no count can be found.'],
+    solution: variantGiven ? [`Each cell is a percent of ALL the ${x.who} surveyed: the whole is ${N}.`, `${fmt(j)}% of the ${N} ${x.who}: ${fmt(j / 100, 4)} × ${N} = <b class="s">${cnt}</b>.`] : ['A percent is a share of some total. The table never says how many were surveyed, so no count can be found.'],
   };
 };
 
@@ -818,7 +819,7 @@ const screenWord: Gen = (R, n) => {
   }));
   return {
     id: `screenWord-${n}`, family: 'screenWord',
-    prompt: `${S.test} was used on ${s.N.toLocaleString('en-US')} ${S.who}. What do you call the <b class="b">${v.toLocaleString('en-US')}</b> ${S.who} that ${desc}?`,
+    prompt: `${S.test} was used on ${s.N.toLocaleString('en-US')} ${S.who}. What do you call the ${S.who} that ${desc} (<b class="b">${v.toLocaleString('en-US')}</b> of them here)?`,
     board: '\\text{test says} \\;\\text{vs}\\; \\text{truth}', input: 'choice', ...choose(R, opts, true),
     picture: { pic: { kind: 'table', table: countSpec(S.rows, S.cols, [[s.tp, s.fn], [s.fp, s.tn]]) }, focus: { part: { r, c } }, steps: [`\\text{${cell[1] === 'p' ? 'positive' : 'negative'}: the test said ${cell[1] === 'p' ? 'yes' : 'no'}}`, `\\text{${cell[0] === 't' ? 'true' : 'false'}: it was ${cell[0] === 't' ? 'right' : 'wrong'}}`] },
     solution: [`Positive or negative: what the test said. True or false: whether it was right.`, `These ${S.who} ${desc}: ${why[cell]}, so they are <b class="s">${names[cell].toLowerCase()}</b>.`],
@@ -1009,9 +1010,23 @@ const rawCountClaim: Gen = (R, n) => {
   };
 };
 
-export const GENERATORS: Record<FamilyId, Gen> = {
+/** a choice item's worked lines end on the right choice (docs/lessons/QUALITY_LAYER.md: "So: <right choice>" when no
+ *  line marks it yet), for every choice family. A category that ends in "p.m." at the end of a sentence would print
+ *  "p.m.."; every text gets one dot. */
+const oneDot = (s: string) => s.replace(/\b([ap])\.m\.\./g, '$1.m.');
+const endsOnChoice = (g: Gen): Gen => (R, n, sg) => {
+  const it = g(R, n, sg), chk = it.check;
+  it.prompt = oneDot(it.prompt);
+  it.solution = it.solution.map(oneDot);
+  if (it.choices) it.choices = it.choices.map(oneDot);
+  it.check = r => { const v = chk(r); return { ...v, say: oneDot(v.say) }; };
+  if (it.input === 'choice' && it.answer.kind === 'choice' && it.choices) it.solution = endOnChoice(it.solution, it.choices[it.answer.i]!);
+  return it;
+};
+export const GENERATORS: Record<FamilyId, Gen> = Object.fromEntries(Object.entries({
   rowPct, colPct, matchQuestion, jointPct, jointRound, marginalPct, marginalFromJoint, weightedTrap, nameType, nameWhole,
   condFromJoint, countUnknown, barSegment, pickGraph, readSeg, readSentence, moreWho, countFromBar, assocTable, pointsDiff,
   assocBars, treeLeaf, treeMissing, fillCell, fromConditional, screenWord, screenPPV, chanceAll, chanceGroup, chanceWho,
   rewriteClaim, confounder, combineGroups, pieAngle, rawCountClaim,
-};
+} satisfies Record<FamilyId, Gen>).map(([k, g]) => [k, endsOnChoice(g)])) as Record<FamilyId, Gen>;
+

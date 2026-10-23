@@ -24,6 +24,7 @@ import { drawFig, type Look, sheet } from '../../src/lesson/topics/parallel-line
 import { type Fig, type Fit, FIG, add, fitFig, mapFig, mul, rotP, sub } from '../../src/lesson/topics/parallel-lines-and-triangles/figMaths';
 import { QUESTION, TURN, proofFig } from '../../src/lesson/topics/parallel-lines-and-triangles/figures';
 import { FAMILY_NAMES, GENERATORS, MC, type GeoItem } from '../../src/lesson/topics/parallel-lines-and-triangles/items';
+import { explain } from '../../src/lesson/topics/parallel-lines-and-triangles/explain';
 import { PLAN } from '../../src/lesson/topics/parallel-lines-and-triangles/plan';
 import LINES from './parallel-lines-and-triangles/voice/lines.json';
 
@@ -426,7 +427,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as GeoItem),
   });

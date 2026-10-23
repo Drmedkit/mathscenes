@@ -4,6 +4,7 @@
 // Most items carry a LineModel picture ({ lf }: the block's params, the steps shown at once, the steps the worked
 // solution adds, and TeX lines the solution writes on the board). Pure: no DOM, no canvas.
 import { type Item, type Response, type Verdict, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import type { LMParams, LMStep, LMAxis } from './LineModel';
 import { H, T, eqHtml, eqTex, evalLine, interceptOf, q, qNum, rat, sameValue, slopeOf, terminates, windowFor, type Form } from './lfMaths';
 
@@ -124,7 +125,7 @@ function choiceItem(R: () => number, base: Omit<LFItem, 'input' | 'choices' | 'a
   const o = shuffle(R, uniq);
   const i = o.findIndex(x => x.ok);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i }, solution: endOnChoice(base.solution, o[i]!.t),
     check: (r: Response) => {
       if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const c = o[r.i]!;
@@ -231,7 +232,7 @@ const axisX = (c: Ctx) => (c.count ? c.xn : `${c.xn} (${c.xa})`), axisY = (c: Ct
 /** the equation of a context in its letters */
 const ctxEqT = (c: Ctx, m: number, b: number, form?: Form) => eqTex(m, b, { x: c.x, y: c.y, form });
 const ctxEqH = (c: Ctx, m: number, b: number, form?: Form) => eqHtml(m, b, { x: c.x, y: c.y, form });
-const defineVars = (c: Ctx) => `${I(c.y)} is the ${c.yn} in ${c.yu} and ${I(c.x)} is the ${c.xn === 'time' ? 'time' : c.xn} in ${c.xu}.`;
+const defineVars = (c: Ctx) => `${I(c.y)} is the ${c.yn} in ${c.yu} and ${I(c.x)} is ${c.count ? `the number of ${c.xn}` : `the ${c.xn === 'time' ? 'time' : c.xn} in ${c.xu}`}.`;
 
 // ---------- windows ----------
 const ax = (w: { min: number; max: number; step: number }, name: string, ticks = true): LMAxis => ({ ...w, name, ticks });
@@ -416,7 +417,7 @@ const startGraph: Gen = (R, n, sg) => {
     picture: { lf: { lm: { x: X, y: Y, lines: [{ m, b }], pts: [{ x: xa, y: ya, name: 'A' }, { x: xb, y: yb, name: 'B' }], step: { x: xa, y: ya, run: 2, rise: yb - ya } },
       show: ['axes', 'line', 'points'], solve: ['step'],
       tex: [`m = \\dfrac{${T(yb)} - ${par(ya)}}{${xb} - ${xa}} = ${T(m)}`, `b = ${T(ya)} - ${par(m)}\\cdot ${xa} = ${T(b)}`] } },
-    solution: [`The left edge of the window is ${I(c ? c.x : 'x')} = ${x0}, not the axis.`, `Rate: (${H(yb)} − ${H(ya)}) ÷ ${xb - xa} = ${H(m)} per unit.`, `Back from ${I('A')} to input 0: ${H(ya)} − ${H(m)} × ${xa} = <b class="s">${H(b)}</b>.`],
+    solution: [`The left edge of the window is ${I(c ? c.x : 'x')} = ${x0}, not the axis.`, `Rate: (${H(yb)} − ${ya < 0 ? `(${H(ya)})` : H(ya)}) ÷ ${xb - xa} = ${H(m)} per unit.`, `Back from ${I('A')} to input 0: ${H(ya)} − ${m < 0 ? `(${H(m)})` : H(m)} × ${xa} = <b class="s">${H(b)}</b>.`],
   }, b, v => {
     if (near(v, b)) return ok(`Yes: back from ${I('A')} by ${xa} units gives ${I('b')} = ${H(b)}.`);
     if (near(v, edge)) return no(`${H(edge)} is where the line meets the left EDGE of the window, at ${I(c ? c.x : 'x')} = ${x0}. The ${I('y')}-axis is further left, at 0.`, MC.window);
@@ -489,7 +490,8 @@ const rateSentence: Gen = (R, n) => {
   const opts: Opt[] = [{ t: right, ok: true, say: m === 0 ? `Yes: a zero rate means a flat line.` : `Yes: ${am} ${up ? 'more' : 'less'} for each ${c.xu1}, and it says which way.` }];
   if (m !== 0) {
     opts.push({ t: `The ${c.yn} is ${am}.`, mc: MC.perUnit, say: `${am} is not the ${c.yn} itself. It is how much the ${c.yn} changes for each ${c.xu1}.` });
-    opts.push({ t: `The ${c.yn} goes ${up ? 'up' : 'down'} 1 ${c.money ? 'dollar' : c.yu1} for every ${H(Math.abs(m))} ${c.xu}.`, mc: MC.inverted, say: `That flips the rate. Output per input: ${am} for each ONE ${c.xu1}.` });
+    // the flipped rate ("1 dollar for every 3 hours"); at a rate of 1 it would say the same as the right answer
+    if (!near(Math.abs(m), 1)) opts.push({ t: `The ${c.yn} goes ${up ? 'up' : 'down'} 1 ${c.money ? 'dollar' : c.yu1} for every ${H(Math.abs(m))} ${c.xu}.`, mc: MC.inverted, say: `That flips the rate. Output per input: ${am} for each ONE ${c.xu1}.` });
     if (!up) opts.push({ t: `The ${c.yn} goes up ${am} for every 1 ${c.xu1}.`, mc: MC.sign, say: `The outputs get smaller, so the ${c.yn} goes DOWN.` });
     if (!up) opts.push({ t: `The ${c.yn} is ${amt(c, m)}.`, mc: MC.negAmount, say: `A negative rate means the amount goes down. The ${c.yn} itself starts at ${amt(c, b)}.` });
     if (gap > 1) opts.push({ t: `The ${c.yn} goes ${up ? 'up' : 'down'} ${amt(c, Math.abs(m * gap))} for every 1 ${c.xu1}.`, mc: MC.inputStep, say: `${amt(c, Math.abs(m * gap))} is the change for ${gap} ${c.xu}. Per ONE ${c.xu1} it is ${am}.` });
@@ -654,7 +656,9 @@ const predictShift: Gen = (R, n) => {
   const opts: Opt[] = [{ t: right, ok: true, say: kind === 'b' ? `Yes: a new ${I('b')} slides the line up or down.` : `Yes: a new ${I('m')} turns the line about its point on the ${I('y')}-axis.` }];
   if (kind === 'b') {
     opts.push({ t: `It gets steeper.`, mc: MC.swap, say: `The slope stayed ${H(m1)}. Only ${I('b')} changed, so the line slides ${d > 0 ? 'up' : 'down'}.` });
-    opts.push({ t: `It moves ${d > 0 ? 'right' : 'left'} ${Math.abs(d)}.`, say: `${I('b')} is on the ${I('y')}-axis: changing it moves the line ${d > 0 ? 'up' : 'down'}.` });
+    // a slide sideways by d moves a line of slope −1 exactly as far up or down: then it is no wrong answer
+    if (m1 !== -1) opts.push({ t: `It moves ${d > 0 ? 'right' : 'left'} ${Math.abs(d)}.`, say: `${I('b')} is on the ${I('y')}-axis: changing it moves the line ${d > 0 ? 'up' : 'down'}.` });
+    else opts.push({ t: `It moves ${d > 0 ? 'down' : 'up'} ${Math.abs(d)}.`, say: `${I('b')} went from ${H(b1)} to ${H(b2)}: the line moves ${d > 0 ? 'up' : 'down'}.` });
   } else {
     opts.push({ t: `It moves up ${Math.abs(m2 - m1)}.`, mc: MC.swap, say: `${I('b')} stayed ${H(b1)}, so the crossing point stays. Changing ${I('m')} changes the steepness and direction.` });
     opts.push({ t: `Nothing changes: it is the same line.`, say: `A different slope is a different line. Try ${I('x')} = 1: the outputs differ.` });
@@ -679,13 +683,14 @@ const storyToEq: Gen = (R, n) => {
   const X = xAxis(xEnd(c, m, b), axisX(c), 6), Y = yAxisFor([b, 0], [{ m, b }], X, axisY(c), 7);
   const opts: Opt[] = [
     { t: ctxEqH(c, m, b, R() < 0.5 ? 'mx+b' : 'b+mx'), ok: true, say: `Yes: ${H(b)} once, plus ${H(m)} for every ${c.xu1}.` },
-    { t: ctxEqH(c, b, m), mc: MC.swap, say: `That multiplies the one-time ${H(b)} by ${I(c.x)}. The amount per ${c.xu1}, ${H(m)}, multiplies ${I(c.x)}.` },
+    // the swapped equation (b times x); when the fee equals the rate it is the same equation, so it is left out
+    ...(m !== b ? [{ t: ctxEqH(c, b, m), mc: MC.swap, say: `That multiplies the one-time ${H(b)} by ${I(c.x)}. The amount per ${c.xu1}, ${H(m)}, multiplies ${I(c.x)}.` }] : []),
     { t: ctxEqH(c, m, 0), mc: MC.dropStart, say: `Where is ${c.bWhat}, ${amt(c, b)}? It is there even at ${I(c.x)} = 0.` },
     ...(m > 0 ? [{ t: `${I(c.y)} = ${H(b)}${I(c.x)} + ${H(m)}${I(c.x)}`, mc: MC.feeTimes, say: `${cap(c.bWhat)} happens once, so it is not multiplied by ${I(c.x)}.` }] : []),
   ];
   if (m < 0) opts.push({ t: ctxEqH(c, -m, b), mc: MC.sign, say: `The ${c.yn} goes DOWN each ${c.xu1}, so the slope is negative: ${H(m)}.` });
   return choiceItem(R, {
-    id: `storyToEq-${n}`, family: 'storyToEq', prompt: `${c.story(m, b)} Let ${defineVars(c)} Which equation fits?`,
+    id: `storyToEq-${n}`, family: 'storyToEq', prompt: `${c.story(m, b)} Here ${defineVars(c)} Which equation fits?`,
     board: `${c.y} = m \\cdot ${c.x} + b`,
     picture: { lf: { lm: { x: X, y: Y, lines: [{ m, b }] }, show: ['axes'], solve: ['start', 'line'], tex: [`b = ${T(b)},\\ m = ${T(m)}`, ctxEqT(c, m, b)] } },
     solution: [`The starting amount is ${I('b')} = ${H(b)} (${c.bWhat}).`, `The change per ${c.xu1} is ${I('m')} = ${H(m)}${m < 0 ? ' (a decrease, so negative)' : ''}.`, `${ctxEqH(c, m, b)}.`],
@@ -939,7 +944,7 @@ const eqTwoPoints: Gen = (R, n) => {
     picture: { lf: { lm: { x: X, y: Y, lines: [{ m: P.m, b }], pts: [{ x: P.x1, y: P.y1, name: 'A' }, { x: P.x2, y: P.y2, name: 'B' }], step: { x: L[0]!, y: L[1]!, run: Rr[0]! - L[0]!, rise: Rr[1]! - L[1]! }, backFrom: L[0]! },
       show: ['axes', 'points'], solve: ['step', 'line', 'start'],
       tex: [`m = \\dfrac{${T(P.y2 - P.y1)}}{${T(P.x2 - P.x1)}} = ${T(P.m)}`, `b = ${T(P.y1)} - ${par(P.m)}\\cdot ${par(P.x1)} = ${T(b)}`, eqTex(P.m, b)] } },
-    solution: [`Slope: (${H(P.y2)} − ${par(P.y1).replace('-', '−')}) ÷ (${H(P.x2)} − ${par(P.x1).replace('-', '−')}) = ${H(P.m)}.`, `${I('b')} = ${H(P.y1)} − ${H(P.m)} · ${par(P.x1).replace('-', '−')} = ${H(b)}.`, `<b class="s">${eqHtml(P.m, b)}</b>. Check ${I('B')}: ${H(P.m)} · ${par(P.x2).replace('-', '−')} + ${par(b).replace('-', '−')} = ${H(P.y2)} ✓`],
+    solution: [`Slope: (${H(P.y2)} − ${par(P.y1).replace('-', '−')}) ÷ (${H(P.x2)} − ${par(P.x1).replace('-', '−')}) = ${H(P.m)}.`, `${I('b')} = ${H(P.y1)} − ${P.m < 0 ? `(${H(P.m)})` : H(P.m)} · ${par(P.x1).replace('-', '−')} = ${H(b)}.`, `<b class="s">${eqHtml(P.m, b)}</b>. Check ${I('B')}: ${H(P.m)} · ${par(P.x2).replace('-', '−')} + ${par(b).replace('-', '−')} = ${H(P.y2)} ✓`],
   }, [P.m, b], (x, y) => classifyMB(P.m, b, x, y, P));
 };
 const eqFromTable: Gen = (R, n) => {
@@ -1124,7 +1129,9 @@ const scaledRead: Gen = (R, n) => {
   const X = ax({ min: 0, max: xs * 6, step: xs }, axisX(c));
   const Y0 = yAxisFor([b, 0], [{ m, b }], X, axisY(c), 6);
   // an input whose output sits on a grid line when there is one (an exact reading)
-  const cands = [2, 3, 4, 5].map(k => k * xs);
+  // and an amount the story can have (no negative water in a tank)
+  const fine = [2, 3, 4, 5].map(k => k * xs).filter(x => negOk(c) || f(m, b, x) >= 0);
+  const cands = fine.length ? fine : [xs];
   const onGrid = cands.filter(x => Math.abs(((f(m, b, x) - Y0.min) / Y0.step) % 1) < 1e-9);
   const xr = pick(R, onGrid.length ? onGrid : cands);
   const yr = f(m, b, xr);
@@ -1133,7 +1140,7 @@ const scaledRead: Gen = (R, n) => {
     id: `scaledRead-${n}`, family: 'scaledRead', prompt: `${c.story(m, b)} Use the graph: what is the ${c.yn} at ${xAmt(c, xr)}? Watch the scales on the axes.`,
     board: `${c.y}\\ \\text{at}\\ ${c.x} = ${xr}`, unit: c.money ? 'dollars' : c.ya,
     picture: { lf: { lm: { x: X, y: Y0, lines: [{ m, b }], read: xr }, show: ['axes', 'line'], solve: ['read'], tex: [`${T(m)}\\cdot ${xr} + ${T(b)} = ${T(yr)}`] } },
-    solution: [`Each square on the ${c.yn} axis is ${H(Y0.step)} ${c.money ? 'dollars' : c.ya}, each square across is ${xs} ${c.xu}.`, `Up from ${xr} to the line, across to the ${c.yn} axis: <b class="s">${amt(c, yr)}</b>.`],
+    solution: [`Each square on the ${c.yn} axis is ${H(Y0.step)} ${c.money ? 'dollars' : c.ya}, each square across is ${xs} ${xs === 1 ? c.xu1 : c.xu}.`, `Up from ${xr} to the line, across to the ${c.yn} axis: <b class="s">${amt(c, yr)}</b>.`],
   }, yr, v => {
     if (near(v, yr)) return ok(`Yes: ${amt(c, yr)}.`);
     if (near(v, squares) || near(v, Y0.min + squares)) return no(`That counts squares. Each square is ${H(Y0.step)} ${c.money ? 'dollars' : c.ya}: read the axis numbers.`, MC.interval);
@@ -1484,9 +1491,19 @@ const predictValid: Gen = (R, n) => {
   ]);
 };
 
-export const GENERATORS: Record<FamilyId, Gen> = {
+/** a unit that ends in a full stop ("5 in.") at the end of a sentence would print "in.."; every text gets one dot */
+const oneDot = (s: string) => s.replace(/\b(in|ft|mi|min|wk|gal)\.\./g, '$1.');
+const tidy = (g: Gen): Gen => (R, n, sg) => {
+  const it = g(R, n, sg), chk = it.check;
+  it.prompt = oneDot(it.prompt);
+  it.solution = it.solution.map(oneDot);
+  if (it.choices) it.choices = it.choices.map(oneDot);
+  it.check = r => { const v = chk(r); return { ...v, say: oneDot(v.say) }; };
+  return it;
+};
+export const GENERATORS: Record<FamilyId, Gen> = Object.fromEntries(Object.entries({
   tableRate, fasterLine, startTable, startGraph, scaledRate, rateSentence, rateUnit, pickMB, sameFunction,
   whatChanged, predictShift, storyToEq, storyPair, twoPointRate, specialSlope, isLinear, fitsRule, backSolve, eqTwoPoints,
   eqFromTable, onTheLine, plotPoint, slopeStep, whichGraph, graphToEq, scaledRead, chooseScale, dotsOrLine, refuteClaim,
   convertRate, rewriteEq, interceptMeaning, isProportional, doubleInput, whichEvidence, validInputs, predict, predictValid,
-};
+} satisfies Record<FamilyId, Gen>).map(([k, g]) => [k, tidy(g)])) as Record<FamilyId, Gen>;

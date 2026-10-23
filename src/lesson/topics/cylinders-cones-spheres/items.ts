@@ -4,6 +4,7 @@
 // plain numbers where the sub-goal asks for them. Every typical slip the classifier recognises carries its catalogue
 // misconception id. Pure: no DOM. Every picture is a Vessels or Net parameter set the page draws (picture.scene).
 import { type Gen, type Item, type Response, type Verdict, A, B, S, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import { type Kind, type Q, K, coef, cylLateral, cylTotal, decStr, div, eqQ, htmlPi, htmlQ, isWhole, lenStr, mul, near, pow, q, qd, respValue, roundTo, texPi, texQ, val } from './volMaths';
 import type { Dim, Pour, Vessel, VesselsParams, VKind } from './Vessels';
 import type { NetLabel, NetSpec } from './Net';
@@ -87,6 +88,44 @@ function lab(x: Q, u: string): string {
 function len(x: Q, u: string): string { return isWhole(x) || decStr(x) ? `${lenStr(x)} ${u}` : `${htmlQ(x)} ${u}`; }
 const texLen = (x: Q) => texQ(x, true);
 const KNAME: Record<Kind, string> = { cyl: 'cylinder', cone: 'cone', sphere: 'sphere', hemi: 'hemisphere' };
+
+// ---------- real sizes ----------
+/** the diameter (and height) a named object really has, in inches: a story never names a 28 ft gumball, an 18 in
+ *  soup can or a 4 in water tank (the generators draw again until the object fits its numbers) */
+const REAL: Record<string, { d: [number, number]; h?: [number, number] }> = {
+  'basketball': { d: [8.5, 10.5] }, 'soccer ball': { d: [8.4, 9.2] }, 'bowling ball': { d: [8.4, 8.8] }, 'tennis ball': { d: [2.3, 2.9] },
+  'glass marble': { d: [0.4, 2] }, 'gumball': { d: [0.4, 3] }, 'water balloon': { d: [2, 14] }, 'snow globe': { d: [2, 10] }, 'globe': { d: [4, 24] },
+  'fish bowl': { d: [4, 16] }, 'gumball machine globe': { d: [6, 24] }, 'round lantern': { d: [4, 30] }, 'round water tower tank': { d: [120, 1200] },
+  'water tank': { d: [12, 600], h: [12, 600] }, 'round cake pan': { d: [4, 16], h: [1, 6] }, 'rain barrel': { d: [16, 48], h: [20, 60] },
+  'juice can': { d: [1.8, 5], h: [3, 8] }, 'grain silo': { d: [120, 1500], h: [240, 2400] }, 'candle': { d: [0.5, 10], h: [1, 16] },
+  'snow-cone cup': { d: [2, 5], h: [2, 7] }, 'paper cone cup': { d: [2, 5], h: [2, 7] }, 'funnel': { d: [1.5, 14], h: [1.5, 16] },
+  'party hat': { d: [3, 9], h: [3, 14] }, 'mixing bowl': { d: [5, 18] }, 'salad bowl': { d: [5, 18] }, 'dome tent': { d: [48, 300] },
+  'igloo': { d: [60, 240] }, 'planetarium dome': { d: [300, 3000] }, 'soup can': { d: [2, 5], h: [2.5, 8] }, 'can of beans': { d: [2, 5], h: [2.5, 8] },
+  'drinking glass': { d: [2, 4.5], h: [3, 8] }, 'post mold': { d: [4, 30], h: [12, 180] }, 'tube': { d: [1, 30], h: [6, 180] },
+  'vase': { d: [2, 14], h: [4, 36] }, 'water heater': { d: [14, 32], h: [24, 80] }, 'cooler': { d: [8, 30], h: [8, 36] },
+  'fish tank': { d: [6, 72], h: [6, 72] }, 'pool': { d: [48, 600], h: [12, 96] }, 'pencil cup': { d: [2, 6], h: [3, 7] },
+  'paint can': { d: [3, 12], h: [3, 14] }, 'flower pot': { d: [2, 30], h: [2, 30] }, 'mug': { d: [2.5, 5], h: [3, 7] },
+  'planter': { d: [3, 36], h: [3, 36] }, 'ice bucket': { d: [5, 16], h: [5, 16] }, 'roll of paper towels': { d: [4, 8], h: [8, 14] },
+  'can': { d: [1.5, 12], h: [2, 14] }, 'pipe': { d: [0.5, 48], h: [6, 480] }, 'log': { d: [4, 48], h: [12, 480] },
+  'sand pile': { d: [24, 3600] }, 'gravel pile': { d: [24, 3600] }, 'salt pile': { d: [24, 3600] }, 'road salt pile': { d: [24, 3600] },
+};
+const INCH: Record<string, number> = { in: 1, ft: 12, yd: 36, cm: 1 / 2.54, m: 100 / 2.54 };
+/** a NOUN with diameter d (and height h) in these units is real; a pile stands no taller than its radius (45° sides) */
+function real(noun: string, d: number, u: string, h?: number, hu = u): boolean {
+  const s = REAL[noun];
+  const dIn = d * INCH[u]!, hIn = h === undefined ? undefined : h * INCH[hu]!;
+  if (/pile$/.test(noun) && hIn !== undefined && hIn > dIn / 2 + 1e-9) return false;
+  if (!s) return true;
+  if (dIn < s.d[0] - 1e-9 || dIn > s.d[1] + 1e-9) return false;
+  return !(s.h && hIn !== undefined && (hIn < s.h[0] - 1e-9 || hIn > s.h[1] + 1e-9));
+}
+/** one of the nouns that is real at these sizes, or null */
+function pickReal(R: () => number, nouns: readonly string[], d: number, u: string, h?: number, hu = u): string | null {
+  const ok = nouns.filter(x => real(x, d, u, h, hu));
+  return ok.length ? pick(R, ok) : null;
+}
+/** the story object of a volume item is real at its radius (and height, for a cylinder or cone) */
+const realDims = (noun: string, kind: Kind, D: { r: Q; h: Q; u: string }) => real(noun, 2 * val(D.r), D.u, kind === 'cyl' || kind === 'cone' ? val(D.h) : undefined);
 
 // ---------- pictures ----------
 /** a display shape (the picture is a sketch: the ratio of height to radius is kept readable) */
@@ -244,17 +283,27 @@ const CTX: Record<Kind, Ctx[]> = {
   hemi: [{ noun: 'dome tent', u: 'ft', stuff: 'air' }, { noun: 'salad bowl', u: 'in', stuff: 'salad', bowl: true }, { noun: 'igloo', u: 'ft', stuff: 'air' }, { noun: 'mixing bowl', u: 'in', stuff: 'batter', bowl: true }, { noun: 'planetarium dome', u: 'yd', stuff: 'air' }],
 };
 
+/** the worked steps mark their answer for the steps card (docs/lessons/QUALITY_LAYER.md): the last plain <b>…</b> becomes
+ *  <b class="s">…</b> (the answer colour) */
+function markLast(sol: string[]): string[] {
+  for (let i = sol.length - 1; i >= 0; i--) {
+    const at = sol[i]!.lastIndexOf('<b>');
+    if (at >= 0) return sol.map((l, j) => (j === i ? l.slice(0, at) + '<b class="s">' + l.slice(at + 3) : l));
+  }
+  return sol;
+}
 function coefItem(id: string, family: string, prompt: string, board: string, u: string, c: Q, sol: string[], traps: Trap[], hint: string, picture: CcsPicture): It {
-  return { id, family, prompt, board, input: 'frac', unit: piUnit(u), answer: coefAnswer(c), solution: sol, picture,
+  return { id, family, prompt, board, input: 'frac', unit: piUnit(u), answer: coefAnswer(c), solution: markLast(sol), picture,
     check: numCheck(val(c), `Yes: ${htmlPi(c, true)} ${cu(u)}.`, traps, hint, { coefPi: true }) } as It;
 }
 function numItem(id: string, family: string, prompt: string, board: string, unit: string, v: number, sol: string[], traps: Trap[], hint: string, picture: CcsPicture, o: { alt?: number[]; okSay?: string } = {}): It {
-  return { id, family, prompt, board, input: 'num', unit, answer: { kind: 'num', v }, solution: sol, picture,
+  return { id, family, prompt, board, input: 'num', unit, answer: { kind: 'num', v }, solution: markLast(sol), picture,
     check: numCheck(v, o.okSay ?? `Yes: ${v} ${unit}.`, traps, hint, { alt: o.alt }) } as It;
 }
 function choiceItem(id: string, family: string, prompt: string, board: string, opts: { t: string; ok?: boolean; mc?: string; say: string }[], R: () => number, sol: string[], picture: CcsPicture): It {
   const d = deal(R, opts);
-  return { id, family, prompt, board, input: 'choice', choices: d.choices, answer: { kind: 'choice', i: d.right }, solution: sol, picture, check: choiceCheck(d.right, d.says) } as It;
+  return { id, family, prompt, board, input: 'choice', choices: d.choices, answer: { kind: 'choice', i: d.right }, solution: endOnChoice(sol, d.choices[d.right]!), picture, check: choiceCheck(d.right, d.says) } as It;
+
 }
 const pairOf = (x: number, y: number): Response => ({ kind: 'pair', x, y });
 
@@ -277,8 +326,9 @@ const calcPic: Gen = (R, n, sg = 'cylinder-volume-calc') => {
 /** a word problem with a real object (sub-goals 5-10, 24) */
 const calcStory: Gen = (R, n, sg = 'cylinder-volume-calc') => {
   const kind = kindFor(R, sg);
-  const cx = pick(R, CTX[kind]);
-  const D = dimsFor(R, kind, sg === 'model-practical' ? 'x' : sg, cx.u);
+  // a story object at a real size (no 28 ft gumball): draw again until it is
+  let cx = pick(R, CTX[kind]), D = dimsFor(R, kind, sg === 'model-practical' ? 'x' : sg, cx.u);
+  for (let t = 0; t < 400 && !realDims(cx.noun, kind, D); t++) { cx = pick(R, CTX[kind]); D = dimsFor(R, kind, sg === 'model-practical' ? 'x' : sg, cx.u); }
   const w = volWork(D);
   const given = D.useD ? `is ${A(len(D.d!, D.u))} across (its diameter)` : `has a radius of ${A(len(D.r, D.u))}`;
   const hTxt = kind === 'cyl' || kind === 'cone' ? `${kind === 'cone' && !cx.cup ? ' and is' : ' and is'} ${A(len(D.h, D.u))} ${cx.cup ? 'deep' : 'tall'}` : '';
@@ -319,7 +369,9 @@ const idLengths: Gen = (R, n) => {
 };
 /** a sphere: what does its volume need / how tall is it? */
 const idSphere: Gen = (R, n) => {
-  const cx = pick(R, CTX.sphere), r = int(R, 2, 20), useD = R() < 0.35, u = cx.u;
+  let cx = pick(R, CTX.sphere), r = int(R, 2, 20);
+  for (let t = 0; t < 400 && !real(cx.noun, 2 * r, cx.u); t++) { cx = pick(R, CTX.sphere); r = int(R, 1, 20); }
+  const useD = R() < 0.35, u = cx.u;
   const P = one('sphere', 1, 1, [{ what: useD ? 'd' : 'r', text: `${useD ? 2 * r : r} ${u}` }], { caption: cx.noun });
   const giv = useD ? `is ${A(`${2 * r} ${u}`)} across` : `has a radius of ${A(`${r} ${u}`)}`;
   if (R() < 0.5) {
@@ -341,11 +393,13 @@ const idSphere: Gen = (R, n) => {
 const idLying: Gen = (R, n) => {
   const d = 2 * int(R, 1, 9), h = int(R, 2, 20), u: U = pick(R, ['in', 'ft', 'cm'] as const), useD = R() < 0.6, r = d / 2;
   if (h === d || h === r) return idLying(R, n + 1);
+  const noun = pickReal(R, ['can', 'pipe', 'log', 'roll of paper towels'], d, u, h);
+  if (!noun) return idLying(R, n + 1);
   const P = one('cyl', r, h, [{ what: useD ? 'd' : 'r', text: `${useD ? d : r} ${u}` }, { what: 'h', text: `${h} ${u}` }], { tilt: pick(R, [90, -90]) });
   return {
-    id: `id-lying-${n}`, family: 'id-lying', prompt: `This ${pick(R, ['can', 'pipe', 'log', 'roll of paper towels'])} is lying on its side, marked ${A(`${useD ? d : r} ${u}`)} and ${A(`${h} ${u}`)}. What are its radius ${S('r')} and height ${S('h')} for the volume formula?`,
+    id: `id-lying-${n}`, family: 'id-lying', prompt: `This ${noun} is lying on its side, marked ${A(`${useD ? d : r} ${u}`)} and ${A(`${h} ${u}`)}. What are its radius ${S('r')} and height ${S('h')} for the volume formula?`,
     board: 'V = \\pi r^2 h', input: 'pair', pairLead: 'r =', pairOp: `${u}, &nbsp;h =`, pairTail: u, answer: pairOf(r, h),
-    solution: [`The height runs between the two circular ends: ${h} ${u}, even when the can lies down.`, useD ? `The diameter is ${d} ${u}, so the radius is ${r} ${u}.` : `The radius is ${r} ${u}.`],
+    solution: [useD ? `The diameter is ${d} ${u}, so the radius is <b class="s">${r} ${u}</b>.` : `The radius is <b class="s">${r} ${u}</b>.`, `The height runs between the two circular ends: <b class="s">${h} ${u}</b>, even when the can lies down.`],
     picture: pic(P, [[['dims', 1]]], [`r = ${r},\\ h = ${h}`]),
     check: (x: Response): Verdict => {
       if (x.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
@@ -359,8 +413,10 @@ const idLying: Gen = (R, n) => {
 
 /** a stack of layers: V = (one layer) x (number of layers) */
 const bhLayers: Gen = (R, n) => {
-  const r = int(R, 1, 9), h = int(R, 2, 12), u: U = pick(R, ['in', 'cm', 'ft'] as const), giveB = R() < 0.5, B2 = r * r;
-  const thing = pick(R, ['a stack of coins', 'a stack of round crackers', 'a pile of round pancakes', 'a roll of round stickers']);
+  // every layer is 1 unit thick: things that really come that thick, at their real radius
+  const L0 = pick(R, [{ t: 'a stack of round crackers', u: 'cm', r: [2, 4] }, { t: 'a stack of round pancakes', u: 'cm', r: [5, 10] },
+    { t: 'a stack of round foam coasters', u: 'cm', r: [4, 6] }, { t: 'a stack of round cake layers', u: 'in', r: [3, 6] }] as const);
+  const thing = L0.t, u: U = L0.u, r = int(R, L0.r[0], L0.r[1]), h = int(R, 2, 12), giveB = R() < 0.5, B2 = r * r;
   const P: VesselsParams = { vessels: [{ kind: 'cyl', r: 1, h: Math.min(3, Math.max(0.6, h / r)), role: 'first', layers: { n: h, key: 'layers' }, ghost: false }], dims: [giveB ? { v: 0, what: 'h', text: `${h} ${u}` } : { v: 0, what: 'r', text: `${r} ${u}` }, ...(giveB ? [] : [{ v: 0, what: 'h' as const, text: `${h} ${u}` }])], maxScale: 230 };
   const prompt = giveB
     ? `${thing[0]!.toUpperCase() + thing.slice(1)}: each layer is ${A(`1 ${u}`)} thick with a top area of ${A(`${B2}π ${sq(u)}`)}. The stack is ${A(`${h} ${u}`)} tall. What is its volume?`
@@ -398,8 +454,9 @@ const bhTwin: Gen = (R, n) => {
 };
 /** which product is the can's volume (layer x layers)? */
 const bhLayerArea: Gen = (R, n) => {
-  const r = int(R, 2, 9), h = int(R, 2, 12), u: U = pick(R, ['in', 'cm'] as const);
-  if (r === h || 2 * r === h) return bhLayerArea(R, n + 1);
+  // r = 2 would make 2π·r·h equal to π·r²·h (two right choices); the can has a real size
+  const r = int(R, 3, 9), h = int(R, 2, 12), u: U = pick(R, ['in', 'cm'] as const);
+  if (r === h || 2 * r === h || !real('can', 2 * r, u, h)) return bhLayerArea(R, n + 1);
   const P = one('cyl', r, h, [{ what: 'r', text: `${r} ${u}` }, { what: 'h', text: `${h} ${u}` }]);
   return choiceItem(`bh-layer-area-${n}`, 'bh-layer-area', `This can has radius ${A(`${r} ${u}`)} and height ${A(`${h} ${u}`)}. Its volume is (one layer) × (number of layers). Which product gives it?`, 'V = B \\cdot h', [
     { t: `π · ${r}² · ${h}`, ok: true, say: `Yes: one layer is the circle π · ${r}², and there are ${h} ${u} of layers.` },
@@ -484,12 +541,16 @@ const sphPour: Gen = (R, n) => {
 };
 /** the smallest can that holds a ball */
 const sphCan: Gen = (R, n) => {
-  const r = int(R, 1, 15), u: U = pick(R, ['in', 'cm', 'ft'] as const), useD = R() < 0.4, cx = pick(R, ['tennis ball', 'basketball', 'gumball', 'glass marble', 'soccer ball', 'bowling ball']);
+  // a ball at its real size: a tennis ball is about 2.6 in across, never 28 ft
+  const BALLS = ['tennis ball', 'basketball', 'gumball', 'glass marble', 'soccer ball', 'bowling ball'];
+  let r = int(R, 1, 15), u: U = pick(R, ['in', 'cm'] as const), cx = pickReal(R, BALLS, 2 * r, u) ?? '';
+  for (let t = 0; t < 600 && !cx; t++) { r = int(R, 1, 15); u = pick(R, ['in', 'cm'] as const); cx = pickReal(R, BALLS, 2 * r, u) ?? ''; }
+  const useD = R() < 0.4;
   const P: VesselsParams = { vessels: [{ kind: 'cyl', r: 1, h: 2, role: 'second', ghost: true }, { kind: 'sphere', r: 1, role: 'first', inside: 0 }], dims: [{ v: 1, what: useD ? 'd' : 'r', text: `${useD ? 2 * r : r} ${u}` }, { v: 0, what: 'h', text: 'h = ?', col: 'pick' }], maxScale: 200 };
   return {
     id: `sph-can-${n}`, family: 'sph-can', prompt: `A ${cx} ${useD ? `is ${A(`${2 * r} ${u}`)} across` : `has a radius of ${A(`${r} ${u}`)}`}. What are the radius and height of the smallest can that holds it?`,
     board: 'r = \\,?\\quad h = \\,?', input: 'pair', pairLead: 'r =', pairOp: `${u}, &nbsp;h =`, pairTail: u, answer: pairOf(r, 2 * r),
-    solution: [`The can is as wide as the ball: radius ${r} ${u}.`, `It is as tall as the ball, and the ball is as tall as its diameter: ${2 * r} ${u}.`],
+    solution: [`The can is as wide as the ball: radius <b class="s">${r} ${u}</b>.`, `It is as tall as the ball, and the ball is as tall as its diameter: <b class="s">${2 * r} ${u}</b>.`],
     picture: pic(P, [[['dims', 1]]], [`r = ${r}`, `h = 2 \\cdot ${r} = ${2 * r}`]),
     check: (x: Response): Verdict => {
       if (x.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
@@ -503,8 +564,9 @@ const sphCan: Gen = (R, n) => {
 
 /** which formula fits the pictured solid? */
 const mixFormula: Gen = (R, n) => {
-  const kind = pick(R, ['cyl', 'cone', 'sphere', 'hemi'] as const), cx = pick(R, CTX[kind]);
-  const D = dimsFor(R, kind, 'cylinder-volume-calc', cx.u);
+  const kind = pick(R, ['cyl', 'cone', 'sphere', 'hemi'] as const);
+  let cx = pick(R, CTX[kind]), D = dimsFor(R, kind, 'cylinder-volume-calc', cx.u);
+  for (let t = 0; t < 400 && !realDims(cx.noun, kind, D); t++) { cx = pick(R, CTX[kind]); D = dimsFor(R, kind, 'cylinder-volume-calc', cx.u); }
   const P = volPicture(D, { cup: cx.cup, bowl: cx.bowl, caption: cx.noun });
   const F = { cyl: 'V = πr²h', cone: 'V = ⅓πr²h', sphere: 'V = ⁴⁄₃πr³', hemi: 'V = ⅔πr³' };
   const opts: { t: string; ok?: boolean; mc?: string; say: string }[] = [{ t: F[kind], ok: true, say: `Yes: a ${cx.noun} is a ${KNAME[kind]}.` }];
@@ -594,12 +656,15 @@ const saPrismStory: Gen = (R, n) => {
   const u: U = pick(R, ['ft', 'in'] as const);
   const l = int(R, 3, 14), wd = int(R, 2, 10), h = int(R, 2, 10);
   if (l === wd || l === h || wd === h) return saPrismStory(R, n + 1);
-  const cx = pick(R, [
-    { t: `You paint the four walls of a room ${A(`${l} ${u}`)} long, ${A(`${wd} ${u}`)} wide and ${A(`${h} ${u}`)} high (no floor, no ceiling). How much wall do you paint?`, total: false },
-    { t: `You wrap a gift box ${A(`${l} ${u}`)} long, ${A(`${wd} ${u}`)} wide and ${A(`${h} ${u}`)} tall in paper, every face. How much paper covers it?`, total: true },
-    { t: `A paper label goes all the way around the sides of a box ${A(`${l} ${u}`)} long, ${A(`${wd} ${u}`)} wide and ${A(`${h} ${u}`)} tall (not the top or bottom). How big is the label?`, total: false },
-    { t: `A closed shipping crate is ${A(`${l} ${u}`)} long, ${A(`${wd} ${u}`)} wide and ${A(`${h} ${u}`)} tall. How much wood covers its outside, every face?`, total: true },
-  ]);
+  // each story at a real size: a room in feet with 7 to 10 ft walls, gift boxes and labels in inches
+  const fit = [
+    { t: `You paint the four walls of a room ${A(`${l} ${u}`)} long, ${A(`${wd} ${u}`)} wide and ${A(`${h} ${u}`)} high (no floor, no ceiling). How much wall do you paint?`, total: false, ok: u === 'ft' && h >= 7 && h <= 10 && l >= 6 && wd >= 6 },
+    { t: `You wrap a gift box ${A(`${l} ${u}`)} long, ${A(`${wd} ${u}`)} wide and ${A(`${h} ${u}`)} tall in paper, every face. How much paper covers it?`, total: true, ok: u === 'in' },
+    { t: `A paper label goes all the way around the sides of a box ${A(`${l} ${u}`)} long, ${A(`${wd} ${u}`)} wide and ${A(`${h} ${u}`)} tall (not the top or bottom). How big is the label?`, total: false, ok: u === 'in' },
+    { t: `A closed shipping crate is ${A(`${l} ${u}`)} long, ${A(`${wd} ${u}`)} wide and ${A(`${h} ${u}`)} tall. How much wood covers its outside, every face?`, total: true, ok: u === 'ft' },
+  ].filter(x => x.ok);
+  if (!fit.length) return saPrismStory(R, n + 1);
+  const cx = pick(R, fit);
   const Pm = 2 * (l + wd), L = Pm * h, B2 = l * wd, St = L + 2 * B2;
   const P: VesselsParams = { vessels: [{ kind: 'box', l: 1, w: wd / l, h: Math.max(0.35, Math.min(2.2, h / l)), role: 'first' }], dims: [{ v: 0, what: 'len', text: `${l} ${u}` }, { v: 0, what: 'w', text: `${wd} ${u}` }, { v: 0, what: 'h', text: `${h} ${u}` }], maxScale: 330 };
   return numItem(`sa-prism-story-${n}`, 'sa-prism-story', cx.t, cx.total ? 'S = Ph + 2B' : 'L = Ph', sq(u), cx.total ? St : L,
@@ -610,6 +675,7 @@ const saPrismStory: Gen = (R, n) => {
 /** a can and its net: L = 2 pi r h, S = 2 pi r h + 2 pi r^2 */
 const saCylNet: Gen = (R, n) => {
   const useD = R() < 0.3, r = useD ? int(R, 1, 8) : int(R, 1, 9), h = int(R, 2, 12), u: U = pick(R, ['in', 'cm'] as const), total = R() < 0.5;
+  if (!real('can', 2 * r, u, h)) return saCylNet(R, n + 1);
   const L = cylLateral(q(r), q(h)), St = cylTotal(q(r), q(h));
   const spec: NetSpec = { kind: 'cyl', r: 1, h: Math.max(1, Math.min(4, h / r)) };
   const labels: NetLabel[] = [{ edge: 'r', text: useD ? `d = ${2 * r} ${u}` : `${r} ${u}`, col: 'second' }, { edge: 'h', text: `${h} ${u}` }, { edge: 'C', text: 'around the can', col: 'pick' }];
@@ -624,14 +690,14 @@ const saCylNet: Gen = (R, n) => {
   if (useD) traps.push({ v: total ? 4 * r * h + 8 * r * r : 4 * r * h, mc: MC.dForR, say: `${2 * r} ${u} is the diameter: the radius is ${r} ${u}.` });
   return {
     id: `sa-cyl-net-${n}`, family: 'sa-cyl-net', prompt, board: total ? 'S = 2\\pi r h + 2\\pi r^2' : 'L = 2\\pi r h', input: 'frac', unit: `π ${sq(u)}`, answer: coefAnswer(total ? St : L),
-    solution: [`Unroll the label: a rectangle 2π · ${r} = ${2 * r}π ${u} long and ${h} ${u} tall: ${val(L)}π ${sq(u)}.`, ...(total ? [`Two circles: 2 · π · ${r}² = ${2 * r * r}π. Total: <b>${val(St)}π ${sq(u)}</b>.`] : [`Label: <b>${val(L)}π ${sq(u)}</b>.`])],
+    solution: [`Unroll the label: a rectangle 2π · ${r} = ${2 * r}π ${u} long and ${h} ${u} tall: ${val(L)}π ${sq(u)}.`, ...(total ? [`Two circles: 2 · π · ${r}² = ${2 * r * r}π. Total: <b class="s">${val(St)}π ${sq(u)}</b>.`] : [`Label: <b class="s">${val(L)}π ${sq(u)}</b>.`])],
     picture, check: numCheck(val(total ? St : L), `Yes: ${val(total ? St : L)}π ${sq(u)}.`, traps, 'The label unrolls into a rectangle: (2πr) by h.', { coefPi: true }),
   } as It;
 };
 /** label or soup? interleaved surface area and volume of one can */
 const saOrVol: Gen = (R, n) => {
   const r = int(R, 1, 8), h = int(R, 2, 12), u: U = pick(R, ['in', 'cm'] as const), ask = pick(R, ['label', 'soup', 'tin'] as const);
-  if (r === 2 || 2 * r === r * r) return saOrVol(R, n + 1);
+  if (r === 2 || 2 * r === r * r || !real('soup can', 2 * r, u, h)) return saOrVol(R, n + 1);
   const L = 2 * r * h, V = r * r * h, St = L + 2 * r * r;
   const v = ask === 'label' ? L : ask === 'soup' ? V : St;
   const unit = ask === 'soup' ? piUnit(u) : `π ${sq(u)}`;
@@ -644,7 +710,8 @@ const saOrVol: Gen = (R, n) => {
     : [{ v: V, mc: MC.saVol, say: 'π r² h is the soup inside. Paper and tin cover the outside: surface area.' }, ...(ask === 'tin' ? [{ v: L, mc: MC.latTotal, say: 'Add the top and bottom circles too.' }, { v: L + r * r, mc: MC.omitsBase, say: 'A closed can has two circles.' }] : [{ v: St, mc: MC.latTotal, say: 'The label is the side only.' }])];
   return {
     id: `sa-or-vol-${n}`, family: 'sa-or-vol', prompt, board: ask === 'soup' ? 'V = \\,?' : 'S = \\,?', input: 'frac', unit, answer: coefAnswer(q(v)),
-    solution: [ask === 'soup' ? `Inside: V = π · ${r}² · ${h} = <b>${V}π ${cu(u)}</b>.` : ask === 'label' ? `The side unrolls: 2π · ${r} · ${h} = <b>${L}π ${sq(u)}</b>.` : `Side ${L}π + two circles ${2 * r * r}π = <b>${St}π ${sq(u)}</b>.`, ask === 'soup' ? 'Filling is volume, cubic units.' : 'Covering is surface area, square units.'],
+    solution: [ask === 'soup' ? `Inside: V = π · ${r}² · ${h} = <b class="s">${V}π ${cu(u)}</b>.` : ask === 'label' ? `The side unrolls: 2π · ${r} · ${h} = <b class="s">${L}π ${sq(u)}</b>.` : `Side ${L}π + two circles ${2 * r * r}π = <b class="s">${St}π ${sq(u)}</b>.`,
+ ask === 'soup' ? 'Filling is volume, cubic units.' : 'Covering is surface area, square units.'],
     picture: pic(P, [[['dims', 1]]], ask === 'soup' ? [`V = \\pi \\cdot ${r}^2 \\cdot ${h}`, `= ${V}\\pi`] : ask === 'label' ? [`L = 2\\pi \\cdot ${r} \\cdot ${h}`, `= ${L}\\pi`] : [`S = ${L}\\pi + ${2 * r * r}\\pi`, `= ${St}\\pi`]),
     check: numCheck(v, `Yes: ${v}π ${ask === 'soup' ? cu(u) : sq(u)}.`, traps, ask === 'soup' ? 'Filling is volume: π r² h.' : 'Covering is surface area: the label is 2π r h.', { coefPi: true }),
   } as It;
@@ -672,8 +739,11 @@ const unitMixed: Gen = (R, n) => {
 };
 /** which setup uses one unit? */
 const unitTrap: Gen = (R, n) => {
-  const ri = int(R, 2, 9), hf = int(R, 2, 5), hin = hf * 12;
-  const P = one('cyl', ri, hin, [{ what: 'r', text: `${ri} in` }, { what: 'h', text: `${hf} ft` }], { caption: pick(R, ['water tank', 'tube', 'post mold', 'vase']) });
+  // r = 2 would make 2π·r·h equal to π·r²·h; the pictured object has a real size
+  const ri = int(R, 3, 9), hf = int(R, 2, 5), hin = hf * 12;
+  const noun = pickReal(R, ['water tank', 'tube', 'post mold', 'vase'], 2 * ri, 'in', hf, 'ft');
+  if (!noun) return unitTrap(R, n + 1);
+  const P = one('cyl', ri, hin, [{ what: 'r', text: `${ri} in` }, { what: 'h', text: `${hf} ft` }], { caption: noun });
   return choiceItem(`unit-trap-${n}`, 'unit-trap', `This cylinder has radius ${A(`${ri} in`)} and height ${A(`${hf} ft`)}. Which setup gives its volume in cubic inches?`, 'V = \\pi r^2 h', [
     { t: `π · ${ri}² · ${hin}`, ok: true, say: `Yes: ${hf} ft = ${hin} in, so both lengths are in inches.` },
     { t: `π · ${ri}² · ${hf}`, mc: MC.unconverted, say: `${hf} is in feet while ${ri} is in inches. Change ${hf} ft into inches first.` },
@@ -703,10 +773,11 @@ const cubicConv: Gen = (R, n) => {
 };
 /** a box in cubic yards, seen as cubic feet */
 const cubicCube: Gen = (R, n) => {
-  const l = int(R, 1, 4), wd = int(R, 1, 3), h = int(R, 1, 3), up = R() < 0.35;
+  // a low dumpster: whole yards are its real size (a sandbox is never a yard deep)
+  const l = int(R, 2, 6), wd = int(R, 2, 3), h = 1, up = R() < 0.35;
   const yd3 = l * wd * h, ft3 = 27 * yd3;
   const P: VesselsParams = { vessels: [{ kind: 'box', l, w: wd, h, role: 'first', grid: 3 }], dims: [{ v: 0, what: 'len', text: `${l} yd` }, { v: 0, what: 'w', text: `${wd} yd` }, { v: 0, what: 'h', text: `${h} yd` }], maxScale: 170 };
-  const prompt = up ? `A sandbox holds ${A(`${ft3} ${cu('ft')}`)} of sand. How many cubic yards is that? (1 yd = 3 ft)` : `A sandbox is ${A(`${l} yd`)} by ${A(`${wd} yd`)} by ${A(`${h} yd`)}. How many cubic feet of sand fill it? (1 yd = 3 ft)`;
+  const prompt = up ? `A dumpster holds ${A(`${ft3} ${cu('ft')}`)} of trash. How many cubic yards is that? (1 yd = 3 ft)` : `A dumpster is ${A(`${l} yd`)} by ${A(`${wd} yd`)} by ${A(`${h} yd`)}. How many cubic feet of trash fill it? (1 yd = 3 ft)`;
   return numItem(`cubic-cube-${n}`, 'cubic-cube', prompt, '1\\text{ yd}^3 = 3^3\\text{ ft}^3', up ? cu('yd') : cu('ft'), up ? yd3 : ft3,
     [`Each cubic yard is 3 × 3 × 3 = 27 cubic feet (the small cubes).`, up ? `${ft3} ÷ 27 = <b>${yd3} ${cu('yd')}</b>.` : `${yd3} ${cu('yd')} × 27 = <b>${ft3} ${cu('ft')}</b>.`],
     up ? [{ v: ft3 / 3, mc: MC.linearFactor, say: 'Divide by 27, not 3: a cubic yard holds 3 × 3 × 3 cubic feet.' }, { v: ft3 / 9, mc: MC.squaredFactor, say: 'Volume has three directions: 3³ = 27.' }, { v: ft3 * 27, mc: MC.wrongDir, say: 'Cubic yards are bigger: there are fewer of them.' }]
@@ -718,7 +789,9 @@ const capTank: Gen = (R, n) => {
   const r = int(R, 3, 12), mixed = R() < 0.45, hIn = mixed ? 12 * int(R, 1, 4) : int(R, 6, 30);
   const V = r * r * hIn * Math.PI, gal = roundTo(V / 231, 1);
   const hS = mixed ? `${hIn / 12} ft` : `${hIn} in`;
-  const P = one('cyl', r, hIn, [{ what: 'r', text: `${r} in` }, { what: 'h', text: hS }], { caption: pick(R, ['fish tank', 'water heater', 'rain barrel', 'cooler']) });
+  const noun = pickReal(R, ['fish tank', 'water heater', 'rain barrel', 'cooler'], 2 * r, 'in', hIn);
+  if (!noun) return capTank(R, n + 1);
+  const P = one('cyl', r, hIn, [{ what: 'r', text: `${r} in` }, { what: 'h', text: hS }], { caption: noun });
   return numItem(`cap-tank-${n}`, 'cap-tank', `A cylinder tank has radius ${A(`${r} in`)} and height ${A(hS)}. How many gallons does it hold? Use 231 in³ = 1 gallon, the π key, and round to the nearest tenth.`, '231\\text{ in}^3 = 1\\text{ gal}', 'gal', gal,
     [...(mixed ? [`Height in inches: ${hS} = ${hIn} in.`] : []), `V = π · ${r}² · ${hIn} = ${r * r * hIn}π ≈ ${roundTo(V, 1)} in³.`, `${roundTo(V, 1)} ÷ 231 ≈ <b>${gal} gal</b>.`],
     [{ v: roundTo((V * 231), 1), mc: MC.wrongDir, say: 'Gallons are much bigger than cubic inches: divide by 231.' }, { v: roundTo(r * r * (hIn / 12) * Math.PI / 231, 1), mc: MC.capBeforeUnits, say: 'The height was still in feet. Put every length in inches before you use 231 in³ per gallon.' }, { v: roundTo(V, 1), say: 'That is cubic inches. Now change it into gallons.' }],
@@ -728,6 +801,7 @@ const capTank: Gen = (R, n) => {
 const capLiter: Gen = (R, n) => {
   if (R() < 0.5) {
     const kind = pick(R, ['cyl', 'sphere', 'cone'] as const), r = pick(R, [4, 5, 6, 8, 10, 12]), h = pick(R, [10, 15, 20, 24, 30]);
+    if (!real(kind === 'cyl' ? 'vase' : kind === 'sphere' ? 'fish bowl' : 'funnel', 2 * r, 'cm', kind === 'sphere' ? undefined : h)) return capLiter(R, n + 1);
     const c = coef(kind, W(r), W(h)), V = val(c) * Math.PI, L = roundTo(V / 1000, 1);
     const P = volPicture({ kind, r: W(r), h: W(h), u: 'cm', useD: false }, { cup: kind === 'cone', caption: kind === 'cyl' ? 'vase' : kind === 'sphere' ? 'fish bowl' : 'funnel' });
     return numItem(`cap-liter-${n}`, 'cap-liter', `This ${kind === 'cyl' ? 'vase' : kind === 'sphere' ? 'round fish bowl' : 'funnel'} is a ${KNAME[kind]} with radius ${A(`${r} cm`)}${kind === 'sphere' ? '' : ` and height ${A(`${h} cm`)}`}. How many liters does it hold? Use 1000 cm³ = 1 L and round to the nearest tenth.`, '1000\\text{ cm}^3 = 1\\text{ L}', 'L', L,
@@ -851,7 +925,7 @@ const solveR: Gen = (R, n) => {
     : [{ v: r * r, say: `That is r². Which number squared gives ${r * r}?` }, { v: Math.cbrt(r * r), mc: MC.rootSwap, say: `In a ${KNAME[kind]} the radius is squared: find the number that squared gives ${r * r}.` }, { v: val(c) / h, say: `That is r² (the volume ÷ the height). Now find r.` }];
   const step = kind === 'sphere' ? `${val(c)}π = 4/3 · π · r³, so r³ = ${val(c)} · 3/4 = ${r ** 3}.` : kind === 'cone' ? `${val(c)}π = ⅓ · π · r² · ${h}, so r² = ${val(c)} · 3 ÷ ${h} = ${r * r}.` : `${val(c)}π = π · r² · ${h}, so r² = ${val(c)} ÷ ${h} = ${r * r}.`;
   return numItem(`solve-r-${n}`, 'solve-r', `This ${KNAME[kind]} has V = ${A(`${val(c)}π ${cu(u)}`)}${kind === 'sphere' ? '' : ` and height ${A(`${h} ${u}`)}`}. What is its radius?`, kind === 'sphere' ? `${val(c)}\\pi = \\tfrac43 \\pi r^3` : `${val(c)}\\pi = ${kind === 'cone' ? '\\tfrac13 ' : ''}\\pi r^2 \\cdot ${h}`, u, r,
-    [step, `${r}${kind === 'sphere' ? '³' : '²'} = ${kind === 'sphere' ? r ** 3 : r * r}, so <b>r = ${r} ${u}</b>.`], traps,
+    [step, `${r}${kind === 'sphere' ? '³' : '²'} = ${kind === 'sphere' ? r ** 3 : r * r}, so r = <b>${r} ${u}</b>.`], traps,
     kind === 'sphere' ? 'Undo the 4/3 π to get r³, then ask: which whole number cubed gives it?' : 'Undo the rest to get r², then ask: which whole number squared gives it?',
     pic(P, [[['dims', 1]]], [kind === 'sphere' ? `r^3 = ${r ** 3}` : `r^2 = ${r * r}`, `r = ${r}\\text{ ${u}}`]), { okSay: `Yes: r = ${r} ${u}.` });
 };
@@ -862,19 +936,21 @@ const solveStory: Gen = (R, n, sg = 'solve-for-height') => {
     const sphere = R() < 0.4, r = sphere ? int(R, 1, 5) : int(R, 2, 10), h = int(R, 2, 10);
     const c = sphere ? coef('sphere', W(r)) : coef('cyl', W(r), W(h));
     if (!isWhole(c)) return solveStory(R, n + 1, sg);
-    const thing = sphere ? pick(R, ['gumball machine globe', 'round lantern', 'water balloon']) : pick(R, ['paint can', 'candle', 'flower pot']);
+    const thing = pickReal(R, sphere ? ['gumball machine globe', 'round lantern', 'water balloon'] : ['paint can', 'candle', 'flower pot'], 2 * r, u, sphere ? undefined : h);
+    if (!thing) return solveStory(R, n + 1, sg);
     const P = volPicture({ kind: sphere ? 'sphere' : 'cyl', r: W(r), h: W(h), u, useD: false }, { askR: true, caption: thing });
     return numItem(`solve-story-${n}`, 'solve-story', sphere ? `A ${thing} is a sphere that holds ${A(`${val(c)}π ${cu(u)}`)}. What is its radius?` : `A ${thing} is a cylinder ${A(`${h} ${u}`)} tall that holds ${A(`${val(c)}π ${cu(u)}`)}. What is its radius?`,
-      'r = \\,?', u, r, [sphere ? `r³ = ${val(c)} · 3/4 = ${r ** 3}.` : `r² = ${val(c)} ÷ ${h} = ${r * r}.`, `<b>r = ${r} ${u}</b>.`],
+      'r = \\,?', u, r, [sphere ? `r³ = ${val(c)} · 3/4 = ${r ** 3}.` : `r² = ${val(c)} ÷ ${h} = ${r * r}.`, `${r}${sphere ? '³' : '²'} = ${sphere ? r ** 3 : r * r}, so r = <b>${r} ${u}</b>.`],
       [{ v: sphere ? r ** 3 : r * r, say: `That is r${sphere ? '³' : '²'}. Which whole number ${sphere ? 'cubed' : 'squared'} gives it?` }, { v: sphere ? Math.sqrt(r ** 3) : Math.cbrt(r * r), mc: MC.rootSwap, say: `The radius is ${sphere ? 'cubed' : 'squared'} here.` }],
       sphere ? 'Get r³ alone, then find which number cubed gives it.' : 'Get r² alone, then find which number squared gives it.', pic(P, [[['dims', 1]]], [sphere ? `r^3 = ${r ** 3}` : `r^2 = ${r * r}`, `r = ${r}`]), { okSay: `Yes: r = ${r} ${u}.` });
   }
   const kind = pick(R, ['cyl', 'cone'] as const), r = int(R, 2, 6), h = kind === 'cone' ? 3 * int(R, 1, 5) : int(R, 2, 12);
   const c = coef(kind, W(r), W(h));
-  const thing = kind === 'cyl' ? pick(R, ['can of beans', 'fish tank', 'drinking glass', 'pencil cup']) : pick(R, ['snow-cone cup', 'funnel', 'party hat']);
+  const thing = pickReal(R, kind === 'cyl' ? ['can of beans', 'fish tank', 'drinking glass', 'pencil cup'] : ['snow-cone cup', 'funnel', 'party hat'], 2 * r, u, h);
+  if (!thing) return solveStory(R, n + 1, sg);
   const P = volPicture({ kind, r: W(r), h: W(h), u, useD: false }, { askH: true, cup: kind === 'cone' && thing !== 'party hat', caption: thing });
   return numItem(`solve-story-${n}`, 'solve-story', `A ${thing} has radius ${A(`${r} ${u}`)} and holds ${A(`${val(c)}π ${cu(u)}`)}. How ${kind === 'cone' && thing !== 'party hat' ? 'deep' : 'tall'} is it?`, 'h = \\,?', u, h,
-    [kind === 'cyl' ? `${val(c)}π = ${r * r}π · h.` : `${val(c)}π = ⅓ · ${r * r}π · h, so ${3 * val(c)}π = ${r * r}π · h.`, `<b>h = ${h} ${u}</b>.`],
+    [kind === 'cyl' ? `${val(c)}π = ${r * r}π · h.` : `${val(c)}π = ⅓ · ${r * r}π · h, so ${3 * val(c)}π = ${r * r}π · h.`, `h = ${kind === 'cyl' ? val(c) : 3 * val(c)} ÷ ${r * r} = <b>${h} ${u}</b>.`],
     kind === 'cyl' ? [{ v: val(c) / r, mc: MC.partOfBase, say: `Divide by the base area ${r * r}π, not by the radius.` }] : [{ v: val(c) / (r * r), mc: MC.partialUndo, say: 'Undo the 1/3 too: multiply by 3.' }, { v: val(c) / (3 * r * r), mc: MC.unitFraction, say: 'To undo × 1/3, multiply by 3.' }],
     'Divide the volume by the base area (and undo the 1/3 for a cone).', pic(P, [[['dims', 1]]], [`h = ${h}\\text{ ${u}}`]), { okSay: `Yes: h = ${h} ${u}.` });
 };
@@ -925,7 +1001,8 @@ const scaleCompare: Gen = (R, n, sg = 'scale-height-only') => {
 const modelInside: Gen = (R, n) => {
   const ro = int(R, 4, 10), ho = int(R, 5, 14), t = 1, u: U = pick(R, ['in', 'cm'] as const);
   const ri = ro - t, hi = ho - t;
-  const thing = pick(R, ['planter', 'mug', 'ice bucket', 'pencil cup', 'cooler']);
+  const thing = pickReal(R, ['planter', 'mug', 'ice bucket', 'pencil cup', 'cooler'], 2 * ro, u, ho);
+  if (!thing) return modelInside(R, n + 1);
   const c = q(ri * ri * hi);
   const sc = 1 / ro;
   const P: VesselsParams = {
@@ -941,6 +1018,8 @@ const modelInside: Gen = (R, n) => {
 const modelPile: Gen = (R, n) => {
   const d = 2 * int(R, 3, 15), h = int(R, 2, 12), u: U = pick(R, ['ft', 'yd'] as const);
   const r = d / 2, c = (r * r * h) / 3, V = c * Math.PI, ans = Math.round(V);
+  if (h > r) return modelPile(R, n + 1);   // a pile stands no taller than its radius
+
   const stuff = pick(R, ['sand', 'gravel', 'mulch', 'road salt', 'grain']);
   const P = one('cone', r, h, [{ what: 'd', text: `${d} ${u}` }, { what: 'h', text: `${h} ${u}` }], { caption: `${stuff} pile` });
   return numItem(`model-pile-${n}`, 'model-pile', `A pile of ${stuff} is shaped like a cone, ${A(`${d} ${u}`)} across the bottom and ${A(`${h} ${u}`)} high. About how much ${stuff} is in it? Use the π key and round to the nearest whole ${cu(u)}.`, 'V = \\tfrac13 \\pi r^2 h', cu(u), ans,

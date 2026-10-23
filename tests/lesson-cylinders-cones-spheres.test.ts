@@ -102,3 +102,53 @@ describe('cylinders-cones-spheres: voice', () => {
     for (const [k, v] of Object.entries(LINES)) { expect(voice[k]!.text, k).toBe(v.say); expect(/[0-9=+×÷π²³⁄½⅓]/.test(v.say), k).toBe(false); }
   });
 });
+
+describe('cylinders-cones-spheres: quality layer regressions', () => {
+  it('cubic-conv: a marked 2,000,000 is read in full (not 2000) by the steps card', async () => {
+    const { explain } = await import('../src/lesson/topics/cylinders-cones-spheres/explain');
+    let big = 0;
+    for (let s = 1; s <= 300; s++) {
+      const item = GEN['cubic-conv']!(rng(s * 17 + 1), s, 'cubic-unit-conversion');
+      expect(explain(item)!.result, item.prompt).toEqual(item.answer);
+      if (item.answer.kind === 'num' && item.answer.v >= 1e6) big++;
+    }
+    expect(big).toBeGreaterThan(0);
+  });
+  it('pair and solve families mark r before h, and the value (not "r = 3 cm") as the answer', async () => {
+    const { explain } = await import('../src/lesson/topics/cylinders-cones-spheres/explain');
+    const cases: [string, string][] = [['id-lying', 'identify-r-h'], ['sph-can', 'sphere-two-thirds'], ['solve-r', 'solve-for-radius'], ['solve-story', 'solve-for-height'], ['solve-story', 'solve-for-radius'], ['sa-cyl-net', 'sa-cylinder'], ['sa-or-vol', 'sa-cylinder']];
+    for (const [f, sg] of cases) for (let s = 1; s <= 60; s++) {
+      const item = GEN[f]!(rng(s * 29 + 3), s, sg);
+      const r = explain(item)!.result, a = item.answer;
+      const v = (x: typeof a) => (x.kind === 'frac' ? x.w + x.n / x.d : x.kind === 'num' ? x.v : x.kind === 'pair' ? x.x * 1000 + x.y : -1);
+      expect(v(r), `${f}/${sg}: ${item.prompt}`).toBeCloseTo(v(a), 9);
+    }
+  });
+});
+
+describe('cylinders-cones-spheres: sweep regressions (oracle findings)', () => {
+  // objects at real sizes (no 28 ft tennis ball, 18 in can, 9 ft deep sandbox, room with 4 ft walls, 1 ft thick
+  // cracker), piles no taller than their radius, and r = 2 never makes 2π·r·h equal π·r²·h in a choice list
+  const fams: [string, string][] = [['calc-story', 'cylinder-volume-calc'], ['calc-story', 'cone-volume-calc'], ['calc-story', 'sphere-volume-calc'], ['calc-story', 'hemisphere-volume'],
+    ['calc-story', 'diameter-given'], ['calc-story', 'model-practical'], ['mix-formula', 'mixed-formula-choice'], ['id-sphere', 'identify-r-h'], ['id-lying', 'identify-r-h'],
+    ['bh-layers', 'cylinder-bh'], ['bh-layer-area', 'cylinder-bh'], ['sph-can', 'sphere-two-thirds'], ['sa-prism-story', 'sa-prism-lateral-total'], ['sa-cyl-net', 'sa-cylinder'],
+    ['sa-or-vol', 'sa-cylinder'], ['cubic-cube', 'cubic-unit-conversion'], ['cap-liter', 'capacity-conversion'], ['solve-story', 'solve-for-height'], ['solve-story', 'solve-for-radius'],
+    ['model-inside', 'model-practical'], ['model-pile', 'model-practical']];
+  it('the independent oracle finds nothing unreal in these families', async () => {
+    // @ts-expect-error: the oracle is an untyped .mjs module
+    const O = (await import('./oracle/cylinders-cones-spheres.mjs')).default;
+    // @ts-expect-error: an untyped .mjs module
+    const { viewOf } = await import('../tools/quality/view.mjs');
+    for (const [f, sg] of fams) for (let s = 1; s <= 150; s++) {
+      const it = GEN[f]!(rng(s * 61 + f.length), s, sg);
+      const q = viewOf(it, sg);
+      expect(O.sane(q), `${f}/${sg}: ${it.prompt}`).toBe('');
+    }
+  });
+  it('unit-trap and bh-layer-area: exactly one choice gives the volume (never r = 2)', () => {
+    for (let s = 1; s <= 400; s++) for (const [f, sg] of [['unit-trap', 'common-length-unit'], ['bh-layer-area', 'cylinder-bh']] as const) {
+      const it = GEN[f]!(rng(s), s, sg);
+      expect(it.prompt).not.toMatch(/radius (<[^>]+>)?2 (in|cm)\b/);
+    }
+  });
+});

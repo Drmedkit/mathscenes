@@ -4,6 +4,7 @@
 // Most items carry a picture: the system on a plane (SysPic) whose answer-revealing parts only appear on the solve.
 // Pure: no DOM, no canvas; a seeded rng makes sessions repeatable.
 import { type Item, type Response, type Verdict, fr, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import {
   type Form, type Lin, type V, type Win, add, clip, htmlExpr, htmlLin, inWin, isInt, lattice, lhsOf, lin, nH, nP, nT, near, on,
   pairH, pairP, pairT, scale, slope, solve, sub, subH, texExpr, texLin, through, yAt, yInt, ySlope,
@@ -218,7 +219,7 @@ function plugT(L: Lin, which: 'x' | 'y', v: number): string {
 }
 /** TeX of a·x + b·y with both values put in: "2(3) + 3(-1)" */
 export function subT(L: Lin, p: V): string {
-  const val = (k: number, v: number) => (near(Math.abs(k), 1) ? (v < 0 ? `(${nT(v)})` : nT(v)) : `${nT(Math.abs(k))}(${nT(v)})`);
+  const val = (k: number, v: number) => (near(Math.abs(k), 1) ? (v < 0 || (k < 0 && near(v, 0)) ? `(${nT(v)})` : nT(v)) : `${nT(Math.abs(k))}(${nT(v)})`);   // "−(0)", never "−0"
   const parts: string[] = [];
   if (!near(L.a, 0)) parts.push(`${L.a < 0 ? '-' : ''}${val(L.a, p[0])}`);
   if (!near(L.b, 0)) parts.push(parts.length ? `${L.b < 0 ? '-' : '+'} ${val(L.b, p[1])}` : `${L.b < 0 ? '-' : ''}${val(L.b, p[1])}`);
@@ -651,6 +652,7 @@ const setEqual: Gen = (R, n) => {
     if (m1 === m2) continue;
     const k1 = sol[1] - m1 * sol[0], k2 = sol[1] - m2 * sol[0];
     if (k1 === 0 || k2 === 0 || Math.abs(k1) > 9 || Math.abs(k2) > 9) continue;
+    if (sol[1] === 0) continue;   // crossing on the x-axis: the sign-flipped equation would have the same solution
     const L1 = ySlope(m1, k1), L2 = ySlope(m2, k2);
     const right = `${htmlExpr(m1, k1)} = ${htmlExpr(m2, k2)}`;
     const firstOnly = `${htmlExpr(m1, k1)} = ${htmlExpr(m2, 0)}`;
@@ -923,7 +925,7 @@ const pickMult: Gen = (R, n, sg) => {
           if (near(r.v, k)) return { ok: false, mc: MC.addsEqual, say: `× ${pn(k)} makes the ${Y}-terms EQUAL, and adding equal terms doubles them. You need opposites: × ${pn(-k)}.` };
           return { ok: false, say: `The ${Y}-terms are ${kH(L1.b, Y)} and ${kH(L2.b, Y)}. What times ${nH(L1.b)} gives ${nH(-L2.b)}?` };
         },
-        solution: [`${nH(L1.b)} × ${pn(-k)} = ${nH(-L2.b)}: the opposite of ${nH(L2.b)}.`, `${htmlLin(M)}; adding the second gives ${htmlLin(S)}.`],
+        solution: [`The ${Y}-terms are ${kH(L1.b, Y)} and ${kH(L2.b, Y)}: ${nH(L1.b)} × ${pn(-k)} = ${nH(-L2.b)}, the opposite of ${nH(L2.b)}.`, `Multiply the first equation by <b class="s">${nH(-k)}</b>: ${htmlLin(M)}; adding the second gives ${htmlLin(S)}.`],
         picture: { sys: pic({ win: winFor([sol]), eqs: e, lines: [{ L: L1, col: 'first', at: 'start' }, { L: L2, col: 'second', at: 'start' }], cross: sol,
           work: [`\\times ${-k < 0 ? `(${-k})` : -k}:\\ ${texLin(M)}`, `\\text{add:}\\ ${texLin(S)}`] }) },
       };
@@ -1016,7 +1018,7 @@ const ratSolve: Gen = (R, n) => {
       prompt: `${N} coins, only ${na} and ${nb}, are worth $${money(T)}: <b class="a"><i>${l1}</i> + <i>${l2}</i> = ${N}</b> and <b class="b">${money(pa)}<i>${l1}</i> + ${money(pb)}<i>${l2}</i> = ${money(T)}</b>. How many of each?`,
       board: board2(e), input: 'pair', pairLead: `(<i>${l1}</i>, <i>${l2}</i>) = (`, pairOp: ',', pairTail: ')',
       answer: { kind: 'pair', x: qa, y: qb }, check: pairCheck([qa, qb], [L1, L2], { names: [l1, l2] }),
-      solution: [...work.map(texToHtml), `${qa} ${na} and ${qb} ${nb}: ${qa} × $${money(pa)} + ${qb} × $${money(pb)} = $${money(T)}. ✓`],
+      solution: [...work.map(texToHtml), `<b class="s">${qa}</b> ${na} and <b class="s">${qb}</b> ${nb}: ${qa} × $${money(pa)} + ${qb} × $${money(pb)} = $${money(T)}. ✓`],
       picture: { sys: pic({ win: ctx.win, gx: ctx.gx, gy: ctx.gy, names: [na, nb], eqs: e,
         lines: [{ L: L1, col: 'first', at: 'start' }, { L: L2, col: 'second', at: 'solve' }], cross: [qa, qb], work }) },
     };
@@ -1083,6 +1085,12 @@ const chooseMethod: Gen = (R, n) => {
   let L1: Lin, L2: Lin, f1: Form = 'std', sol: V;
   if (which === 'sub') { const s = subSys(R); L1 = s.iso; L2 = s.L; f1 = s.isoForm; sol = s.sol; }
   else { const s = elimSys(R, which === 'add' ? 'add' : which === 'subtract' ? 'sub' : 'both', pick(R, ['x', 'y'] as const)); L1 = s.L1; L2 = s.L2; sol = s.sol; }
+  // one best method only: no system that has equal AND opposite coefficients, no "multiply first" when adding or
+  // subtracting already works
+  if (which !== 'sub') {
+    const eq = near(L1.a, L2.a) || near(L1.b, L2.b), opp = near(L1.a, -L2.a) || near(L1.b, -L2.b);
+    if ((which === 'add' && eq) || (which === 'subtract' && opp) || (which === 'scale' && (eq || opp))) return chooseMethod(R, n);
+  }
   const say = { sub: 'a letter is already alone, so put its expression into the other equation.', add: 'a letter has opposite coefficients, so adding cancels it.', subtract: 'a letter has equal coefficients, so subtracting cancels it.', scale: 'no coefficients match yet, so multiply first to make them match.' };
   const c = choose(R, [
     { t: 'Substitution: a letter is already alone', ok: which === 'sub', mc: which === 'sub' ? undefined : MC.method, say: which === 'sub' ? `Yes: ${say.sub}` : `No letter is alone here: ${say[which]}` },
@@ -1463,19 +1471,20 @@ const viable: Gen = (R, n) => {
     const kind = pick(R, ['half', 'neg', 'ok'] as const);
     const A = pick(R, t.sa), B = pick(R, t.sb);
     const na = kind === 'half' ? int(R, 2, 6) + 0.5 : kind === 'neg' ? -int(R, 1, 3) : int(R, 2, 6);
-    const nb = kind === 'neg' ? int(R, 8, 20) : int(R, 2, 8);
+    // a half count on both sides keeps the totals whole (never "8.5 boxes in all")
+    const nb = kind === 'neg' ? int(R, 8, 20) : int(R, 2, 8) + (kind === 'half' ? 0.5 : 0);
     const N = na + nb, S = A * na + B * nb;
     if (!isInt(S) || S <= 0) continue;
     const opts: Opt[] = kind === 'half' ? [
       { t: `Not possible: ${nP(na)} ${t.a} is not a whole number`, ok: true, say: `Right. The equations are solved exactly, but you can't have half a ${t.ca}, so no plan fits both conditions.` },
-      { t: `Round: ${Math.ceil(na)} ${t.a} and ${nb} ${t.b}`, mc: MC.rounds, say: `Rounding breaks the totals: ${Math.ceil(na)} ${t.a} and ${nb} ${t.b} no longer fit both conditions.` },
-      { t: `${nP(na)} ${t.a} and ${nb} ${t.b} is the answer`, mc: MC.allReals, say: `The algebra is right, but the context needs whole ${t.a}. A count can't be ${nP(na)}.` },
+      { t: `Round: ${Math.ceil(na)} ${t.a} and ${Math.floor(nb)} ${t.b}`, mc: MC.rounds, say: `Rounding breaks the totals: ${Math.ceil(na)} ${t.a} and ${Math.floor(nb)} ${t.b} no longer fit both conditions.` },
+      { t: `${nP(na)} ${t.a} and ${nP(nb)} ${t.b} is the answer`, mc: MC.allReals, say: `The algebra is right, but the context needs whole ${t.a}. A count can't be ${nP(na)}.` },
     ] : kind === 'neg' ? [
       { t: 'Not possible: a count can’t be negative', ok: true, say: `Right: ${nP(na)} ${t.a} makes no sense. These conditions can't both be met.` },
-      { t: `${-na} ${t.a} and ${nb} ${t.b} (drop the minus)`, say: 'Dropping the minus changes the totals. The exact solution has a negative count, so it does not fit.' },
-      { t: `${nP(na)} ${t.a} and ${nb} ${t.b} is the answer`, mc: MC.allReals, say: `The algebra is right, but a number of ${t.a} can't be negative.` },
+      { t: `${-na} ${t.a} and ${nP(nb)} ${t.b} (drop the minus)`, say: 'Dropping the minus changes the totals. The exact solution has a negative count, so it does not fit.' },
+      { t: `${nP(na)} ${t.a} and ${nP(nb)} ${t.b} is the answer`, mc: MC.allReals, say: `The algebra is right, but a number of ${t.a} can't be negative.` },
     ] : [
-      { t: `It works: ${na} ${t.a} and ${nb} ${t.b}`, ok: true, say: 'Yes: whole, nonnegative counts that fit both conditions.' },
+      { t: `It works: ${na} ${t.a} and ${nP(nb)} ${t.b}`, ok: true, say: 'Yes: whole, nonnegative counts that fit both conditions.' },
       { t: 'Not possible: the numbers are too small', say: 'Whole, nonnegative counts are fine. Check: they fit both totals.' },
       { t: `Round up to be safe: ${na + 1} ${t.a}`, mc: MC.rounds, say: `${na} is exact and whole already; changing it breaks the totals.` },
     ];
@@ -1485,10 +1494,10 @@ const viable: Gen = (R, n) => {
     const la = t.a[0]!, lb = t.b[0]! === la ? 'q' : t.b[0]!;
     const e = [`${la} + ${lb} = ${N}`, `${A}${la} + ${B}${lb} = ${S}`];
     return {
-      id: `viable-${n}`, family: 'viable', prompt: `${N} ${t.group} hold ${S} ${t.unit}: ${t.a} hold ${A} each, ${t.b} hold ${B} each. Solving the system gives <b>${nP(na)} ${t.a} and ${nb} ${t.b}</b>. What does that mean?`,
+      id: `viable-${n}`, family: 'viable', prompt: `${N} ${t.group} hold ${S} ${t.unit}: ${t.a} hold ${A} each, ${t.b} hold ${B} each. Solving the system gives <b>${nP(na)} ${t.a} and ${nP(nb)} ${t.b}</b>. What does that mean?`,
       board: board2(e), input: 'choice', ...c,
-      solution: [`Check the math: ${nP(na)} + ${nb} = ${N} and ${A} × ${pn(na)} + ${B} × ${nb} = ${S}. The algebra is right.`, kind === 'ok' ? 'The counts are whole and not negative, so the plan works.' : `But counts of ${t.a} must be whole and not negative. This solution can't happen.`],
-      picture: kind !== 'neg' ? { sys: pic({ ...ctx, names: [t.a, t.b], eqs: e, lines: [{ L: L1, col: 'first', at: 'start' }, { L: L2, col: 'second', at: 'start' }], cross: [na, nb], crossLabel: `(${nP(na)}, ${nb})` }) } : undefined,
+      solution: [`Check the math: ${nP(na)} + ${nP(nb)} = ${N} and ${A} × ${pn(na)} + ${B} × ${nP(nb)} = ${S}. The algebra is right.`, kind === 'ok' ? 'The counts are whole and not negative, so the plan works.' : `But counts of ${t.a} must be whole and not negative. This solution can't happen.`],
+      picture: kind !== 'neg' ? { sys: pic({ ...ctx, names: [t.a, t.b], eqs: e, lines: [{ L: L1, col: 'first', at: 'start' }, { L: L2, col: 'second', at: 'start' }], cross: [na, nb], crossLabel: `(${nP(na)}, ${nP(nb)})` }) } : undefined,
     };
   }
 };
@@ -1508,9 +1517,9 @@ const planMeaning: Gen = (R, n) => {
       { t: 'They cost the same at month 0', mc: MC.zeroVsNone, say: `At month 0 they cost $${f1} and $${f2}: not the same. And the gap stays $${Math.abs(f2 - f1)} every month.` },
       { t: 'After a while, when the cheaper plan catches up', mc: MC.offscreen, say: 'Both go up by the same amount each month, so the cheaper one stays cheaper forever.' },
     ] : [
-      { t: `After ${m} months, both plans cost $${cst}`, ok: true, say: `Yes: (${m}, ${cst}) is on both lines: same month, same cost.` },
-      { t: `After ${cst} months, both plans cost $${m}`, mc: MC.reversed, say: `The first number is the month (x), the second the cost (y): ${m} months, $${cst}.` },
-      { t: `It means ${m} months`, mc: MC.stops, say: `Give the whole meaning: after ${m} months, the cost is the same, $${cst}.` },
+      { t: `After ${m} ${m === 1 ? 'month' : 'months'}, both plans cost $${cst}`, ok: true, say: `Yes: (${m}, ${cst}) is on both lines: same month, same cost.` },
+      { t: `After ${cst} months, both plans cost $${m}`, mc: MC.reversed, say: `The first number is the month (x), the second the cost (y): ${m} ${m === 1 ? 'month' : 'months'}, $${cst}.` },
+      { t: `It means ${m} ${m === 1 ? 'month' : 'months'}`, mc: MC.stops, say: `Give the whole meaning: after ${m} months, the cost is the same, $${cst}.` },
       { t: `Plan ${pA} is cheaper for the first ${cst} months`, say: `${cst} is a cost in dollars, not a number of months.` },
     ];
     const c = choose(R, opts);
@@ -1522,7 +1531,7 @@ const planMeaning: Gen = (R, n) => {
       prompt: same ? `Plan ${pA}: <b class="a">${h1}</b>. Plan ${pB}: <b class="b">${h2}</b> (cost <i>c</i> in dollars after <i>m</i> months). Solving gives a false statement. What does it mean?`
         : `Plan ${pA}: <b class="a">${h1}</b>. Plan ${pB}: <b class="b">${h2}</b> (cost <i>c</i> in dollars after <i>m</i> months). The solution is <b>(${m}, ${cst})</b>. What does it mean?`,
       board: `${t1} \\qquad ${t2}`, input: 'choice', ...c,
-      solution: same ? [`Both plans add $${r1} a month; they start $${Math.abs(f2 - f1)} apart.`, 'The lines are parallel: the plans never cost the same.'] : [`(${m}, ${cst}) is on both lines: month ${m}, cost $${cst}.`, `After ${m} months both plans cost $${cst}; before or after that, one is cheaper.`],
+      solution: same ? [`Both plans add $${r1} a month; they start $${Math.abs(f2 - f1)} apart.`, 'The lines are parallel: the plans never cost the same.'] : [`(${m}, ${cst}) is on both lines: month ${m}, cost $${cst}.`, `After ${m} ${m === 1 ? 'month' : 'months'} both plans cost $${cst}; before or after that, one is cheaper.`],
       picture: { sys: pic({ ...ctx, names: ['months m', 'cost c ($)'], eqs: [t1, t2], lines: [{ L: L1, col: 'first', at: 'start' }, { L: L2, col: 'second', at: 'start' }],
         cross: same ? null : [m, cst], crossLabel: same ? undefined : `(${m}, $${cst})` }) },
     };
@@ -1599,9 +1608,17 @@ const meetOrNot: Gen = (R, n) => {
   }
 };
 
-export const GENERATORS: Record<FamilyId, Gen> = {
+/** a choice item's worked lines end on the right choice (docs/lessons/QUALITY_LAYER.md: "So: <right choice>" when no
+ *  line marks it yet), for every choice family */
+const endsOnChoice = (g: Gen): Gen => (R, n, sg) => {
+  const it = g(R, n, sg);
+  if (it.input === 'choice' && it.answer.kind === 'choice' && it.choices) it.solution = endOnChoice(it.solution, it.choices[it.answer.i]!);
+  return it;
+};
+export const GENERATORS: Record<FamilyId, Gen> = Object.fromEntries(Object.entries({
   onLine, makeSolution, howMany, pickPair, checkWork, readCross, pointPick, parallelGraph, howManySys, sameLine, solOrNot, subChoice, setEqual,
   subSolve, reportPair, isolate, whichVar, addEq, elimSolve, afterAdd, subEq, scaleOne, pickMult, clearFrac, ratSolve, zeroEq, chooseMethod,
   methodsAgree, graphRead, sketchTrap, estimate, writeOne, fillCount, writeSystem, timesAsMany, verify, findSlip, exactVsEst, viable, planMeaning,
   twoPoints, meetOrNot,
-};
+} satisfies Record<FamilyId, Gen>).map(([k, g]) => [k, endsOnChoice(g)])) as Record<FamilyId, Gen>;
+

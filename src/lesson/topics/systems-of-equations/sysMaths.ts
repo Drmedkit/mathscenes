@@ -126,7 +126,7 @@ export const pairH = (p: V) => `(${nH(p[0])}, ${nH(p[1])})`;
 export const pairP = (p: V) => `(${nP(p[0])}, ${nP(p[1])})`;
 /** "2(−3) + 5" style substitution text of a·x + b·y for a point (HTML) */
 export function subH(L: Lin, p: V): string {
-  const val = (k: number, v: number) => `${near(Math.abs(k), 1) ? '' : nH(Math.abs(k))}${near(Math.abs(k), 1) ? (v < 0 ? `(${nH(v)})` : nH(v)) : `(${nH(v)})`}`;
+  const val = (k: number, v: number) => `${near(Math.abs(k), 1) ? '' : nH(Math.abs(k))}${near(Math.abs(k), 1) ? (v < 0 || (k < 0 && v === 0) ? `(${nH(v)})` : nH(v)) : `(${nH(v)})`}`;
   const parts: string[] = [];
   if (!near(L.a, 0)) parts.push(`${L.a < 0 ? '−' : ''}${val(L.a, p[0])}`);
   if (!near(L.b, 0)) parts.push(parts.length ? `${L.b < 0 ? '−' : '+'} ${val(L.b, p[1])}` : `${L.b < 0 ? '−' : ''}${val(L.b, p[1])}`);

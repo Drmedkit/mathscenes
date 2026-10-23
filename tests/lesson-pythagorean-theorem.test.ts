@@ -243,3 +243,28 @@ describe('pythagorean-theorem: voice', () => {
     }
   });
 });
+
+describe('pythagorean-theorem: quality layer regressions', () => {
+  it('every choice family ends its steps on the right choice (whereRight named a wrong corner before)', async () => {
+    const { explain } = await import('../src/lesson/topics/pythagorean-theorem/explain');
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 30; s++) {
+      const item = GEN[f]!(rng(s * 19 + 5), s, p.id);
+      if (item.input === 'choice') expect(explain(item)?.result, `${p.id}/${f}: ${item.prompt}`).toEqual(item.answer);
+    }
+  });
+});
+
+describe('pythagorean-theorem: sweep regressions (oracle findings)', () => {
+  it('gentle wheelchair ramps, real ladders standing steeper than 45°, a pronoun that fits the name: the oracle agrees', async () => {
+    // @ts-expect-error: the oracle is an untyped .mjs module
+    const O = (await import('./oracle/pythagorean-theorem.mjs')).default;
+    // @ts-expect-error: an untyped .mjs module
+    const { viewOf } = await import('../tools/quality/view.mjs');
+    const fams: [string, string][] = [['story', 'model-2d-context'], ['whichTri', 'model-2d-context'], ['findError', 'critique-hypotenuse-assignment'], ['deckBrace', 'insufficient-information']];
+    for (const [f, sg] of fams) for (let s = 1; s <= 300; s++) {
+      const it = GEN[f]!(rng(s * 23 + f.length), s, sg), q = viewOf(it, sg);
+      expect(O.sane ? O.sane(q) : '', `${f}: ${it.prompt}`).toBe('');
+      expect(it.prompt).not.toMatch(/Mr\. .*\bshe\b|Ms\. .*\bhe\b/);
+    }
+  });
+});

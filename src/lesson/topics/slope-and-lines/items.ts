@@ -5,6 +5,7 @@
 // Pictures: most items carry a SlopeGrid (graph) or a TableCard (table); `hide` lists the steps that appear only in
 // the worked solution after a miss (never the answer before the kid answers). Pure: no DOM.
 import { type Item, type Response, type Verdict, fr, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import { frame } from '../../../blocks/block';
 import type { Theme } from '../../../core/theme';
 import * as S from './slopeMaths';
@@ -104,7 +105,7 @@ function choice(R: () => number, base: Base, opts: Opt[], keepOrder = false): Sl
   const o = keepOrder ? opts.slice() : shuffle(R, opts.slice());
   const i = o.findIndex(x => x.ok);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i }, solution: endOnChoice(base.solution, o[i]!.t),
     check: (r: Response): Verdict => {
       if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const c = o[r.i]!;
@@ -350,7 +351,7 @@ const slopeTri: G = (R, n, sg) => fitted(() => {
     prompt: scaled ? `Read the axes carefully: each square across is ${a(F(xs))} and each square up is ${b(F(ys))}. What is the slope of the line${c ? `, in ${c.per}` : ''}?`
       : `Count the slope triangle on the line: how far ${a('across')}, how far ${b('up')}. What is the slope? A fraction is fine.`,
     board: `\\text{from } ${S.ptTex(ax, ay)}:\\quad m = \\frac{\\text{rise}}{\\text{run}} = \\,?`, unit: c ? c.per : '',
-    solution: scaled ? [`The run is ${cr} squares of ${F(xs)}: ${a(F(run))}. The rise is ${cu} squares of ${F(ys)}: ${b(F(rise))}.`, `Slope = ${F(rise)} ÷ ${F(run)} = ${sOk(F(qNum(m)))}${c ? ' ' + c.per : ''}. Counting squares (${cu} ÷ ${cr}) ignores the scales.`]
+    solution: scaled ? [`The run is ${cr} ${cr === 1 ? 'square' : 'squares'} of ${F(xs)}: ${a(F(run))}. The rise is ${cu} ${cu === 1 ? 'square' : 'squares'} of ${F(ys)}: ${b(F(rise))}.`, `Slope = ${F(rise)} ÷ ${F(run)} = ${sOk(F(qNum(m)))}${c ? ' ' + c.per : ''}. Counting squares (${cu} ÷ ${cr}) ignores the scales.`]
       : [`Run: ${a(String(run))} across. Rise: ${b(String(rise))} up.`, `Slope = rise ÷ run = ${rise} ÷ ${run} = ${sOk(Qh(m))}.`],
     picture: { graph: g, hide: ['run:t', 'rise:t'], solveTex: [`m = \\frac{${S.tnum(rise)}}{${S.tnum(run)}} = ${scaled ? S.tnum(qNum(m)) : Qt(m, true)}`] },
   }, ans, scaled ? 'num' : 'frac', `Yes: ${scaled ? F(qNum(m)) : Qh(m)}${c ? ' ' + c.per : ''}.`, [
@@ -420,7 +421,7 @@ const squaresToScale: G = (R, n) => fitted(() => {
   g.lines = [{ id: 'L', m, b: ys - m * xs, ends: 'full' }];
   g.tris = [tri('t', A, B, `${cr} square${cr === 1 ? '' : 's'}`, `${cu} square${cu === 1 ? '' : 's'}`)];
   return numAns({
-    id: `squaresToScale-${n}`, family: 'squaresToScale', prompt: `Jada counts the slope triangle: ${a(`${cr} squares across`)} and ${b(`${cu} squares up`)}. One square across is ${F(xs)}; one square up is ${F(ys)}. What is the slope?`,
+    id: `squaresToScale-${n}`, family: 'squaresToScale', prompt: `Jada counts the slope triangle: ${a(`${cr} ${cr === 1 ? 'square' : 'squares'} across`)} and ${b(`${cu} ${cu === 1 ? 'square' : 'squares'} up`)}. One square across is ${F(xs)}; one square up is ${F(ys)}. What is the slope?`,
     board: `m = \\frac{${cu} \\times ${S.tnum(ys)}}{${cr} \\times ${xs}} = \\,?`,
     solution: [`Run: ${cr} × ${xs} = ${a(F(cr * xs))}. Rise: ${cu} × ${F(ys)} = ${b(F(cu * ys))}.`, `Slope = ${F(cu * ys)} ÷ ${F(cr * xs)} = ${sOk(F(m))}.`],
     picture: { graph: g, hide: [] },
@@ -941,7 +942,7 @@ const lineFromTwo: G = (R, n) => fitted(() => {
   return pairAns({
     id: `lineFromTwo-${n}`, family: 'lineFromTwo', prompt: `Write the equation of the line through ${S.ptHtml(...P)} and ${S.ptHtml(...Qp)}: first the slope, then b.`,
     board: `${S.ptTex(...P)},\\ ${S.ptTex(...Qp)}`, pairLead: '<i>y</i> =', pairOp: '<i>x</i> +',
-    solution: [`Slope: ${F(Qp[1] - P[1])} ÷ ${F(Qp[0] - P[0])} = ${a(F(m))}.`, `b = ${F(P[1])} − ${F(m)} × ${P[0] < 0 ? `(${F(P[0])})` : F(P[0])} = ${b(F(bb))}.`, `${sOk(`${Yv} = ${F(m)}${X} ${bb < 0 ? '−' : '+'} ${F(Math.abs(bb))}`)}. Check it with the other point.`],
+    solution: [`Slope: ${F(Qp[1] - P[1])} ÷ ${F(Qp[0] - P[0])} = ${a(F(m))}.`, `b = ${F(P[1])} − ${m < 0 ? `(${F(m)})` : F(m)} × ${P[0] < 0 ? `(${F(P[0])})` : F(P[0])} = ${b(F(bb))}.`, `${sOk(`${Yv} = ${F(m)}${X} ${bb < 0 ? '−' : '+'} ${F(Math.abs(bb))}`)}. Check it with the other point.`],
     picture: { graph: g, hide: ['line:L', 'pt:B', 'ptl:B', ...triSteps('t')] },
   }, [m, bb], `Yes: ${Yv} = ${F(m)}${X} ${bb < 0 ? '−' : '+'} ${F(Math.abs(bb))}. Both points check.`, [
     [[m, P[1]], MC.firstOut, `${F(P[1])} is the output at ${X} = ${F(P[0])}, not at 0. b = ${Yv} − m${X}.`],
@@ -994,7 +995,8 @@ const missingX: G = (R, n) => fitted(() => {
 const meaningMB: G = (R, n) => fitted(() => {
   const v = pick(R, ['plan', 'plan', 'plant'] as const);
   if (v === 'plant') {
-    const m = int(R, 2, 4), bb = int(R, 3, 8), w0 = int(R, 2, 4);
+    // the start differs from the slope, so "what does the b tell you" asks about one number only
+    const m = int(R, 2, 4), b0 = int(R, 3, 8), bb = b0 === m ? b0 + 4 : b0, w0 = int(R, 2, 4);
     const g = grid([12], [bb + 12 * m], { xName: 'week', yName: 'height (cm)' });
     g.lines = [{ id: 'L', m, b: bb, ends: 'segment', from: w0, to: 10 }];
     return choice(R, {
@@ -1149,7 +1151,9 @@ const varyingRate: G = (R, n) => fitted(() => {
   }, [
     { t: linear ? `Linear: the rate is ${rTxt.split(', ')[0]} every time` : `Not linear: the rates are ${rTxt}`, ok: true, say: linear ? 'Yes: a constant rate means linear.' : 'Yes: a changing rate means not linear.' },
     { t: linear ? `Not linear: the outputs grow by different amounts` : 'Linear: the outputs keep going up', mc: linear ? MC.step : MC.illusion, say: linear ? 'The outputs grow by different amounts because the x-steps differ. Divide: the rate is the same.' : `Going up is not enough: the rates are ${rTxt}.` },
-    { t: through0 && !linear ? 'Proportional: it goes through (0, 0)' : 'Proportional: y/x is the same in every row', mc: through0 && !linear ? MC.origin : (kind === 'prop' ? undefined : MC.scalesNP), ok: false, say: through0 && !linear ? 'Through (0, 0) is not enough: the rate must be constant too.' : kind === 'prop' ? 'It is proportional too, but the question is whether it is linear: it is, the rate is constant.' : `Check y/x: it is not the same in every row.` },
+    // for a proportional table "y/x is the same in every row" is TRUE: then the distractor says it is not linear
+    kind === 'prop' ? { t: 'Not linear: y/x is the same in every row, so it is proportional instead', mc: MC.dichotomy, say: 'Proportional relationships are linear too: the rate is the same between every two rows.' } :
+    { t: through0 && !linear ? 'Proportional: it goes through (0, 0)' : 'Proportional: y/x is the same in every row', mc: through0 && !linear ? MC.origin : MC.scalesNP, ok: false, say: through0 && !linear ? 'Through (0, 0) is not enough: the rate must be constant too.' : `Check y/x: it is not the same in every row.` },
     { t: linear ? 'Not linear: it is not proportional' : 'Linear: it is not proportional', mc: MC.dichotomy, say: 'Not proportional does not decide it. Linear means a constant rate of change; check the rates.' },
   ].filter((o, i, all) => all.findIndex(x => x.t === o.t) === i));
 });
