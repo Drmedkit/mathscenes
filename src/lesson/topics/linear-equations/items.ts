@@ -7,6 +7,7 @@ import { qAdd, qEq, qMul, rat } from '../../../core/math';
 import { type Eq, type Q, type Side, G, N, X, decQ, eqHtml, eqTex, isGrp, isZ, nH, neg, num, q, qSub, sideHtml, sideLin, sideTex, simp, solve, subHtml, valueAt } from './lin';
 import { MC, XH, checkLine, classifySolve, clearBy, eqFor, eqOf, expandSide, formSide, scaleSide, workLines, type Style } from './solving';
 import { sidesFit } from './sidesMaths';
+import { ans, endOnChoice } from '../../runtime/explain';
 
 export { MC };
 export type FamilyId = 'checkBoth' | 'evalSides' | 'sameSet' | 'keepStep' | 'noResolve' | 'varStep' | 'rewrite' | 'zeroStep' | 'howMany'
@@ -72,7 +73,7 @@ function choiceItem(R: () => number, base: Omit<LEItem, 'input' | 'choices' | 'a
   const o = shuffle(R, uniq);
   const i = o.findIndex(x => x.ok);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i }, solution: endOnChoice(base.solution, o[i]!.t),
     check: (r: Response) => {
       if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const c = o[r.i]!;
@@ -138,7 +139,7 @@ const evalSides: Gen = (R, n) => {
     id: `evalSides-${n}`, family: 'evalSides', board: eqTex(e),
     prompt: `Put ${XH} = ${H(k)} into ${E(e)}. What is each side worth?`,
     input: 'pair', pairLead: 'left', pairOp: 'right',
-    solution: [`Left: ${subHtml(e.L, k)} = ${H(t.L)}.`, `Right: ${subHtml(e.R, k)} = ${H(t.R)}.`, t.sol ? `Equal: ${XH} = ${H(k)} is a solution.` : `Not equal: ${XH} = ${H(k)} is not a solution.`],
+    solution: [`Left: ${subHtml(e.L, k)} = ${ans(H(t.L))}.`, `Right: ${subHtml(e.R, k)} = ${ans(H(t.R))}.`, t.sol ? `Equal: ${XH} = ${H(k)} is a solution.` : `Not equal: ${XH} = ${H(k)} is not a solution.`],
     answer: { kind: 'pair', x: num(t.L), y: num(t.R) },
     picture: (() => { const p = balanceOf(e, true); return p && k.q === 1 && k.p >= 0 && k.p <= 8 ? { balance: p, mode: 'try' as const, v: k.p } : undefined; })(),
     check(r: Response): Verdict {
@@ -200,6 +201,9 @@ const keepStep: Gen = (R, n) => {
   const A = a.q === 1 ? a.p : 0;
   const wrongCE = (w: Eq) => { const l = valueAt(w.L, x), r = valueAt(w.R, x); return `Test it with the solution ${XH} = ${H(x)}: in ${eqHtml(w)} the sides are ${H(l)} and ${H(r)}. A solution was lost, so this step does not keep the solutions.`; };
   const opts: Opt[] = [];
+  // a wrong line that the solution still satisfies has exactly the same solutions too (2x + 10 = 10 and x + 10 = 10
+  // when x = 0): it is not offered
+  const wrong = (o: Opt & { w: Eq }) => { if (!qEq(valueAt(o.w.L, x), valueAt(o.w.R, x))) opts.push(o); };
   const op = pick(R, A && b % A === 0 && c % A === 0 ? ['sub', 'div'] : a.q > 1 ? ['sub', 'mul'] : ['sub']);
   let right: Eq;
   if (op === 'div') right = eqOf([X(1), N(b / A)], [N(c / A)]);
@@ -208,11 +212,11 @@ const keepStep: Gen = (R, n) => {
   const why = op === 'div' ? `both whole sides were divided by ${A}` : op === 'mul' ? `both whole sides were multiplied by ${a.q}` : `${H(b)} came off both sides`;
   opts.push({ t: eqHtml(right), ok: true, say: `Yes: ${why}. Equal values stay equal, and the step can be undone, so no solution is gained or lost.` });
   const w1 = op === 'div' ? eqOf([X(1), N(b)], [N(c / A)]) : op === 'mul' ? eqOf([X(1), N(b)], [N(c * a.q)]) : eqOf([X(a)], [N(c + b)]);
-  opts.push({ t: eqHtml(w1), mc: op === 'sub' ? MC.noSign : MC.someTerms, say: wrongCE(w1) });
+  wrong({ w: w1, t: eqHtml(w1), mc: op === 'sub' ? MC.noSign : MC.someTerms, say: wrongCE(w1) });
   const w2 = eqOf([X(a)], [N(c)]);
-  opts.push({ t: eqHtml(w2), mc: MC.oneSideOnly, say: wrongCE(w2) });
+  wrong({ w: w2, t: eqHtml(w2), mc: MC.oneSideOnly, say: wrongCE(w2) });
   const w3 = op === 'sub' && A ? eqOf([X(1), N(b)], [N(c)]) : eqOf([X(a), N(b)], [N(c - b)]);
-  opts.push({ t: eqHtml(w3), mc: MC.oneSideOnly, say: wrongCE(w3) });
+  wrong({ w: w3, t: eqHtml(w3), mc: MC.oneSideOnly, say: wrongCE(w3) });
   return choiceItem(R, {
     id: `keepStep-${n}`, family: 'keepStep', board: eqTex(e),
     prompt: `Which next line has exactly the same solutions as ${E(e)}?`,
@@ -221,7 +225,8 @@ const keepStep: Gen = (R, n) => {
 };
 const noResolve: Gen = (R, n) => {
   const { e, x } = simpleEq(R);
-  const op = pick(R, ['add', 'add', 'mul', 'subx'] as const);
+  // x = 0 times k is still 0: "x = 0" would then be a second right choice next to "x = 0, the same"
+  const op = isZ(x) ? pick(R, ['add', 'add', 'subx'] as const) : pick(R, ['add', 'add', 'mul', 'subx'] as const);
   const k = op === 'mul' ? int(R, 2, 5) * sg1(R, 0.3) : int(R, 2, 12);
   const e2: Eq = op === 'add' ? eqOf([...e.L, N(k)], [...e.R, N(k)]) : op === 'mul' ? eqOf(scaleSide(e.L, q(k)), scaleSide(e.R, q(k))) : eqOf([...e.L, X(-k)], [...e.R, X(-k)]);
   const what = op === 'add' ? `adds ${k} to both sides` : op === 'mul' ? `multiplies every term on both sides by ${H(k)}` : `subtracts ${k}${XH} from both sides`;
@@ -240,7 +245,7 @@ const noResolve: Gen = (R, n) => {
 const varStep: Gen = (R, n) => {
   const variant = pick(R, ['result', 'result', 'why', 'add'] as const);
   for (;;) {
-    const a = int(R, 2, 5), c = int(R, 1, a - 1), x = int(R, 1, 8), b = int(R, 0, 12), d = (a - c) * x + b;
+    const a = int(R, 2, 5), c = int(R, 1, a - 1), x = int(R, 1, 8), b = int(R, 1, 12), d = (a - c) * x + b;   // b = 0 would show "3x + 0"
     if (d > 30) continue;
     if (variant === 'add') {
       const A = -int(R, 1, 5), C = int(R, 1, 6), bb = int(R, -10, 12), xx = int(R, -6, 6), dd = bb + (A - C) * xx;
@@ -286,7 +291,9 @@ const varStep: Gen = (R, n) => {
 };
 const rewrite: Gen = (R, n) => {
   const v = pick(R, ['dist', 'collect', 'copy', 'partial'] as const);
-  const a = int(R, 2, 6), b = int(R, 1, 9) * sg1(R, 0.3), c = int(R, 1, 8), d = int(R, -12, 12) || 5;
+  // c ≠ a: with the same x-coefficient on both sides (5(x + 2) = 5x − 8) both equations have NO solution, so a
+  // "changed value" step would still keep the (empty) solution set and the keyed "No" would be false
+  const a = int(R, 2, 6), b = int(R, 1, 9) * sg1(R, 0.3), c0 = int(R, 1, 8), c = c0 === a ? a + 1 : c0, d = int(R, -12, 12) || 5;
   const name = pick(R, ['Ana', 'Ben', 'Kai', 'Lena', 'Omar', 'Rosa']);
   const Rs: Side = [X(c), N(d)];
   if (v === 'collect') {
@@ -697,7 +704,7 @@ const construct: Gen = (R, n) => {
       id: `construct-${n}`, family: 'construct', board: bt,
       prompt: `Which number in the box gives ${B(shown)} ${target === 'all' ? 'infinitely many solutions' : 'no solution'}?`,
       input: 'num',
-      solution: [`The left side simplifies to ${a + c}${XH} ${k < 0 ? '−' : '+'} ${Math.abs(k)}.`, target === 'all' ? `The same expression on both sides: the box is ${H(k)}.` : `Same x-term, so any number except ${H(k)} gives no solution (${H(k)} gives every number).`],
+      solution: [`The left side simplifies to ${a + c}${XH} ${k < 0 ? '−' : '+'} ${Math.abs(k)}.`, target === 'all' ? `The same expression on both sides: the box is ${ans(H(k))}.` : `Same x-term, so any number except ${H(k)} gives no solution (${H(k)} gives every number), for example ${ans(H(k + 1))}.`],
       answer: { kind: 'num', v: target === 'all' ? k : k + 1 },
       check(r: Response): Verdict {
         if (r.kind !== 'num' || !Number.isFinite(r.v)) return { ok: false, say: 'Type a number.' };
@@ -714,7 +721,8 @@ const construct: Gen = (R, n) => {
       id: `construct-${n}`, family: 'construct', board: `${sideTex([G(a, X(1), N(b))])} = \\square x + \\square`,
       prompt: `Fill both boxes so the equation has ${B(want)}.`,
       input: 'pair', pairLead: lead, pairOp: `${XH} +`,
-      solution: [`${sideHtml([G(a, X(1), N(b))])} = ${a}${XH} ${k < 0 ? '−' : '+'} ${Math.abs(k)}.`, 'Same coefficient and same number: every number. Same coefficient, different number: none. Different coefficient: one.'],
+      solution: [`${sideHtml([G(a, X(1), N(b))])} = ${a}${XH} ${k < 0 ? '−' : '+'} ${Math.abs(k)}.`, 'Same coefficient and same number: every number. Same coefficient, different number: none. Different coefficient: one.',
+        target === 'all' ? `So the same expression: ${ans(a)}${XH} and ${ans(H(k))}.` : target === 'none' ? `So the same x-term with another number, for example ${ans(a)}${XH} and ${ans(H(k + 1))}.` : `So another x-coefficient, for example ${ans(a + 1)}${XH} and ${ans(H(k))}.`],
       answer: { kind: 'pair', x: target === 'one' ? a + 1 : a, y: target === 'none' ? k + 1 : k },
       check(r: Response): Verdict {
         if (r.kind !== 'pair' || !Number.isFinite(r.x) || !Number.isFinite(r.y)) return { ok: false, say: 'Type a number in both boxes.' };

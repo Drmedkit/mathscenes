@@ -161,3 +161,44 @@ describe('voice', () => {
     }
   });
 });
+
+describe('quality layer (worked steps, check-in figure)', () => {
+  it('the steps of an exact a + bπ answer end on both boxes (a π part alone has number part 0)', async () => {
+    const { GENS } = await import('../src/lesson/topics/composite-figures/items');
+    const { explain } = await import('../src/lesson/topics/composite-figures/explain');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (let s = 1; s <= 150; s++) for (const [f, sg] of [['hole', 's3-hole-area-and-boundary'], ['arcLen', 's2-arc-length'], ['cutArea', 's2-cutout-area'], ['notch', 's2-notch-perimeter']] as const) {
+      const it0 = GENS[f](rng(s * 37 + 11), s, sg), ex = explain(it0)!;
+      expect(ex.result, it0.prompt).toEqual(it0.answer);
+    }
+  });
+  it('the check-in figure is a small self-contained svg (no NaN, no external refs)', async () => {
+    const { GENS } = await import('../src/lesson/topics/composite-figures/items');
+    const { PLACEMENT } = await import('../src/lesson/topics/composite-figures/placement');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (let s = 1; s <= 60; s++) {
+      const svg = PLACEMENT.figure!(GENS.areaAdd(rng(s * 3 + 1), s, 's2-composite-area-add'))!;
+      expect(svg).toMatch(/^<svg[\s>].*viewBox=/);
+      expect(svg.length).toBeLessThan(6144);
+      expect(svg).not.toMatch(/NaN|undefined|href=|<script/);
+    }
+  });
+});
+
+describe('quality layer (phase 2 regressions)', () => {
+  it('round: the value before rounding is never an exact .5 tie (40 + 2.5π with π ≈ 3.14 = 47.85)', async () => {
+    const { GENS } = await import('../src/lesson/topics/composite-figures/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    let n314 = 0;
+    for (let s = 1; s <= 2000; s++) {
+      const it0 = GENS.round(rng(s * 131 + 7), s, 's2-exact-and-approx');
+      const p = it0.prompt.replace(/<[^>]+>/g, '');
+      const m = p.match(/is (\d+) ([+−]) (\d+(?:\.\d+)?)π .*π ≈ 3\.14 and round to the nearest (tenth|whole number)/);
+      if (!m) continue;
+      n314++;
+      const v = (+m[1]! + (m[2] === '−' ? -1 : 1) * +m[3]! * 3.14) * (m[4] === 'tenth' ? 10 : 1);
+      expect(Math.abs(Math.abs(v - Math.trunc(v)) - 0.5) < 1e-6, p).toBe(false);
+    }
+    expect(n314).toBeGreaterThan(50);
+  });
+});

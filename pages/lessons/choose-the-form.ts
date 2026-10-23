@@ -23,6 +23,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import { FormLine, type FormLineBlock, type FormLineParams } from '../../src/lesson/topics/choose-the-form/FormLine';
 import { FAMILY_NAMES, GENERATORS, MC, type FormItem } from '../../src/lesson/topics/choose-the-form/items';
 import { PLAN } from '../../src/lesson/topics/choose-the-form/plan';
+import { explain } from '../../src/lesson/topics/choose-the-form/explain';
 import { LINES as SCRIPT } from '../../src/lesson/topics/choose-the-form/script';
 import LINES from './choose-the-form/voice/lines.json';
 
@@ -378,7 +379,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as FormItem),
   });

@@ -9,6 +9,7 @@ import {
   sH, sTex, sciH, sciOf, sciTex, sciVal, sigDigits, sub, toNum,
 } from './sci';
 import { type HopParams, type HopStep, hopForSci } from './PointHop';
+import { endOnChoice } from '../../runtime/explain';
 import type { Icon, LadderParams, LadderStep } from './PowerLadder';
 export { rng };
 export type { Response, Verdict };
@@ -125,6 +126,7 @@ function checkSci(target: Dec, r: Response, why: (x: Dec, y: number, v: Dec) => 
   }
   return why(p.x, p.y, v) ?? { ok: false, say: `Not this time. The answer is ${S(sciH(target))}.` };
 }
+const placesW = (k: number) => `${k} place${k === 1 ? '' : 's'}`;
 /** the exponent a kid gets by moving the point the right number of places in the WRONG direction while renormalising */
 const sameDirExp = (given: number, right: number) => 2 * given - right;
 interface Opt { t: string; ok: boolean; mc?: string; say: string }
@@ -132,7 +134,7 @@ function choice(R: () => number, base: Omit<SnItem, 'input' | 'choices' | 'answe
   const o = shuffle(R, opts.slice());
   const right = o.findIndex(x => x.ok);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right }, solution: endOnChoice(base.solution, o[right]!.t),
     check: r => {
       if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const x = o[r.i]!;
@@ -239,7 +241,7 @@ const toDecimal: Gen = (R, n) => {
       if (!x) return { ok: false, say: 'Type the number, without commas (like 45000 or 0.0032).' };
       if (eq(x, v)) return { ok: true, say: `Yes: ${sH(a, e)} = ${S(nH(v))}.` };
       if (e !== 0 && eq(x, sciVal(a, -e))) return { ok: false, mc: MC.shiftDir, say: `That moves the point the wrong way. A ${e > 0 ? 'positive' : 'negative'} exponent makes the number ${e > 0 ? 'bigger' : 'smaller'}: ${nH(v)}.` };
-      if (e > 0 && isDecimal(a) && (eq(x, a) || eq(x, D(plain(a).replace('.', '') + '0'.repeat(e))))) return { ok: false, mc: MC.appendsZero, say: `Writing zeros after the digits does not multiply by 10 when there is a decimal point: move the point ${e} places right instead. ${sH(a, e)} = ${nH(v)}.` };
+      if (e > 0 && isDecimal(a) && (eq(x, a) || eq(x, D(plain(a).replace('.', '') + '0'.repeat(e))))) return { ok: false, mc: MC.appendsZero, say: `Writing zeros after the digits does not multiply by 10 when there is a decimal point: move the point ${placesW(e)} right instead. ${sH(a, e)} = ${nH(v)}.` };
       if (e !== 0 && eq(x, a)) return { ok: false, mc: MC.notSame, say: `That is only the number in front. The ${pH(e)} is part of the number too: ${sH(a, e)} = ${nH(v)}.` };
       if (x.c < 0n && (eq(neg(x), v) || eq(neg(x), sciVal(a, -e)))) return { ok: false, mc: MC.negMakesNeg, say: `A negative exponent makes a number small, never negative: ${nH(v)}.` };
       if (eq(x, mul(v, dec(10))) || eq(x, mul(v, D('0.1')))) return { ok: false, say: `One place off. Count the hops: ${Math.abs(e)}. ${sH(a, e)} = ${nH(v)}.` };
@@ -263,8 +265,8 @@ const toSci: Gen = (R, n) => {
     check: r => checkSci(v, r, (x, y) => {
       if (!eq(x, a)) return null;
       if (e !== 0 && y === -e) return { ok: false, mc: MC.shiftDir, say: `The exponent has the wrong sign. ${e < 0 ? `${nH(v)} is less than 1, so the exponent is negative` : `${nH(v)} is more than 10, so the exponent is positive`}: ${sH(a, e)}.` };
-      if (e < 0 && y === e + 1) return { ok: false, mc: MC.countZeros, say: `Counting the zeros gives ${-e - 1}, but the point moves ${-e} places: to just past the first non-zero digit. ${sH(a, e)}.` };
-      if (e > 0 && isInt(v) && y === e + 1) return { ok: false, mc: MC.countDigits, say: `${nH(v)} has ${e + 1} digits, but the point moves only ${e} places (one digit stays in front). ${sH(a, e)}.` };
+      if (e < 0 && y === e + 1) return { ok: false, mc: MC.countZeros, say: `Counting the zeros gives ${-e - 1}, but the point moves ${placesW(-e)}: to just past the first non-zero digit. ${sH(a, e)}.` };
+      if (e > 0 && isInt(v) && y === e + 1) return { ok: false, mc: MC.countDigits, say: `${nH(v)} has ${e + 1} digits, but the point moves only ${placesW(e)} (one digit stays in front). ${sH(a, e)}.` };
       if (Math.abs(y - e) === 1) return { ok: false, say: `One place off: count the hops of the point again. ${sH(a, e)}.` };
       return null;
     }, `${nH(v)} = ${S(sH(a, e))}.`),
@@ -399,7 +401,7 @@ const distribute: Gen = (R, n) => {
     solveTex: [`(${plain(a1)} + ${plain(a2)}) \\times 10^{${e}} = ${sTex(c, e)}`],
   }, [
     { t: `(${plain(a1)} + ${plain(a2)}) × ${pH(e)}`, ok: true, say: `Yes: the shared ${pH(e)} is taken out once (distributive property), like ${plain(a1)} apples + ${plain(a2)} apples.` },
-    { t: `(${plain(a1)} + ${plain(a2)}) × ${pH(`${e} + ${e}`)}`, ok: false, mc: MC.addAddsExp, say: `Adding exponents is the rule for MULTIPLYING powers. In a sum the ${pH(e)} is a shared factor: (${plain(a1)} + ${plain(a2)}) × ${pH(e)}.` },
+    { t: `(${plain(a1)} + ${plain(a2)}) × ${pH(2 * e)}`, ok: false, mc: MC.addAddsExp, say: `Adding exponents is the rule for MULTIPLYING powers. In a sum the ${pH(e)} is a shared factor: (${plain(a1)} + ${plain(a2)}) × ${pH(e)}.` },
     { t: `(${plain(a1)} × ${plain(a2)}) × ${pH(e)}`, ok: false, say: `The terms are added, so the numbers in front are added: (${plain(a1)} + ${plain(a2)}) × ${pH(e)}.` },
   ]);
 };
@@ -474,7 +476,7 @@ const sameNumber: Gen = (R, n) => {
   const v = sciVal(a, e);
   if (R() < 0.5) {
     const opts: Opt[] = [
-      { t: 'Yes: it is one number, written two ways.', ok: true, say: `Yes: ${sH(a, e)} = ${nH(v)}. Move the point ${Math.abs(e)} places to check.` },
+      { t: 'Yes: it is one number, written two ways.', ok: true, say: `Yes: ${sH(a, e)} = ${nH(v)}. Move the point ${placesW(Math.abs(e))} to check.` },
       { t: 'No: a decimal and scientific notation can never be equal.', ok: false, mc: MC.formsIncompat, say: `Two ways of writing can name the same number, like ½ and 0.5. ${sH(a, e)} = ${nH(v)}.` },
       { t: `No: ${sH(a, e)} is just ${plain(a)}.`, ok: false, mc: MC.notSame, say: `The ${pH(e)} is part of the number: ${sH(a, e)} = ${nH(v)}, not ${plain(a)}.` },
     ];
@@ -534,7 +536,7 @@ const eDecimal: Gen = (R, n) => {
   return {
     id: `eDecimal-${n}`, family: 'eDecimal', prompt: `A ${dev} shows ${B(txt)}. Type the number as an ordinary decimal (no commas).`, board: `\\texttt{${txt}}`, input: 'num',
     pic: { kind: 'screen', text: txt, device: dev },
-    solution: [`${txt} means ${sH(a, e)}.`, `Move the point ${Math.abs(e)} places ${e > 0 ? 'right' : 'left'}: ${S(nH(v))}.`],
+    solution: [`${txt} means ${sH(a, e)}.`, `Move the point ${Math.abs(e)} place${Math.abs(e) === 1 ? '' : 's'} ${e > 0 ? 'right' : 'left'}: ${S(nH(v))}.`],
     solveTex: [`\\texttt{${txt}} = ${sTex(a, e)}`, `= ${nTex(v)}`],
     answer: numAns(v),
     check: r => {
@@ -584,6 +586,9 @@ const estimate: Gen = (R, n) => {
     ctx = `A measurement is ${B(nH(v))}.`;
   }
   const r1 = roundSig(v, 1), t = sciOf(r1), raw = sciOf(v);
+  // an exact tie (7.5 × 10ⁿ: 75,000,000 or 0.000075) could round to 8 or stay 7: not asked
+  const a10 = toNum(raw.a) * 10;
+  if (Math.abs(a10 - Math.round(a10)) < 1e-9 && Math.round(a10) % 10 === 5) return estimate(R, n);
   const digits = isInt(v) ? plain(v).length : 0;
   const lead0 = toNum(v) < 1 ? -raw.n - 1 : -1;
   const vs = v.c.toString();
@@ -804,7 +809,8 @@ const UNITS: readonly UnitCtx[] = [
   { what: 'the size of a flu virus', opts: ['120 nanometers', '0.00000012 meters', '0.00012 millimeters'], sizeWord: 'size' },
   { what: 'the width of a human hair', opts: ['80 micrometers', '0.00008 meters', '0.00000008 kilometers'], sizeWord: 'width' },
   { what: 'the length of a marathon', opts: ['42.195 kilometers', '42,195,000 millimeters', '4,219,500 centimeters'], sizeWord: 'length' },
-  { what: 'the mass of a ship', opts: ['72,000 metric tons', '72,000,000,000 grams', '72,000,000,000,000 milligrams'], sizeWord: 'mass' },
+  // the first option must be the one with a number from 1 to 1,000 (a ship's 72,000 metric tons fit none)
+  { what: 'the mass of a blue whale', opts: ['150 metric tons', '150,000 kilograms', '150,000,000 grams'], sizeWord: 'mass' },
   { what: 'how much a fingernail grows in a month', opts: ['3.5 millimeters', '0.0000035 kilometers', '0.0035 meters'], sizeWord: 'growth' },
 ];
 const pickUnit: Gen = (R, n) => {

@@ -4,6 +4,7 @@
 // Pure: no DOM, no canvas. Pictures are plain params for MapSheet.ts (the page draws them through tryBlock).
 import { type Item, type Response, type Verdict, fracValue, int, pick, shuffle } from '../../runtime/item';
 import type { CardSpec, BarParams, MapLinesParams, RangeParams, RulerParams, StripsParams } from './MapSheet';
+import { ans as mark, endOnChoice } from '../../runtime/explain';
 import type { Mark } from '../scale-calculations/ScaleLines';
 import { IN_PER_MI, conv, drawnInches, fmt, fmtT, ground, mapLen, possible, r9, range, roundTo } from './mapMaths';
 
@@ -115,7 +116,7 @@ const fracAns = (x: number): Response => { const e = Math.round(x * 4), w = Math
 const rfH = (n: number) => `1&#8202;:&#8202;${fmt(n)}`;
 const rfT = (n: number) => `1 : ${fmtT(n)}`;
 const uT = (u: string) => `\\text{ ${u}}`;
-const PLACES: readonly [string, string][] = [['trailhead', 'lake'], ['camp', 'falls'], ['town', 'mine'], ['dock', 'island'], ['farm', 'bridge'], ['parking', 'summit'], ['ranger station', 'tower'], ['school', 'park']];
+const PLACES: readonly [string, string][] = [['trailhead', 'lake'], ['camp', 'falls'], ['town', 'mine'], ['dock', 'island'], ['farm', 'bridge'], ['parking lot', 'summit'], ['ranger station', 'tower'], ['school', 'park']];
 const AREAS = ['the coast', 'a state park', 'the valley', 'the lake country', 'the river delta', 'the islands'] as const;
 const UNIT_NAME: Record<string, string> = { in: 'inches', ft: 'feet', mi: 'miles', cm: 'centimeters', mm: 'millimeters', m: 'meters', km: 'kilometers' };
 
@@ -123,7 +124,7 @@ function choiceItem(R: () => number, base: Omit<MSItem, 'input' | 'choices' | 'a
   const o = shuffle(R, opts.slice());
   const i = o.findIndex(x => x.ok);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i }, solution: endOnChoice(base.solution, o[i]!.t),
     check: (r: Response) => {
       if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const c = o[r.i]!;
@@ -228,7 +229,7 @@ const ratioTable: Gen = (R, k) => {
     id: `ratioTable-${k}`, family: 'ratioTable', unit: gu,
     prompt: `On a map of ${area}, ${A(`2 ${mu}`)} stand for ${B(`${2 * s} ${gu}`)}, and ${A(`0 ${mu}`)} for ${B(`0 ${gu}`)}. What do ${A(`${ask} ${mu}`)} stand for?`,
     board: tab,
-    solution: [`2 ${mu} → ${2 * s} ${gu}, so 1 ${mu} → ${s} ${gu}.`, `${ask} ${mu} → ${ask} × ${s} = ${ans} ${gu}. The same factor (× ${s}) works for every pair.`],
+    solution: [`2 ${mu} → ${2 * s} ${gu}, so 1 ${mu} → ${s} ${gu}.`, `${ask} ${mu} → ${ask} × ${s} = ${mark(ans)} ${gu}. The same factor (× ${s}) works for every pair.`],
     work: [`${ask} \\times ${s} = ${ans}${uT(gu)}`],
     picture: lines({ rows: [[`map, ${mu}`, 1], [`ground, ${gu}`, s]], n: 6, given: { row: 0, v: ask }, ask: { row: 1, v: ans } }, ['lines', 'given', 'ask'], ['ref', 'nums', 'drop', 'answer'], 1),
   }, ans, v => same(v, ans) ? { ok: true, say: `Yes: × ${s} for every pair, so ${ask} ${mu} → ${ans} ${gu}.` }
@@ -369,7 +370,7 @@ const verbalMixed: Gen = (R, k) => {
     id: `verbalMixed-${k}`, family: 'verbalMixed', unit: 'mi',
     prompt: `On a ${A('1 in')} = ${B(`${s} mi`)} map, the trail from the ${a} to the ${b} measures ${A(`${mixH(L)} in`)} in a straight line. How many miles is that? Write it as a mixed number.`,
     board: `${mixT(L)}${uT('in')} \\times ${s}`,
-    solution: [`${mixH(L)} = ${whole} + ${mixH(r9(L - whole))}.`, `${whole} × ${s} = ${whole * s}, and ${mixH(r9(L - whole))} × ${s} = ${mixH(r9((L - whole) * s))}.`, `Together: ${mixH(ans)} mi.`],
+    solution: [`${mixH(L)} = ${whole} + ${mixH(r9(L - whole))}.`, `${whole} × ${s} = ${whole * s}, and ${mixH(r9(L - whole))} × ${s} = ${mixH(r9((L - whole) * s))}.`, `Together: ${mark(mixH(ans))} mi.`],
     work: [`${whole} \\times ${s} + ${mixT(r9(L - whole))} \\times ${s}`, `= ${mixT(ans)}${uT('mi')}`],
     picture: lines({ rows: [['map, in', 1], ['ground, mi', s]], n: nFor(L + 0.01, 3), sub: 4, given: { row: 0, v: L, tex: mixT(L) }, ask: { row: 1, v: ans }, card: { tag: `1${uT('in')} = ${s}${uT('mi')}`, len: L, from: a, to: b } }, SHOW2, SOLVE2, 1),
   }, ans, v => same(v, ans) ? { ok: true, say: `Yes: ${mixH(ans)} mi.` }
@@ -445,7 +446,7 @@ const metricRoute: Gen = (R, k) => {
     id: `metricRoute-${k}`, family: 'metricRoute', unit: to,
     prompt: `A path is ${A(`${fmt(L)} cm`)} on a ${rfH(N)} map. How long is it on the ground, in ${UNIT_NAME[to]}?`,
     board: `${fmtT(L)}${uT('cm')} \\to \\,?${uT(to)}`,
-    solution: [`${fmt(L)} × ${fmt(N)} = ${fmt(gcm)} cm.`, `÷ 100: ${fmt(m)} m.${to === 'km' ? ` ÷ 1,000: ${fmt(ans)} km.` : ''}`, N === 100000 ? 'Shortcut: at 1 : 100,000, 1 cm on the map is exactly 1 km.' : ''].filter(Boolean),
+    solution: [`${fmt(L)} × ${fmt(N)} = ${fmt(gcm)} cm.`, `÷ 100: ${to === 'km' ? fmt(m) : mark(fmt(m))} m.${to === 'km' ? ` ÷ 1,000: ${mark(fmt(ans))} km.` : ''}`, N === 100000 ? 'Shortcut: at 1 : 100,000, 1 cm on the map is exactly 1 km.' : ''].filter(Boolean),
     work: [`${fmtT(L)} \\times ${fmtT(N)} = ${fmtT(gcm)}${uT('cm')}`, to === 'km' ? `= ${fmtT(m)}${uT('m')} = ${fmtT(ans)}${uT('km')}` : `= ${fmtT(m)}${uT('m')}`],
     picture: lines({ rows: [['map, cm', 1], ['ground, cm', N], [`ground, ${to}`, step2]], n: nFor(L + 0.01, 3), sub: 2, given: { row: 0, v: L }, via: { row: 1, v: gcm }, ask: { row: 2, v: ans }, card: { tag: rfT(N), len: L } }, SHOW3, SOLVE3, 2),
   }, ans, v => same(v, ans) ? { ok: true, say: `Yes: ${fmt(ans)} ${to}.` }
@@ -464,7 +465,7 @@ const customaryFt: Gen = (R, k, sg) => {
     id: `customaryFt-${k}`, family: 'customaryFt', unit: 'ft',
     prompt: `On a ${rfH(24000)} topo map, the ${a} and the ${b} are ${A(`${mixH(L)} in`)} apart. How far apart are they on the ground, in feet?`,
     board: `${mixT(L)}${uT('in')} \\to \\,?${uT('ft')}`,
-    solution: [`${fmt(L)} × 24,000 = ${fmt(gin)} in.`, `÷ 12: ${fmt(ft)} ft.`, 'Shortcut printed on USGS maps: 1 in = 2,000 ft.'],
+    solution: [`${fmt(L)} × 24,000 = ${fmt(gin)} in.`, `÷ 12: ${mark(fmt(ft))} ft.`, 'Shortcut printed on USGS maps: 1 in = 2,000 ft.'],
     work: [`${fmtT(L)} \\times 24{,}000 = ${fmtT(gin)}${uT('in')}`, `${fmtT(gin)} \\div 12 = ${fmtT(ft)}${uT('ft')}`],
     picture: lines({ rows: [['map, in', 1], ['ground, in', 24000], ['ground, ft', 2000]], n: nFor(L + 0.01, 3), sub: 4, given: { row: 0, v: L, tex: mixT(L) }, via: { row: 1, v: gin }, ask: { row: 2, v: ft }, card: { tag: rfT(24000), len: L, from: a, to: b } }, SHOW3, SOLVE3, 2),
   }, ft, v => same(v, ft) ? { ok: true, say: `Yes: ${fmt(ft)} ft${ft > 5280 ? ', a bit over a mile' : ''}.` }
@@ -480,7 +481,7 @@ const customaryMi: Gen = (R, k) => {
       id: `customaryMi-${k}`, family: 'customaryMi', unit: 'mi',
       prompt: `On a ${rfH(63360)} map of Alaska, a river crossing is ${A(`${mixH(L)} in`)} from the ${a}. How many miles is that on the ground?`,
       board: `${mixT(L)}${uT('in')} \\times 63{,}360`,
-      solution: [`${fmt(L)} × 63,360 = ${fmt(gin)} in.`, `÷ 12 = ${fmt(ft)} ft, ÷ 5,280 = ${fmt(L)} mi.`, '63,360 in is exactly 1 mi, so 1 : 63,360 is 1 in = 1 mi.'],
+      solution: [`${fmt(L)} × 63,360 = ${fmt(gin)} in.`, `÷ 12 = ${fmt(ft)} ft, ÷ 5,280 = ${mark(fmt(L))} mi.`, '63,360 in is exactly 1 mi, so 1 : 63,360 is 1 in = 1 mi.'],
       work: [`${fmtT(gin)}${uT('in')} \\div 12 = ${fmtT(ft)}${uT('ft')}`, `${fmtT(ft)} \\div 5{,}280 = ${fmtT(L)}${uT('mi')}`],
       picture: lines({ rows: [['map, in', 1], ['ground, in', 63360], ['ground, mi', 1]], n: nFor(L + 0.01, 3), sub: 4, given: { row: 0, v: L, tex: mixT(L) }, via: { row: 1, v: gin }, ask: { row: 2, v: L }, card: { tag: rfT(63360), len: L, from: a, to: 'crossing' } }, SHOW3, SOLVE3, 2),
     }, L, x => same(x, L) ? { ok: true, say: `Yes: ${fmt(L)} mi. At 1 : 63,360, every inch is one mile.` }
@@ -496,7 +497,7 @@ const customaryMi: Gen = (R, k) => {
     id: `customaryMi-${k}`, family: 'customaryMi', unit: 'mi',
     prompt: `On a ${rfH(24000)} map, the ${a} is ${A(`${fmt(L)} in`)} from the ${b}. How many miles apart are they on the ground?${exact ? '' : ' Round to the nearest hundredth (a calculator is fine for ÷ 5,280).'}`,
     board: `${fmtT(L)}${uT('in')} \\to \\,?${uT('mi')}`,
-    solution: [`${fmt(L)} × 24,000 = ${fmt(r9(L * 24000))} in, ÷ 12 = ${fmt(ft)} ft.`, `${fmt(ft)} ÷ 5,280 = ${exact ? fmt(ans) : `${fmt(roundTo(mi, 5))}… ≈ ${fmt(ans)}`} mi.`, 'Benchmark: 5,280 ft is 1 mi.'],
+    solution: [`${fmt(L)} × 24,000 = ${fmt(r9(L * 24000))} in, ÷ 12 = ${fmt(ft)} ft.`, `${fmt(ft)} ÷ 5,280 = ${exact ? mark(fmt(ans)) : `${fmt(roundTo(mi, 5))}… ≈ ${mark(fmt(ans))}`} mi.`, 'Benchmark: 5,280 ft is 1 mi.'],
     work: [`${fmtT(L)} \\times 2{,}000 = ${fmtT(ft)}${uT('ft')}`, `${fmtT(ft)} \\div 5{,}280 ${exact ? '=' : '\\approx'} ${fmtT(ans)}${uT('mi')}`],
     picture: lines({ rows: [['map, in', 1], ['ground, ft', 2000]], n: nFor(L + 0.01, 3), sub: 4, given: { row: 0, v: L }, ask: { row: 1, v: ft }, card: { tag: rfT(24000), len: L, from: a, to: b } }, SHOW2, SOLVE2, 1),
   }, ans, x => Math.abs(x - ans) <= (exact ? 1e-6 : 0.005 + 1e-9) ? { ok: true, say: `Yes: about ${fmt(ans)} mi.` }
@@ -561,7 +562,7 @@ const rulerInch: Gen = (R, k) => {
     id: `rulerInch-${k}`, family: 'rulerInch', unit: 'in',
     prompt: `Measure the line from the ${a} to the ${b} to the nearest quarter inch. ${start ? `It starts at the ${start} mark.` : ''} (The small marks are eighths.)`,
     board: `\\text{length} = \\,?${uT('in')}`,
-    solution: [start ? `End reading minus start: subtract ${start}.` : 'It starts at 0, so the end mark is the length.', 'Between two inch marks: the longest mark is 1/2, the next are 1/4 and 3/4, the shortest are eighths.', `Length: ${mixH(fixedL)} in.`],
+    solution: [start ? `End reading minus start: subtract ${start}.` : 'It starts at 0, so the end mark is the length.', 'Between two inch marks: the longest mark is 1/2, the next are 1/4 and 3/4, the shortest are eighths.', `Length: ${mark(mixH(fixedL))} in.`],
     work: [start ? `${mixT(start + fixedL)} - ${start} = ${mixT(fixedL)}${uT('in')}` : `${mixT(fixedL)}${uT('in')}`],
     picture: { pic: { kind: 'ruler', p: { unit: 'in', start, len: fixedL, total: 6, from: a, to: b, ans: `${mixT(fixedL)}${uT('in')}` }, show: ['map', 'seg', 'ruler'], solve: ['read', 'answer'] } },
   }, fixedL, v => same(v, fixedL) ? { ok: true, say: `Yes: ${mixH(fixedL)} in.` }
@@ -577,7 +578,7 @@ const rulerMm: Gen = (R, k) => {
     id: `rulerMm-${k}`, family: 'rulerMm', unit,
     prompt: `Measure the line from the ${a} to the ${b} to the nearest millimeter.${start ? ` It starts at the ${start} cm mark.` : ''} Give it in ${UNIT_NAME[unit]}.`,
     board: `\\text{length} = \\,?${uT(unit)}`,
-    solution: [start ? `End reading minus ${start} cm.` : 'It starts at 0.', `Each small mark is 1 mm; 10 mm make 1 cm. Length: ${fmt(fixedL)} cm = ${fmt(r9(fixedL * 10))} mm.`],
+    solution: [start ? `End reading minus ${start} cm.` : 'It starts at 0.', `Each small mark is 1 mm; 10 mm make 1 cm. Length: ${inMm ? fmt(fixedL) : mark(fmt(fixedL))} cm = ${inMm ? mark(fmt(r9(fixedL * 10))) : fmt(r9(fixedL * 10))} mm.`],
     work: [`${fmtT(fixedL)}${uT('cm')} = ${fmtT(r9(fixedL * 10))}${uT('mm')}`],
     picture: { pic: { kind: 'ruler', p: { unit: 'cm', start, len: fixedL, total: 10, from: a, to: b, ans: `${fmtT(ans)}${uT(unit)}` }, show: ['map', 'seg', 'ruler'], solve: ['read', 'answer'] } },
   }, ans, v => same(v, ans) ? { ok: true, say: `Yes: ${fmt(ans)} ${unit}.` }
@@ -595,7 +596,7 @@ const measureCalc: Gen = (R, k) => {
     id: `measureCalc-${k}`, family: 'measureCalc', unit: 'mi',
     prompt: `The map's scale is ${sc.h}. Measure the line from the ${a} to the ${b} (nearest quarter inch${start ? `; it starts at the ${start} mark` : ''}), then find the straight-line ground distance.`,
     board: `\\text{measure} \\times ${sc.per}`,
-    solution: [`The line is ${mixH(fixedL)} in.`, `${fmt(fixedL)} × ${sc.per} = ${fmt(ans)} mi${sc.per === 1 ? ' (1 : 63,360 is 1 in = 1 mi)' : ''}.`],
+    solution: [`The line is ${mixH(fixedL)} in.`, `${fmt(fixedL)} × ${sc.per} = ${mark(fmt(ans))} mi${sc.per === 1 ? ' (1 : 63,360 is 1 in = 1 mi)' : ''}.`],
     work: [`${mixT(fixedL)}${uT('in')} \\times ${sc.per} = ${fmtT(ans)}${uT('mi')}`],
     picture: { pic: { kind: 'ruler', p: { unit: 'in', start, len: fixedL, total: 6, tag: sc.tag, from: a, to: b, ans: `${mixT(fixedL)}${uT('in')}` }, show: ['map', 'seg', 'ruler'], solve: ['read', 'answer'] } },
   }, ans, v => same(v, ans) ? { ok: true, say: `Yes: ${mixH(fixedL)} in on the map, ${fmt(ans)} mi on the ground.` }
@@ -610,7 +611,7 @@ const measureKm: Gen = (R, k) => {
     id: `measureKm-${k}`, family: 'measureKm', unit: 'km',
     prompt: `This map is ${rfH(N)}. Measure the line from the ${a} to the ${b} to the nearest millimeter${start ? ` (it starts at the ${start} cm mark)` : ''}. How many kilometers is it on the ground?`,
     board: `${rfT(N)}`,
-    solution: [`The line is ${fmt(fixedL)} cm.`, `${fmt(fixedL)} × ${fmt(N)} = ${fmt(ground(fixedL, N))} cm = ${fmt(km)} km (100,000 cm in 1 km).`],
+    solution: [`The line is ${fmt(fixedL)} cm.`, `${fmt(fixedL)} × ${fmt(N)} = ${fmt(ground(fixedL, N))} cm = ${mark(fmt(km))} km (100,000 cm in 1 km).`],
     work: [`${fmtT(fixedL)} \\times ${fmtT(N)} = ${fmtT(ground(fixedL, N))}${uT('cm')}`, `= ${fmtT(km)}${uT('km')}`],
     picture: { pic: { kind: 'ruler', p: { unit: 'cm', start, len: fixedL, total: 10, tag: rfT(N), from: a, to: b, ans: `${fmtT(fixedL)}${uT('cm')}` }, show: ['map', 'seg', 'ruler'], solve: ['read', 'answer'] } },
   }, km, v => same(v, km) ? { ok: true, say: `Yes: ${fmt(fixedL)} cm on the map, ${fmt(km)} km on the ground.` }
@@ -699,13 +700,15 @@ const largerScale: Gen = (R, k) => {
 };
 const sameRoad: Gen = (R, k) => {
   const pair = pick(R, [[24000, 48000], [25000, 100000], [24000, 72000], [50000, 100000], [100000, 25000], [48000, 24000]] as const);
-  const [a, b] = pair, L = pick(R, a < b ? [1, 1.5, 2, 2.5, 3] : [0.5, 1, 1.5, 2]);
+  // only lengths whose answer is exact in hundredths: 2.5 in from 1 : 24,000 to 1 : 72,000 would be 0.8333… in, with no
+  // rounding asked
+  const [a, b] = pair, L = pick(R, (a < b ? [1, 1.5, 2, 2.5, 3] : [0.5, 1, 1.5, 2]).filter(x => Number.isInteger(r9(x * a / b * 100))));
   const ans = r9(L * a / b), mi = r9(L * a / IN_PER_MI);
   return numItem({
     id: `sameRoad-${k}`, family: 'sameRoad', unit: 'in',
     prompt: `A straight road is ${A(`${fmt(L)} in`)} long on a ${rfH(a)} map. How long is the same road on a ${rfH(b)} map?`,
     board: `${rfT(a)} \\to ${rfT(b)}`,
-    solution: [`On the ground: ${fmt(L)} × ${fmt(a)} = ${fmt(r9(L * a))} in.`, `On the other map: ${fmt(r9(L * a))} ÷ ${fmt(b)} = ${fmt(ans)} in.`, b < a ? 'Smaller denominator, larger scale: the line gets longer.' : 'Bigger denominator, smaller scale: the line gets shorter.'],
+    solution: [`On the ground: ${fmt(L)} × ${fmt(a)} = ${fmt(r9(L * a))} in.`, `On the other map: ${fmt(r9(L * a))} ÷ ${fmt(b)} = ${mark(fmt(ans))} in.`, b < a ? 'Smaller denominator, larger scale: the line gets longer.' : 'Bigger denominator, smaller scale: the line gets shorter.'],
     work: [`${fmtT(L)} \\times ${fmtT(a)} = ${fmtT(r9(L * a))}${uT('in')}`, `${fmtT(r9(L * a))} \\div ${fmtT(b)} = ${fmtT(ans)}${uT('in')}`],
     picture: { pic: { kind: 'strips', p: { ns: [a, b], mi, name: 'the same road on both maps', ans: [`${fmtT(L)}${uT('in')}`, `${fmtT(ans)}${uT('in')}`] }, show: ['rows', 'lines'], solve: ['answer'] } },
   }, ans, v => same(v, ans) ? { ok: true, say: `Yes: ${fmt(ans)} in.` }

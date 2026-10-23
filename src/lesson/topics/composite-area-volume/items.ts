@@ -11,6 +11,7 @@ import {
 } from './measure';
 import type { Body, Glow, Label, Measure, SolidsParams } from './Solids';
 import type { PlanLabel, PlanSeg, PlanSpec } from './FloorPlan';
+import { endOnChoice } from '../../runtime/explain';
 
 export type FamilyId =
   | 'split' | 'hidden' | 'areaAdd' | 'areaSub' | 'volAdd' | 'volSub' | 'prismBh' | 'tent' | 'third' | 'pyrVol' | 'twoWays'
@@ -123,9 +124,13 @@ function respOf(x: number, input: 'num' | 'frac'): Response {
   return { kind: 'frac', w, n: 0, d: 1 };
 }
 const isThirds = (x: number) => !Number.isInteger(clean(x)) && near(x * 3, Math.round(x * 3)) && !quarters(x);
+/** "an" where the next word is read with a vowel sound: an ice block, an oatmeal tub, an 18 in base, an 8 ft wall */
+const art = (t: string) => t.replace(/\b([Aa]) ((?:<[^>]*>)*)(?=[aeioAEIO]|8|1[18](?![\d.,]))/g, '$1n $2');
+const artBase = <T extends { prompt: string; solution: string[] }>(b: T): T => ({ ...b, prompt: art(b.prompt), solution: b.solution.map(art) });
 /** a number answer: equal values are right (tol for answers rounded from 3.14) */
-function numItem(b: Base, ans: number, okSay: string, wrongs: Wrong[], fallback: string, o: { style?: NumStyle; tol?: number } = {}): Item {
+function numItem(b0: Base, ans: number, okSay: string, wrongs: Wrong[], fallback: string, o: { style?: NumStyle; tol?: number } = {}): Item {
   ans = clean(ans);
+  const b = artBase(b0);
   const frac = !Number.isInteger(ans) && (isThirds(ans) || (o.style === 'frac' && quarters(ans)));
   const input: 'num' | 'frac' = frac ? 'frac' : 'num';
   const tol = o.tol ?? 1e-6;
@@ -146,11 +151,11 @@ function numItem(b: Base, ans: number, okSay: string, wrongs: Wrong[], fallback:
   return it;
 }
 interface Opt { t: string; ok?: boolean; say: string; mc?: string }
-function choiceItem(b: Omit<Base, 'unit'>, R: Rn, opts: Opt[]): Item {
-  const o = shuffle(R, opts.slice());
+function choiceItem(b0: Omit<Base, 'unit'>, R: Rn, opts: Opt[]): Item {
+  const b = artBase(b0), o = shuffle(R, opts.map(x => ({ ...x, t: art(x.t), say: art(x.say) })));
   const right = o.findIndex(x => x.ok);
   const it: Item = {
-    ...b, picture: b.picture as unknown as Item['picture'], input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right },
+    ...b, picture: b.picture as unknown as Item['picture'], input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right }, solution: endOnChoice(b.solution, o[right]!.t),
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one answer.' };
       const x = o[r.i]!;
@@ -176,8 +181,12 @@ const BLOCKS = [
   { what: 'wooden block', u: 'in' }, { what: 'block of clay', u: 'in' }, { what: 'concrete block', u: 'in' }, { what: 'foam block', u: 'in' },
   { what: 'block of cheese', u: 'cm' }, { what: 'stone block', u: 'ft' }, { what: 'ice block', u: 'in' },
 ];
+/** two of them: "blocks of cheese", "wooden blocks" */
+const plural = (what: string) => (/^block of /.test(what) ? what.replace(/^block/, 'blocks') : `${what}s`);
 const PRISMS = ['tent', 'doorstop', 'ramp', 'chocolate box', 'cheese wedge', 'roof attic', 'trough', 'skate ramp'];
 const PYRS = ['glass paperweight', 'stone pyramid model', 'pyramid tent', 'roof cap', 'pyramid candle', 'crystal'];
+/** units that fit each pyramid's size (a pyramid tent is feet, not 8 inches tall; a paperweight is not feet) */
+const PYR_U: Record<string, string[]> = { 'glass paperweight': ['cm', 'in'], 'stone pyramid model': ['in', 'cm'], 'pyramid tent': ['ft'], 'roof cap': ['ft'], 'pyramid candle': ['cm', 'in'], crystal: ['cm'] };
 const CYLS = [
   { what: 'water tank', u: 'ft' }, { what: 'soup can', u: 'in' }, { what: 'oatmeal tub', u: 'in' }, { what: 'rain barrel', u: 'ft' },
   { what: 'candle', u: 'cm' }, { what: 'drum', u: 'in' }, { what: 'paint can', u: 'in' }, { what: 'round pool', u: 'ft' },
@@ -769,7 +778,7 @@ function thirdSlant(R: Rn, n: number, u: string, ww: number, hp: number, slant: 
 // 10. pyrVol: V = (1/3)Bh for rectangular and triangular pyramids                                  [pyramid-volume]
 function pyrVol(R: Rn, n: number, sg?: string): Item {
   const what = pick(R, PYRS);
-  const u = pick(R, ['in', 'cm', 'ft']);
+  const u = pick(R, PYR_U[what]!);
   const tri = R() < 0.4;
   if (!tri) {
     const [hl, h, s] = pick(R, TRIPLES);
@@ -792,7 +801,11 @@ function pyrVol(R: Rn, n: number, sg?: string): Item {
     ], 'V = ⅓ × base area × height (straight up).');
   }
   // a triangular pyramid: the base triangle has its own height, the pyramid another
-  const b = int(R, 3, 10), t = int(R, 2, 8);
+  // b × t even: B is whole, so V = ⅓ B H is a whole number or thirds (an odd b × t with H not a multiple of 3 gave
+  // sixths, 45.833… ft³, typed with no rounding asked)
+  const b = int(R, 3, 10);
+  let t = int(R, 2, 8);
+  if ((b * t) % 2) t += 1;
   let H = int(R, 3, 12);
   if (H === t) H = t + 2;
   const base: V3[] = [[0, 0, 0], [b, 0, 0], [b / 2, t, 0]];
@@ -921,7 +934,7 @@ function classify(R: Rn, n: number): Item {
   const say = kind === 'contact' ? 'It is glued between the blocks: inside the solid, so no paint reaches it.' : seen ? 'It faces out and you can see it: it gets paint.' : 'You cannot see it from here, but it still faces the outside: it gets paint.';
   return choiceItem({
     id: `classify-${n}`, family: 'classify', board: `${tt('outside?')}`,
-    prompt: `Two ${A(pr.what)}s are glued together, and the new solid is painted all over, bottom included. Does the ${P('marked region')} get paint?`,
+    prompt: `Two ${A(plural(pr.what))} are glued together, and the new solid is painted all over, bottom included. Does the ${P('marked region')} get paint?`,
     solution: [`The marked region is ${which}.`, say, 'Only the regions where blocks touch become inside. Hidden from view is not the same as inside.'],
     picture: solidsPic({ bodies: [{ kind: 'boxes', add: [pr.A], role: 'first' }, { kind: 'boxes', add: [pr.B], role: 'second' }], glows, labels: pairLabels(pr) }, ['solid', 'dims', 'mk'], [[]], [out ? tt('outside: painted') : tt('inside: no paint')]),
   }, R, [
@@ -957,7 +970,7 @@ function faces(R: Rn, n: number): Item {
     const [L1, W1, H1] = dimsOf(pr.A), [l2, , h2] = dimsOf(pr.B);
     return numItem({
       id: `faces-${n}`, family: 'faces', unit: sqU(pr.u),
-      prompt: `Two ${A(pr.what)}s are glued face to face. What is the surface area of the new solid, bottom included?`,
+      prompt: `Two ${A(plural(pr.what))} are glued face to face. What is the surface area of the new solid, bottom included?`,
       board: 'S = \\,?',
       solution: [pr.how === 'top' ? `Outside faces: the bottom and the top (${L1} × ${W1} each), and the four sides, now ${H1 + h2} ${pr.u} tall.` : `Outside faces: the two ends (${W1} × ${H1}), and the top, bottom, front and back, now ${L1 + l2} ${pr.u} long.`, `The two glued faces are inside and drop out.`, `S = ${S(`${ans} ${sqU(pr.u)}`)}.`],
       picture: solidsPic({ bodies: pairBodies(pr), labels: pairLabels(pr), glows: pairGlows(pr, 'gc') }, ['solid', 'dims'], [['explode'], ['gc']], [`${S1} + ${S2} - 2 \\cdot ${A2}`, `= ${ans}${sqT(pr.u)}`]),
@@ -997,7 +1010,7 @@ function joinSA(R: Rn, n: number): Item {
   const [l2, w2] = pr.how === 'side' ? [pr.A.size[1], pr.A.size[2]] : [pr.B.size[0], pr.B.size[1]];
   const pic = solidsPic({ bodies: pairBodies(pr), labels: pairLabels(pr), glows: pairGlows(pr, 'gc') }, ['solid', 'dims'], [['explode'], ['gc']], [`${S1} + ${S2} - 2 \\cdot ${A2}`, `= ${ans}${sqT(pr.u)}`]);
   const sol = [`Where the blocks touch, a ${l2} × ${w2} = ${A2} ${sqU(pr.u)} region was part of BOTH surfaces: once on each block.`, `Glued, neither copy is outside, so it comes off twice.`, `${S1} + ${S2} − 2 × ${A2} = ${S(`${ans} ${sqU(pr.u)}`)}.`];
-  if (R() < 0.3) return choiceItem({ id: `joinSA-${n}`, family: 'joinSA', board: `S = S_1 + S_2 - 2A`, picture: pic, solution: sol, prompt: `Two ${A(pr.what)}s are glued together. Why does the surface area lose ${P(`2 × ${A2} ${sqU(pr.u)}`)}, not just ${A2}?` }, R, [
+  if (R() < 0.3) return choiceItem({ id: `joinSA-${n}`, family: 'joinSA', board: `S = S_1 + S_2 - 2A`, picture: pic, solution: sol, prompt: `Two ${A(plural(pr.what))} are glued together. Why does the surface area lose ${P(`2 × ${A2} ${sqU(pr.u)}`)}, not just ${A2}?` }, R, [
     { t: `Each block had its own ${A2} ${sqU(pr.u)} face there, and both are now inside`, ok: true, say: 'Yes: counted once on each block, and neither is outside any more.' },
     { t: `It should be just ${A2}: only one face is covered`, mc: MC.removesOnce, say: 'Both blocks lose a face where they meet: the top one\'s and the bottom one\'s.' },
     { t: `Because the volume also drops by ${A2}`, mc: MC.contactFromVol, say: 'The volume does not drop at all: faces have no thickness. Volumes just add.' },
@@ -1248,7 +1261,7 @@ function missing(R: Rn, n: number): Item {
       { v: V / w, mc: MC.partOfBase, say: `Divide by the whole base area, ${l} × ${w}, not by one edge.` },
     ], 'h = V ÷ B, with B = length × width.');
   }
-  const what = pick(R, PYRS);
+  const what = pick(R, PYRS.filter(p => PYR_U[p]!.includes(u)));
   const l = int(R, 2, 9), w = int(R, 2, 9), h = int(R, 2, 12), Bv = l * w, V = pyramidVolume(Bv, h);
   if (!Number.isInteger(V)) return missing(R, n);
   const apex: V3 = [l / 2, w / 2, h];

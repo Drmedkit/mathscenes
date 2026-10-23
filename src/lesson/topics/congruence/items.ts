@@ -4,6 +4,7 @@
 // Pure: no DOM, no canvas. Pictures are plain data (congMaths.ts) the page draws. PROBES records, per item, typical
 // wrong responses and the misconception id they must get (tests).
 import { type Gen, type Item, type Response, type Verdict, A as Am, B as Bm, int, pick, shuffle } from '../../runtime/item';
+import { ans as mark, endOnChoice } from '../../runtime/explain';
 /** the figure we try to reach (lavender in the picture) */
 const Pm = (s: string | number) => `<b class="p">${s}</b>`;
 import {
@@ -93,7 +94,7 @@ function choiceItem(R: () => number, base: Base, opts: Opt[], keep = false): Con
   const o = keep ? uniq : shuffle(R, uniq.slice());
   const right = o.findIndex(x => x.ok);
   if (right < 0 || o.filter(x => x.ok).length !== 1) throw new Error(`${base.id}: needs exactly one right option`);
-  const it: CongItem = { ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right }, check: choiceCheck(right, o.map(x => ({ say: x.say, mc: x.mc }))) };
+  const it: CongItem = { ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right }, solution: endOnChoice(base.solution, o[right]!.t), check: choiceCheck(right, o.map(x => ({ say: x.say, mc: x.mc }))) };
   PROBES.set(it, o.flatMap((x, i) => (x.mc && !x.ok ? [{ r: { kind: 'choice', i } as Response, mc: x.mc }] : [])));
   return it;
 }
@@ -217,7 +218,7 @@ const cover: Gen = (R, n) => fitted(() => {
     ], true);
   }
   const A = placed(R, P, 6);
-  const seq: Move[] = mode === 'slid' ? [slide(int(R, -6, 6) || 3, int(R, -5, 5))] : [pick(R, [flipY, flipX, turn(1), turn(-1), turn(2)]), slide(int(R, -3, 3), int(R, -3, 3))];
+  const seq: Move[] = mode === 'slid' ? [slide(int(R, -6, 6) || 3, int(R, -5, 5))] : [pick(R, [flipY, flipX, turn(1), turn(-1), turn(2)]), slide(int(R, -3, 3) || 2, int(R, -3, 3))];   // never a zero slide ("slide nowhere")
   const B0 = mapPts(seq, A);
   const B = mode === 'near' ? nearOf(B0) : B0;
   if (!B || !inRange(B) || !apart(A, B)) return null;
@@ -413,7 +414,7 @@ const specify: Gen = (R, n) => fitted(() => {
   const lead = `One move maps ${Am('△ABC')} onto ${Pm('△A′B′C′')}.`;
   if (mode === 'slide') {
     const d = (m as { d: V }).d;
-    const it = pointItem({ ...base, prompt: `${lead} It is a slide. Fill in its rule.`, solution: [`A ${ptWords(pa)} goes to A′ ${ptWords(pb)}.`, `x changes by ${n2(d[0])}, y by ${n2(d[1])}: the rule is (x, y) → (x ${d[0] < 0 ? '−' : '+'} ${Math.abs(d[0])}, y ${d[1] < 0 ? '−' : '+'} ${Math.abs(d[1])}).`] },
+    const it = pointItem({ ...base, prompt: `${lead} It is a slide. Fill in its rule.`, solution: [`A ${ptWords(pa)} goes to A′ ${ptWords(pb)}.`, `x changes by ${mark(n2(d[0]))}, y by ${mark(n2(d[1]))}: the rule is (x, y) → (x ${d[0] < 0 ? '−' : '+'} ${Math.abs(d[0])}, y ${d[1] < 0 ? '−' : '+'} ${Math.abs(d[1])}).`] },
       d, '(x, y) → (x +', `Yes: every point moves ${n2(d[0])} across and ${n2(d[1])} up.`, [
         { v: [-d[0], -d[1]], say: 'That slide goes from A′ back to A. Count from A to A′.' },
         { v: [d[1], d[0]], say: 'The across change goes with x, the up change with y.' },
@@ -463,7 +464,7 @@ const sequence: Gen = (R, n) => fitted(() => {
   const picture = pic({ axes: true, figs: [F1(A, 'first', ABC(nV))], more: ['\\text{then}\\ ' + moveTex(seq[1]!)], solve: { fig: 0, seq } });
   return pointItem({ id: `sequence-${order}-${n}`, family: 'sequence', board: moveTex(seq[0]!), picture,
     prompt: `${Am(`A is at ${ptWords(p)}`)}. ${Bm(moveWords(seq[0]!)[0]!.toUpperCase() + moveWords(seq[0]!).slice(1))}, then ${Bm(moveWords(seq[1]!))}. Where does A end up?`,
-    solution: [`Step 1: ${moveWords(seq[0]!)} takes A ${ptWords(p)} to A′ ${ptWords(mid)}.`, `Step 2 starts from A′: ${moveWords(seq[1]!)} takes it to A″ ${ptWords(end)}.`] },
+    solution: [`Step 1: ${moveWords(seq[0]!)} takes A ${ptWords(p)} to A′ ${ptWords(mid)}.`, `Step 2 starts from A′: ${moveWords(seq[1]!)} takes it to A″ (${mark(n2(end[0]))}, ${mark(n2(end[1]))}).`] },
   end, 'A″ = (', `Yes: A′ is ${ptWords(mid)}, and step 2 takes it to ${ptWords(end)}.`, [
     { v: skip, mc: MC.toOriginal, say: `That is step 2 done to A itself. Step 2 starts where step 1 ended: A′ ${ptWords(mid)}.` },
     { v: mid, say: `That is A′, after step 1 only. Now do step 2 to it.` },
@@ -542,7 +543,7 @@ const plan: Gen = (R, n) => fitted(() => {
   const wf = mv(wrongFirst, A[0]!);
   const c1 = [first, slide(d0[0], d0[1])];                      // the slide counted from the ORIGINAL corner
   const c2 = [wrongFirst, slide(B[0]![0] - wf[0], B[0]![1] - wf[1])];   // the wrong first move, then a slide fixing A only
-  if (mapsOnto(c1, A, B) || mapsOnto(c2, A, B) || (c1[1] as { d: V }).d.every(x => x === 0) || seqWords(c1) === seqWords(seq)) return null;
+  if (mapsOnto(c1, A, B) || mapsOnto(c2, A, B) || (c1[1] as { d: V }).d.every(x => x === 0) || (c2[1] as { d: V }).d.every(x => x === 0) || seqWords(c1) === seqWords(seq)) return null;
   const picture = pic({ axes: true, figs: [F1(A, 'first', ABC(3)), F1(B, 'pick', DEF(3))], solve: { fig: 0, seq, to: 1 } });
   const mid = mapPts([first], A);
   return choiceItem(R, { id: `plan-${first.kind}-${n}`, family: 'plan', board: '', picture,
@@ -651,9 +652,9 @@ const dilate: Gen = (R, n) => fitted(() => {
   const base = { id: `dilate-${mode}-${n}`, family: 'dilate' as const, board: moveTex(m) };
   if (mode === 'num') {
     const picture = pic({ axes: true, figs: [F1(A, 'first', ABC(3), { lens: [String(L), null, null] })], pins: [{ p: center, label: veq(center, [0, 0]) ? undefined : 'P' }], solve: { fig: 0, seq: [m] } });
-    const it: CongItem = { ...base, input: 'num', unit: 'units', picture,
-      prompt: `${Am(`AB is ${L} units long`)}. ${Bm(`Dilate △ABC by a scale factor of ${kw}`)} about ${veq(center, [0, 0]) ? 'the origin' : 'P'}. How long is A′B′?`,
-      solution: [`A dilation multiplies every length by the scale factor: ${L} × ${kw} = ${ab}.`, `A′B′ = ${ab}, not ${L}: the dilation changed a length, so it is not a rigid motion.`],
+    const it: CongItem = { ...base, input: 'num', unit: ab === 1 ? 'unit' : 'units', picture,
+      prompt: `${Am(`AB is ${L} unit${L === 1 ? '' : 's'} long`)}. ${Bm(`Dilate △ABC by a scale factor of ${kw}`)} about ${veq(center, [0, 0]) ? 'the origin' : 'P'}. How long is A′B′?`,
+      solution: [`A dilation multiplies every length by the scale factor: ${L} × ${kw} = ${ab}.`, `A′B′ = ${mark(ab)}, not ${L}: the dilation changed a length, so it is not a rigid motion.`],
       answer: { kind: 'num', v: ab },
       check: r => r.kind !== 'num' ? { ok: false, say: 'Type a number.' } : Math.abs(r.v - ab) < 1e-9 ? { ok: true, say: `Yes: ${L} × ${kw} = ${ab}. The length changed, so this is not a rigid motion.` }
         : r.v === L ? { ok: false, mc: MC.sizeRigid, say: `A dilation is not a slide or a turn: it multiplies every length by ${kw}. A′B′ = ${ab}.` }
@@ -823,6 +824,7 @@ const justify: Gen = (R, n) => fitted(() => {
   const P = placed(R, shapeOf(R, R() < 0.4), 5);
   if (mode === 'stencil') {
     const seq: Move[] = [pick(R, [flipY, flipX]), slide(int(R, -2, 2), int(R, -2, 2))];
+    if ((seq[1] as { d: V }).d.every(x => x === 0)) return null;   // "then slide nowhere": the flip alone would do
     const Q = mapPts(seq, P);
     if (!inRange(Q) || !apart(P, Q)) return null;
     const picture = pic({ axes: true, figs: [F1(P, 'first', undefined, { tag: 'S' }), F1(Q, 'pick', undefined, { tag: 'O' })], solve: { fig: 0, seq, to: 1 } });

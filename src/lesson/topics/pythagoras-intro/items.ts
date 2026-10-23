@@ -6,6 +6,7 @@
 import { type Item, type Response, type Verdict, int, pick, shuffle } from '../../runtime/item';
 import type { Pt } from '../../../core/math';
 import type { SideId } from './SideSquares';
+import { endOnChoice } from '../../runtime/explain';
 import { TRIPLES, bracket, hyp2, isSquare, isqrt, leg2, rootHtml, rootTex, round1, rightPts, sideLen2, tilted, triKind } from './pythag';
 
 export type FamilyId = 'findHyp' | 'letterC' | 'squareArea' | 'areaUnit' | 'tilted' | 'surroundCalc' | 'missingArea' | 'eqTrue' | 'meaning'
@@ -126,7 +127,7 @@ function choiceItem(R: () => number, base: Omit<PyItem, 'input' | 'choices' | 'a
   const right = o.findIndex(x => x.ok);
   if (right < 0 || o.filter(x => x.ok).length !== 1) throw new Error(`${base.family}: exactly one right option`);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right }, solution: endOnChoice(base.solution, o[right]!.t),
     check: (r: Response): Verdict => {
       if (r.kind !== 'choice') return { ok: false, say: 'Pick one of the options.' };
       const x = o[r.i];
@@ -782,7 +783,7 @@ const unitName: Gen = (R, n) => {
     picture: { pic: legPic(a, b, pick(R, POSES), { a: tu(a, u), b: tu(b, u), c: 'c' }) },
     prompt: `The legs of a right triangle are ${a} ${u} and ${b} ${u}. ${q} Which unit fills the gap?`,
     board: area ? `c^2 = ${c * c}\\ \\, ?` : `c = ${c}\\ \\, ?`,
-    solution: area ? [`${c * c} = ${c} × ${c} is an area: ${S(SQU(u))}.`] : [`${c} is the length of a side: ${S(u)}.`, `Its square, ${c * c}, would be in ${SQU(u)}.`],
+    solution: area ? [`${c} × ${c} = ${c * c}: the area of a square with sides of ${c} ${u}.`, `An area is counted in square units: ${S(SQU(u))}.`] : [`${c} is the length of a side: ${S(u)}.`, `Its square, ${c * c}, would be in ${SQU(u)}.`],
   }, opts);
 };
 

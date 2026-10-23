@@ -23,6 +23,7 @@ import { FloorPlan, type PlanBlock } from '../../src/lesson/topics/composite-are
 import { type BoxSpec, type V3, box3 } from '../../src/lesson/topics/composite-area-volume/measure';
 import { FAMILY_NAMES, GENS, MC, type CavPicture } from '../../src/lesson/topics/composite-area-volume/items';
 import { PLAN } from '../../src/lesson/topics/composite-area-volume/plan';
+import { explain } from '../../src/lesson/topics/composite-area-volume/explain';
 import { SCRIPT } from '../../src/lesson/topics/composite-area-volume/script';
 
 const SLUG = 'composite-area-volume';
@@ -328,7 +329,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed), show: it => showItem(it),
   });
 }

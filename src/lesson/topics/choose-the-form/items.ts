@@ -5,6 +5,7 @@
 // Pure: no DOM, no canvas. Pictures are plain data for the page's FormLine (type-only import).
 import { type Item, type Response, type Verdict, A, fr, int, pick, shuffle, fracValue } from '../../runtime/item';
 import type { FormLineParams, Tick } from './FormLine';
+import { ans, endOnChoice } from '../../runtime/explain';
 import {
   type Form, type Rat, decRat, decStr, digitKey, formHtml, formTex, formValue, fracTex, money, near, pctOfCents, pctRat, pctStr,
   rat, rEq, rMul, rNum, rSub, roundRat, terminates,
@@ -85,13 +86,17 @@ type Gen = (R: () => number, n: number, sg?: string) => FormItem;
 type Base = Pick<FormItem, 'id' | 'family' | 'prompt' | 'board' | 'solution'> & Partial<Pick<FormItem, 'picture' | 'unit'>>;
 
 // ---------- builders ----------
+/** "1 hundredth", "1 cent", "1 cup": the templates write the plural after any count, this puts 1 right */
+const one = (t: string) => t.replace(/(^|[^\d.,−-])1 (hundredth|cent|cup|dollar|place|batch)(e?s)\b/g, '$11 $2');
+const oneBase = (b: Base): Base => ({ ...b, prompt: one(b.prompt), board: b.board.replace(/(^|[^\d.,])1\\text\{ (hundredth|cent|cup)s\}/g, '$11\\text{ $2}'), solution: b.solution.map(one), ...(b.unit ? { unit: one(b.unit) } : {}) });
 interface Opt { t: string; ok?: boolean; mc?: string; say: string }
-function choiceItem(R: () => number, base: Base, opts: Opt[]): FormItem {
+function choiceItem(R: () => number, base0: Base, opts0: Opt[]): FormItem {
+  const base = oneBase(base0), opts = opts0.map(o => ({ ...o, t: one(o.t), say: one(o.say) }));
   const o = shuffle(R, opts.slice());
   if (o.filter(x => x.ok).length !== 1) throw new Error(`choiceItem ${base.id}: needs exactly one right option`);
   if (new Set(o.map(x => x.t)).size !== o.length) throw new Error(`choiceItem ${base.id}: duplicate options ${o.map(x => x.t).join(' | ')}`);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: o.findIndex(x => x.ok) },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: o.findIndex(x => x.ok) }, solution: endOnChoice(base.solution, o.find(x => x.ok)!.t),
     check: (r: Response): Verdict => {
       if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const x = o[r.i]!;
@@ -100,7 +105,10 @@ function choiceItem(R: () => number, base: Base, opts: Opt[]): FormItem {
   };
 }
 interface Trap { v: number; mc?: string; say: string }
-function numItem(base: Base, v: number, okSay: string, hint: string, traps: Trap[]): FormItem {
+function numItem(base0: Base, v: number, okSay0: string, hint0: string, traps0: Trap[]): FormItem {
+  const base = oneBase(base0), okSay = one(okSay0), hint = one(hint0), traps = traps0.map(t => ({ ...t, say: one(t.say) }));
+  // the unit after the box: "1 cent", "1 cup"
+  if (v === 1 && base.unit) base.unit = base.unit.replace(/^(hundredth|cent|cup|dollar|scoop)s$/, '$1');
   return {
     ...base, input: 'num', answer: { kind: 'num', v },
     check: (r: Response): Verdict => {
@@ -111,7 +119,8 @@ function numItem(base: Base, v: number, okSay: string, hint: string, traps: Trap
     },
   };
 }
-function fracItem(base: Base, target: Rat, okSay: string, hint: string, traps: { r: Rat; mc?: string; say: string }[]): FormItem {
+function fracItem(base0: Base, target: Rat, okSay0: string, hint0: string, traps0: { r: Rat; mc?: string; say: string }[]): FormItem {
+  const base = oneBase(base0), okSay = one(okSay0), hint = one(hint0), traps = traps0.map(t => ({ ...t, say: one(t.say) }));
   const w = Math.floor(target.n / target.d), rem = target.n - w * target.d;
   return {
     ...base, input: 'frac', answer: rem ? { kind: 'frac', w, n: rem, d: target.d } : { kind: 'frac', w, n: 0, d: 1 },
@@ -353,7 +362,12 @@ const over100: Gen = (R, n) => {
   const showable = rNum(r) <= 2;
   const line: FormLineParams = { wholes: 2, top: [{ v: 0, t: '0' }, { v: 1, t: '1' }, { v: 2, t: '2' }], bot: pctTicks(2), mark: rNum(r), names: { pct: pt(r), frac: r.d === 1 ? undefined : ft(r), dec: ds(r) } };
   const pic = (given: Kind) => (showable ? { picture: { form: { line, pre: ['bar', 'top0', 'top1', 'top2', 'bot0', 'bot1', 'bot2', 'mark', given], solve: (['pct', 'frac', 'dec'] as Kind[]).filter(k => k !== given), work: [`${pt(r)} = ${ds(r)}`, `${pt(r)} = 100\\% + ${ds(rSub(p, rat(100)))}\\%`] } } } : {});
-  const sol = [`100% is one whole.`, `${ps(r)} = ${ds(r)} wholes`, r.d > 1 ? `${ds(r)} = ${formHtml({ kind: 'frac', r })}` : `${ps(r)} = ${r.n}`];
+  // the steps go from the given form to the asked one and mark the answer
+  const fH = r.d > 1 ? formHtml({ kind: 'frac', r }) : String(r.n);
+  const sol = dir === 0 ? [`100% is one whole.`, `${ps(r)} = ${pn} ÷ 100 = ${ans(ds(r))} wholes`]
+    : dir === 1 ? [`One whole is 100%.`, `${ds(r)} wholes = ${ds(r)} × 100% = ${ans(ps(r))}`]
+      : dir === 2 && r.d > 1 ? [`100% is one whole.`, `${ps(r)} = ${ds(r)} wholes`, `${ds(r)} = ${ans(fH)}`]
+        : r.d > 1 ? [`One whole is 100%.`, `${fH} = ${ds(r)} wholes`, `${ds(r)} × 100% = ${ans(ps(r))}`] : [`One whole is 100%.`, `${fH} wholes = ${fH} × 100% = ${ans(ps(r))}`];
   const lessSay = `Do not drop the whole: ${ps(r)} is more than one whole, ${ds(r)}.`;
   if (dir === 0) return numItem({ id: `over100-${n}`, family: 'over100', prompt: `Write ${A(ps(r))} as a decimal.`, board: `${pt(r)} = \\,?`, ...pic('pct'), solution: sol },
     rNum(r), `Yes: ${ps(r)} = ${ds(r)}.`, 'Divide the percent by 100: 100% is 1.', [
@@ -443,7 +457,8 @@ const moreHow: Gen = (R, n) => {
   return numItem({
     id: `moreHow-${n}`, family: 'moreHow',
     prompt: `In ${c.a}, ${A(fh(r))} of the ${A(W1)} ${c.u} ${c.v}. In ${c.b}, ${A(ps(r))} of the ${A(W2)} ${c.u} ${c.v}. How many more ${c.u} in ${big}?`,
-    board: `${pt(r)}\\text{ of } ${W2} - ${ft(r)}\\text{ of } ${W1}`, unit: c.u,
+    // the bigger amount first, so the board works out the positive difference that is asked
+    board: a2 > a1 ? `${pt(r)}\\text{ of } ${W2} - ${ft(r)}\\text{ of } ${W1}` : `${ft(r)}\\text{ of } ${W1} - ${pt(r)}\\text{ of } ${W2}`, unit: c.u,
     solution: [`${fh(r)} of ${W1} = ${W1} ÷ ${r.d}${r.n > 1 ? ` × ${r.n}` : ''} = ${a1}`, `${ps(r)} of ${W2} = ${fh(r)} of ${W2} = ${a2}`, `${Math.max(a1, a2)} − ${Math.min(a1, a2)} = ${diff}`],
   }, diff, `Yes: ${a1} and ${a2}, so ${diff} more.`, `Find each amount first: the share is the same, the wholes are not.`, [
     { v: 0, mc: MC.wholes, say: `${fh(r)} = ${ps(r)}, but the wholes differ: ${a1} and ${a2} ${c.u}.` },
@@ -497,14 +512,16 @@ const contextMatch: Gen = (R, n) => {
   ].filter((o, i, x) => x.findIndex(y => y.t === o.t) === i));
 };
 
+/** "a" or "an" before a number as it is read aloud: an 18% tip, an $80 jacket, an 11.5% tax; a 110% ... */
+const an = (s: string, cap = false) => { const t = s.replace(/<[^>]+>/g, '').replace(/^\$/, ''); const w = /^(8|1[18](?!\d))/.test(t) ? 'an' : 'a'; return cap ? w[0]!.toUpperCase() + w.slice(1) : w; };
 // ===================== 6. fraction-form-benchmark =====================
 const BENCH_P = ['25', '50', '75', '10', '20', '40'];
 function wholeFor(R: () => number, d: number, lo: number, hi: number): number { return d * int(R, Math.ceil(lo / d), Math.floor(hi / d)); }
 const CTX_OF = [
-  { pre: (p: string, w: string) => `A ${w} jacket is ${p} off. How much is the discount?`, money: true, unit: 'dollars' },
-  { pre: (p: string, w: string) => `A ${w} dinner bill gets a ${p} tip. How much is the tip?`, money: true, unit: 'dollars' },
+  { pre: (p: string, w: string) => `${an(w, true)} ${w} jacket is ${p} off. How much is the discount?`, money: true, unit: 'dollars' },
+  { pre: (p: string, w: string) => `${an(w, true)} ${w} dinner bill gets ${an(p)} ${p} tip. How much is the tip?`, money: true, unit: 'dollars' },
   { pre: (p: string, w: string) => `${p} of the ${w} seats on a plane are by a window. How many is that?`, money: false, unit: 'seats' },
-  { pre: (p: string, w: string) => `A ${w} video game is ${p} off. How much do you save?`, money: true, unit: 'dollars' },
+  { pre: (p: string, w: string) => `${an(w, true)} ${w} video game is ${p} off. How much do you save?`, money: true, unit: 'dollars' },
 ];
 const fractionRoute: Gen = (R, n, sg) => {
   const p = sg === 'convenience-compare' ? pick(R, ['12.5', '25', '50', '12.5']) : pick(R, BENCH_P);
@@ -544,7 +561,7 @@ const routeEqual: Gen = (R, n, sg) => {
     const W = pick(R, [20, 30, 40, 45, 50, 60, 80, 90]);
     return choiceItem(R, {
       id: `routeEqual-${n}`, family: 'routeEqual', ...asPic(percentOfPic(p, $(W * 100), $(W * Number(p)), { decomp: true })), board: `${p}\\%\\text{ of } ${tm(W * 100)}`,
-      prompt: `${a} finds a ${A(p + '%')} tip on ${A($(W * 100))} as ${tens > 1 ? `${tens} × 10%` : '10%'} + ${rest}%. ${b} works out ${ds(pctRat(p))} × ${W}. What is true?`,
+      prompt: `${a} finds ${an(p)} ${A(p + '%')} tip on ${A($(W * 100))} as ${tens > 1 ? `${tens} × 10%` : '10%'} + ${rest}%. ${b} works out ${ds(pctRat(p))} × ${W}. What is true?`,
       solution: [`10% of ${$(W * 100)} = ${$(W * 10)}, ${rest}% = ${$(W * rest)}`, `${a}: ${$(W * 10 * tens, true)} + ${$(W * rest, true)} = ${$(W * Number(p), true)}`, `${b}: ${ds(pctRat(p))} × ${W} = ${ds(rMul(pctRat(p), rat(W)))}`],
     }, [
       { t: 'Both routes give the same tip', ok: true, say: `Yes: ${p}% is one number; splitting it or using ${ds(pctRat(p))} gives the same ${$(W * Number(p), true)}.` },
@@ -576,9 +593,9 @@ function exactAmount(R: () => number, p: string): number {
 const routeCompute: Gen = (R, n) => {
   const p = pick(R, ROUTE_P), f = pctRat(p), A0 = exactAmount(R, p), ans = pctOfCents(p, A0)!, pv = Number(p);
   const kind = ['6', '7.5', '8', '2.5', '5', '7'].includes(p) ? 'tax' : ['18', '15'].includes(p) ? 'tip' : 'discount';
-  const prompt = kind === 'tax' ? `The sales tax is ${A(p + '%')} on a ${A($(A0, true))} purchase. How much is the tax?`
-    : kind === 'tip' ? `You leave a ${A(p + '%')} tip on a ${A($(A0, true))} bill. How much is the tip?`
-      : `A ${A($(A0, true))} bike helmet is ${A(p + '%')} off. How much is the discount?`;
+  const prompt = kind === 'tax' ? `The sales tax is ${A(p + '%')} on ${an($(A0, true))} ${A($(A0, true))} purchase. How much is the tax?`
+    : kind === 'tip' ? `You leave ${an(p)} ${A(p + '%')} tip on ${an($(A0, true))} ${A($(A0, true))} bill. How much is the tip?`
+      : `${an($(A0, true), true)} ${A($(A0, true))} bike helmet is ${A(p + '%')} off. How much is the discount?`;
   const tens = Math.floor(pv / 10), rest = pv - tens * 10, decomp = ['15', '18', '35', '45'].includes(p);
   const work = decomp ? [`${tens > 1 ? tens + ' \\times ' : ''}10\\% = ${tm((A0 / 10) * tens, true)}`, `${rest}\\% = ${tm(A0 * rest / 100, true)}`, `${p}\\% = ${tm(ans, true)}`]
     : [`${p}\\% = ${ds(f)}`, `${ds(f)} \\times ${ds(rat(A0, 100))} = ${ds(rat(ans, 100))}`];
@@ -723,15 +740,16 @@ const reportForm: Gen = (R, n) => {
   ]);
 };
 
-const EITHER = [
-  { what: 'the discount on a jacket', unit: 'off', top: 'price' },
-  { what: 'how far they ran', unit: 'mile', top: '1 mile' },
-  { what: 'how much of the pizza is left', unit: 'of the pizza', top: 'pizza' },
-  { what: 'the chance of rain', unit: 'chance', top: 'certain' },
+// the forms people really use in each context: "30% mile" and "0.25 off" are not said
+const EITHER: { what: string; unit: string; top: string; kinds: Kind[] }[] = [
+  { what: 'the discount on a jacket', unit: 'off', top: 'price', kinds: ['frac', 'pct'] },
+  { what: 'how far they ran', unit: 'mile', top: '1 mile', kinds: ['frac', 'dec'] },
+  { what: 'how much of the pizza is left', unit: 'of the pizza', top: 'pizza', kinds: ['frac', 'pct'] },
+  { what: 'the chance of rain', unit: 'chance', top: 'certain', kinds: ['frac', 'dec', 'pct'] },
 ];
 const eitherForm: Gen = (R, n) => {
   const [a, b] = two(R), r = pick(R, [rat(1, 4), rat(1, 2), rat(3, 4), rat(1, 5), rat(2, 5), rat(3, 10)]), c = pick(R, EITHER);
-  const kinds = shuffle(R, ['frac', 'dec', 'pct'] as Kind[]), ka = kinds[0]!, kb = kinds[1]!;
+  const kinds = shuffle(R, c.kinds.slice()), ka = kinds[0]!, kb = kinds[1]!;
   const fa = formHtml(formOf(r, ka)), fb = formHtml(formOf(r, kb));
   const asked = R() < 0.4;
   const names = { [ka]: formTex(formOf(r, ka)), [kb]: formTex(formOf(r, kb)) } as FormLineParams['names'];
@@ -765,7 +783,7 @@ const reportAs: Gen = (R, n) => {
   }
   if (t === 1) {
     const p = pick(R, ['6', '7.5', '8', '5', '2.5']), A0 = exactAmount(R, p), ans = pctOfCents(p, A0)!;
-    return numItem({ id: `reportAs-${n}`, family: 'reportAs', ...amountPic(ans / 100, i => '$' + i, ans + '¢', 10), prompt: `You found a ${p}% tax on ${$(A0, true)} as ${ds(pctRat(p))} × ${ds(rat(A0, 100))} = ${A(ds(rat(ans, 100)))} dollars. The receipt shows the tax in cents. How many cents?`, board: `${ds(rat(ans, 100))}\\text{ dollars} = \\,?\\text{ cents}`, unit: 'cents', solution: ['A dollar is 100 cents.', `${ds(rat(ans, 100))} × 100 = ${ans} cents`] },
+    return numItem({ id: `reportAs-${n}`, family: 'reportAs', ...amountPic(ans / 100, i => '$' + i, ans + '¢', 10), prompt: `You found ${an(p)} ${p}% tax on ${$(A0, true)} as ${ds(pctRat(p))} × ${ds(rat(A0, 100))} = ${A(ds(rat(ans, 100)))} dollars. The receipt shows the tax in cents. How many cents?`, board: `${ds(rat(ans, 100))}\\text{ dollars} = \\,?\\text{ cents}`, unit: 'cents', solution: ['A dollar is 100 cents.', `${ds(rat(ans, 100))} × 100 = ${ans} cents`] },
       ans, `Yes: ${ans} cents.`, 'Each dollar is 100 cents.', [
         { v: ans / 100, mc: MC.calcForm, say: `That is the dollar form you calculated in. In cents: ${ans}.` },
         { v: ans / 10, mc: MC.centsPoint, say: `One place off: a dollar is 100 cents, so ${ans} cents.` },
@@ -791,7 +809,7 @@ const reportPick: Gen = (R, n) => {
   }
   if (t === 1) {
     const r = pick(R, [rat(3, 8), rat(5, 8), rat(2, 5), rat(3, 4), rat(7, 20), rat(1, 8)]);
-    return choiceItem(R, { id: `reportPick-${n}`, family: 'reportPick', ...pointPic(rNum(r), { frac: ft(r), pct: pt(r) }, ['frac'], ['pct']), prompt: `You found that ${A(fh(r))} of the team’s shots went in, working with fractions. The coach’s chart shows percents. What do you write?`, board: `${ft(r)} = \\,?\\,\\%`, solution: [`${fh(r)} = ${ds(r)} = ${ps(r)}`] }, [
+    return choiceItem(R, { id: `reportPick-${n}`, family: 'reportPick', ...pointPic(rNum(r), { frac: ft(r), pct: pt(r) }, ['frac'], ['pct']), prompt: `You found that ${A(fh(r))} of the team’s shots went in, working with fractions. The coach’s chart shows percents. What do you write?`, board: `${ft(r)} = \\,?\\,\\%`, solution: [`${fh(r)} = ${ds(r)} = ${ps(r)}`, 'The chart shows percents, so write the percent.'] }, [
       { t: ps(r), ok: true, say: `Yes: ${fh(r)} = ${ps(r)}.` },
       { t: `${fh(r)}: it was found with fractions`, mc: MC.calcForm, say: `The chart wants percents. ${fh(r)} = ${ps(r)}.` },
       { t: `${r.n}${r.d}%`, mc: MC.fracDigitsPct, say: `The digits of ${fh(r)} are not the percent: ${ps(r)}.` },
@@ -851,7 +869,7 @@ const roundingGap: Gen = (R, n) => {
     const W = 300 * int(R, 1, 5), third = R() < 0.6;
     const ex = third ? W / 3 : (2 * W) / 3, ap = third ? (33 * W) / 100 : (67 * W) / 100, diff = Math.abs(ex - ap);
     const p = third ? '33' : '67', f = third ? rat(1, 3) : rat(2, 3);
-    return numItem({ id: `roundingGap-${n}`, family: 'roundingGap', ...asPic(gapPic(f, '0.' + p, W * 100)), prompt: `${A(fh(f))} of a ${A($(W * 100))} prize goes to the winner. A spreadsheet uses ${A(p + '%')} instead. How many dollars apart are the two answers?`, board: `${ft(f)}\\text{ of } ${tm(W * 100)} \\;\\text{vs}\\; ${p}\\%\\text{ of } ${tm(W * 100)}`, unit: 'dollars',
+    return numItem({ id: `roundingGap-${n}`, family: 'roundingGap', ...asPic(gapPic(f, '0.' + p, W * 100)), prompt: `${A(fh(f))} of ${an($(W * 100))} ${A($(W * 100))} prize goes to the winner. A spreadsheet uses ${A(p + '%')} instead. How many dollars apart are the two answers?`, board: `${ft(f)}\\text{ of } ${tm(W * 100)} \\;\\text{vs}\\; ${p}\\%\\text{ of } ${tm(W * 100)}`, unit: 'dollars',
       solution: [`${fh(f)} of ${$(W * 100)} = ${$(ex * 100)}`, `${p}% of ${$(W * 100)} = ${$(Math.round(ap * 100), true)}`, `The difference is ${$(Math.round(diff * 100), true)}.`] },
       diff, `Yes: ${$(Math.round(diff * 100), true)} apart.`, `Work out both: ${fh(f)} of ${W}, and ${p}% of ${W}.`, [
         { v: 0, mc: MC.midRound, say: `${p}% is not exactly ${fh(f)}. ${fh(f)} of ${W} = ${ex}, but ${p}% of ${W} = ${ap}.` },
@@ -870,7 +888,7 @@ const roundingGap: Gen = (R, n) => {
   const X = pick(R, [10, 20, 50, 100, 25, 40, 70, 80, 11, 13, 14, 16]) * 100, share = Math.floor(X / 3), left = X - 3 * share;
   if (left === 0) return roundingGap(R, n, 'x');
   return numItem({ id: `roundingGap-${n}`, family: 'roundingGap', prompt: `Three friends split ${A($(X))}. Each pays ${A($(share, true))}. How much of the ${$(X)} is not covered?`, board: `${tm(X)} - 3 \\times ${tm(share, true)}`, unit: 'dollars',
-    solution: [`3 × ${$(share, true)} = ${$(3 * share, true)}`, `${$(X, true)} − ${$(3 * share, true)} = ${$(left, true)}`, `So one friend pays ${$(share + left, true)}.`] },
+    solution: [`3 × ${$(share, true)} = ${$(3 * share, true)}`, `${$(X, true)} − ${$(3 * share, true)} = ${ans($(left, true))} not covered.`, `So one friend pays ${$(share + left, true)}.`] },
     left / 100, `Yes: ${$(left, true)} is left, so one friend pays a cent${left > 1 ? 's' : ''} more.`, `Multiply the share by 3, then subtract from ${$(X)}.`, [
       { v: 0, mc: MC.midRound, say: `Rounding each share changes the total: 3 × ${$(share, true)} = ${$(3 * share, true)}.` },
     ]);
@@ -892,10 +910,10 @@ const keepExact: Gen = (R, n, sg) => {
 
 // ===================== 13. accuracy-tolerance =====================
 const TOL = [
-  { T: 0.125, th: `${fr(1, 8)} inch`, u: 'inches', what: 'a shelf board' },
-  { T: 0.5, th: '0.5 pound', u: 'pounds', what: 'a bag of dog food' },
-  { T: 0.1, th: '0.1 mile', u: 'miles', what: 'a running route' },
-  { T: 0.05, th: '0.05 liter', u: 'liters', what: 'a water jug' },
+  { T: 0.125, th: `${fr(1, 8)} inch`, u: 'inches', what: 'a shelf board', size: 'length' },
+  { T: 0.5, th: '0.5 pound', u: 'pounds', what: 'a bag of dog food', size: 'weight' },
+  { T: 0.1, th: '0.1 mile', u: 'miles', what: 'a running route', size: 'length' },
+  { T: 0.05, th: '0.05 liter', u: 'liters', what: 'a water jug', size: 'volume' },
 ];
 const tolerance: Gen = (R, n) => {
   const c = pick(R, TOL), den = pick(R, [3, 6, 7, 9]);
@@ -914,7 +932,7 @@ const tolerance: Gen = (R, n) => {
   const right = err < c.T;
   const exStr = formHtml({ kind: 'frac', r: e });
   return choiceItem(R, {
-    id: `tolerance-${n}`, family: 'tolerance', prompt: `The exact length of ${c.what} is ${A(exStr + ' ' + c.u)}. A plan writes ${A(as + ' ' + c.u)}. It must be within ${c.th}. Is ${as} close enough?`,
+    id: `tolerance-${n}`, family: 'tolerance', prompt: `The exact ${c.size} of ${c.what} is ${A(exStr + ' ' + c.u)}. A plan writes ${A(as + ' ' + c.u)}. It must be within ${c.th}. Is ${as} close enough?`,
     board: `\\left|\\,${ft(e)} - ${as}\\,\\right| \\;\\overset{?}{<}\\; ${c.T === 0.125 ? '\\tfrac{1}{8}' : String(c.T)}`,
     solution: [`${exStr} = ${truncStrSafe(e)}…`, `The difference is about ${err.toFixed(3)} ${c.u}.`, right ? `${err.toFixed(3)} < ${c.T}: close enough.` : `${err.toFixed(3)} > ${c.T}: not close enough.`],
   }, [
@@ -945,8 +963,9 @@ const fasterRoute: Gen = (R, n) => {
   const t = int(R, 0, 3);
   if (t === 0) {
     const p = pick(R, ['25', '50', '20', '75']), f = pctRat(p), W = wholeFor(R, f.d, 12, 120);
-    return choiceItem(R, { id: `fasterRoute-${n}`, family: 'fasterRoute', ...asPic(percentOfPic(p, $(W * 100), $(Math.round(rNum(rMul(f, rat(W * 100))))))), prompt: `No calculator. Which route for ${A(p + '%')} of ${A($(W * 100))} takes the fewest steps?`, board: `${p}\\%\\text{ of } ${tm(W * 100)}`, solution: [`${p}% = ${fh(f)}`, `${W} ÷ ${f.d} = ${W / f.d}: one easy division.`] }, [
-      { t: `${W} ÷ ${f.d}`, ok: true, say: `Yes: ${p}% = ${fh(f)}, and ${W} splits evenly into ${f.d}.` },
+    return choiceItem(R, { id: `fasterRoute-${n}`, family: 'fasterRoute', ...asPic(percentOfPic(p, $(W * 100), $(Math.round(rNum(rMul(f, rat(W * 100))))))), prompt: `No calculator. Which route for ${A(p + '%')} of ${A($(W * 100))} takes the fewest steps?`, board: `${p}\\%\\text{ of } ${tm(W * 100)}`, solution: [`${p}% = ${fh(f)}`, f.n === 1 ? `${W} ÷ ${f.d} = ${W / f.d}: one easy division.` : `${W} ÷ ${f.d} = ${W / f.d}, then × ${f.n} = ${(W / f.d) * f.n}: easy steps.`] }, [
+      // 75% = 3/4: "÷ 4" alone would give 25%, so the route says "then × 3"
+      { t: f.n === 1 ? `${W} ÷ ${f.d}` : `${W} ÷ ${f.d}, then × ${f.n}`, ok: true, say: `Yes: ${p}% = ${fh(f)}, and ${W} splits evenly into ${f.d}.` },
       { t: `${ds(f)} × ${W}, worked out on paper`, mc: MC.oneForm, say: `That works too, but it takes more steps. Here the fraction ${fh(f)} is quicker.` },
       { t: `${W} ÷ ${p}`, mc: MC.onePth, say: `${p}% is ${fh(f)}, not one ${p}th.` },
     ]);
@@ -1034,7 +1053,7 @@ const multiStep: Gen = (R, n) => {
     const disc = rNum(rMul(f, rat(P * 100))), sale = P * 100 - disc, tax = pctOfCents(t, sale);
     if (tax === null) continue;
     const total = sale + tax, item = pick(R, ['jacket', 'skateboard', 'backpack', 'pair of sneakers', 'lamp']);
-    return numItem({ id: `multiStep-${n}`, family: 'multiStep', prompt: `A ${A($(P * 100))} ${item} is ${A(d + '% off')}. Then ${A(t + '%')} sales tax is added to the sale price. (Sale price = price − discount; total = sale price + tax.) What is the total?`, board: `${tm(P * 100)} - ${d}\\%,\\;\\text{then} + ${t}\\%\\text{ tax}`, unit: 'dollars',
+    return numItem({ id: `multiStep-${n}`, family: 'multiStep', prompt: `${an($(P * 100), true)} ${A($(P * 100))} ${item} is ${A(d + '% off')}. Then ${A(t + '%')} sales tax is added to the sale price. (Sale price = price − discount; total = sale price + tax.) What is the total?`, board: `${tm(P * 100)} - ${d}\\%,\\;\\text{then} + ${t}\\%\\text{ tax}`, unit: 'dollars',
       solution: [`Discount: ${d}% = ${fh(f)}, ${P} ÷ ${f.d}${f.n > 1 ? ` × ${f.n}` : ''} = ${$(disc, true)}`, `Sale price: ${$(P * 100, true)} − ${$(disc, true)} = ${$(sale, true)}`, `Tax: ${ds(pctRat(t))} × ${ds(rat(sale, 100))} = ${$(tax, true)}`, `Total: ${$(sale, true)} + ${$(tax, true)} = ${$(total, true)}`] },
       total / 100, `Yes: ${$(total, true)}.`, 'Three steps: the discount, the sale price, then the tax on the sale price.', [
         { v: sale / 100, mc: MC.intermediate, say: `${$(sale, true)} is the sale price. Add the ${t}% tax on it.` },

@@ -7,6 +7,7 @@ import { type Q, qMul, rat, toQ } from '../../../core/math';
 import { frame } from '../../../blocks/block';
 import { type AreaPic, type Shape, type V, areaOf, fitsArea } from './areaMaths';
 import type { AreaStep, LabelKey } from './AreaGrid';
+import { endOnChoice } from '../../runtime/explain';
 
 export type FamilyId =
   | 'stretchOne' | 'stretchTimes' | 'fillCopy' | 'copyArea' | 'twoFactors' | 'isScaled' | 'tileCount' | 'onlyRects'
@@ -126,7 +127,7 @@ function choiceItem(R: () => number, o: { id: string; family: FamilyId; prompt: 
   const opts = shuffle(R, [...o.opts]);
   const item: AreaItem = {
     id: o.id, family: o.family, prompt: o.prompt, board: o.board, input: 'choice', choices: opts.map(x => x.t),
-    answer: { kind: 'choice', i: opts.findIndex(x => x.ok) }, solution: o.solution, ...(o.pict ? { pict: o.pict } : {}),
+    answer: { kind: 'choice', i: opts.findIndex(x => x.ok) }, solution: endOnChoice(o.solution, opts.find(x => x.ok)!.t), ...(o.pict ? { pict: o.pict } : {}),
     check(r: Response): Verdict {
       if (r.kind !== 'choice') return { ok: false, say: 'Pick one answer.' };
       const x = opts[r.i];
@@ -202,9 +203,10 @@ function sketchPic(oT: string, cT: string, cArea: string, tex: string): ItemPic 
 }
 
 // ---------- contexts ----------
+// lo / hi: the areas (square units) such a thing really has: no 14 sq ft patio, no 160 sq ft tablecloth
 const THINGS = [
-  { n: 'rug', u: 'ft' }, { n: 'garden bed', u: 'ft' }, { n: 'poster', u: 'in' }, { n: 'photo', u: 'in' },
-  { n: 'patio', u: 'ft' }, { n: 'banner', u: 'ft' }, { n: 'tablecloth', u: 'ft' }, { n: 'sticker', u: 'in' },
+  { n: 'rug', u: 'ft', lo: 20, hi: 200 }, { n: 'garden bed', u: 'ft', lo: 10, hi: 150 }, { n: 'poster', u: 'in', lo: 300, hi: 1200 }, { n: 'photo', u: 'in', lo: 24, hi: 150 },
+  { n: 'patio', u: 'ft', lo: 60, hi: 400 }, { n: 'banner', u: 'ft', lo: 6, hi: 100 }, { n: 'tablecloth', u: 'ft', lo: 15, hi: 60 }, { n: 'sticker', u: 'in', lo: 2, hi: 30 },
 ] as const;
 const NAMES = ['Maya', 'Jordan', 'Riley', 'Sam', 'Ava', 'Leo', 'Nora', 'Eli', 'Zoe', 'Mateo'] as const;
 const sqU = (u: string) => `sq ${u}`;
@@ -217,7 +219,7 @@ const stretchOne: Gen = (R, n) => {
   const story = R() < 0.5;
   const prompt = story
     ? `A ${th.n} is ${A(w)} ${th.u} long and ${A(h)} ${th.u} wide. A new one keeps the ${other} but makes the ${word} ${B(k * side)} ${th.u}. What is the new area?`
-    : `A rectangle is ${A(w)} units long and ${A(h)} units wide. Only its ${word} is multiplied by ${K(k)}. What is the new area?`;
+    : `A rectangle is ${A(w)} unit${w === 1 ? '' : 's'} long and ${A(h)} unit${h === 1 ? '' : 's'} wide. Only its ${word} is multiplied by ${K(k)}. What is the new area?`;
   const unit = story ? sqU(th.u) : 'sq units';
   const pic: AreaPic = { shape: rect(w, h), kx: along ? k : 1, ky: along ? 1 : k, labels: { ow: `${w}`, oh: `${h}`, cw: `${along ? k * w : w}`, ch: `${along ? h : k * h}` }, area: { o: `${A0}` }, tile: 'copies', count: true };
   return numItem({
@@ -435,7 +437,7 @@ const areaFactor: Gen = (R, n) => {
       { v: 2 * k, mc: MC.timesTwo, say: `k² means ${k} × ${k}, not ${k} × 2.` },
     ],
     ok: `Yes: ${k}² = ${k} × ${k} = ${k * k}.${k === 1 ? ' Same size, same area.' : ''}`, hint: `The area factor is k × k.`,
-    solution: [`Area factor = k × k = ${k} × ${k} = <b class="s">${k * k}</b>.`],
+    solution: [`The length is × ${k}, and the width is × ${k} again.`, `Area factor = k × k = ${k} × ${k} = <b class="s">${k * k}</b>.`],
   });
 };
 const squaredMeans: Gen = (R, n) => {
@@ -452,7 +454,9 @@ const squaredMeans: Gen = (R, n) => {
 
 // =================== 7. area of the copy ===================
 const areaGiven: Gen = (R, n) => {
-  const k = int(R, 2, 10), A0 = k <= 5 ? int(R, 4, 200) : int(R, 4, 40), th = pick(R, THINGS), ans = k * k * A0, u = sqU(th.u);
+  // big factors (× 6 and up) keep the area small enough to multiply by hand
+  const k = int(R, 2, 10), th = pick(R, k <= 5 ? THINGS : THINGS.filter(t => t.lo <= 40));
+  const A0 = int(R, th.lo, k <= 5 ? th.hi : Math.min(th.hi, 40)), ans = k * k * A0, u = sqU(th.u);
   return numItem({
     id: `areaGiven-${n}`, family: 'areaGiven', pict: unitPic(k, `${k}^2 \\times ${A0} = ${tn(ans)}`), prompt: `A ${th.n} has an area of ${A(A0)} ${u}. A scaled copy has every length × ${K(k)}. What is the area of the copy?`,
     board: `${A0}\\text{ ${u}},\\ k = ${k}`, unit: u, ans,
@@ -498,10 +502,12 @@ const fracFactor: Gen = (R, n) => {
         { v: (k.p * k.p) / k.q, say: `Square the whole fraction: the top AND the bottom. (${qh(k)})² = ${qh(k2)}.` },
       ],
       ok: `Yes: ${qh(k)} × ${qh(k)} = ${qh(k2)}.${red ? ' Squaring a number less than 1 makes it smaller.' : ''}`, hint: 'Multiply the fraction by itself: top × top, bottom × bottom.',
-      solution: [`(${qh(k)})² = ${qh(k)} × ${qh(k)} = <b class="s">${qh(k2)}</b>${k2.q !== 1 ? ` (= ${fmt(qv(k2))})` : ''}.`],
+      solution: [`The length is × ${qh(k)}, and the width is × ${qh(k)} again.`, `(${qh(k)})² = ${qh(k)} × ${qh(k)} = <b class="s">${qh(k2)}</b>${k2.q !== 1 ? ` (= ${fmt(qv(k2))})` : ''}.`],
     });
   }
-  const A0 = k2.q * int(R, 1, 6), ans = A0 * qv(k2), th = pick(R, THINGS), u = sqU(th.u);
+  // a whole number of k² denominators, inside the thing's real size
+  const th = pick(R, THINGS.filter(t => Math.floor(t.hi / k2.q) >= Math.max(1, Math.ceil(t.lo / k2.q))));
+  const A0 = k2.q * int(R, Math.max(1, Math.ceil(th.lo / k2.q)), Math.min(Math.floor(th.hi / k2.q), Math.max(Math.ceil(th.lo / k2.q), 12))), ans = A0 * qv(k2), u = sqU(th.u);
   return numItem({
     id: `fracFactor-${n}`, family: 'fracFactor', pict: fracPic(k, `${qt(k2)} \\times ${A0} = ${tn(ans)}`), prompt: `A ${th.n} has an area of ${A(A0)} ${u}. Every length is multiplied by ${K(qh(k))}. What is the new area?`,
     board: `${A0}\\text{ ${u}},\\ k = ${qt(k)}`, unit: u, ans,
@@ -565,7 +571,7 @@ const areaRatio: Gen = (R, n) => {
       { x: b * b, y: a * a, mc: MC.reverseRatio, say: `Keep the order: new first, then original. ${a * a} : ${b * b}.` },
     ],
     ok: `Yes: ${a}² : ${b}² = ${a * a} : ${b * b}.`, hint: 'Square each term of the length ratio, and keep the order.',
-    solution: [`Areas compare as the squares of the lengths.`, `${a}² : ${b}² = <b class="s">${a * a} : ${b * b}</b> (new : original).`],
+    solution: [`Areas compare as the squares of the lengths.`, `${a}² : ${b}² = <b class="s">${a * a}</b> : <b class="s">${b * b}</b> (new : original).`],
   });
 };
 const planRatio: Gen = (R, n) => {
@@ -579,7 +585,7 @@ const planRatio: Gen = (R, n) => {
       { x: s * s, y: 1, mc: MC.reverseRatio, say: `Keep the order: drawing first, then actual. 1 : ${fmt(s * s)}.` },
     ],
     ok: `Yes: 1 : ${fmt(s)}² = 1 : ${fmt(s * s)}.`, hint: 'Square both terms of the scale.',
-    solution: [`One square unit on the drawing is ${fmt(s)} by ${fmt(s)} real units.`, `Drawing : actual area = <b class="s">1 : ${fmt(s * s)}</b>.`],
+    solution: [`One square unit on the drawing is ${fmt(s)} by ${fmt(s)} real units.`, `Drawing : actual area = <b class="s">1</b> : <b class="s">${fmt(s * s)}</b>.`],
   });
 };
 
@@ -645,13 +651,15 @@ const rootK: Gen = (R, n) => {
     board: `k^2 = ${F},\\ k = \\,?`, unit: '', ans: k,
     wrongs: [{ v: F / 2, mc: MC.rootHalf, say: `A square root is not half of ${F}. Which number times itself gives ${F}?` }, { v: F, mc: MC.byK, say: `${F} is the AREA factor. The length factor times itself makes ${F}.` }],
     ok: `Yes: ${k} × ${k} = ${F}.`, hint: `Which number times itself gives ${F}?`,
-    solution: [`${k} × ${k} = ${F}, so k = <b class="s">${k}</b>.`],
+    solution: [`The area factor is k × k = ${F}: which number times itself gives ${F}?`, `${k} × ${k} = ${F}, so k = <b class="s">${k}</b>.`],
   });
 };
+/** what a plan of each kind shows: a yard plan has a lawn, not a room */
+const REAL_ON: Record<string, string> = { map: 'region', 'state map': 'region', 'yard plan': 'lawn', 'deck plan': 'deck', 'site plan': 'parking lot' };
 const planBack: Gen = (R, n) => {
   const L = pick(R, LEGENDS.filter(l => l.s <= 10)), w = int(R, 1, 6), h = int(R, 1, 5), actual = w * h * L.s * L.s;
   return numItem({
-    id: `planBack-${n}`, family: 'planBack', prompt: `A ${L.plan} has the legend ${B(`${L.d} : ${L.a}`)}. A real ${L.plan === 'map' ? 'region' : 'room'} has an area of ${A(fmt(actual))} sq ${L.au}. What is its area on the ${L.plan}?`,
+    id: `planBack-${n}`, family: 'planBack', prompt: `A ${L.plan} has the legend ${B(`${L.d} : ${L.a}`)}. A real ${REAL_ON[L.plan] ?? 'room'} has an area of ${A(fmt(actual))} sq ${L.au}. What is its area on the ${L.plan}?`,
     board: `${tn(actual)}\\text{ sq ${L.au}} \\to \\,?`, unit: `sq ${L.du}`, ans: w * h,
     wrongs: [{ v: actual / L.s, mc: MC.linearUnits, say: `1 sq ${L.du} stands for ${L.s} × ${L.s} = ${L.s * L.s} sq ${L.au}, so divide by ${L.s * L.s}, not ${L.s}.` }],
     ok: `Yes: ${fmt(actual)} ÷ ${L.s * L.s} = ${w * h} sq ${L.du}.`, hint: `How many sq ${L.au} does 1 sq ${L.du} stand for? Divide by that.`,
@@ -759,20 +767,22 @@ const triWhy: Gen = (R, n) => {
 
 // =================== 15. times k or times k² ===================
 const whichMeasure: Gen = (R, n) => {
-  const k = pick(R, [2, 3, 4] as const), w = int(R, 2, 6), h = int(R, 1, 5), A0 = w * h, P0 = 2 * (w + h), ask = int(R, 0, 2);
+  // never a square: the question may ask for the copy's long side
+  const k = pick(R, [2, 3, 4] as const), w = int(R, 2, 6), h0 = int(R, 1, 5), h = h0 === w ? w - 1 : h0, A0 = w * h, P0 = 2 * (w + h), ask = int(R, 0, 2);
   const pic: AreaPic = { shape: rect(w, h), kx: k, ky: k, labels: { ow: `${w}`, oh: `${h}`, cw: `${k * w}`, ch: `${k * h}` }, tile: 'copies' };
   const base = `A ${A(w)} cm by ${A(h)} cm rectangle (perimeter ${A(P0)} cm, area ${A(A0)} sq cm) is scaled by ${K(k)}.`;
   const common = { family: 'whichMeasure' as const, id: `whichMeasure-${n}`, board: `${w} \\times ${h},\\ k = ${k}` };
   const pict = fit(pic, ['grid', 'o', 'oL'], { show: ['c', 'cL', ...(ask === 2 ? ['tiles' as const] : [])], tex: ask === 0 ? `${w} \\times ${k} = ${k * w}` : ask === 1 ? `${P0} \\times ${k} = ${k * P0}` : `${A0} \\times ${k}^2 = ${k * k * A0}` });
+  const rule = `Scale factor ${k}: lengths and the perimeter are × ${k}, the area is × ${k}² = ${k * k}.`;
   if (ask === 0) return numItem({ ...common, prompt: `${base} How long is the copy’s long side?`, unit: 'cm', ans: k * Math.max(w, h),
     wrongs: [{ v: k * k * Math.max(w, h), mc: MC.areaToLength, say: `A length is × ${k}, not × ${k * k}. Only areas get k².` }],
-    ok: `Yes: a length is × ${k}.`, hint: `Lengths are multiplied by k.`, solution: [`Lengths × k: ${Math.max(w, h)} × ${k} = <b class="s">${k * Math.max(w, h)}</b> cm.`], pict });
+    ok: `Yes: a length is × ${k}.`, hint: `Lengths are multiplied by k.`, solution: [rule, `Lengths × k: ${Math.max(w, h)} × ${k} = <b class="s">${k * Math.max(w, h)}</b> cm.`], pict });
   if (ask === 1) return numItem({ ...common, prompt: `${base} What is the copy’s perimeter?`, unit: 'cm', ans: k * P0,
     wrongs: [{ v: k * k * P0, mc: MC.areaToLength, say: `A perimeter is a length: × ${k}, not × ${k * k}.` }, { v: P0 + 4 * (k - 1), say: `Every side is × ${k}, so the perimeter is × ${k}.` }],
-    ok: `Yes: the perimeter is a length, × ${k}.`, hint: 'The perimeter is a length: lengths are × k.', solution: [`The perimeter is a length: ${P0} × ${k} = <b class="s">${k * P0}</b> cm.`], pict });
+    ok: `Yes: the perimeter is a length, × ${k}.`, hint: 'The perimeter is a length: lengths are × k.', solution: [rule, `The perimeter is a length: ${P0} × ${k} = <b class="s">${k * P0}</b> cm.`], pict });
   return numItem({ ...common, prompt: `${base} What is the copy’s area?`, unit: 'sq cm', ans: k * k * A0,
     wrongs: [{ v: k * A0, mc: MC.byK, say: `Area is × k², not × k: ${k} × ${k} × ${A0}.` }],
-    ok: `Yes: area is × ${k}² = ${k * k}.`, hint: 'Areas are multiplied by k².', solution: [`Area × k²: ${A0} × ${k * k} = <b class="s">${k * k * A0}</b> sq cm.`], pict });
+    ok: `Yes: area is × ${k}² = ${k * k}.`, hint: 'Areas are multiplied by k².', solution: [rule, `Area × k²: ${A0} × ${k * k} = <b class="s">${k * k * A0}</b> sq cm.`], pict });
 };
 const fieldJobs: Gen = (R, n) => {
   const k = pick(R, [2, 3, 4] as const), m = int(R, 3, 12), bags = int(R, 1, 5), walk = R() < 0.5;
@@ -789,7 +799,8 @@ const fieldJobs: Gen = (R, n) => {
 const costArea: Gen = (R, n) => {
   const kind = int(R, 0, 2);
   if (kind === 0) {
-    const w = int(R, 3, 8), h = int(R, 2, 6), k = pick(R, [2, 3] as const), p = pick(R, [2, 3, 4, 5, 6, 1.5, 2.5] as const), ans = r3(p * k * k * w * h);
+    // a real room, yard or kitchen floor: at least 40 sq ft
+    const w = int(R, 6, 10), h0 = int(R, 4, 8), h = w * h0 < 40 ? Math.ceil(40 / w) : h0, k = pick(R, [2, 3] as const), p = pick(R, [2, 3, 4, 5, 6, 1.5, 2.5] as const), ans = r3(p * k * k * w * h);
     const what = pick(R, [{ t: 'carpet', r: 'room' }, { t: 'sod', r: 'yard' }, { t: 'tile', r: 'kitchen floor' }] as const);
     return numItem({ id: `costArea-${n}`, family: 'costArea', pict: rectPic(w, h, k, k, `${w * h} \\times ${k}^2 = ${k * k * w * h}`), prompt: `A ${what.r} is ${A(w)} ft by ${A(h)} ft. A bigger ${what.r} has every length ${K(k)} times as long. ${what.t[0]!.toUpperCase() + what.t.slice(1)} costs ${money(p)} per sq ft. What does ${what.t} for the bigger ${what.r} cost?`,
       board: `${w} \\times ${h},\\ k = ${k},\\ \\$${p}\\text{ per sq ft}`, unit: 'dollars', ans,
@@ -816,7 +827,7 @@ const pizzaDeal: Gen = (R, n) => {
   const [d, k] = pick(R, [[6, 2], [7, 2], [8, 2], [9, 2], [10, 2], [5, 3], [6, 3]] as const);
   const s = pick(R, [4, 5, 6, 8] as const), f = k === 2 ? pick(R, [2.5, 3, 3.5] as const) : pick(R, [4, 5, 6, 7] as const), big = r3(s * f);
   return choiceItem(R, {
-    id: `pizzaDeal-${n}`, family: 'pizzaDeal', pict: unitPic(k, `${k}^2 = ${k * k} > ${f}`), prompt: `A ${A(d)}-inch pizza costs ${money(s)}. A ${B(d * k)}-inch pizza (same thickness) costs ${money(big)}. Which is the better deal?`,
+    id: `pizzaDeal-${n}`, family: 'pizzaDeal', pict: unitPic(k, `${k}^2 = ${k * k} > ${f}`), prompt: `${d === 8 ? 'An' : 'A'} ${A(d)}-inch pizza costs ${money(s)}. ${d * k === 18 || d * k === 8 ? 'An' : 'A'} ${B(d * k)}-inch pizza (same thickness) costs ${money(big)}. Which is the better deal?`,
     board: `${d}\\text{ in} \\to ${d * k}\\text{ in}`, opts: [
       { t: `The ${d * k}-inch: ${k * k} times the pizza for ${f} times the price`, ok: true, say: `Yes: the width is × ${k}, so the pizza (an area) is × ${k * k}, but the price is only × ${f}.` },
       { t: `The ${d}-inch: the big one is only ${k} times the pizza for ${f} times the price`, mc: MC.byK, say: `The amount of pizza is an area: × ${k}² = ${k * k}, not × ${k}.` },

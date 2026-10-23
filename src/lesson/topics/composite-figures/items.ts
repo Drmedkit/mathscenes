@@ -9,6 +9,7 @@ import {
   quarterOnly, rectHole, rectQuarter, rectSemi, ring, rotFig, semiOnly, squareInscribed, track, trapSemi, triSemi,
 } from './figMaths';
 import type { DimShow } from './PlanFigure';
+import { endOnChoice } from '../../runtime/explain';
 
 export type FamilyId =
   | 'shown' | 'measure' | 'inventory' | 'arcVs' | 'arcEst' | 'exact' | 'readPi' | 'partArea' | 'arcLen' | 'infer'
@@ -95,7 +96,7 @@ function choiceItem(base: Omit<Item, 'input' | 'choices' | 'answer' | 'check'>, 
   const o = shuffle(R, opts.filter(x => (seen.has(x.t) ? false : (seen.add(x.t), true))));
   const right = o.findIndex(x => x.ok);
   const it: Item = {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right }, solution: endOnChoice(base.solution, o[right]!.t),
     check: r => {
       if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one answer.' };
       const x = o[r.i]!;
@@ -645,6 +646,9 @@ const genRound: Gen = (R, n) => {
   const PIv = key ? Math.PI : 3.14;
   const rd = (x: number) => Math.round(x * 10 ** dp + 1e-9) / 10 ** dp;
   const val = (p: number) => (minus ? a - b * p : a + b * p);
+  // an exact .5 tie (41 − 2.5 × 3.14 = 33.15 to the nearest tenth) could round either way: not asked
+  const sc = val(PIv) * 10 ** dp;
+  if (Math.abs(Math.abs(sc - Math.trunc(sc)) - 0.5) < 1e-6) return genRound(R, n);
   const right = rd(val(PIv));
   const X = pn(a, minus ? -b : b);
   const unit = area ? u2(u) : u;
@@ -693,7 +697,7 @@ const genHole: Gen = (R, n) => {
     right = [outer, 0]; what = `the ${B('outer perimeter')} (the outside edge only)`;
     wr = [{ v: [outer, 2 * m.r], mc: MC.fixedBoundary, say: 'The outer perimeter is only the outside edge: leave the hole out this time.' },
       { v: [outer - 2 * m.r, 0], mc: MC.cutShrinks, say: 'A hole in the middle does not touch the outside edge: it stays the same.' }];
-    sol = [`The outside edge is not touched by the hole.`, `Outer perimeter: 2 × (${m.w} + ${m.h}) = ${outer} ${u} (0 in the π box).`];
+    sol = [`The outside edge is not touched by the hole.`, `Outer perimeter: 2 × (${m.w} + ${m.h}) = ${outer} ${u}. No curve, so ${outer} + 0π.`];
     solve = ['cut', 'trace']; hero = perimHero(F, 'outer');
   }
   const pic: FigPicture = { kind: 'fig', fig: F, unit: u, dims: [{ id: 'w' }, { id: 'h' }, { id: 'd' }], before: true, solve, hero };
@@ -803,7 +807,7 @@ const genJob: Gen = (R, n) => {
     prompt = all ? `A deck with a round hole for a tree gets rubber edging along EVERY edge, around the hole too. How much edging? Round to the nearest tenth.` : `A deck with a round hole for a tree gets a railing around the OUTSIDE only. How much railing?`;
     wr = all ? [{ v: 2 * (m.w + m.h), mc: MC.fixedBoundary, say: 'The job says every edge, around the hole too: add the hole’s edge, π × d.' }, { v: r1(pnVal(F.area)), mc: MC.areaPerim, say: 'That is the area. Edging runs along edges: a length.' }]
       : [{ v: r1(pnVal(F.perimeter)), mc: MC.ignoresContext, say: 'The railing only goes around the outside: leave the hole’s edge out.' }, { v: m.w * m.h, mc: MC.areaPerim, say: 'That is the area. A railing runs along an edge.' }];
-    sol = all ? [`Outside: 2 × (${m.w} + ${m.h}) = ${2 * (m.w + m.h)}.`, `Hole: π × ${2 * m.r} ≈ ${r1(2 * m.r * Math.PI)}.`, `Edging ≈ ${right} ${u}.`] : [`Only the outside: 2 × (${m.w} + ${m.h}) = ${right} ${u}.`];
+    sol = all ? [`Outside: 2 × (${m.w} + ${m.h}) = ${2 * (m.w + m.h)}.`, `Hole: π × ${2 * m.r} ≈ ${r1(2 * m.r * Math.PI)}.`, `Edging ≈ ${right} ${u}.`] : ['A railing runs along the edge: a length. The hole’s edge is not on the outside.', `Only the outside: 2 × (${m.w} + ${m.h}) = ${right} ${u}.`];
     solve = all ? ['trace', 'holes'] : ['trace'];
   } else if (v === 'window') {
     const m = mkRectSemi(R); F = rotFig(m.F, 1); dims = [{ id: 'w' }, { id: 'h' }];

@@ -25,6 +25,7 @@ import type { AreaPic } from '../../src/lesson/topics/scale-and-area/areaMaths';
 import { LESSON_FRAME, PHOTO, RUG, TRI } from '../../src/lesson/topics/scale-and-area/lessonPics';
 import { type AreaItem, FAMILY_NAMES, GENERATORS, MC, PF } from '../../src/lesson/topics/scale-and-area/items';
 import { PLAN } from '../../src/lesson/topics/scale-and-area/plan';
+import { explain } from '../../src/lesson/topics/scale-and-area/explain';
 import { SCRIPT } from '../../src/lesson/topics/scale-and-area/script';
 
 const SLUG = 'scale-and-area';
@@ -355,7 +356,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as AreaItem),
   });

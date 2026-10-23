@@ -25,6 +25,7 @@ import { SIDES_BOARD, SIDES_FRAME, STRIP_FROM, STRIP_TO } from '../../src/lesson
 import { SidesBalance, type SidesBlock, type SidesFocus, type SidesStep, type LabelPart } from '../../src/lesson/topics/linear-equations/SidesBalance';
 import { FAMILY_NAMES, GENERATORS, MC, type LEItem, type BalancePic } from '../../src/lesson/topics/linear-equations/items';
 import { PLAN } from '../../src/lesson/topics/linear-equations/plan';
+import { explain } from '../../src/lesson/topics/linear-equations/explain';
 import { SCRIPT } from '../../src/lesson/topics/linear-equations/script';
 import { N, X, sideTex, type Side } from '../../src/lesson/topics/linear-equations/lin';
 
@@ -485,7 +486,7 @@ function partPractice(): void {
   // ?sg=<sub-goal id>: practise one part of the topic only (a teacher's jump, and the walk's way to reach later parts)
   const sg = ctx.qs.get('sg'), plan = sg && PLAN.some(p => p.id === sg) ? PLAN.filter(p => p.id === sg) : PLAN;
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as LEItem),
   });

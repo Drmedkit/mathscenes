@@ -23,6 +23,7 @@ import { Bar, MAPF, MapLines, type MapLinesBlock, Range, Ruler, Strips } from '.
 import { ALASKA, JO, TOPO } from '../../src/lesson/topics/map-scale/lessonPics';
 import { FAMILY_NAMES, GENERATORS, MC, type MSItem } from '../../src/lesson/topics/map-scale/items';
 import { PLAN } from '../../src/lesson/topics/map-scale/plan';
+import { explain } from '../../src/lesson/topics/map-scale/explain';
 import type { LinesFocus } from '../../src/lesson/topics/scale-calculations/ScaleLines';
 import LINES from './map-scale/voice/lines.json';
 
@@ -392,7 +393,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as MSItem),
   });

@@ -161,3 +161,47 @@ describe('voice', () => {
     }
   });
 });
+
+describe('quality layer (worked steps, regressions)', () => {
+  it('pyramid volume is whole or thirds, never sixths typed as 45.833… (no rounding is asked)', async () => {
+    const { GENS } = await import('../src/lesson/topics/composite-area-volume/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (let s = 1; s <= 1500; s++) {
+      const it0 = GENS.pyrVol(rng(s * 131 + 7), s, 'pyramid-volume');
+      const v = it0.answer.kind === 'num' ? it0.answer.v : it0.answer.kind === 'frac' ? it0.answer.w + it0.answer.n / it0.answer.d : 0;
+      expect(Math.abs(v * 3 - Math.round(v * 3)), it0.prompt).toBeLessThan(1e-6);
+    }
+  });
+  it('"two blocks of cheese", never "two block of cheeses"', async () => {
+    const { GENS } = await import('../src/lesson/topics/composite-area-volume/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (let s = 1; s <= 400; s++) for (const [f, sg] of [['classify', 'sa-contact-classify'], ['joinSA', 'sa-double-subtraction']] as const) {
+      expect(GENS[f](rng(s * 7 + 3), s, sg).prompt.replace(/<[^>]+>/g, '')).not.toMatch(/\bblock of \w+s\b/);
+    }
+  });
+  it('explain reads mixed numbers the way the steps write them (15¾ ft²)', async () => {
+    const { GENS } = await import('../src/lesson/topics/composite-area-volume/items');
+    const { explain } = await import('../src/lesson/topics/composite-area-volume/explain');
+    const { rng } = await import('../src/lesson/runtime/item');
+    let fr = 0;
+    for (let s = 1; s <= 300; s++) for (const [f, sg] of [['areaAdd', 'area-additive'], ['areaSub', 'area-subtractive'], ['pyrVol', 'pyramid-volume']] as const) {
+      const it0 = GENS[f](rng(s * 11 + 1), s, sg), ex = explain(it0)!;
+      expect(it0.check(ex.result).ok, `${it0.prompt} ${JSON.stringify(ex.result)}`).toBe(true);
+      if (it0.input === 'frac') fr++;
+    }
+    expect(fr).toBeGreaterThan(0);
+  });
+});
+
+describe('quality layer (world words)', () => {
+  it('"an ice block", "an 18 in base"; a pyramid tent is in feet, a paperweight never in feet', async () => {
+    const { GENS } = await import('../src/lesson/topics/composite-area-volume/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    const txt = (s: string) => s.replace(/<[^>]+>/g, '');
+    for (let s = 1; s <= 400; s++) for (const [f, sg] of [['volSub', 'vol-subtractive'], ['cylVol', 'cyl-volume-bh'], ['pyrVol', 'pyramid-volume'], ['missing', 'vol-missing-dimension']] as const) {
+      const p = txt(GENS[f](rng(s * 41 + 9), s, sg).prompt);
+      expect(p, p).not.toMatch(/\b[Aa] (?=[aeioAEIO]|8|1[18](?![\d.,]))/);
+      expect(p, p).not.toMatch(/pyramid tent .*\d (in|cm)\b|paperweight .*\d ft\b|roof cap .*\d (in|cm)\b/);
+    }
+  });
+});

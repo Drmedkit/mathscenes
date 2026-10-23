@@ -241,3 +241,55 @@ describe('voice', () => {
     }
   });
 });
+
+describe('quality layer (worked steps, regressions)', () => {
+  it('explain reads a big decimal with all its thousands commas (7,400,000 is 7400000) and marks a × 10ⁿ', async () => {
+    const { explain } = await import('../src/lesson/topics/scientific-notation/explain');
+    const { GENS } = await import('../src/lesson/topics/scientific-notation/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    let big = 0;
+    for (let s = 1; s <= 300; s++) {
+      const it0 = GENS.toDecimal!(rng(s * 13 + 5), s, 'convert-sci-to-decimal'), ex = explain(it0)!;
+      expect(ex.result).toEqual(it0.answer);
+      if (it0.answer.kind === 'num' && it0.answer.v >= 1e6) big++;
+      const it1 = GENS.multiply!(rng(s * 17 + 3), s, 'multiply-sci'), ex1 = explain(it1)!;
+      expect(ex1.result).toEqual(it1.answer);
+    }
+    expect(big).toBeGreaterThan(0);
+  });
+  it('distribute: the "adds the exponents" choice is written as one power (10^−10), never "10^−5 + −5"; "1 place", not "1 places"', async () => {
+    const { GENS } = await import('../src/lesson/topics/scientific-notation/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (let s = 1; s <= 300; s++) {
+      const it0 = GENS.distribute!(rng(s * 7 + 1), s, 'add-subtract-same-power');
+      for (const c of it0.choices ?? []) expect(c).not.toMatch(/\+ [−-]/);
+      const it1 = GENS.eDecimal!(rng(s * 7 + 2), s, 'e-notation');
+      expect(it1.solution.join(' ')).not.toMatch(/\b1 places\b/);
+    }
+  });
+});
+
+describe('quality layer (phase 2 regressions)', () => {
+  it('pickUnit: the keyed unit gives a number from 1 to 1,000, the others do not', async () => {
+    const { GENS } = await import('../src/lesson/topics/scientific-notation/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (let s = 1; s <= 400; s++) {
+      const it0 = GENS.pickUnit!(rng(s * 131 + 7), s, 'choose-unit');
+      if (!/1 to 1,000/.test(it0.prompt)) continue;
+      it0.choices!.forEach((c, i) => {
+        const v = Number(c.replace(/<[^>]+>/g, '').replace(/,/g, '').split(' ')[0]);
+        expect(v >= 1 && v <= 1000, c).toBe(i === (it0.answer as { i: number }).i);
+      });
+    }
+  });
+  it('estimate: never an exact tie like 7.5 × 10ⁿ', async () => {
+    const { GENS } = await import('../src/lesson/topics/scientific-notation/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (let s = 1; s <= 1500; s++) {
+      const it0 = GENS.estimate!(rng(s * 131 + 7), s, 'estimate-single-digit-power');
+      const step = it0.solution[0]!.replace(/<[^>]+>/g, '');
+      const a = Number(step.match(/= (\d+(?:\.\d+)?) ×/)![1]);
+      expect(Math.abs(a * 10 - Math.round(a * 10)) < 1e-9 && Math.round(a * 10) % 10 === 5, step).toBe(false);
+    }
+  });
+});

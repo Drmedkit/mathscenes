@@ -111,3 +111,34 @@ describe('reading-maps: voice', () => {
     for (const [id, l] of Object.entries(LINES)) expect(/[0-9×÷=+%$½¼¾]/.test(l.text), `${id}: ${l.text}`).toBe(false);
   });
 });
+
+describe('quality layer (regressions)', () => {
+  const txt = (s: string) => s.replace(/<[^>]+>/g, '');
+  it('"1 mile", "1 kilometer", never "1 miles", in questions, steps, choices and the unit after the box', async () => {
+    const { GENERATORS: G } = await import('../src/lesson/topics/reading-maps/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    let ones = 0;
+    for (const [f, sg] of [['barInterval', 'scale-bar-read'], ['roundFirst', 'unit-scale-fraction'], ['plausible', 'benchmark-check'], ['errorSize', 'error-scaling'], ['gapRead', 'tolerance-agreement']] as const) for (let s = 1; s <= 300; s++) {
+      const it0 = G[f](rng(s * 19 + 7), s, sg);
+      for (const t of [it0.prompt, ...it0.solution, ...(it0.choices ?? []), it0.unit ?? '']) {
+        expect(txt(t), `${f}: ${txt(t)}`).not.toMatch(/(^|[^\d.,/])1 (miles|kilometers|inches|centimeters)\b/);
+        if (/(^|[^\d.,/])1 (mile|kilometer)\b/.test(txt(t))) ones++;
+      }
+    }
+    expect(ones).toBeGreaterThan(0);
+  });
+  it('fixIt: the steps reach the right distance (the endpoint case included)', async () => {
+    const { GENERATORS: G } = await import('../src/lesson/topics/reading-maps/items');
+    const { explain } = await import('../src/lesson/topics/reading-maps/explain');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (let s = 1; s <= 200; s++) {
+      const it0 = G.fixIt(rng(s * 23 + 1), s, 'diagnose-discrepancy'), ex = explain(it0)!;
+      expect(it0.check(ex.result).ok, `${txt(it0.prompt)} ${JSON.stringify(ex.result)}`).toBe(true);
+    }
+  });
+  it('routeSum never throws: a four-bend road that ends on its start (a closed loop) is not made', async () => {
+    const { GENERATORS: G } = await import('../src/lesson/topics/reading-maps/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (let s = 1; s <= 3000; s++) expect(() => G.routeSum(rng(s * 131 + 7), s, 'route-length')).not.toThrow();
+  });
+});

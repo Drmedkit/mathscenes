@@ -23,6 +23,7 @@ import { PlanFigure, type FigBlock, type FigFocus, type FigParams } from '../../
 import { LESSON_FIGS, MF } from '../../src/lesson/topics/composite-figures/lessonFigs';
 import { FAMILY_NAMES, GENS, MC, type FigPicture } from '../../src/lesson/topics/composite-figures/items';
 import { PLAN } from '../../src/lesson/topics/composite-figures/plan';
+import { explain } from '../../src/lesson/topics/composite-figures/explain';
 import { SCRIPT } from '../../src/lesson/topics/composite-figures/script';
 
 const SLUG = 'composite-figures';
@@ -412,7 +413,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it),
   });

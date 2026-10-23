@@ -24,6 +24,7 @@ import { drawEvidence, drawNumberLine } from '../../src/lesson/topics/reading-ma
 import { lessonMap } from '../../src/lesson/topics/reading-maps/lessonMap';
 import { FAMILY_NAMES, GENERATORS, MC, type RmItem } from '../../src/lesson/topics/reading-maps/items';
 import { PLAN } from '../../src/lesson/topics/reading-maps/plan';
+import { explain } from '../../src/lesson/topics/reading-maps/explain';
 import { SCRIPT } from '../../src/lesson/topics/reading-maps/script';
 
 const SLUG = 'reading-maps';
@@ -344,7 +345,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as RmItem),
   });

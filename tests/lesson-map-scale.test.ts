@@ -131,3 +131,24 @@ describe('map-scale: voice', () => {
     for (const id of [...ids, ...dyn]) expect(LINES[id], id).toBeDefined();
   });
 });
+
+describe('quality layer (regressions)', () => {
+  it('sameRoad: the answer is exact in hundredths (no 0.8333… in with no rounding asked)', async () => {
+    const { GENERATORS: G } = await import('../src/lesson/topics/map-scale/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (let s = 1; s <= 600; s++) {
+      const it0 = G.sameRoad(rng(s * 29 + 3), s, 'compare-denominators');
+      const v = (it0.answer as { v: number }).v;
+      expect(Math.abs(v * 100 - Math.round(v * 100)), it0.prompt).toBeLessThan(1e-9);
+    }
+  });
+  it('explain: the steps end on the unit asked (mm or cm) and read big numbers with every comma', async () => {
+    const { GENERATORS: G } = await import('../src/lesson/topics/map-scale/items');
+    const { explain } = await import('../src/lesson/topics/map-scale/explain');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (let s = 1; s <= 200; s++) for (const [f, sg] of [['rulerMm', 'ruler-subdivisions'], ['customaryFt', 'customary-route'], ['metricRoute', 'metric-route']] as const) {
+      const it0 = G[f](rng(s * 31 + 1), s, sg), ex = explain(it0)!;
+      expect(ex.result, it0.prompt).toEqual(it0.answer);
+    }
+  });
+});

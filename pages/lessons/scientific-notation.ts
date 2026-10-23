@@ -30,6 +30,7 @@ import { PointHop } from '../../src/lesson/topics/scientific-notation/PointHop';
 import { CalcScreen } from '../../src/lesson/topics/scientific-notation/CalcScreen';
 import { FAMILY_NAMES, GENS, MC, type SnItem } from '../../src/lesson/topics/scientific-notation/items';
 import { PLAN } from '../../src/lesson/topics/scientific-notation/plan';
+import { explain } from '../../src/lesson/topics/scientific-notation/explain';
 import { LINES } from '../../src/lesson/topics/scientific-notation/script';
 import { D } from '../../src/lesson/topics/scientific-notation/sci';
 
@@ -451,7 +452,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as SnItem),
   });

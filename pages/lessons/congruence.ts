@@ -25,6 +25,7 @@ import { rng } from '../../src/lesson/runtime/item';
 import { leader } from '../../src/lesson/annotate';
 import { FAMILY_NAMES, GENS, MC, type CongItem, type FamilyId } from '../../src/lesson/topics/congruence/items';
 import { PLAN } from '../../src/lesson/topics/congruence/plan';
+import { explain } from '../../src/lesson/topics/congruence/explain';
 import { LINES } from '../../src/lesson/topics/congruence/script';
 import { type CongPic, type Move, type V, type Win, flipY, mapPts, mv, seqAt, slide, turn } from '../../src/lesson/topics/congruence/congMaths';
 import {
@@ -516,7 +517,7 @@ function partPractice(): void {
   if (one) { reviewItem(one); return; }
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as CongItem),
   });

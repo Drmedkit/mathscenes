@@ -8,6 +8,7 @@ import { type BarSpec, type LinePic, type MapPic, type MapUnit, type Overlay, ty
   bigBarOrigin, dist, fh, fp, ft, fx, lineProblems, near, parts } from './mapMaths';
 import { type ComposeSpec, type Geo, type Leg, bentLegs, compose, dirOf, fits, windingLegs } from './mapGen';
 import type { Evidence } from './Evidence';
+import { ans as mark, endOnChoice } from '../../runtime/explain';
 
 export type FamilyId = 'keyLookup' | 'symbolSize' | 'measurePoint' | 'sameEverywhere' | 'biggerMap' | 'barInterval' | 'barPoint'
   | 'whichDistance' | 'compareDist' | 'layBar' | 'countIntervals' | 'halfBar' | 'leftSub' | 'rulerRead' | 'shiftedRuler'
@@ -121,11 +122,15 @@ const capT = (s: string) => s.replace(/[\\{}$%#&_^~]/g, '');
 // ---------- item makers ----------
 interface Opt { t: string; ok?: boolean; mc?: string; say: string }
 type Base = Omit<RmItem, 'input' | 'choices' | 'answer' | 'check' | 'unit'>;
-function choiceItem(R: () => number, base: Base, opts: Opt[]): RmItem {
+/** "1 mile", "1 inch": the templates write the plural after any number, this puts a lone 1 right */
+const one = (t: string) => t.replace(/(^|[^\d.,\/−-])1((?:<\/b>)?) (mile|kilometer|centimeter|interval)s\b/g, '$11$2 $3').replace(/(^|[^\d.,\/−-])1((?:<\/b>)?) inches\b/g, '$11$2 inch');
+const oneBase = (b: Base): Base => ({ ...b, prompt: one(b.prompt), solution: b.solution.map(one) });
+function choiceItem(R: () => number, base0: Base, opts0: Opt[]): RmItem {
+  const base = oneBase(base0), opts = opts0.map(x => ({ ...x, t: one(x.t), say: one(x.say) }));
   const o = shuffle(R, [...opts]);
   const i = o.findIndex(x => x.ok);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i }, solution: endOnChoice(base.solution, o[i]!.t),
     check: (r: Response): Verdict => {
       if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one answer.' };
       const x = o[r.i]!;
@@ -142,8 +147,9 @@ const valueOf = (r: Response): number => {
   }
   return NaN;
 };
-function numItem(base: Base, input: 'num' | 'frac', unit: string, ans: number, okSay: string, slips: Slip[], general: string): RmItem {
-  const p = parts(ans);
+function numItem(base0: Base, input: 'num' | 'frac', unit0: string, ans: number, okSay0: string, slips0: Slip[], general0: string): RmItem {
+  const p = parts(ans), base = oneBase(base0), okSay = one(okSay0), general = one(general0), slips = slips0.map(x => ({ ...x, say: one(x.say) }));
+  const unit = ans === 1 ? unit0.replace(/^(mile|kilometer|centimeter|interval)s$/, '$1').replace(/^inches$/, 'inch') : unit0;
   return {
     ...base, input, unit,
     answer: input === 'num' ? { kind: 'num', v: ans } : { kind: 'frac', w: p.w, n: p.n, d: p.d },
@@ -336,7 +342,7 @@ const barInterval: Gen = (R, n) => {
     prompt: ends ? `This scale bar has ${nn} equal intervals, from ${B('0')} to ${B(`${total} ${real === 'mi' ? 'mi' : 'km'}`)}. What real distance does <b>one interval</b> represent?`
       : `What real distance does <b>one interval</b> of this scale bar represent?`,
     board: '1\\text{ interval} = \\,?',
-    solution: [ends ? `The bar runs from 0 to ${total} in ${nn} equal intervals.` : `Read it like a number line: 0, ${step}, ${2 * step}, …`, `One interval: ${ends ? `${total} ÷ ${nn}` : `from 0 to ${step}`} = ${step} ${words(real)}.`],
+    solution: [ends ? `The bar runs from 0 to ${total} in ${nn} equal intervals.` : `Read it like a number line: 0, ${step}, ${2 * step}, …`, `One interval: ${ends ? `${total} ÷ ${nn}` : `from 0 to ${step}`} = ${realW(step, real)}.`],
   }, 'num', words(real), step, `Yes: from 0 to ${step} is one interval.`, slips, 'Read the bar like a number line: what number comes after 0?');
 };
 
@@ -482,7 +488,7 @@ const halfBar: Gen = (R, n) => {
     id: `halfBar-${n}`, family: 'halfBar', picture: { map: m, answer: `${ft(cnt)} \\times ${step} = ${ft(ans)}\\text{ mi}`, steps: 0 },
     prompt: `Copies of one bar interval are laid along the road from ${a} to ${b}. The last copy only fits in part. How far is it?`,
     board: `1\\text{ interval} = ${step}\\text{ mi}`,
-    solution: [`${w} whole intervals and ${fh(f)} of one more: ${fh(cnt)} intervals.`, `${fh(cnt)} × ${step} = ${fh(ans)} miles (${fh(f)} of ${step} is ${fh(f * step)}).`],
+    solution: [`${w} whole intervals and ${fh(f)} of one more: ${fh(cnt)} intervals.`, `${fh(cnt)} × ${step} = ${mark(fh(ans))} miles (${fh(f)} of ${step} is ${fh(f * step)}).`],
   }, 'frac', 'miles', ans, `Yes: ${fh(cnt)} intervals of ${step} miles.`, [
     { v: Math.ceil(cnt) * step, mc: MC.partial, say: `The last piece is only ${fh(f)} of an interval: ${fh(f)} of ${step} miles, not a whole ${step}.` },
     { v: Math.floor(cnt) * step, mc: MC.partial, say: `Don't drop the last piece: ${fh(f)} of an interval is ${fh(f * step)} more miles.` },
@@ -498,7 +504,7 @@ const leftSub: Gen = (R, n) => {
     id: `leftSub-${n}`, family: 'leftSub', picture: { map: m, answer: `${mk * step} + ${ft((q / sub) * step)} = ${ft(ans)}\\text{ mi}`, steps: 0 },
     prompt: `A paper strip shows the length of a road on the map. Its right end is on the ${B(String(mk * step))} mark; its left end reaches into the divided part left of 0, which is cut into ${sub} equal pieces. How long is the road?`,
     board: `1\\text{ interval} = ${step}\\text{ mi}`,
-    solution: [`From 0 to the right end: ${mk * step} miles.`, `Left of 0, the divided part is one interval (${step} mi) cut into ${sub}: the strip covers ${q} of them, ${fh((q / sub) * step)} mi.`, `${mk * step} + ${fh((q / sub) * step)} = ${fh(ans)} miles.`],
+    solution: [`From 0 to the right end: ${mk * step} miles.`, `Left of 0, the divided part is one interval (${step} mi) cut into ${sub}: the strip covers ${q} of them, ${fh((q / sub) * step)} mi.`, `${mk * step} + ${fh((q / sub) * step)} = ${mark(fh(ans))} miles.`],
   }, 'frac', 'miles', ans, 'Yes: the whole part right of 0, plus the part left of 0.', [
     { v: (mk + 1) * step, mc: MC.rulerEdge, say: 'The bar starts at 0, not at its left edge. Read the left part in its small pieces.' },
     { v: mk * step, mc: MC.partial, say: `Add the part left of 0 too: ${q} small ${q === 1 ? 'piece' : 'pieces'} of ${fh(step / sub)} mi.` },
@@ -524,7 +530,7 @@ const rulerRead: Gen = (R, n, sg) => {
     id: `rulerRead-${n}`, family: 'rulerRead', picture: { map: m, answer: `${ft(L)}${mapT(unit)}`, steps: 1 },
     prompt: `The ruler's 0 is on the location point of ${a}. What is the map distance from ${a} to ${b}?`,
     board: `\\text{distance} = \\,?${mapT(unit)}`,
-    solution: [`Read the ruler at ${b}'s location point.`, cm ? `Each centimeter has a half mark in the middle: ${fh(L)} cm.` : `Each inch is cut into 4 quarters: ${fh(L)} in.`],
+    solution: [`Read the ruler at ${b}'s location point.`, cm ? `Each centimeter has a half mark in the middle: ${mark(fh(L))} cm.` : `Each inch is cut into 4 quarters: ${mark(fh(L))} in.`],
   }, 'frac', cm ? 'cm' : 'in', L, `Yes: ${fh(L)} ${cm ? 'cm' : 'in'}.`, slips, cm ? 'Count whole centimeters, then the half.' : 'Count whole inches, then the quarters.');
 };
 
@@ -541,7 +547,7 @@ const shiftedRuler: Gen = (R, n) => {
     id: `shiftedRuler-${n}`, family: 'shiftedRuler', picture: { map: m, answer: `${ft(e)} - ${s} = ${ft(L)}\\text{ in}`, steps: 1 },
     prompt: `The ruler's ${A(String(s))} mark is on the location point of ${a}, not its 0. What is the map distance from ${a} to ${b}?`,
     board: `\\text{start at } ${s}`,
-    solution: [`At ${b} the ruler reads ${fh(e)}.`, `Count from ${s}, not from 0: ${fh(e)} − ${s} = ${fh(L)} in.`],
+    solution: [`At ${b} the ruler reads ${fh(e)}.`, `Count from ${s}, not from 0: ${fh(e)} − ${s} = ${mark(fh(L))} in.`],
   }, 'frac', 'in', L, `Yes: from ${s} to ${fh(e)} is ${fh(L)} in.`, [
     { v: e, mc: MC.endReading, say: `${fh(e)} is the reading at the end. The ruler starts at ${s}, so take ${s} away.` },
     { v: L + 1, mc: MC.points, say: `Count the inches between ${s} and the end, not the marks.` },
@@ -564,7 +570,7 @@ const roundRuler: Gen = (R, n) => {
     id: `roundRuler-${n}`, family: 'roundRuler', picture: { map: m, answer: `\\approx ${ft(Q)}\\text{ in}`, steps: 1 },
     prompt: `${b} falls between two marks of the ruler. Round the map distance from ${a} to ${b} to the <b>nearest quarter inch</b>.`,
     board: `\\text{distance} \\approx \\,?\\text{ in}`,
-    solution: [`The location point of ${b} is between two quarter-inch marks.`, `It is nearer to ${fh(Q)}: record ${fh(Q)} in.`],
+    solution: [`The location point of ${b} is between two quarter-inch marks.`, `It is nearer to ${fh(Q)}: record ${mark(fh(Q))} in.`],
   }, 'frac', 'in', Q, `Yes: ${fh(Q)} in is the nearest quarter.`, slips, 'Find the two quarter marks on either side, and take the nearer one.');
 };
 
@@ -584,7 +590,7 @@ const roundCm: Gen = (R, n) => {
     id: `roundCm-${n}`, family: 'roundCm', picture: { map: m, answer: `\\approx ${ft(H)}\\text{ cm}`, steps: 1 },
     prompt: `Round the map distance from ${a} to ${b} to the <b>nearest half centimeter</b>.`,
     board: `\\text{distance} \\approx \\,?\\text{ cm}`,
-    solution: ['The small ticks are millimeters; the longer middle tick is the half centimeter.', `${b} is 1 mm from ${fh(H)} cm: record ${fh(H)} cm.`],
+    solution: ['The small ticks are millimeters; the longer middle tick is the half centimeter.', `${b} is 1 mm from ${fh(H)} cm: record ${mark(fh(H))} cm.`],
   }, 'frac', 'cm', H, `Yes: ${fh(H)} cm.`, slips, 'Which half-centimeter mark is nearest: a whole number or a half?');
 };
 
@@ -688,7 +694,7 @@ const fracScale: Gen = (R, n) => {
     id: `fracScale-${n}`, family: 'fracScale', picture: { map: m, answer: `${ft(l)} \\times ${N} = ${ft(ans)}${realT(real)}`, steps: 1 },
     prompt: `On this map ${A(oneU(unit))} represents ${B(realW(N, real))}. ${a} to ${b} is ${A(`${fh(l)} ${unit}`)}. How far is it in real life?`,
     board: `${ft(l)}${mapT(unit)} \\to \\,?${realT(real)}`,
-    solution: [`${Math.floor(l)} whole ${cm ? 'cm' : 'in'}: ${Math.floor(l)} × ${N} = ${Math.floor(l) * N}. The ${fh(l - Math.floor(l))}: ${fh(l - Math.floor(l))} of ${N} = ${fh((l - Math.floor(l)) * N)}.`, `Together ${fh(ans)} ${words(real)}.`],
+    solution: [`${Math.floor(l)} whole ${cm ? 'cm' : 'in'}: ${Math.floor(l)} × ${N} = ${Math.floor(l) * N}. The ${fh(l - Math.floor(l))}: ${fh(l - Math.floor(l))} of ${N} = ${fh((l - Math.floor(l)) * N)}.`, `Together ${mark(fh(ans))} ${words(real)}.`],
   }, 'frac', words(real), ans, `Yes: ${fh(l)} × ${N} = ${fh(ans)}.`, slips, `Multiply the whole ${cm ? 'centimeters' : 'inches'} AND the fraction by ${N}.`);
 };
 
@@ -703,7 +709,7 @@ const roundFirst: Gen = (R, n) => {
     id: `roundFirst-${n}`, family: 'roundFirst', picture: { map: m, work: [`\\text{Max: } ${ft(l)} \\times ${N} = ${ft(mx)}\\text{ mi}`], answer: `${ft(l)} \\times ${N} = ${ft(mx)}\\text{ mi}`, steps: 0 },
     prompt: `The road is ${A(`${fh(l)} in`)} on a map where ${A('1 inch')} represents ${B(`${N} miles`)}. Jo ${whole ? 'uses only the whole inches' : 'rounds to a whole number of inches first'} and gets ${fp(jo)} miles. Max gets ${fp(mx)} miles. Who is right?`,
     board: `\\text{Jo: } ${whole ? Math.floor(l) : Math.round(l)} \\times ${N} = ${jo}\\text{ mi}`,
-    solution: [`Keep the exact map length: ${fh(l)} × ${N} = ${fh(mx)} miles.`, `${whole ? 'Dropping' : 'Rounding'} the ${fh(f)} inch changes the answer by ${fh(Math.abs(mx - jo))} miles.`],
+    solution: [`Keep the exact map length: ${fh(l)} × ${N} = ${fh(mx)} miles.`, `${whole ? 'Dropping' : 'Rounding'} the ${fh(f)} inch changes the answer by ${realW(Math.abs(mx - jo), 'mi')}.`],
   }, [
     { t: `Max: keep the exact ${fp(l)} inches until the end`, ok: true, say: 'Right. Round, if at all, only the final answer.' },
     whole ? { t: 'Jo: the whole inches are enough', mc: MC.wholePart, say: `The ${fp(f)} inch is part of the road too: ${fp(f)} × ${N} = ${fp(f * N)} miles.` }
@@ -759,7 +765,9 @@ const routeSum: Gen = (R, n) => {
     Ls = Array.from({ length: k }, () => pick(R, pool));
     const tot = Ls.reduce((s, x) => s + x, 0) * N;
     legs = R() < 0.5 ? bentLegs(R, Ls) : windingLegs(R, Ls);
-    if (tot <= 10 && tot >= 4 && fits(legs, 'in', 1.3)) break;
+    // the road must end away from its start: four bends can close a loop (end on the start), and compose then throws
+    const end = legs.reduce<[number, number]>((q, l) => [q[0] + l.d[0]! * l.L, q[1] + l.d[1]! * l.L], [0, 0]);
+    if (tot <= 10 && tot >= 4 && fits(legs, 'in', 1.3) && Math.hypot(end[0], end[1]) >= 1) break;
   }
   const m = compose(R, {
     unit: 'in', legs, roadKind: 'road', kinds: ['town', pick(R, ['camp', 'school'] as const)], verbal: { per: N, real: 'mi' },
@@ -798,7 +806,7 @@ const routeBar: Gen = (R, n) => {
     id: `routeBar-${n}`, family: 'routeBar', picture: { map: m, answer: `${ft(c)} \\times ${step} = ${ft(c * step)}\\text{ mi}`, steps: 0 },
     prompt: `The road from ${m.places[0]!.name} to ${m.places[1]!.name} winds. Copies of one bar interval are laid along it, part after part. How long is the road?`,
     board: `1\\text{ interval} = ${step}\\text{ mi}`,
-    solution: [`Count the intervals along every part: ${fh(c)} in all.`, `${fh(c)} × ${step} = ${fh(c * step)} miles.`],
+    solution: [`Count the intervals along every part: ${fh(c)} in all.`, `${fh(c)} × ${step} = ${mark(fh(c * step))} miles.`],
   }, 'frac', 'miles', c * step, `Yes: ${fh(c)} intervals.`, step === 1 ? [] : [
     { v: c, mc: MC.subdiv, say: `${fh(c)} is the number of intervals. Each one is ${step} miles.` },
   ], 'Count the intervals around every bend (halves too), then use the miles per interval.');
@@ -861,7 +869,7 @@ const plausible: Gen = (R, n) => {
     id: `plausible-${n}`, family: 'plausible', picture: { map: m, answer: `${ft(d)} \\times ${N} = ${tru}\\text{ mi}`, steps: 1 },
     prompt: `${T.who}. ${name} works out the distance on this map and gets ${B(`${X} miles`)}. Is that reasonable?`,
     board: `\\text{${name}: } ${X}\\text{ mi}`,
-    solution: [`Think of the trip: ${T.trip} is about ${T.lo} to ${T.hi} miles.`, `On the map: ${fh(d)} in × ${N} = ${tru} miles.`],
+    solution: [`Think of the trip: ${T.trip} is about ${T.lo} to ${T.hi} miles.`, `On the map: ${fh(d)} in × ${N} = ${realW(tru, 'mi')}.`],
   }, opts);
 };
 
@@ -897,7 +905,7 @@ const errorSize: Gen = (R, n) => {
     id: `errorSize-${n}`, family: 'errorSize', picture: { map: m, answer: `\\tfrac14 \\times ${N} = ${ft(N / 4)}\\text{ mi}`, steps: 0 },
     prompt: `Your ruler reading from ${m.places[0]!.name} to ${m.places[1]!.name} could be off by ${A(`${fh(0.25)} inch`)}. On this map ${A('1 inch')} represents ${B(`${N} miles`)}. By how many miles could the real distance be off?`,
     board: `\\text{slip} = \\tfrac14\\text{ in}`,
-    solution: ['A slip on the map is a map length too: it gets the scale like every other length.', `${fh(0.25)} × ${N} = ${fh(N / 4)} miles.`],
+    solution: ['A slip on the map is a map length too: it gets the scale like every other length.', `${fh(0.25)} × ${N} = ${mark(fh(N / 4))} miles.`],
   }, 'frac', 'miles', N / 4, `Yes: ${fh(0.25)} × ${N} = ${fh(N / 4)} miles.`, [
     { v: 0.25, mc: MC.errNotScaled, say: `The slip is ${fh(0.25)} inch on the MAP. In real life each inch is ${N} miles, so the slip is ${fh(0.25)} × ${N}.` },
     { v: N, say: `${N} miles is a whole inch. The slip is only a quarter of that.` },
@@ -969,7 +977,7 @@ const gapRead: Gen = (R, n) => {
     id: `gapRead-${n}`, family: 'gapRead', picture: { line: { ...L, tol: undefined }, ev, answer: `${ft(Math.max(M, E))} - ${ft(Math.min(M, E))} = ${ft(d)}\\text{ mi}`, steps: 1 },
     prompt: `The map gives ${A(`${fh(M)} miles`)}; ${src} says ${B(`${fh(E)} miles`)}. How far apart are they? Read the gap on the number line.`,
     board: '\\text{gap} = \\,?\\text{ mi}',
-    solution: ['Each small step on the line is half a mile.', `From one pin to the other: ${fh(d)} ${d === 1 ? 'mile' : 'miles'}.`],
+    solution: ['Each small step on the line is half a mile.', `From one pin to the other: ${mark(fh(d))} ${d === 1 ? 'mile' : 'miles'}.`],
   }, 'frac', 'miles', d, `Yes: ${fh(d)} apart.`, [
     { v: 2 * d, mc: MC.subdiv, say: 'Each small step is half a mile, not a whole mile.' },
     { v: d + 0.5, mc: MC.points, say: 'Count the spaces between the pins, not the tick marks.' },
@@ -987,7 +995,7 @@ const CAUSE: Record<Case, string> = {
   zero: 'Sam used the end reading, but the ruler did not start at 0',
   none: 'No mistake shows: the work checks out. A sign can round, or measure from a different point',
 };
-interface Diag { m: MapPic; work: string[]; wrong: number; right: number; ev: Evidence; why: string }
+interface Diag { m: MapPic; work: string[]; wrong: number; right: number; ev: Evidence; why: string; /** the step that reaches the right distance, when why does not */ fix?: string }
 function diagCase(R: () => number, c: Case, fixIt: boolean): Diag {
   const N = pick(R, [2, 4]);
   const evFor = (v: number, name: string): Evidence => ({ kind: 'sign', title: name, value: fx(v), unit: 'mi' });
@@ -997,7 +1005,7 @@ function diagCase(R: () => number, c: Case, fixIt: boolean): Diag {
     const m = compose(R, { unit: 'in', legs: straightLeg(R, d), roadKind: 'road', kinds: ['town', 'camp'], extra: 'town', verbal: { per: N, real: 'mi' }, ov: g => [ov({ id: 'a', k: 'leg', a: g.A, b: g.B, text: `${fx(d)} in`, col: 'first' })] });
     const C = m.places.find(p => p.id === 'C')!, A0 = m.places[0]!;
     const dc = Math.max(0.5, Math.round(dist(A0.at, C.at) * 4) / 4);
-    return { m, work: [`\\text{to ${capT(C.name)}: } ${ft(dc)}\\text{ in}`, `${ft(dc)} \\times ${N} = ${ft(dc * N)}\\text{ mi}`], wrong: dc * N, right: d * N, ev: evFor(d * N + shift, m.places[1]!.name), why: `The question was ${A0.name} to ${m.places[1]!.name}, not to ${C.name}.` };
+    return { m, work: [`\\text{to ${capT(C.name)}: } ${ft(dc)}\\text{ in}`, `${ft(dc)} \\times ${N} = ${ft(dc * N)}\\text{ mi}`], wrong: dc * N, right: d * N, ev: evFor(d * N + shift, m.places[1]!.name), why: `The question was ${A0.name} to ${m.places[1]!.name}, not to ${C.name}.`, fix: `${A0.name} to ${m.places[1]!.name} is ${fh(d)} in: ${fh(d)} × ${N} = ${mark(fh(d * N))} miles.` };
   }
   if (c === 'section') {
     const Ls = [pick(R, [1, 1.5]), pick(R, [1, 1.5, 2]), pick(R, [0.5, 1])];
@@ -1061,7 +1069,7 @@ const fixIt: Gen = (R, n) => {
     id: `fixIt-${n}`, family: 'fixIt', picture: { map: D.m, ev: D.ev, work: D.work.slice(1), answer: `${ft(D.right)}\\text{ mi}`, steps: 0 },
     prompt: `Sam's work for the distance from ${a0} to ${b0} is on the board, next to the road sign. Find his mistake and fix it. What is the right distance from the map?`,
     board: D.work[0]!,
-    solution: [D.why],
+    solution: [D.why, D.fix ?? `So the right distance from the map is ${mark(fh(D.right))} miles.`],
   }, 'frac', 'miles', D.right, `Yes: ${fh(D.right)} miles. ${D.why}`, slips, 'Check each step of the work against the map: endpoints, every part of the road, the scale.');
 };
 

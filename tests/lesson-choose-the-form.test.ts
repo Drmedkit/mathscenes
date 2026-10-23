@@ -147,3 +147,77 @@ describe('choose-the-form: pictures and voice', () => {
     for (const m of page.matchAll(/voiced(?:Fb)?\('([a-z.0-9]+)'/g)) expect(SCRIPT[m[1]!], m[1]).toBeDefined();
   });
 });
+
+describe('quality layer (regressions)', () => {
+  const txt = (s: string) => s.replace(/<[^>]+>/g, '');
+  it('"an 18% tip", "an $80 jacket": the article matches how the number is read', async () => {
+    const { GENERATORS: G } = await import('../src/lesson/topics/choose-the-form/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (const [f, sg] of [['routeCompute', 'decimal-multiplier-choice'], ['fractionRoute', 'fraction-form-benchmark'], ['multiStep', 'multistep-choice']] as const) for (let s = 1; s <= 300; s++) {
+      const p = txt(G[f](rng(s * 11 + 3), s, sg).prompt);
+      expect(p, p).not.toMatch(/\b[Aa] \$?(8|1[18](?![\d]))/);
+      expect(p, p).not.toMatch(/\b[Aa]n \$?(?!8|1[18](?![\d]))\d/);
+    }
+  });
+  it('"1 cent", "1 hundredth", "1 cup": never a plural after 1', async () => {
+    const { GENERATORS: G } = await import('../src/lesson/topics/choose-the-form/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (const [f, sg] of [['decPct', 'decimal-percent-zeros'], ['centsDollars', 'decimal-percent-zeros'], ['threeNames', 'benchmark-three-forms'], ['roundingGap', 'rounding-effect']] as const) for (let s = 1; s <= 300; s++) {
+      const it0 = G[f](rng(s * 13 + 1), s, sg);
+      for (const t of [it0.prompt, ...it0.solution, ...(it0.choices ?? [])]) expect(txt(t)).not.toMatch(/(^|[^\d.,])1 (hundredths|cents|cups)\b/);
+    }
+  });
+  it('over100: the steps go from the given form to the asked one and end on the answer', async () => {
+    const { GENERATORS: G } = await import('../src/lesson/topics/choose-the-form/items');
+    const { explain } = await import('../src/lesson/topics/choose-the-form/explain');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (let s = 1; s <= 300; s++) {
+      const it0 = G.over100(rng(s * 5 + 2), s, 'over-100-percent'), ex = explain(it0)!;
+      expect(it0.check(ex.result).ok, `${it0.prompt} ${JSON.stringify(ex.result)}`).toBe(true);
+    }
+  });
+});
+
+describe('quality layer (phase 2 regressions)', () => {
+  const txt = (s: string) => s.replace(/<[^>]+>/g, '');
+  it('fasterRoute: the keyed route for 75% of N gives 75% (÷ 4, then × 3), not 25%', () => {
+    let seen = 0;
+    for (let s = 1; s <= 600; s++) {
+      const it0 = GENERATORS.fasterRoute(rng(s * 131 + 7), s, 'convenience-compare');
+      const p = txt(it0.prompt).match(/route for (\d+)% of \$[\d,.]+ takes/);
+      if (!p || p[1] !== '75') continue;
+      seen++;
+      expect(txt(it0.choices![(it0.answer as { i: number }).i]!)).toMatch(/÷ 4, then × 3/);
+    }
+    expect(seen).toBeGreaterThan(0);
+  });
+  it('moreHow: the board subtracts the smaller amount from the bigger one', () => {
+    for (let s = 1; s <= 400; s++) {
+      const it0 = GENERATORS.moreHow(rng(s * 17 + 5), s, 'same-whole-check');
+      const last = txt(it0.solution[it0.solution.length - 1]!);
+      const [big, small] = last.split(' = ')[0]!.split(' − ').map(Number);
+      expect(big! >= small!, last).toBe(true);
+      // the board's first term is the share of the whole whose amount is bigger
+      const m = it0.board.match(/of \} (\d+) - .*of \} (\d+)$/)!;
+      const first = Number(m[1]), firstLine = it0.solution.map(txt).find(l => new RegExp(`of ${first} = `).test(l))!;
+      expect(Number(firstLine.split(' = ').pop()), it0.board).toBe(big);
+    }
+  });
+  it('tolerance and eitherForm: the measure and the forms fit the thing ("exact weight of a bag of dog food", no "30% mile", no "0.25 off")', () => {
+    for (let s = 1; s <= 400; s++) {
+      const t = txt(GENERATORS.tolerance(rng(s * 7 + 1), s, 'accuracy-tolerance').prompt);
+      expect(t).not.toMatch(/length of (a bag of dog food|a water jug)/);
+      const e = txt(GENERATORS.eitherForm(rng(s * 7 + 2), s, 'reporting-form').prompt);
+      expect(e, e).not.toMatch(/\d% mile|\d\.\d+ off\b|0\.\d+ of the pizza/);
+    }
+  });
+  it('centsDollars: "1 cent" on the board and after the box', () => {
+    let ones = 0;
+    for (let s = 1; s <= 600; s++) {
+      const it0 = GENERATORS.centsDollars(rng(s * 3 + 1), s, 'decimal-percent-zeros');
+      expect(it0.board, it0.board).not.toMatch(/(^|[^\d.,])1\\text\{ cents\}/);
+      if (it0.answer.kind === 'num' && it0.answer.v === 1 && /^cents?$/.test(it0.unit ?? '')) { ones++; expect(it0.unit).toBe('cent'); }
+    }
+    expect(ones).toBeGreaterThan(0);
+  });
+});

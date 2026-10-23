@@ -27,6 +27,7 @@ import { inkLine, wash } from '../../src/lesson/wash';
 import { drawWords } from '../../src/lesson/words';
 import { FAMILY_NAMES, GENERATORS, MC, type PyItem, type Pic, fmt } from '../../src/lesson/topics/pythagoras-intro/items';
 import { PLAN } from '../../src/lesson/topics/pythagoras-intro/plan';
+import { explain } from '../../src/lesson/topics/pythagoras-intro/explain';
 import { LINES } from '../../src/lesson/topics/pythagoras-intro/script';
 
 const SLUG = 'pythagoras-intro';
@@ -380,7 +381,7 @@ function partPractice(): void {
   tr.reset('X.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as PyItem),
   });

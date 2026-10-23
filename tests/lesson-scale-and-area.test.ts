@@ -131,3 +131,45 @@ describe('scale-and-area: voice', () => {
     for (const id of ids) expect(SCRIPT[id], id).toBeDefined();
   });
 });
+
+describe('quality layer (regressions)', () => {
+  it('"1 unit wide", never "1 units"; "an 8-inch / an 18-inch pizza"', async () => {
+    const { GENERATORS: G } = await import('../src/lesson/topics/scale-and-area/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    const txt = (s: string) => s.replace(/<[^>]+>/g, '');
+    for (let s = 1; s <= 400; s++) {
+      expect(txt(G.stretchOne(rng(s * 3 + 1), s, 'stretch-one-dimension').prompt)).not.toMatch(/\b1 units\b/);
+      const p = txt(G.pizzaDeal(rng(s * 3 + 2), s, 'apply-area-factor-multistep').prompt);
+      expect(p, p).not.toMatch(/\bA (8|18)-inch/);
+    }
+  });
+  it('ratio answers mark both terms, so the steps end on new : original', async () => {
+    const { GENERATORS: G } = await import('../src/lesson/topics/scale-and-area/items');
+    const { explain } = await import('../src/lesson/topics/scale-and-area/explain');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (let s = 1; s <= 100; s++) for (const f of ['areaRatio', 'planRatio'] as const) {
+      const it0 = G[f](rng(s * 7 + 5), s, 'ratio-scale-to-area-ratio'), ex = explain(it0)!;
+      expect(ex.result).toEqual(it0.answer);
+    }
+  });
+});
+
+describe('quality layer (phase 2 regressions)', () => {
+  const txt = (s: string) => s.replace(/<[^>]+>/g, '');
+  it('things have real sizes; rooms are at least 40 sq ft; a yard plan shows a lawn; a "long side" is never asked of a square', async () => {
+    const { GENERATORS: G } = await import('../src/lesson/topics/scale-and-area/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    const SIZE: Record<string, [number, number]> = { tablecloth: [15, 60], patio: [60, 400], poster: [300, 1200], rug: [20, 200], photo: [24, 150], sticker: [2, 30], banner: [6, 100], 'garden bed': [10, 150] };
+    for (let s = 1; s <= 500; s++) {
+      for (const [f, sg] of [['areaGiven', 'area-of-copy'], ['fracFactor', 'area-factor-fraction-decimal']] as const) {
+        const p = txt(G[f](rng(s * 131 + 7), s, sg).prompt), m = p.match(/^A (.+?) has an area of (\d+) sq/);
+        if (m) { const [lo, hi] = SIZE[m[1]!]!; expect(+m[2]! >= lo && +m[2]! <= hi, p).toBe(true); }
+      }
+      const c = txt(G.costArea(rng(s * 17 + 1), s, 'apply-area-factor-multistep').prompt).match(/^A (room|yard|kitchen floor) is (\d+) ft by (\d+) ft/);
+      if (c) expect(+c[2]! * +c[3]!).toBeGreaterThanOrEqual(40);
+      expect(txt(G.planBack(rng(s * 19 + 3), s, 'recover-k-from-area-factor').prompt)).not.toMatch(/(yard|deck|site) plan .*real room/);
+      const w = txt(G.whichMeasure(rng(s * 23 + 5), s, 'contrast-perimeter-area').prompt).match(/^A (\d+) cm by (\d+) cm/)!;
+      expect(w[1]).not.toBe(w[2]);
+    }
+  });
+});

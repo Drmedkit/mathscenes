@@ -229,3 +229,53 @@ describe('voice', () => {
     for (const id of Object.keys(SCRIPT)) expect(used.has(id), `unused line ${id}`).toBe(true);
   });
 });
+
+describe('quality layer (worked steps, regressions)', () => {
+  it('noResolve: no wrong choice names the same value as the right one (x = 0 times k is still 0)', () => {
+    const plain = (s: string) => s.replace(/<[^>]+>/g, '');
+    for (let s = 1; s <= 600; s++) {
+      const it0 = make('noResolve', 's1-same-number-both-sides', s);
+      const right = plain(it0.choices![(it0.answer as { i: number }).i]!).replace(/, the same$/, '');
+      const wrongs = it0.choices!.filter((_, i) => i !== (it0.answer as { i: number }).i).map(plain);
+      expect(wrongs, it0.prompt).not.toContain(right);
+    }
+  });
+  it('explain: a negative fraction answer is read with its sign, and long solves fit in 5 steps', async () => {
+    const { explain } = await import('../src/lesson/topics/linear-equations/explain');
+    let negFrac = 0;
+    for (const sg of ['s2-collect-integer', 's2-fraction-coefficients', 's2-negative-factor', 's2-expand-positive']) for (let s = 1; s <= 200; s++) {
+      const it0 = make('solve', sg, s), ex = explain(it0)!;
+      expect(ex.steps.length).toBeLessThanOrEqual(5);
+      expect(it0.check(ex.result).ok, `${it0.prompt} ${JSON.stringify(ex.result)}`).toBe(true);
+      if (it0.answer.kind === 'frac' && it0.answer.n < 0) negFrac++;
+    }
+    expect(negFrac).toBeGreaterThan(0);
+  });
+});
+
+describe('quality layer (phase 2 regressions)', () => {
+  it('rewrite: the right side never has the left side\'s x-coefficient (both sides would have no solution, so "No" would be false)', () => {
+    let seen = 0;
+    for (let s = 1; s <= 800; s++) {
+      const it0 = make('rewrite', 's1-expression-rewrite', s);
+      const lead = it0.prompt.replace(/<[^>]+>/g, '').match(/rewrites (\d+)\(x [+−] \d+\) = (\d*)x|left side of (\d+)\(x [+−] \d+\) = (\d*)x/);
+      if (lead) { seen++; const a = lead[1] ?? lead[3], c = (lead[2] ?? lead[4]) || '1'; expect(c, it0.prompt).not.toBe(a); }
+    }
+    expect(seen).toBeGreaterThan(100);
+  });
+  it('keepStep (x = 0): no wrong line has the same solution, so exactly one choice is right', () => {
+    let zeros = 0;
+    for (let s = 1; s <= 800; s++) {
+      const it0 = make('keepStep', 's1-same-number-both-sides', s);
+      const txt = it0.prompt.replace(/<[^>]+>/g, '');
+      const m = txt.match(/as (\d*)x ([+−]) (\d+) = (−?\d+)\?/);
+      if (!m) continue;
+      const A = Number(m[1] || 1), B = (m[2] === '−' ? -1 : 1) * Number(m[3]), C = Number(m[4]!.replace('−', '-'));
+      if (A * 0 + B !== C) continue;   // only the x = 0 items
+      zeros++;
+      const holds = it0.choices!.filter(ch => { const q = ch.replace(/<[^>]+>/g, '').match(/^(\d*)x(?: ([+−]) (\d+))? = (−?\d+)$/); return q ? (q[2] ? (q[2] === '−' ? -1 : 1) * Number(q[3]) : 0) === Number(q[4]!.replace('−', '-')) : false; });
+      expect(holds.length, txt).toBe(1);
+    }
+    expect(zeros).toBeGreaterThan(0);
+  });
+});

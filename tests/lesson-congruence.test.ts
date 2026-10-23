@@ -160,3 +160,29 @@ describe('voice', () => {
     expect(toSay('A′ (−1, 12)')).toBe('A prime negative one, twelve');
   });
 });
+
+describe('quality layer (regressions)', () => {
+  it('dilate: "1 unit", never "1 units", in the question and after the box', async () => {
+    const { GENS } = await import('../src/lesson/topics/congruence/items');
+    const { rng } = await import('../src/lesson/runtime/item');
+    let ones = 0;
+    for (let s = 1; s <= 400; s++) {
+      const it0 = GENS.dilate(rng(s * 31 + 7), s, 'dilation-not-rigid');
+      expect(it0.prompt.replace(/<[^>]+>/g, '')).not.toMatch(/\b1 units\b/);
+      if (it0.input === 'num' && it0.answer.kind === 'num') { expect(it0.unit).toBe(it0.answer.v === 1 ? 'unit' : 'units'); if (/\bis 1 unit\b/.test(it0.prompt)) ones++; }
+    }
+    expect(ones).toBeGreaterThan(0);
+  });
+});
+
+describe('quality layer (phase 2 regressions)', () => {
+  it('no choice, prompt or step says "slide nowhere" (a zero slide)', async () => {
+    const { GENS } = await import('../src/lesson/topics/congruence/items');
+    const { PLAN } = await import('../src/lesson/topics/congruence/plan');
+    const { rng } = await import('../src/lesson/runtime/item');
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 250; s++) {
+      const it0 = GENS[f as keyof typeof GENS](rng(s * 131 + 7), s, p.id);
+      for (const t of [it0.prompt, ...it0.solution, ...(it0.choices ?? [])]) expect(t, `${f}: ${t}`).not.toMatch(/slide nowhere/i);
+    }
+  });
+});
