@@ -350,15 +350,15 @@ export function sane(q) {
   }
   if (t.rows.length && t.total !== null && t.totalName === 'Total' && Math.abs(t.total - t.sum) > EPS) out.push(`the counts add up to ${t.sum}, the table says Total ${t.total}`);
   if (t.totalName === 'Asked' && t.total < t.sum) out.push('more answers than people asked');
-  for (const r of t.rows) if (r.v <= 0) out.push(`${r.name} has ${r.v} answers: an empty category in the table`);
+  // a 0-count category is an intended case (topic JSON: zero-frequency categories, 0%); only a negative count is impossible
+  for (const r of t.rows) if (r.v < 0) out.push(`${r.name} has ${r.v} answers: a negative count in the table`);
   for (const r of t.rows) if (!Number.isInteger(r.v) && !/\$/.test(q.board)) out.push(`${r.name}: a count of ${r.v}`);
-  if (P?.cats) for (const c of P.cats) if (c.count <= 0 && !t.rows.length) out.push(`${c.name} has 0 in the graph`);
+  if (P?.cats) for (const c of P.cats) if (c.count < 0 && !t.rows.length) out.push(`${c.name} has a negative count in the graph`);
   // a stated whole in the prompt must be the table's whole
   if (['share', 'pct', 'angle'].includes(q.family)) {
     const a = asked(q);
     if (!a.row) out.push('the asked category is not in the table');
     if (a.statedWhole !== null && Math.abs(a.statedWhole - a.whole) > EPS) out.push(`the prompt says ${a.statedWhole}, the table ${a.whole}`);
-    if (a.row && a.row.v === 0) out.push(`${a.name} has 0 answers but is asked about as a share`);
   }
   // label percents shown in the picture must be the rounded shares
   if (P?.cats && Array.isArray(P.labels)) {
