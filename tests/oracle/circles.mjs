@@ -455,7 +455,7 @@ const solvers = {
 
   // ------------------------------------------------------------ area factor back to the radius factor
   areaBack(q) {
-    const m = q.prompt.match(new RegExp('has ' + NUM + ' times the area of a smaller one'));
+    const m = q.prompt.match(new RegExp('has ' + NUM + ' times the area of a (?:smaller|bigger) one'));
     if (!m) return undefined;
     const f = qv(m[1]);
     const rn = Math.round(Math.sqrt(f.n)), rd = Math.round(Math.sqrt(f.d));
@@ -574,8 +574,10 @@ function sane(q) {
       if (Math.abs(val(c0[1]) - k) > 1e-9) out.push('the claimed radius factor does not fit the radii');
     }
   }
-  if (q.family === 'areaBack' && /\(it is the smaller one\)/.test(p) && /times the area of a smaller one/.test(p)) {
-    out.push('"has k times the area of a smaller one (it is the smaller one)": the other one is called smaller but is the bigger one');
+  if (q.family === 'areaBack' && (m = p.match(new RegExp('has ' + NUM + ' times the area of a (smaller|bigger) one')))) {
+    const f = val(m[1]);
+    if ((m[2] === 'smaller' && !(f > 1)) || (m[2] === 'bigger' && !(f < 1))) out.push(`"has ${m[1]} times the area of a ${m[2]} one": the factor says the other one is not ${m[2]}`);
+    if (/\(it is the smaller one\)/.test(p) && m[2] === 'smaller') out.push('"(it is the smaller one)" contradicts "of a smaller one"');
   }
   if (q.family === 'whichSeg') {
     const segs = q.data?.pict?.pic?.segs ?? [];
