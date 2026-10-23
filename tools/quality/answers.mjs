@@ -52,7 +52,8 @@ export function sameAnswer(it, want, r) {
       return r.kind === 'choice' && r.i === i;
     }
     case 'pair': return r.kind === 'pair' && Array.isArray(want) && want.length === 2 && sameValue(want[0], r.x) && sameValue(want[1], r.y);
-    case 'frac': return r.kind === 'frac' ? sameValue(want, [r.w, r.n, r.d]) : r.kind === 'num' && sameValue(want, r.v);
+    // a whole box may hold a decimal (5.5 typed in the whole box reads as { w: 5.5, n: 0, d: 1 })
+    case 'frac': return r.kind === 'frac' ? (Number.isInteger(r.w) ? sameValue(want, [r.w, r.n, r.d]) : sameValue(want, r.w + r.n / r.d)) : r.kind === 'num' && sameValue(want, r.v);
     default: return r.kind === 'num' ? sameValue(want, r.v) : false;
   }
 }
