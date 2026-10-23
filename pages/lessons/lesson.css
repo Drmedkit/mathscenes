@@ -66,6 +66,7 @@ ol.plan li button { margin-top: 8px; }
 
 /* inputs */
 .ans { display: flex; align-items: center; gap: 10px; margin: 12px 0 4px; flex-wrap: wrap; }
+b.ans { display: inline; margin: 0; }   /* the answer mark in a worked step (<b class="a ans">), not the answer row */
 .ans input { width: 58px; height: 46px; text-align: center; font-family: inherit; font-weight: 600; font-size: 22px; line-height: 1; color: var(--text); background: #11142b; border: 1.5px solid var(--line); border-radius: 10px; }
 .ans input:focus { outline: none; border-color: var(--pick); }
 .ans .stack { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; }

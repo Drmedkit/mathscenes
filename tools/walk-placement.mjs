@@ -1,6 +1,8 @@
 // walk-placement.mjs: click through the check-in page (pages/lessons/placement.html) like a student: answers right on
 // lessons up to --knows (an index in topics.json order), "Not learned yet" or a wrong answer after it; screenshots
-// every question and the result, and checks: no page errors, the board renders, the result names a start lesson.
+// every question and the result (and the teacher's view opened), and checks: no page errors, the board renders, the
+// result has a start (or "all known") for every strand of placement/strands.json. Prints per strand the start found
+// next to the one the walk implies (the strand's first lesson at or after --knows).
 //   node tools/walk-placement.mjs [--knows 30] [--grade 7] [--seed 7] [--port 5290]
 // Needs the dev server (port 5290). Headless, muted, Vite's live-reload client blocked.
 import puppeteer from 'puppeteer';
@@ -30,7 +32,13 @@ await page.evaluate(g => { [...document.querySelectorAll('.grades button')].find
 await page.evaluate(() => [...document.querySelectorAll('button')].find(b => b.textContent === 'Start').click());
 const asked = [];
 for (let q = 1; q <= 30; q++) {
-  await page.waitForFunction(prev => (window.__placementItem && window.__placementItem.id !== prev) || window.__placementResult, { timeout: 30000 }, asked.at(-1)?.id ?? '');
+  try {
+    await page.waitForFunction(q => (window.__placementQ ?? 0) >= q || window.__placementResult, { timeout: 30000 }, q);
+  } catch {
+    await shot('stuck');
+    errors.push(`question ${q} never came (after ${asked.map(i => `${i.lesson}/${i.family}`).join(', ')})`);
+    console.log(JSON.stringify({ errors }, null, 1)); await browser.close(); process.exit(1);
+  }
   if (await page.evaluate(() => !!window.__placementResult)) break;
   await sleep(0.4);
   const it = await page.evaluate(() => { const it = window.__placementItem; return { id: it.id, family: it.family, subgoal: it.subgoal, answer: it.answer, input: it.input }; });
@@ -59,9 +67,23 @@ for (let q = 1; q <= 30; q++) {
 }
 await page.waitForFunction('window.__placementResult', { timeout: 30000 });
 await sleep(0.5);
+await page.setViewport({ width: 1280, height: 900 });
 await shot('result');
-const res = await page.evaluate(() => ({ start: window.__placementResult.start, asked: window.__placementResult.asked, skip: window.__placementResult.skip.length, gaps: window.__placementResult.gaps }));
-const summary = { knows: KNOWS, knowsUpTo: topics[KNOWS - 1], grade: GRADE, ...res, asked: asked.map(i => `${i.lesson}/${i.family}`), errors };
+await page.evaluate(() => { document.querySelector('details.teacher').open = true; });
+await shot('result-teacher');
+await page.setViewport({ width: 390, height: 844 });
+await sleep(0.3);
+await shot('result-phone');
+const res = await page.evaluate(() => ({ start: window.__placementResult.start, asked: window.__placementResult.asked, skip: window.__placementResult.skip.length, gaps: window.__placementResult.gaps, strands: window.__placementResult.strands.map(t => ({ id: t.id, start: t.start })) }));
+const cards = await page.evaluate(() => document.querySelectorAll('article.strand').length);
+const STRANDS = JSON.parse(fs.readFileSync('pages/lessons/placement/strands.json', 'utf8')).strands;
+if (res.strands.length !== STRANDS.length || cards !== STRANDS.length) errors.push(`expected ${STRANDS.length} strands, result has ${res.strands.length}, page shows ${cards}`);
+const perStrand = STRANDS.map(t => {
+  const want = t.slugs.find(sl => topics.indexOf(sl) >= KNOWS) ?? null, got = res.strands.find(x => x.id === t.id)?.start ?? null;
+  const pos = sl => (sl ? t.slugs.indexOf(sl) : t.slugs.length);
+  return `${t.id}: ${got ?? 'all known'} (walk implies ${want ?? 'all known'}, ${Math.abs(pos(got) - pos(want)) <= 1 ? 'within 1' : `off by ${pos(got) - pos(want)}`})`;
+});
+const summary = { knows: KNOWS, knowsUpTo: topics[KNOWS - 1], grade: GRADE, ...res, strands: perStrand, asked: asked.map(i => `${i.lesson}/${i.family}`), errors };
 fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify(summary, null, 1));
 console.log(JSON.stringify(summary, null, 1));
 await browser.close();

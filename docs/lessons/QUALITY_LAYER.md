@@ -34,8 +34,10 @@ node tools/quality/items-dump.mjs <slug> [--n 4] [--family f] [--subgoal sg] [--
 node tools/quality/sweep.mjs <slug> [<slug> ...]       # the practice sweep: 0 errors is the bar
 node tools/quality/sweep.mjs --all --quiet             # every live lesson (out/quality/sweep.json)
 node tools/quality/check-placement.mjs [<slug> ...]    # the check-in adapters (must pass)
-node tools/quality/placement-graph.mjs                 # pages/lessons/placement/graph.json from dependencies.json
-node tools/quality/placement-sim.mjs [--n 300]         # simulated students on the check-in model and real adapters
+node tools/quality/placement-graph.mjs                 # pages/lessons/placement/graph.json + strands.json + mc-names.json
+node tools/quality/placement-sim.mjs [--n 300]         # simulated students on the check-in, real adapters, per strand
+node tools/quality/placement-sim.mjs --all [--total]   # the model alone (model answers); --total: the old single-start model
+node tools/walk-placement.mjs [--knows 30] [--grade 7] # click-through of the check-in page (dev server :5290)
 npx vitest run tests/quality-layer.test.ts tests/lesson-<slug>.test.ts
 node tools/walk-practice.mjs <slug> --no-parts          # click-through of practice incl. the steps card (dev server :5290)
 ```
@@ -170,18 +172,68 @@ without page errors. Warnings ("1 marbles", generic feedback) are worth a look, 
 
 ## The check-in page (`pages/lessons/placement.html`)
 
-A short adaptive check (about 20 questions) that finds where a student should start in `topics.json` order.
+A short adaptive check (about 20 questions) that gives a start lesson **per strand**, like the Kubo check-ins give one
+per theme (a single start on the 63-lesson path was exact for only ~23% of simulated students: one early gap moved it).
 - `tools/quality/placement-graph.mjs` → `pages/lessons/placement/graph.json`: how strongly each lesson rests on the
   others, from `math-curriculum-essentials/dependencies.json` (role × kind, along topic paths that may run through
   topics outside the lesson line, never through another lesson). Only edges from earlier lessons in the order.
+- The same tool → `pages/lessons/placement/strands.json`: six strands, each an ordered list of lessons in `topics.json`
+  order, every lesson in exactly one. A lesson takes the `strand` of its curriculum topic
+  (`math-curriculum-essentials/topics/<id>.json`), mapped as below; `OVERRIDE` in the tool moves the few lessons the
+  curriculum files elsewhere. Change the mapping there and re-run the tool, never by hand.
+
+  | strand (id) | curriculum strands | lessons |
+  |---|---|---|
+  | Number and rational numbers (`number`) | Fractions, Numbers & Operations; + rational operations, exponents, roots, irrational numbers, scientific notation (filed under Algebra & Modeling) | 12 |
+  | Ratio, rate and percent (`ratio`) | Ratios & Percentages, Measurement; + proportional relationships (Functions), percent applications (Algebra) | 14 |
+  | Expressions, equations and inequalities (`equations`) | Algebra & Modeling (the rest) | 7 |
+  | Functions and linear relations (`functions`) | Functions & Trigonometry (the rest); + linear patterns (Data & Patterns) | 4 |
+  | Geometry and measurement (`geometry`) | Geometry | 20 |
+  | Statistics and probability (`statistics`) | Statistics & Probability, Data & Patterns (the rest) | 6 |
 - `src/lesson/placement/model.ts`: the student model (the Kubo model): a belief per lesson in log-odds; an answer moves
-  it and, through the graph, the linked lessons (right → the lessons below, wrong → the lessons above). The next
-  question goes where the expected information gain is largest. A grade prior (the student picks 6, 7 or 8) seeds it.
-- The page loads a lesson's `items.ts` + `placement.ts` only when it asks that lesson. The result: the start lesson
-  (the first lesson in the order that is not mastered), the lessons that can be skipped, gaps, and the misconceptions
-  seen (`errorLabel`).
-- `placement-sim.mjs`: simulated students (hidden knowledge, slips, guesses) on the real adapters; run it after any
-  model or graph change.
+  it and, through the links, the linked lessons (right → the lessons below, wrong → the lessons above). Links: the
+  graph, plus the order itself: within a strand every earlier lesson counts as a foundation (0.8, fading 0.85 per
+  lesson between), and along the whole path the ~4 lessons just before (0.4). The next question goes where it is
+  expected to narrow the **strand starts** most: per strand the entropy of "which lesson is the first one not known"
+  (lessons independent given the beliefs), summed over the strands, plus 0.15 × the overall uncertainty (for the
+  teacher's picture). That spreads the questions over the strands by itself (in simulation: number 3.8, ratio 3.5,
+  equations 2.5, functions 1.2, geometry 5.4, statistics 2.8 of ~19), and stops early when little is left to learn.
+  A grade prior (the student picks 6, 7 or 8) seeds it. A strand starts at its first lesson with a belief below 0.35
+  (`START_BELOW`; below 0.5 because the grade prior is cautious, a same-grade lesson nobody asked sits at 0.4).
+- The page loads a lesson's `items.ts` + `placement.ts` only when it asks that lesson. The result: one card per strand
+  (its lessons as a strip: known, probably known, the start, still to learn; "Start: <lesson>", "Lesson k of n", how
+  many later lessons can be skipped), the misconceptions seen (`errorLabel`), and a closed "For your teacher" part:
+  questions per strand, the first lesson not known on the path read as one line, gaps, and the whole path in order with
+  each lesson's strand, status, belief and how often it was asked. Saved in `localStorage` (`mathscenes.placement`,
+  with `strands`); the intro shows the last strand starts.
+- `placement-sim.mjs`: simulated students (grade 6-8, an ability, hidden known lessons consistent with the graph,
+  slips, guesses). Default: the real adapters (every lesson with a `placement.ts`, its own items and `check()`);
+  `--all`: the model alone with model answers; `--total`: the old single-start model, strand starts read off it;
+  `--profile 0.5`: students who also differ per strand; `--strands file`: try another strand set. It reports per strand
+  exact / within one lesson. Run it after any model, graph or strand change.
+- `walk-placement.mjs`: clicks through the page like a student who knows the lessons before `--knows`; fails on page
+  errors or a strand without a result; prints each strand's start next to the one the walk implies; screenshots the
+  result, the teacher view and a phone-width result (`out/walk-placement/`).
+
+**Simulation (2026-10-23, 1000 students `--all`, 600 with the real adapters, ~19 questions).** Within one lesson of
+the true strand start (exact in brackets):
+
+| | number | ratio | equations | functions | geometry | statistics | mean |
+|---|---|---|---|---|---|---|---|
+| old model `--all --total` | 65 (48) | 53 (40) | 76 (54) | 69 (46) | 40 (29) | 61 (51) | **60.5** (44.6) |
+| strands `--all` | 77 (67) | 67 (57) | 85 (72) | 93 (71) | 68 (56) | 90 (78) | **79.9** (66.8) |
+| old model, real adapters | 68 (49) | 52 (39) | 74 (53) | 70 (47) | 42 (32) | 60 (51) | **60.9** (45.1) |
+| strands, real adapters | 77 (69) | 61 (52) | 84 (68) | 90 (68) | 67 (54) | 88 (74) | **77.9** (64.1) |
+
+With strand profiles (`--profile 0.5`): 59.5% → 77.3%. The single start on the whole path also improved (exact 22% →
+51%), lessons decided 90%, of those correct 89%. The two long strands stay under 80%: the simulated students know
+each lesson with independent noise (sd 0.6 against a step of ~0.2 between neighbours in a strand), so an early gap in
+a 14- or 20-lesson strand is often invisible. Even an oracle that knows each student's exact ability (but not the
+per-lesson noise) gets ratio ~67% and geometry ~54% within one; the check-in is at or above that. Splitting geometry
+in two (transformations and similarity / shapes, angles and measurement) or ratio in two (ratio and scale / percent)
+did not raise the mean (79.9% with 7 strands, 80.4% with 8): the 20 questions are the limit, not the strand set. So
+the six strands above, the curriculum's own domains. Tuned on the sim: the order links (strand 0.8, path 0.4), the
+start threshold 0.35, the overall weight 0.15; the stopping rule and threshold mattered little (±1%).
 
 ## Pilot (2026-10-23): two-step-equations, circles, pie-charts
 
@@ -200,8 +252,8 @@ found was in the items' **worlds and choices**:
 
 The check-in: `placement-sim.mjs --all` (every lesson as if it had an adapter): 20 questions, 90% of lessons decided,
 87% of those right; the single start lesson on a 63-lesson path is exact for only ~23% (within 2 lessons ~33%),
-because one early gap moves it. Before the check-in goes live: per-strand starts (number, ratio and percent, geometry,
-statistics, expressions and equations) like the Kubo themes, and a re-run of the simulation.
+because one early gap moves it. Lead decision: per-strand starts like the Kubo themes before it goes live. Done
+2026-10-23 (see "The check-in page"): six strands, within one lesson of the strand start 60.5% → 79.9%.
 
 ## Rolling out the other 60 lessons
 

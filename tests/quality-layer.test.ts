@@ -2,13 +2,17 @@
 // explain.ts: every (sub-goal, family) pair x 60 seeds gives 2-5 steps whose result the lesson's own check() accepts
 // and equals the item's answer by value. placement.ts: 1-3 picks that exist in plan.ts, the use() filter keeps items,
 // and every kept item's answer passes its check. (The oracle-side checks run in tools/quality/sweep.mjs.)
-// Also the runtime helpers that read the answer out of the steps.
+// Also the runtime helpers that read the answer out of the steps, and the check-in's strands (placement/strands.json).
 import { describe, expect, it } from 'vitest';
 import { rng, type Explain, type Item, type Response } from '../src/lesson/runtime/item';
 import type { SubgoalPlan } from '../src/lesson/runtime/practice';
 import type { Placement } from '../src/lesson/placement/types';
 import { endOnChoice, leadValue, resultOf, stepsFrom } from '../src/lesson/runtime/explain';
 import { stepsOf } from '../src/lesson/runtime/practice';
+import GRAPH from '../pages/lessons/placement/graph.json';
+import STRANDS from '../pages/lessons/placement/strands.json';
+import TOPICS from '../pages/lessons/topics.json';
+import { type Graph, create, gradePriors, next, record, result } from '../src/lesson/placement/model';
 
 type Gens = Record<string, (R: () => number, n: number, sg?: string) => Item>;
 const EXPLAIN = import.meta.glob<{ explain: Explain }>('../src/lesson/topics/*/explain.ts');
@@ -95,3 +99,31 @@ for (const [k, load] of Object.entries(PLACE)) {
     });
   });
 }
+
+// the check-in's strands (pages/lessons/placement/strands.json) and the per-strand result of the model
+
+describe('check-in strands', () => {
+  const graph = GRAPH as Graph, strands = STRANDS.strands, order = (TOPICS as { slug: string; live?: boolean }[]).filter(t => t.live !== false).map(t => t.slug);
+  it('every lesson is in exactly one strand, each strand in topics.json order', () => {
+    const all = strands.flatMap(t => t.slugs);
+    expect(new Set(all).size).toBe(all.length);
+    expect([...all].sort()).toEqual(graph.units.map(u => u.slug).sort());
+    for (const t of strands) expect(t.slugs.map(s => order.indexOf(s))).toEqual([...t.slugs.map(s => order.indexOf(s))].sort((a, b) => a - b));
+    expect(strands.length).toBeGreaterThanOrEqual(5);
+  });
+  it('gives a start per strand: the first lesson of the strand the student does not know', () => {
+    const knows = (slug: string) => order.indexOf(slug) < 30;
+    const S = create(graph, { strands, max: 20, min: 10, priors: gradePriors(graph, 7) });
+    for (let u; (u = next(S));) record(S, { unit: u, right: knows(graph.units.find(x => x.id === u)!.slug) });
+    const R = result(S);
+    expect(R.asked).toBeLessThanOrEqual(20);
+    expect(R.strands.map(t => t.id)).toEqual(strands.map(t => t.id));
+    for (const t of strands) {
+      const want = t.slugs.findIndex(s => !knows(s)), got = R.strands.find(x => x.id === t.id)!;
+      const gi = got.start ? t.slugs.indexOf(got.start) : t.slugs.length;
+      expect(Math.abs(gi - (want < 0 ? t.slugs.length : want)), t.id).toBeLessThanOrEqual(1);
+    }
+    // the questions are spread: no strand with more than 3 lessons goes unasked
+    for (const t of R.strands) if (t.size > 3) expect(t.asked, t.id).toBeGreaterThan(0);
+  });
+});
