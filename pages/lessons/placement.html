@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Math 7–8 Check-in</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    main.check { max-width: 760px; margin: 0 auto; padding: 8px 24px 48px; }
+    main.check .panel { min-height: 0; }
+    .lead { color: var(--dim); max-width: 60ch; }
+    .grades { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0 6px; }
+    .grades button.on { border-color: var(--s); background: #2a3a3a; }
+    .q-board { display: block; margin: 12px 0 14px; max-width: 100%; height: auto; }
+    .q-fig { margin: 8px 0 12px; } .q-fig svg { max-width: 100%; height: auto; }
+    .panel .ans input { font-size: 22px; font-weight: 600; width: 96px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
+    button.quiet { background: none; border-color: transparent; color: var(--dim); }
+    .progress { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin: 4px 0 16px; }
+    .progress i { display: block; height: 100%; background: var(--s); width: 0; transition: width .3s; }
+    .start { border: 1px solid var(--s); border-radius: 14px; padding: 14px 16px; margin: 10px 0 18px; }
+    .start a { color: var(--s); font-size: 20px; font-weight: 650; text-decoration: none; }
+    ol.res { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 4px; }
+    ol.res li { display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: center; padding: 6px 10px; border-radius: 10px; font-size: 15.5px; }
+    ol.res li .n { color: var(--faint); text-align: right; }
+    ol.res li .st { font-size: 13.5px; color: var(--faint); }
+    ol.res li.mastered .st { color: var(--s); } ol.res li.notyet .st { color: var(--a); }
+    ol.res li.here { background: var(--panel2); }
+    ol.res a { color: var(--text); text-decoration: none; } ol.res a:hover { text-decoration: underline; }
+    ul.mc { margin: 6px 0 0; padding-left: 20px; color: var(--dim); }
+  </style>
+</head>
+<body>
+  <header class="top"><h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · Check-in</h1></header>
+  <main class="check"><section class="panel" id="panel" aria-live="polite"></section></main>
+  <script type="module" src="./placement.ts"></script>
+</body>
+</html>
