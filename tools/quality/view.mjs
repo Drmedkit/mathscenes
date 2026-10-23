@@ -16,7 +16,8 @@ export function plainText(h) {
 }
 
 /** fields of an Item that belong to the answer side; never shown to an oracle (at any depth of the picture data) */
-export const HIDDEN = /^(answer|check|solution|solve\w*|\w*OnSolve|work|steps|hero|reveal|explain|ex)$/i;
+// (not `ans`: a survey table's rows have an `ans` per person, which the student does see; judging-samples)
+export const HIDDEN = /^(answer|alt|check|solution|solve\w*|\w*OnSolve|work|steps|hero|reveal|explain|ex)$/i;
 const STD = new Set(['id', 'family', 'subgoal', 'prompt', 'board', 'input', 'unit', 'choices', 'pairLead', 'pairOp', 'pairTail']);
 
 function scrub(v, depth = 0) {

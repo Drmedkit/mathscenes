@@ -172,3 +172,34 @@ describe('simple-interest: voice', () => {
     expect(ids.size).toBeGreaterThan(25);
   });
 });
+
+describe('simple-interest: quality layer (docs/lessons/QUALITY_LAYER.md)', () => {
+  const plainOf = (h: string) => h.replace(/<[^>]+>/g, '');
+  it('a loan story never adds a helmet to college books (the extra fact fits any loan)', () => {
+    for (let s = 1; s <= 300; s++) expect(GEN.loanRoles!(rng(s * 7 + 1), s).prompt).not.toMatch(/helmet/);
+  });
+  it('the rounding step names the third digit in words (no "< 5" that reads as a tag)', () => {
+    for (let s = 1; s <= 100; s++) {
+      const item = GEN.roundI!(rng(s * 11 + 2), s);
+      const last = item.solution.at(-1)!;
+      expect(plainOf(last), last).toMatch(/^The 3rd digit is \d: /);
+      expect(last).not.toMatch(/[<>] ?\d/);
+    }
+  });
+  it('the balance colour is not read as the answer: a principal or interest item ends on its own amount', async () => {
+    const { explain } = await import('../src/lesson/topics/simple-interest/explain');
+    for (let s = 1; s <= 80; s++) for (const f of ['findP', 'tableCell', 'compoundCell', 'labelBoth', 'formulaI']) {
+      const item = GEN[f]!(rng(s * 13 + 5), s);
+      expect(explain(item)?.result, `${f}: ${item.prompt}`).toEqual(item.answer);
+    }
+  });
+});
+
+describe('simple-interest: oracle findings (phase 2)', () => {
+  it('the one-step expression is never on $100 (there "100 + r" is the balance too: two right choices)', () => {
+    for (let s = 1; s <= 600; s++) {
+      const it = GEN.multExpr!(rng(s * 13 + 7), s);
+      expect(it.prompt.replace(/<[^>]+>/g, ''), it.prompt).not.toMatch(/saves \$100 at/);
+    }
+  });
+});

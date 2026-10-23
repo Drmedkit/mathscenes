@@ -9,6 +9,7 @@ import {
   type Ex, type Fmt, type Q, type Term, decQ, exHtml, exTex, expand, factorHtml, factorTex, gcfOf, magHtml, magTex, nH, nT, neg, negEx,
   normal, num, prodHtml, prodTex, q, qAdd, qDiv, qEq, qMul, rat, same, t, termHtml, termTex, value, coef, addEx, divide, isZero,
 } from './expr';
+import { ans, endOnChoice } from '../../runtime/explain';
 import { termTilesFit } from './TermTiles';
 import { tilesFit } from './AreaModel';
 
@@ -65,7 +66,7 @@ function choiceItem(R: R, b: Base, opts: Opt[]): EFItem {
   const ch = shuffle(R, list);
   const it: EFItem = {
     id: `${b.family}.${b.n}`, family: b.family, subgoal: b.sg, prompt: b.prompt, board: b.board, input: 'choice', choices: ch.map(o => o.t),
-    solution: b.solution, pic: b.pic, answer: { kind: 'choice', i: ch.findIndex(o => o.ok) },
+    solution: endOnChoice(b.solution, right[0]!.t), pic: b.pic, answer: { kind: 'choice', i: ch.findIndex(o => o.ok) },
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !ch[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const o = ch[r.i]!;
@@ -77,13 +78,14 @@ function choiceItem(R: R, b: Base, opts: Opt[]): EFItem {
 }
 const eqN = (v: number, Qv: Q) => Number.isFinite(v) && Math.abs(v - num(Qv)) < 1e-9;
 interface Pat { x: Q; y: Q; mc?: string; say: string }
-/** an answer "□ x + □" (two numbers); `pats` are the classified wrong pairs, first match wins */
-function pairItem(b: Base, lead: string, op: string, right: [Q, Q], pats: Pat[], okSay: string, miss: string): EFItem {
+/** an answer "□ x + □" (two numbers); `pats` are the classified wrong pairs, first match wins. The worked solution
+ *  ends by reading the result into the two boxes (the steps card's answer, docs/lessons/QUALITY_LAYER.md). */
+function pairItem(b: Base, lead: string, op: string, right: [Q, Q], pats: Pat[], okSay: string, miss: string, fmt: Fmt = 'frac'): EFItem {
   const used: [Q, Q][] = [right];
   const P = pats.filter(p => { if (used.some(u => qEq(u[0], p.x) && qEq(u[1], p.y))) return false; used.push([p.x, p.y]); return true; });
   const it: EFItem = {
     id: `${b.family}.${b.n}`, family: b.family, subgoal: b.sg, prompt: b.prompt, board: b.board, input: 'pair', pairLead: lead, pairOp: op,
-    solution: b.solution, pic: b.pic, answer: { kind: 'pair', x: num(right[0]), y: num(right[1]) },
+    solution: [...b.solution, `In the boxes: ${ans(nH(right[0], fmt))} and ${ans(nH(right[1], fmt))}.`], pic: b.pic, answer: { kind: 'pair', x: num(right[0]), y: num(right[1]) },
     check(r: Response): Verdict {
       if (r.kind !== 'pair' || !Number.isFinite(r.x) || !Number.isFinite(r.y)) return { ok: false, say: 'Type a number in each box: a minus sign for a negative number, 0 for a missing term.' };
       if (eqN(r.x, right[0]) && eqN(r.y, right[1])) return { ok: true, say: okSay };
@@ -192,7 +194,7 @@ const likeTerms: Gen = (R, n, sg) => {
   if (kind === 'coef') {
     const c = int(R, 1, 12), L = pick(R, LETTERS), front = R() < 0.5;
     const e = front ? `${I(L)} + ${c}` : `${c} + ${I(L)}`;
-    return numItem({ ...base, prompt: `What is the coefficient of ${I(L)} in <b>${e}</b>?`, board: front ? `${L} + ${c}` : `${c} + ${L}`, solution: [`${I(L)} means 1 · ${I(L)}: one ${I(L)}.`, 'The coefficient is 1 (it is just not written).'] }, '', rat(1), [
+    return numItem({ ...base, prompt: `What is the coefficient of ${I(L)} in <b>${e}</b>?`, board: front ? `${L} + ${c}` : `${c} + ${L}`, solution: [`${I(L)} means 1 · ${I(L)}: one ${I(L)}.`, `The coefficient is ${ans(1)} (it is just not written).`] }, '', rat(1), [
       { v: Z, mc: 'mc.expressions.ignores-implicit-coefficient-one', say: `A bare ${I(L)} is one ${I(L)}: 1${I(L)}. Its coefficient is 1, not 0.` },
       { v: rat(c), say: `${c} is the constant term. ${I(L)} on its own is 1${I(L)}.` },
     ], `Yes: ${I(L)} = 1${I(L)}.`, `${I(L)} on its own means 1 · ${I(L)}.`);
@@ -245,7 +247,7 @@ const areaToSum: Gen = (R, n, sg) => {
   const inner: Ex = [t(p, 'x'), t(qq)];
   const prodT = prodTex(t(a), inner, { right }), prodH = prodHtml(t(a), inner, { right, color: true });
   return pairItem({ family: 'areaToSum', n, sg, prompt: `The rectangle is ${a} rows of <b>${exHtml(inner, { color: true })}</b>: its area is <b>${prodH}</b>. Write the area as a sum.`, board: prodT,
-    solution: [`The strip part: ${a} rows of ${p === 1 ? '' : p}${I('x')}, so ${a * p}${I('x')}.`, `The square part: ${a} rows of ${qq} squares, so ${a} · ${qq} = ${a * qq}.`, `${prodH} = ${axb(rat(a * p), rat(a * qq))} (distributive property).`],
+    solution: [`The strip part: ${a} rows of ${p === 1 ? '' : p}${I('x')}, so ${a * p}${I('x')}.`, `The square part: ${a} rows of ${qq} ${qq === 1 ? 'square' : 'squares'}, so ${a} · ${qq} = ${a * qq}.`, `${prodH} = ${axb(rat(a * p), rat(a * qq))} (distributive property).`],
     pic: { kind: 'tiles', a, p, q: qq } }, '', 'x +', [rat(a * p), rat(a * qq)], [
     { x: rat(a * p), y: rat(qq), mc: 'mc.properties.partial-distribution', say: `Count the squares: every one of the ${a} rows has ${qq}, so ${a} · ${qq} = ${a * qq}, not ${qq}.` },
     { x: rat(a * p + a * qq), y: Z, mc: 'mc.expressions.combines-unlike-terms', say: `Strips and squares are unlike terms: ${a * p}${I('x')} and ${a * qq} stay separate.` },
@@ -425,7 +427,7 @@ function collectRational(R: R, n: number, sg: string | undefined): EFItem {
     ];
     if (qEq(wrong, s)) opts.splice(1, 1);
     return choiceItem(R, { family: 'collect', n, sg, prompt: `Combine: <b>${T(a)} + ${T(b)}</b>`, board: sub(`${magTex(a)}x + ${magTex(b)}x`, L),
-      solution: [`(${magHtml(a)} + ${magHtml(b)})${I(L)}: add the coefficients.`, `${magHtml(a)} + ${magHtml(b)} = ${magHtml(s)}, so ${T(s)}${s.q !== 1 ? ` (or ${decStrOr(s)}${I(L)})` : ''}.`] }, opts);
+      solution: [`(${magHtml(a)} + ${magHtml(b)})${I(L)}: add the coefficients.`, `${magHtml(a)} + ${magHtml(b)} = ${magHtml(s)}, so ${T(s)}${s.q !== 1 && Number.isInteger(num(s) * 1000) ? ` (or ${decStrOr(s)}${I(L)})` : ''}.`] }, opts);
   }
   const d = pick(R, [0.3, 0.4, 0.6, 0.7, 0.25, 0.75, 1.2, 0.8]), D = decQ(d), s = qAdd(D, rat(-1));
   const T = (c: Q) => `${nH(c, 'dec')}${I(L)}`;
@@ -445,14 +447,14 @@ const signedTerms: Gen = (R, n, sg) => {
   if (kind === 'coef') {
     const c = int(R, 1, 12), lead = R() < 0.5;
     const eH = lead ? `${MIN}${I(L)} + ${c}` : `${c} ${MIN} ${I(L)}`;
-    return numItem({ ...base, prompt: `What is the coefficient of ${I(L)} in <b>${eH}</b>?`, board: lead ? `-${L} + ${c}` : `${c} - ${L}`, solution: [`The minus sign belongs to the term: the terms are ${lead ? `${MIN}${I(L)} and ${c}` : `${c} and ${MIN}${I(L)}`}.`, `${MIN}${I(L)} = ${MIN}1 · ${I(L)}: the coefficient is ${MIN}1.`] }, '', rat(-1), [
+    return numItem({ ...base, prompt: `What is the coefficient of ${I(L)} in <b>${eH}</b>?`, board: lead ? `-${L} + ${c}` : `${c} - ${L}`, solution: [`The minus sign belongs to the term: the terms are ${lead ? `${MIN}${I(L)} and ${c}` : `${c} and ${MIN}${I(L)}`}.`, `${MIN}${I(L)} = ${MIN}1 · ${I(L)}: the coefficient is ${ans(MIN + '1')}.`] }, '', rat(-1), [
       { v: rat(1), mc: 'mc.integers.minus-sign-detached-from-term', say: `The minus in front of ${I(L)} belongs to that term: ${MIN}${I(L)} is ${MIN}1 · ${I(L)}.` },
       { v: Z, mc: 'mc.expressions.ignores-implicit-coefficient-one', say: `${MIN}${I(L)} still has one ${I(L)}, taken away: its coefficient is ${MIN}1.` },
     ], `Yes: ${MIN}${I(L)} = ${MIN}1${I(L)}.`, `${MIN}${I(L)} means ${MIN}1 times ${I(L)}.`);
   }
   if (kind === 'minusParen') {
     const qq = int(R, 2, 9);
-    return numItem({ ...base, prompt: `In <b>${MIN}(${I(L)} + ${qq})</b> the minus sign in front of the parentheses is the same as multiplying by which number?`, board: `-(${L} + ${qq})`, solution: [`A minus in front of parentheses is ${MIN}1 times the group.`, `${MIN}(${I(L)} + ${qq}) = ${MIN}1(${I(L)} + ${qq}) = ${MIN}${I(L)} ${MIN} ${qq}.`] }, '', rat(-1), [
+    return numItem({ ...base, prompt: `In <b>${MIN}(${I(L)} + ${qq})</b> the minus sign in front of the parentheses is the same as multiplying by which number?`, board: `-(${L} + ${qq})`, solution: [`${MIN}(${I(L)} + ${qq}) = ${MIN}1(${I(L)} + ${qq}) = ${MIN}${I(L)} ${MIN} ${qq}.`, `So a minus in front of parentheses is ${ans(MIN + '1')} times the group.`] }, '', rat(-1), [
       { v: rat(1), mc: 'mc.integers.minus-sign-detached-from-term', say: `The minus stays with the group: it means ${MIN}1 times (${I(L)} + ${qq}).` },
       { v: Z, say: `Times 0 would wipe the group out. A lone minus means ${MIN}1 times the group.` },
     ], `Yes: ${MIN}(${I(L)} + ${qq}) = ${MIN}1(${I(L)} + ${qq}) = ${MIN}${I(L)} ${MIN} ${qq}.`, `A minus sign alone in front means ${MIN}1 times.`);

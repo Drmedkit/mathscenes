@@ -6,6 +6,7 @@ import { type Item, type Response, type Verdict, fracValue, int, pick, shuffle }
 import { type Q, qNum } from '../../../core/math';
 import { type AU, type Legend, areaFactor, convert, dec, isMetric, legend, legendHtml, legendTex, perUnit, polyArea, q, ratioN, ratioText, toActual, toDrawing, vHtml, vTex, vText } from './scaleMaths';
 import type { PlanFig, PlanParams, RulerSpec } from './PlanSheet';
+import { endOnChoice } from '../../runtime/explain';
 
 export type FamilyId = 'copy' | 'copyLen' | 'legend' | 'legendNum' | 'toActual' | 'toDrawing' | 'fracLegend' | 'fracRewrite'
   | 'ruler' | 'makePlan' | 'rescale' | 'area' | 'audit' | 'fit' | 'areaWhy' | 'cost';
@@ -101,7 +102,7 @@ function choiceItem(R: () => number, base: Omit<ScaleItem, 'input' | 'choices' |
   const ts = new Set(O.map(o => o.t));
   if (ts.size !== O.length) throw new Error(`choices not unique: ${O.map(o => o.t).join(' | ')}`);
   return {
-    ...base, input: 'choice', choices: O.map(o => o.t), answer: { kind: 'choice', i: O.findIndex(o => o.ok) },
+    ...base, solution: endOnChoice(base.solution, O.find(o => o.ok)!.t), input: 'choice', choices: O.map(o => o.t), answer: { kind: 'choice', i: O.findIndex(o => o.ok) },
     check: (r: Response): Verdict => {
       const o = r.kind === 'choice' ? O[r.i] : undefined;
       if (!o) return { ok: false, say: 'Pick one.' };
@@ -347,7 +348,7 @@ const toActual_: Gen = (R, n) => {
       const place = pick(R, YARDS);
       return {
         id: `toActual-${n}`, family: 'toActual',
-        prompt: `A plan of ${an(place)} is drawn at ${A(`1 : ${N}`)}. A path on the plan is ${A(`${dec(d)} cm`)} long. How long is the real path, in ${B('meters')}?`,
+        prompt: `A plan of ${an(place)} uses the scale ${A(`1 : ${N}`)}. A path on the plan is ${A(`${dec(d)} cm`)} long. How long is the real path, in ${B('meters')}?`,
         board: `\\cssId{d}{${dec(d)}${T('cm')}} \\times ${N} = \\ ?${T('m')}`, input: 'num', unit: 'm', answer: { kind: 'num', v: ans },
         solution: [`1 : ${N} means every length is × ${N}: ${dec(d)} cm × ${N} = ${dec(cm)} cm.`, `100 cm = 1 m, so ${dec(cm)} cm = ${dec(ans)} m.`],
         work: `${dec(cm)}${T('cm')} = \\cssId{s}{${dec(ans)}}${T('m')}`,
@@ -419,7 +420,7 @@ const toDrawing_: Gen = (R, n) => {
       const fig: PlanFig = { pts: rect(d, h), col: 'first', dashed: true, labels: [lab(real, au, metric), null, null, null], labelCol: 'second', labels2: [lab(ans, u, metric), null, null, null], label2Col: 'first' };
       return { kind: 'plan', plan: { unit: u === 'in' ? 'in' : 'cm', figs: [fig], legend: legTex(L), grid: false, ruler: { len: Math.ceil(d), ticks: u === 'in' ? 4 : 2, seg: [0, d], actual: { per: k, unit: au, every: perUnitEvery(L, Math.ceil(d)) } } }, solve: ['labels2', 'ruler', 'seg', 'actual'] } as Pic;
     })(),
-    solution: [`Every ${UW[u]} on the plan stands for ${k} ${au}, so ask: how many ${k}s fit in ${dec(real)}?`, `${dec(real)} ÷ ${k} = ${round ? `${dec(Number(exact.toFixed(3)))}…, about ${vText(ans, false)}` : vText(ans, metric)} ${u}.`],
+    solution: [`Every ${UW[u]} on the plan stands for ${k} ${au}, so ask: how many ${k}s fit in ${dec(real)}?`, `${dec(real)} ÷ ${k} = ${round ? `${dec(Number(exact.toFixed(3)))}…, about ${S(`${vHtml(ans, false)} ${u}`)}` : S(`${vHtml(ans, metric)} ${u}`)}.`],
     work: `${dec(real)} \\div ${k} ${round ? '\\approx' : '='} \\cssId{s}{${vTex(ans, metric)}}${T(u)}`,
     check: valCheck(ans, `Right: ${dec(real)} ÷ ${k} ${round ? `is about ${vText(ans, false)}` : `= ${vText(ans, metric)}`} ${u}.`, [
       { v: real * k, mc: MC.wrongOp, say: `Multiplying makes the drawing bigger than the real wall. Going from real to drawing, divide by ${k}.` },
@@ -445,7 +446,7 @@ const fracLegend: Gen = (R, n) => {
       prompt: `On a plan of ${an(room)}, ${A(legH)} represents ${B('1 ft')}. A wall is ${A(`${vHtml(d, false)} in`)} on the plan. How long is the real wall?`,
       board: `\\cssId{d}{${vTex(d, false)}${T('in')}} \\to\\ ?${T('ft')}`, input: 'num', unit: 'ft', answer: { kind: 'num', v: ans },
       picture: rulerFracPic(L, Math.max(2, Math.ceil(d)), d, true),
-      solution: [`${vText(L.d, false)} in : 1 ft is the same as 1 in : ${den} ft (multiply both by ${den}).`, `${vText(d, false)} × ${den} = ${ans} ft.`],
+      solution: [`${vText(L.d, false)} in : 1 ft is the same as 1 in : ${den} ft (multiply both by ${den}).`, `${vText(d, false)} × ${den} = ${S(`${vHtml(ans, false)} ft`)}.`],
       work: `${vTex(d, false)} \\times ${den} = \\cssId{s}{${ans}}${T('ft')}`,
       check: valCheck(ans, `Right: 1 in stands for ${den} ft, and ${vText(d, false)} × ${den} = ${ans} ft.`, [
         { v: d / den, mc: MC.wrongOp, say: `Multiplying by ${vText(L.d, false)} makes the real wall smaller than the drawing. Each inch stands for ${den} ft: multiply by ${den}.` },
@@ -460,7 +461,7 @@ const fracLegend: Gen = (R, n) => {
     prompt: `A plan of ${an(room)} uses ${A(legH)} represents ${B('1 ft')}. A real wall is ${B(`${real} ft`)} long. How long do you draw it?`,
     board: `\\cssId{a}{${real}${T('ft')}} \\to\\ ?${T('in')}`, unit: 'in', ...answerOf(ans, false),
     picture: qNum(ans) <= 8 ? rulerFracPic(L, Math.max(2, Math.ceil(qNum(ans))), qNum(ans), false) : undefined,
-    solution: [`Every foot is drawn ${vText(L.d, false)} in long.`, `${real} × ${vText(L.d, false)} = ${vText(ans, false)} in.`],
+    solution: [`Every foot is drawn ${vText(L.d, false)} in long.`, `${real} × ${vText(L.d, false)} = ${S(`${vHtml(ans, false)} in`)}.`],
     work: `${real} \\times \\tfrac{1}{${den}} = \\cssId{s}{${vTex(ans, false)}}${T('in')}`,
     check: valCheck(ans, `Right: ${real} feet, each ${vText(L.d, false)} in long: ${vText(ans, false)} in.`, [
       { v: real * den, mc: MC.wrongOp, say: `That divides by ${vText(L.d, false)}, which makes the drawing bigger than the wall. Each foot is drawn ${vText(L.d, false)} in: multiply by ${vText(L.d, false)}.` },
@@ -523,7 +524,7 @@ const ruler: Gen = (R, n) => {
       prompt: `A drawn segment starts at the ${A(`${s} ${u}`)} mark and ends at the ${A(`${vHtml(e, metric)} ${u}`)} mark. How long is it?`,
       board: `${vTex(e, metric)} - ${s} = \\ ?`, unit: u, ...answerOf(ans, metric),
       picture: { kind: 'plan', plan: { unit: metric ? 'cm' : 'in', figs: [], sheet: false, ruler: { len, ticks: t, seg: [s, e], start: s } }, solve: [] },
-      solution: [`The segment does not start at 0, so its end mark is not its length.`, `Length = end − start = ${vText(e, metric)} − ${s} = ${vText(ans, metric)} ${u}.`],
+      solution: [`The segment does not start at 0, so its end mark is not its length.`, `Length = end − start = ${vText(e, metric)} − ${s} = ${S(`${vHtml(ans, metric)} ${u}`)}.`],
       work: `${vTex(e, metric)} - ${s} = \\cssId{s}{${vTex(ans, metric)}}${T(u)}`,
       check: valCheck(ans, `Right: from ${s} to ${vText(e, metric)} is ${vText(ans, metric)} ${u}.`, [
         { v: e, mc: MC.rulerEnd, say: `${vText(e, metric)} is where it ends. It started at ${s}, not at 0: subtract.` },
@@ -619,7 +620,7 @@ const makePlan: Gen = (R, n) => {
     prompt: `You are drawing an L-shaped ${room} at ${A('1 in')} represents ${B(`${k} ft`)}. Some walls are drawn already. The inside wall at the corner is ${B(`${notch} ft`)}. How long do you draw it?`,
     board: `\\cssId{a}{${notch}${T('ft')}} \\to\\ ?${T('in')}`, unit: 'in', ...answerOf(ans, false),
     picture: { kind: 'plan', plan: { unit: 'in', figs: [fig], legend: legTex(L) }, solve: ['labels2'], side: { fig: 0, side: 3 } },
-    solution: [`Every wall uses the same scale, the short one too.`, `${notch} ÷ ${k} = ${vText(ans, false)} in.`],
+    solution: [`Every wall uses the same scale, the short one too.`, `${notch} ÷ ${k} = ${S(`${vHtml(ans, false)} in`)}.`],
     work: `${notch} \\div ${k} = \\cssId{s}{${vTex(ans, false)}}${T('in')}`,
     check: valCheck(ans, `Right: ${notch} ÷ ${k} = ${vText(ans, false)} in, same scale as every other wall.`, [
       { v: notch, mc: MC.someLengths, say: `${notch} is the real length in feet. This wall needs the scale too: ${notch} ÷ ${k}.` },
@@ -647,7 +648,7 @@ const rescale: Gen = (R, n) => {
     prompt: `A plan drawn at ${A(`1 ${u}`)} represents ${B(`${k1} ${au}`)} shows a fence ${A(`${vHtml(d, metric)} ${u}`)} long. You redraw the plan at ${A(`1 ${u}`)} represents ${B(`${k2} ${au}`)}. How long is the fence on the new plan?`,
     board: `\\cssId{d}{${vTex(d, metric)}${T(u)}} \\to\\ ?${T(au)} \\to\\ ?${T(u)}`, unit: u, ...answerOf(ans, metric),
     picture: { kind: 'plan', plan: { unit: metric ? 'cm' : 'in', figs, grid: false }, solve: ['labels2'] },
-    solution: [`Old plan to real: ${vText(d, metric)} × ${k1} = ${dec(real)} ${au}.`, `Real to new plan: ${dec(real)} ÷ ${k2} = ${vText(ans, metric)} ${u}.`],
+    solution: [`Old plan to real: ${vText(d, metric)} × ${k1} = ${dec(real)} ${au}.`, `Real to new plan: ${dec(real)} ÷ ${k2} = ${S(`${vHtml(ans, metric)} ${u}`)}.`],
     work: `${vTex(d, metric)} \\times ${k1} = ${dec(real)},\\ ${dec(real)} \\div ${k2} = \\cssId{s}{${vTex(ans, metric)}}`,
     check: valCheck(ans, `Right: the real fence is ${dec(real)} ${au}, and ${dec(real)} ÷ ${k2} = ${vText(ans, metric)} ${u}.`, [
       { v: d / k2, mc: MC.drawAsActual, say: `That treats ${vText(d, metric)} ${u} as the real length. First find the real fence: ${vText(d, metric)} × ${k1} = ${dec(real)} ${au}.` },
@@ -715,15 +716,17 @@ const audit: Gen = (R, n) => {
   const room = pick(R, ROOMS);
   let pts: [number, number][], lw = dw, lh = dh, angleTxt: string | null = null;
   if (kind === 'side') { lh = dh + pick(R, [0.5, -0.5]); if (lh < 1) lh = dh + 0.5; pts = rect(dw, lh); }
-  else if (kind === 'slant') { pts = [[0.5, 0], [dw + 0.5, 0], [dw, dh], [0, dh]]; angleTxt = `${Math.round(Math.atan2(dh, 0.5) * 180 / Math.PI)}°`; lh = dh; }
+  else if (kind === 'slant') {
+    // a slanted plan whose slanted side really is the labelled dh (the lengths fit; only the corners are wrong)
+    const deg = pick(R, [60, 65, 70, 75]), sx = dh * Math.cos(deg * Math.PI / 180), hy = dh * Math.sin(deg * Math.PI / 180);
+    pts = [[sx, 0], [dw + sx, 0], [dw, hy], [0, hy]]; angleTxt = `${deg}°`; lh = dh;
+  }
   else pts = rect(dw, dh);
-  const sideLen = kind === 'slant' ? Math.hypot(0.5, dh) : lh;
   const fig: PlanFig = {
     pts, col: 'first', right: kind !== 'slant',
     labels: [lab(lw, 'in', false), kind === 'slant' ? lab(dh, 'in', false) : lab(lh, 'in', false), null, null],
     angles: angleTxt ? [{ at: 3, text: angleTxt }] : undefined,
   };
-  void sideLen;
   const opts: Opt[] = kind === 'ok' ? [
     { t: 'Yes: both lengths fit the scale, and the corners are square', ok: true, say: `Yes: ${W} ÷ ${k} = ${vText(dw, false)}, ${H} ÷ ${k} = ${vText(dh, false)}, and all four corners are right angles.` },
     { t: `No: the plan should be ${W} in by ${H} in`, ok: false, mc: MC.drawAsActual, say: `A plan isn't the real size: each inch stands for ${k} ft. ${W} ÷ ${k} = ${vText(dw, false)} in.` },
@@ -783,7 +786,7 @@ const fit: Gen = (R, n) => {
       ...base,
       prompt: `${cap(an(room))} is ${B(`${Ln} ft`)} by ${B(`${Wn} ft`)}. Your page is ${A(`${P} in`)} by ${A(`${Qh} in`)}. What is the smallest whole number of feet per inch that makes the plan fit?`,
       input: 'num' as const, unit: 'ft per in', answer: { kind: 'num' as const, v: ans },
-      solution: [`Long side: ${Ln} ÷ ${P} = ${dec(Number((Ln / P).toFixed(3)))} ft per inch at least. Short side: ${Wn} ÷ ${Qh} = ${dec(Number((Wn / Qh).toFixed(3)))} ft per inch at least.`, `Both must fit, so take the bigger one and round up: ${ans} ft per inch.`],
+      solution: [`Long side: ${Ln} ÷ ${P} = ${dec(Number((Ln / P).toFixed(3)))} ft per inch at least. Short side: ${Wn} ÷ ${Qh} = ${dec(Number((Wn / Qh).toFixed(3)))} ft per inch at least.`, `Both must fit, so take the bigger one and round up: ${S(`${ans} ft`)} per inch.`],
       work: `\\max(${dec(Number((Ln / P).toFixed(2)))},\\ ${dec(Number((Wn / Qh).toFixed(2)))}) \\to \\cssId{s}{${ans}}`,
       picture: { ...base.picture, plan: { ...base.picture.plan, figs: [{ ...fig, pts: rect(Ln / ans, Wn / ans) }] } },
       check: valCheck(ans, `Right: at 1 in : ${ans} ft the plan is ${dec(Number((Ln / ans).toFixed(2)))} in by ${dec(Number((Wn / ans).toFixed(2)))} in: it fits.`, [

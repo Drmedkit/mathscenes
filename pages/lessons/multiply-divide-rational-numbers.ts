@@ -21,6 +21,7 @@ import type { Item } from '../../src/lesson/runtime/item';
 import { TimeJumps, type JumpBlock, type JumpFocus, type JumpParams, scaleArrow } from '../../src/lesson/topics/multiply-divide-rational-numbers/TimeJumps';
 import { Counters, type MatBlock } from '../../src/lesson/topics/multiply-divide-rational-numbers/Counters';
 import { FAMILY_NAMES, GENS, type Picture } from '../../src/lesson/topics/multiply-divide-rational-numbers/items';
+import { explain } from '../../src/lesson/topics/multiply-divide-rational-numbers/explain';
 import { PLAN } from '../../src/lesson/topics/multiply-divide-rational-numbers/plan';
 import { SCRIPT } from '../../src/lesson/topics/multiply-divide-rational-numbers/script';
 import { q, dq, qMul, readQ, tq, tp, withUnit } from '../../src/lesson/topics/multiply-divide-rational-numbers/rq';
@@ -459,7 +460,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it),
   });

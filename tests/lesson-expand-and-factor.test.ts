@@ -157,3 +157,22 @@ describe('voice', () => {
   });
 });
 void (null as unknown as Item);
+
+describe('expand-and-factor: quality layer (docs/lessons/QUALITY_LAYER.md)', () => {
+  const G = GENS as Record<string, (R: () => number, n: number, sg?: string) => Item>;
+  it('a sum of fractions that has no short decimal is not repeated as "(or 5/6a)"', () => {
+    for (let s = 1; s <= 300; s++) {
+      const item = G.collect!(rng(s * 5 + 3), s, 'rational-coefficients');
+      for (const l of item.solution) expect(l.replace(/<[^>]+>/g, ''), l).not.toMatch(/(\S+) \(or \1\)/);
+    }
+  });
+  it('one square, not "1 squares", in the area model', () => {
+    for (let s = 1; s <= 300; s++) for (const l of G.areaToSum!(rng(s * 3 + 1), s, 'model-distributive').solution) expect(l).not.toMatch(/\b1 squares/);
+  });
+  it('a two-box answer ends on its two boxes', () => {
+    for (let s = 1; s <= 100; s++) {
+      const item = G.expand!(rng(s * 9 + 4), s, 'expand-negative');
+      expect(item.solution.at(-1)!.replace(/<[^>]+>/g, '')).toMatch(/^In the boxes: \S+ and \S+\.$/);
+    }
+  });
+});

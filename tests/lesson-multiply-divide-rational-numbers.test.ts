@@ -137,7 +137,7 @@ describe('the models', () => {
     expect(qSame(readQ({ kind: 'num', v: -0.625 })!, q(-5, 8))).toBe(true);
     expect(expand(q(-7, 12))).toEqual({ int: '0', pre: '58', rep: '3' });
     expect(expand(q(1, 7)).rep).toBe('142857');
-    expect(hq(q(-5, 8), 'dec')).toBe('&minus;0.625');
+    expect(hq(q(-5, 8), 'dec')).toBe('−0.625');
   });
 });
 
@@ -149,6 +149,47 @@ describe('voice', () => {
       expect(l.text, id).toBe(LINES[id]!.say);
       expect(l.text.length, id).toBeGreaterThan(3);
       expect(l.text, id).not.toMatch(/\d\s*\/\s*\d|[<>×÷−]|-\d|\(\s*-/);
+    }
+  });
+});
+
+describe('multiply-divide-rational-numbers: quality layer (docs/lessons/QUALITY_LAYER.md)', () => {
+  const G = GENS as Record<string, (R: () => number, n: number, sg?: string) => Item>;
+  const txt = (h: string) => h.replace(/<[^>]+>/g, '');
+  it('"a + b × c" is written with its × and brackets: never "−7 + −52" (which read as −7 + (−5)(2))', () => {
+    for (let s = 1; s <= 400; s++) {
+      const it = G.compound!(rng(s * 7 + 3), s);
+      expect(txt(it.prompt), it.prompt).not.toMatch(/[+−-] [−-]\d/);
+      expect(it.board, it.board).not.toMatch(/\t/);
+    }
+  });
+  it('the distributive "box" step marks the box (the first part), not its opposite', async () => {
+    const { explain } = await import('../src/lesson/topics/multiply-divide-rational-numbers/explain');
+    for (let s = 1; s <= 300; s++) {
+      const it = G.argument!(rng(s * 11 + 5), s);
+      expect(explain(it)?.result, txt(it.prompt)).toEqual(it.answer);
+    }
+  });
+  it('negative fraction answers and repeating-decimal choices are read from the steps', async () => {
+    const { explain } = await import('../src/lesson/topics/multiply-divide-rational-numbers/explain');
+    for (let s = 1; s <= 200; s++) for (const f of ['ratMul', 'oneNeg', 'decimal', 'story1']) {
+      const it = G[f]!(rng(s * 13 + 1), s);
+      const ex = explain(it);
+      expect(ex, `${f}: ${txt(it.prompt)}`).not.toBeNull();
+      expect(it.check(ex!.result).ok, `${f}: ${txt(it.prompt)} ${JSON.stringify(ex!.result)}`).toBe(true);
+    }
+  });
+});
+
+describe('multiply-divide-rational-numbers: oracle findings (phase 2)', () => {
+  it('factors written side by side each have brackets: never "(−2)51(−5)" or "13(−2)" (read as 51, 13)', () => {
+    const G = GENS as Record<string, (R: () => number, n: number, sg?: string) => Item>;
+    for (let s = 1; s <= 600; s++) {
+      const it = G.intMul!(rng(s * 19 + 3), s);
+      const p = it.prompt.replace(/<[^>]+>/g, '');
+      expect(p, p).not.toMatch(/\)\d/);
+      if (!p.includes(' × ')) expect(p, p).toMatch(/^(\(−?\d+\)|\d)(\(−?\d+\))+ = \?$/);
+      expect(it.board, it.board).not.toMatch(/\)\d/);
     }
   });
 });

@@ -163,7 +163,7 @@ describe('sales-tax: misconceptions are diagnosed', () => {
     let up = 0, cut = 0;
     for (let s = 1; s <= 300; s++) {
       const it = mk('budgetMax', 'budget-max-price', s);
-      const m = /have <b class="s">\$([\d,.]+)<\/b> to spend, and the sales tax is <b class="b">([\d.]+)%/.exec(it.prompt)!;
+      const m = /have <b class="s(?: tot)?">\$([\d,.]+)<\/b> to spend, and the sales tax is <b class="b">([\d.]+)%/.exec(it.prompt)!;
       const budget = Math.round(Number(m[1]!.replace(/,/g, '')) * 100), rate = Math.round(Number(m[2]) * 1000);
       const best = budgetMax(budget, rate), q = Math.floor((budget * 100000) / (100000 + rate));
       expect(it.check(num(best / 100)).ok).toBe(true);
@@ -183,7 +183,7 @@ describe('sales-tax: misconceptions are diagnosed', () => {
           const t = salesTax(P.tape.price, P.tape.rate), r = P.tape.rate / 1000;
           probes.push(r, (P.tape.price / 100) * r, Math.round(P.tape.price / r) / 100, truncU(t.taxU) / 100, t.taxU / (100 * U_CENT), t.tax * P.tape.rate / 1e7, (1 + r / 100) / 10, salesTax(P.tape.price, Math.round(P.tape.rate / 1000) * 1000).tax / 100);
         }
-        const m = /have <b class="s">\$([\d,.]+)<\/b> to spend, and the sales tax is <b class="b">([\d.]+)%/.exec(it.prompt);
+        const m = /have <b class="s(?: tot)?">\$([\d,.]+)<\/b> to spend, and the sales tax is <b class="b">([\d.]+)%/.exec(it.prompt);
         if (m) { const b = Math.round(Number(m[1]!.replace(/,/g, '')) * 100), r = Math.round(Number(m[2]) * 1000), q = Math.floor((b * 100000) / (100000 + r)); probes.push(q / 100, (q + 1) / 100); }
         for (const v of probes) { const c = it.check(num(v)); if (c.mc) produced.add(c.mc); }
       }
@@ -210,5 +210,44 @@ describe('sales-tax: voice', () => {
     for (const m of page.matchAll(/cb: '([qetp]\.[a-z0-9-]+)'/g)) ids.add(m[1]!);
     expect(ids.size).toBeGreaterThan(20);
     for (const id of ids) expect(LINES[id], id).toBeDefined();
+  });
+});
+
+describe('sales-tax: quality layer (docs/lessons/QUALITY_LAYER.md)', () => {
+  it('the total colour is not read as the answer: a pre-tax price item ends on the price, not the total', async () => {
+    const { explain } = await import('../src/lesson/topics/sales-tax/explain');
+    for (let s = 1; s <= 80; s++) for (const f of ['missingAmt', 'priceFromTotal', 'priceFromTax', 'budgetMax']) {
+      const item = GEN[f]!(rng(s * 13 + 5), s);
+      expect(explain(item)?.result, `${f}: ${item.prompt}`).toEqual(item.answer);
+    }
+  });
+  it('"an 8%" and "an 11%", never "a 8%"', () => {
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 60; s++) {
+      const item = GEN[f]!(rng(s * 17 + 3), s, p.id);
+      expect(item.prompt.replace(/<[^>]+>/g, ''), `${f}`).not.toMatch(/\ba (8|11|18)(\.\d+)?%/);
+    }
+  });
+});
+
+describe('sales-tax: oracle findings (phase 2)', () => {
+  const txt = (h: string) => h.replace(/<[^>]+>/g, '');
+  it('no $100 pre-tax price in the plan / division / subtract-fails items ("add $r", "total − $r", "take $r off" would be right too)', () => {
+    for (const f of ['planTotal', 'whichDivision', 'subtractFails']) for (let s = 1; s <= 600; s++) {
+      const p = txt(GEN[f]!(rng(s * 37 + 11), s).prompt);
+      const m = /marked \$([\d,.]+), with an? ([\d.]+)%/.exec(p) ?? /total (?:of|was) \$([\d,.]+) (?:includes an? |with )([\d.]+)%/.exec(p);
+      expect(m, p).not.toBeNull();
+      const v = Number(m![1]!.replace(/,/g, '')), r = Number(m![2]);
+      const price = f === 'planTotal' ? v : v / (1 + r / 100);
+      expect(Math.abs(price - 100), p).toBeGreaterThan(0.001);
+    }
+  });
+  it('a rate read as dollars shows cents ("$6.50", never "$6.5"), and "an 8%"', () => {
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 80; s++) {
+      const it = GEN[f]!(rng(s * 41 + 5), s, p.id);
+      for (const t of [it.prompt, ...it.solution, ...(it.choices ?? [])].map(txt)) {
+        expect(t, f).not.toMatch(/\$\d+\.\d(?!\d)/);
+        expect(t, f).not.toMatch(/\b[Aa] (8|11|18)(\.\d+)?%/);
+      }
+    }
   });
 });

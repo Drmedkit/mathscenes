@@ -4,6 +4,7 @@
 // Values are exact (expo.ts: repeated multiplication, never Math.pow). Pure: no DOM, no canvas.
 // PROBES records, per item, typical wrong responses and the id they must get (tests).
 import { type Gen, type Item, type Response, type Verdict, A, B, S, fr, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import { type Q, rat } from '../../../core/math';
 import { type Bracket, type MatParams, type Role, type Tile, matFits } from './FactorMat';
 import { baseHtml, baseTex, decStr, minus, powHtml, powTex, qNeg, qPow, qSame, readQ, respOf, sup, vHtml, vTex, varHtml, varPow } from './expo';
@@ -97,7 +98,7 @@ function choiceItem(o: Base, R: () => number, opts: Opt[]): Item {
   const sh = shuffle(R, opts.slice());
   const right = sh.findIndex(x => x.ok);
   const it: Item = {
-    ...o, picture: o.picture as Record<string, unknown> | undefined, input: 'choice', choices: sh.map(x => x.t), answer: { kind: 'choice', i: right },
+    ...o, solution: endOnChoice(o.solution, sh[right]!.t), picture: o.picture as Record<string, unknown> | undefined, input: 'choice', choices: sh.map(x => x.t), answer: { kind: 'choice', i: right },
     check: r => {
       if (r.kind !== 'choice' || !sh[r.i]) return { ok: false, say: 'Pick one answer.' };
       const x = sh[r.i]!;
@@ -110,6 +111,13 @@ function choiceItem(o: Base, R: () => number, opts: Opt[]): Item {
 
 // ---------- shared pieces ----------
 const B10 = Z(10);
+/** a power whose EXPONENT is the marked answer ("Type the exponent": the steps card reads the exponent, not 3^6 as 36) */
+const PS = (b: Q, n: number) => `${baseHtml(b)}<sup>${S(minus(n))}</sup>`;
+const VS = (x: string, n: number) => `<i>${x}</i><sup>${S(minus(n))}</sup>`;
+/** a signed number after + or −, in parentheses when negative: 2 + (−5), never 2 + −5 */
+/** "1 factor", "3 factors" */
+const nf = (n: number) => `${n} factor${n === 1 ? '' : 's'}`;
+const par = (n: number) => (n < 0 ? `(${minus(n)})` : String(n));
 const P = (b: Q, n: number | string) => powHtml(b, n);
 const T = (b: Q, n: number | string) => powTex(b, n);
 const times = ' × ';
@@ -155,20 +163,20 @@ const prodExp: Gen = (R, n, sg) => {
   const s = m + k;
   const pic = b.q === 1 ? lawMat(b.p, [{ exp: m, label: T(b, m) }, { exp: k, label: T(b, k) }], `= ${T(b, s)}${s === 0 ? ' = 1' : ''}`) : undefined;
   const wrongs: W[] = [
-    { v: Z(m * k), mc: MC.prodMul, say: `Multiplying the exponents is the rule for a power of a power. Here you multiply ${P(b, m)} by ${P(b, k)}: count the factors, ${minus(m)} + ${minus(k)} = ${minus(s)}.` },
-    ...(s < 0 ? [{ v: Z(-s), mc: MC.sumPos, say: `${minus(m)} + ${minus(k)} is ${minus(s)}, not ${-s}: there are more factors below the bar than on top, so the exponent stays negative.` }] : []),
+    { v: Z(m * k), mc: MC.prodMul, say: `Multiplying the exponents is the rule for a power of a power. Here you multiply ${P(b, m)} by ${P(b, k)}: count the factors, ${minus(m)} + ${par(k)} = ${minus(s)}.` },
+    ...(s < 0 ? [{ v: Z(-s), mc: MC.sumPos, say: `${minus(m)} + ${par(k)} is ${minus(s)}, not ${-s}: there are more factors below the bar than on top, so the exponent stays negative.` }] : []),
   ];
   return valItem({
     id: `pe-${n}`, family: 'prodExp',
     prompt: `Write ${A(P(b, m))} × ${B(P(b, k))} as one power of ${baseHtml(b)}. Type the exponent.`,
     board: `${T(b, m)} \\times ${T(b, k)} = ${baseTex(b)}^{\\,?}`,
     solution: [
-      m > 0 && k > 0 ? `${P(b, m)} is ${m} factor${m > 1 ? 's' : ''} of ${baseHtml(b)}, ${P(b, k)} is ${k} more: ${m + k} factors in all.` : `A negative exponent puts its factors below the bar; each factor on top cancels one below.`,
-      `Same base, multiply: add the exponents. ${minus(m)} + ${minus(k)} = ${minus(s)}.`,
-      `So ${P(b, m)} × ${P(b, k)} = ${S(P(b, s))}.`,
+      m > 0 && k > 0 ? `${P(b, m)} is ${m} factor${m > 1 ? 's' : ''} of ${baseHtml(b)}, ${P(b, k)} is ${k} more: ${nf(m + k)} in all.` : `A negative exponent puts its factors below the bar; each factor on top cancels one below.`,
+      `Same base, multiply: add the exponents. ${minus(m)} + ${par(k)} = ${minus(s)}.`,
+      `So ${P(b, m)} × ${P(b, k)} = ${PS(b, s)}.`,
     ],
     picture: pic,
-  }, Z(s), 'num', `Yes: ${minus(m)} + ${minus(k)} = ${minus(s)}, so it is ${P(b, s)}.`, wrongs, `Same base, so add the exponents: ${minus(m)} + ${minus(k)} = ${minus(s)}.`);
+  }, Z(s), 'num', `Yes: ${minus(m)} + ${par(k)} = ${minus(s)}, so it is ${P(b, s)}.`, wrongs, `Same base, so add the exponents: ${minus(m)} + ${par(k)} = ${minus(s)}.`);
 };
 
 // 2. one power or not? [product-rule-positive]
@@ -193,9 +201,9 @@ const prodPick: Gen = (R, n) => {
   return choiceItem({
     id: `pp-${n}`, family: 'prodPick',
     prompt: `Which is equal to ${A(P(Z(b), m))} × ${B(P(Z(b), k))}?`, board: `${T(Z(b), m)} \\times ${T(Z(b), k)}`,
-    solution: [`${m} factors of ${b} times ${k} more factors of ${b}: ${m + k} factors of ${b}.`, `The base stays ${b}; the exponents add: ${S(P(Z(b), m + k))}.`],
+    solution: [`${nf(m)} of ${b} times ${k} more factors of ${b}: ${nf(m + k)} of ${b}.`, `The base stays ${b}; the exponents add: ${S(P(Z(b), m + k))}.`],
   }, R, [
-    { t: `${b}${sup(m + k)}`, ok: true, say: `Yes: ${m} + ${k} = ${m + k} factors of ${b}, so ${b}${sup(m + k)}.` },
+    { t: `${b}${sup(m + k)}`, ok: true, say: `Yes: ${m} + ${k} = ${nf(m + k)} of ${b}, so ${b}${sup(m + k)}.` },
     { t: `${b * b}${sup(m + k)}`, mc: MC.sameBase, say: `The exponents add, but the base stays ${b}: every factor is still a ${b}, not a ${b * b}. It is ${b}${sup(m + k)}.` },
     { t: `${b}${sup(m * k)}`, mc: MC.prodMul, say: `Multiplying exponents is for a power of a power. Here count the factors: ${m} + ${k} = ${m + k}, so ${b}${sup(m + k)}.` },
     { t: `${b * b}${sup(m * k)}`, mc: MC.sameBase, say: `Both the base and the exponent changed. The base stays ${b} and the exponents add: ${b}${sup(m + k)}.` },
@@ -230,9 +238,9 @@ const quotExp: Gen = (R, n, sg) => {
     id: `qe-${n}`, family: 'quotExp',
     prompt: `Write ${A(P(b, m))} ÷ ${B(P(b, k))} as one power of ${baseHtml(b)}. Type the exponent.`, board,
     solution: [
-      m > 0 && k > 0 ? `${m} factors of ${baseHtml(b)} on top, ${k} below the bar; each pair cancels (${baseHtml(b)} ÷ ${baseHtml(b)} = 1).` : `Dividing by ${P(b, k)} undoes multiplying by it, so subtract its exponent.`,
+      m > 0 && k > 0 ? `${nf(m)} of ${baseHtml(b)} on top, ${k} below the bar; each pair cancels (${baseHtml(b)} ÷ ${baseHtml(b)} = 1).` : `Dividing by ${P(b, k)} undoes multiplying by it, so subtract its exponent.`,
       `Same base, divide: subtract the exponents. ${minus(m)} − ${k < 0 ? `(${minus(k)})` : k} = ${minus(d)}.`,
-      `So it is ${S(P(b, d))}.`,
+      `So it is ${PS(b, d)}.`,
     ],
     picture: pic,
   }, Z(d), 'num', `Yes: ${minus(m)} − ${k < 0 ? `(${minus(k)})` : k} = ${minus(d)}, so ${P(b, d)}.`, wrongs, `Same base, so subtract the exponents: ${minus(m)} − ${k < 0 ? `(${minus(k)})` : k} = ${minus(d)}.`);
@@ -254,9 +262,9 @@ const quotPick: Gen = (R, n, sg) => {
       prompt: `Which is equal to ${A(P(base, ex))}?`, board: T(base, ex),
       solution: neg
         ? [`A negative exponent flips the fraction: ${P(base, ex)} = ${P(rat(c, a), e)}.`, `Then the power goes to the top AND the bottom: ${S(ok)}.`]
-        : [`The power goes to the top AND the bottom: (${fr(a, c)})${sup(e)} = ${S(ok)}.`],
+        : [`(${fr(a, c)})${sup(e)} is ${nf(e)} of ${fr(a, c)}.`, `The power goes to the top AND the bottom: (${fr(a, c)})${sup(e)} = ${S(ok)}.`],
     }, R, [
-      { t: ok, ok: true, say: neg ? `Yes: flip the fraction, then raise both parts: ${ok}.` : `Yes: ${e} factors of ${fr(a, c)} give ${a}${sup(e)} on top and ${c}${sup(e)} below.` },
+      { t: ok, ok: true, say: neg ? `Yes: flip the fraction, then raise both parts: ${ok}.` : `Yes: ${nf(e)} of ${fr(a, c)} give ${a}${sup(e)} on top and ${c}${sup(e)} below.` },
       { t: one, mc: MC.oneFrac, say: `The power belongs to the whole fraction, so the bottom is raised too: ${ok}.` },
       { t: negv, mc: neg ? MC.negNeg : MC.baseTimes, say: neg ? `A negative exponent does not make the value negative: it flips the fraction. ${ok}.` : `An exponent counts factors; it does not multiply by ${e}. ${ok}.` },
       { t: other, say: neg ? `That forgot the flip: a negative exponent turns ${fr(a, c)} into ${fr(c, a)}. ${ok}.` : `That divides two powers of ${a}. Raising a fraction to a power raises the top and the bottom: ${ok}.` },
@@ -267,9 +275,9 @@ const quotPick: Gen = (R, n, sg) => {
   return choiceItem({
     id: `qp-${n}`, family: 'quotPick',
     prompt: `Which is equal to ${A(P(Z(b), m))} ÷ ${B(P(Z(b), k))}?`, board: `\\frac{${T(Z(b), m)}}{${T(Z(b), k)}}`,
-    solution: [`${m} factors of ${b} on top, ${k} below: ${k} pairs cancel.`, `${m - k} factors of ${b} are left: ${S(`${b}${sup(m - k)}`)}.`],
+    solution: [`${nf(m)} of ${b} on top, ${k} below: ${k} pairs cancel.`, `${nf(m - k)} of ${b} are left: ${S(`${b}${sup(m - k)}`)}.`],
   }, R, [
-    { t: `${b}${sup(m - k)}`, ok: true, say: `Yes: ${k} pairs cancel and ${m - k} factors of ${b} are left.` },
+    { t: `${b}${sup(m - k)}`, ok: true, say: `Yes: ${k} pairs cancel and ${nf(m - k)} of ${b} are left.` },
     { t: `${b}${sup(m / k)}`, mc: MC.quotDiv, say: `Dividing powers subtracts the exponents; it does not divide them. ${m} − ${k} = ${m - k}: ${b}${sup(m - k)}.` },
     { t: `1${sup(m - k)}`, mc: MC.sameBase, say: `The base stays ${b}: only the exponents change. ${b}${sup(m - k)}.` },
     { t: `${b}${sup(m + k)}`, say: `Adding exponents is for multiplying. Dividing cancels factors: ${b}${sup(m - k)}.` },
@@ -293,7 +301,7 @@ const powPow: Gen = (R, n, sg) => {
     m = int(R, 2, 4); k = int(R, 2, 4);
     if (m === 2 && k === 2) k = 3;
   }
-  const e = m * k;
+  const e = m * k + 0;   // + 0: (3^0)^−2 is 3^0, not 3^−0
   // the picture: k groups of m tiles (m and k small, k > 0)
   let pic: MatPic | undefined;
   if (k > 0 && m !== 0 && b.p !== 10 && Math.abs(m) * k <= 8) {
@@ -307,9 +315,9 @@ const powPow: Gen = (R, n, sg) => {
     prompt: `Write ${A(`(${P(b, m)})${sup(k)}`)} as one power of ${baseHtml(b)}. Type the exponent.`,
     board: `\\left(${T(b, m)}\\right)^{${k}} = ${baseTex(b)}^{\\,?}`,
     solution: [
-      k > 0 ? `(${P(b, m)})${sup(k)} is ${k} factors of ${P(b, m)}: ${Array.from({ length: k }, () => P(b, m)).join(' × ')}.` : `The rule (a${sup('m')})${sup('n')} = a${sup('mn')} still holds for zero and negative exponents.`,
+      k > 0 ? `(${P(b, m)})${sup(k)} is ${nf(k)} of ${P(b, m)}: ${Array.from({ length: k }, () => P(b, m)).join(' × ')}.` : `The rule (a${sup('m')})${sup('n')} = a${sup('mn')} still holds for zero and negative exponents.`,
       `Multiply the exponents: ${minus(m)} × ${k < 0 ? `(${minus(k)})` : k} = ${minus(e)}.`,
-      `So it is ${S(P(b, e))}.`,
+      `So it is ${PS(b, e)}.`,
     ],
     picture: pic,
   }, Z(e), 'num', `Yes: ${minus(m)} × ${k < 0 ? `(${minus(k)})` : k} = ${minus(e)}, so ${P(b, e)}.`, wrongs, `A power of a power multiplies the exponents: ${minus(m)} × ${k < 0 ? `(${minus(k)})` : k} = ${minus(e)}.`);
@@ -372,11 +380,11 @@ const powProd: Gen = (R, n, sg) => {
   return choiceItem({
     id: `pd-${n}`, family: 'powProd',
     prompt: `Which is equal to ${A(`(${a} × ${c})${sup(e)}`)}?`, board: `(${a} \\times ${c})^{${e}}`,
-    solution: [`(${a} × ${c})${sup(e)} is ${e} factors of (${a} × ${c}).`, `Regroup: ${e} factors of ${a} and ${e} factors of ${c}: ${S(`${a}${sup(e)} × ${c}${sup(e)}`)} = ${va} × ${vc} = ${va * vc}.`],
+    solution: [`(${a} × ${c})${sup(e)} is ${nf(e)} of (${a} × ${c}).`, `Regroup: ${nf(e)} of ${a} and ${nf(e)} of ${c}: ${S(`${a}${sup(e)} × ${c}${sup(e)}`)} = ${va} × ${vc} = ${va * vc}.`],
     picture: matFits(pic) ? pic : undefined,
   }, R, [
     { t: `${a}${sup(e)} × ${c}${sup(e)}`, ok: true, say: `Yes: every factor is raised. ${a}${sup(e)} × ${c}${sup(e)} = ${va * vc}.` },
-    { t: `${a} × ${c}${sup(e)}`, mc: MC.oneProd, say: `The power goes to the ${a} too: there are ${e} factors of ${a}, not one. ${a}${sup(e)} × ${c}${sup(e)}.` },
+    { t: `${a} × ${c}${sup(e)}`, mc: MC.oneProd, say: `The power goes to the ${a} too: there are ${nf(e)} of ${a}, not one. ${a}${sup(e)} × ${c}${sup(e)}.` },
     { t: `${a}${sup(e)} + ${c}${sup(e)}`, say: `The ${a}s and ${c}s are multiplied, not added: ${a}${sup(e)} × ${c}${sup(e)}.` },
     { t: `${a * c} × ${e}`, mc: MC.baseTimes, say: `An exponent counts factors; it does not multiply by ${e}. ${a}${sup(e)} × ${c}${sup(e)} = ${va * vc}.` },
   ]);
@@ -410,7 +418,7 @@ const powQuot: Gen = (R, n, sg) => {
     id: `pq-${n}`, family: 'powQuot',
     prompt: `What is ${A(P(base, e))}?`, board: `${T(base, e)} = \\ ?`,
     solution: e > 0
-      ? [`(${vHtml(base)})${sup(e)} is ${e} factors of ${vHtml(base)}.`, `Multiply the tops and the bottoms: ${fr(`${a}${sup(e)}`, `${c}${sup(e)}`)} = ${S(vHtml(want))}.`]
+      ? [`(${vHtml(base)})${sup(e)} is ${nf(e)} of ${vHtml(base)}.`, `Multiply the tops and the bottoms: ${fr(`${a}${sup(e)}`, `${c}${sup(e)}`)} = ${S(vHtml(want))}.`]
       : [`A negative exponent flips the fraction: (${vHtml(base)})${sup(e)} = (${vHtml(rat(c, a))})${sup(ae)}.`, `Raise the top and the bottom: ${S(vHtml(want))}.`],
   }, want, input, `Yes: ${P(base, e)} = ${vHtml(want)}.`, wrongs, `Raise the top and the bottom${e < 0 ? ' after flipping the fraction' : ''}: ${vHtml(want)}.`);
 };
@@ -424,12 +432,12 @@ const negBase: Gen = (R, n) => {
     const m = int(R, 1, b === -3 ? 3 : 4), k = int(R, 1, b === -3 ? 3 : 4);
     base = Z(b); e = m + k;
     if (e > (b === -3 ? 6 : 7)) return negBase(R, n);
-    board = `${T(base, m)} \\times ${T(base, k)} = \\ ?`; html = `${P(base, m)} × ${P(base, k)}`; how = `same base: ${m} + ${k} = ${e} factors of (${b})`;
+    board = `${T(base, m)} \\times ${T(base, k)} = \\ ?`; html = `${P(base, m)} × ${P(base, k)}`; how = `same base: ${m} + ${k} = ${nf(e)} of (${minus(b)})`;
     pic = lawMat(b, [{ exp: m, label: T(base, m) }, { exp: k, label: T(base, k) }], `= ${T(base, e)} = ${vTex(qPow(base, e))}`);
   } else if (kind === 'quot') {
     const b = -2, m = int(R, 3, 6), k = int(R, 1, m - 1);
     base = Z(b); e = m - k;
-    board = `\\frac{${T(base, m)}}{${T(base, k)}} = \\ ?`; html = `${P(base, m)} ÷ ${P(base, k)}`; how = `same base: ${m} − ${k} = ${e} factors of (${b})`;
+    board = `\\frac{${T(base, m)}}{${T(base, k)}} = \\ ?`; html = `${P(base, m)} ÷ ${P(base, k)}`; how = `same base: ${m} − ${k} = ${nf(e)} of (${minus(b)})`;
     pic = lawMat(b, [{ exp: m, label: T(base, m) }, { exp: k, label: T(base, k), div: true }], `= ${T(base, e)} = ${vTex(qPow(base, e))}`);
   } else if (kind === 'pow') {
     base = pick(R, [rat(-1, 2), rat(-1, 3), Z(-2)]);
@@ -466,9 +474,9 @@ const negSame: Gen = (R, n) => {
   return choiceItem({
     id: `ns-${n}`, family: 'negSame',
     prompt: `Write ${A(P(base, m))} × ${B(P(base, k))} as one power.`, board: `${T(base, m)} \\times ${T(base, k)}`,
-    solution: [`(${b}) is one factor, used ${m} times and then ${k} more times.`, `Same base, add the exponents: ${S(P(base, m + k))}.`],
+    solution: [`(${minus(b)}) is one factor, used ${m} times and then ${k} more times.`, `Same base, add the exponents: ${S(P(base, m + k))}.`],
   }, R, [
-    { t: P(base, m + k), ok: true, say: `Yes: ${m} + ${k} = ${m + k} factors of (${b}).` },
+    { t: P(base, m + k), ok: true, say: `Yes: ${m} + ${k} = ${nf(m + k)} of (${b}).` },
     { t: `${b * b}${sup(m + k)}`, mc: MC.sameBase, say: `Every factor is still a (${b}); the base does not change. ${P(base, m + k)}.` },
     { t: P(base, m * k), mc: MC.prodMul, say: `Multiplying the exponents is for a power of a power. Count the factors: ${m} + ${k} = ${m + k}.` },
   ]);
@@ -482,16 +490,16 @@ const zeroExp: Gen = (R, n) => {
   if (kind === 'quot') {
     const k = int(R, 2, 4);
     board = `\\frac{${T(b, k)}}{${T(b, k)}} = ${baseTex(b)}^{\\,?} = \\ ?`; prompt = `${A(P(b, k))} ÷ ${B(P(b, k))} is ${baseHtml(b)} to what power, and what is its value? Type the value.`;
-    sol = [`${k} factors on top, ${k} below: every pair cancels, and 1 is left.`, `The quotient rule gives ${k} − ${k} = 0: ${P(b, 0)}. Both are right, so ${S(`${P(b, 0)} = 1`)}.`];
+    sol = [`${nf(k)} on top, ${k} below: every pair cancels, and 1 is left.`, `The quotient rule gives ${k} − ${k} = 0: ${P(b, 0)}. Both are right, so ${P(b, 0)} = ${S('1')}.`];
     pic = lawMat(b.p, [{ exp: k, label: T(b, k) }, { exp: k, label: T(b, k), div: true }], `= ${T(b, 0)} = 1`, rat(1));
   } else if (kind === 'table') {
     const vals = [3, 2, 1].map(e => `${T(b, e)} = ${vTex(qPow(b, e))}`).join(',\\ \\ ');
     board = `${vals},\\ \\ ${T(b, 0)} = \\ ?`;
     prompt = `Going down the table, each step divides by ${b.p}. What is ${A(P(b, 0))}?`;
-    sol = [`${P(b, 1)} = ${b.p}. One step down divides by ${b.p}: ${b.p} ÷ ${b.p} = 1.`, `So ${S(`${P(b, 0)} = 1`)}.`];
+    sol = [`${P(b, 1)} = ${b.p}. One step down divides by ${b.p}: ${b.p} ÷ ${b.p} = 1.`, `So ${P(b, 0)} = ${S('1')}.`];
   } else {
     board = `${T(b, 0)} = \\ ?`; prompt = `What is ${A(P(b, 0))}?`;
-    sol = [`${P(b, 1)} = ${vHtml(b)}; divide by the base once more: ${vHtml(b)} ÷ ${vHtml(b)} = 1.`, `With no factors left, the 1 every product starts from is what remains: ${S(`${P(b, 0)} = 1`)}.`];
+    sol = [`${P(b, 1)} = ${vHtml(b)}; divide by the base once more: ${vHtml(b)} ÷ ${vHtml(b)} = 1.`, `With no factors left, the 1 every product starts from is what remains: ${P(b, 0)} = ${S('1')}.`];
     if (b.q === 1) pic = { kind: 'mat', top: [], bottom: [], brackets: [{ key: 'z', row: 'top', from: 0, to: 0, label: T(b, 0), col: 'second', empty: true }], result: '= 1', resultValue: rat(1) };
   }
   return valItem({ id: `z-${n}`, family: 'zeroExp', prompt, board, solution: sol, picture: pic }, rat(1), 'num', `Yes: ${P(b, 0)} = 1.`, [
@@ -507,12 +515,12 @@ const zeroContrast: Gen = (R, n) => {
   return choiceItem({
     id: `zc-${n}`, family: 'zeroContrast',
     prompt: `Which line is right?`, board: `${b}^{0} \\qquad ${b} \\times 0 \\qquad 0^{${b}}`,
-    solution: [`${b}${sup(0)}: no factors of ${b}, so the starting 1 is left: 1.`, `${b} × 0 = 0, and 0${sup(b)} = ${b} factors of 0 = 0.`, `So: ${S(row('1', '0', '0'))}.`],
+    solution: [`${b}${sup(0)}: no factors of ${b}, so the starting 1 is left: 1.`, `${b} × 0 = 0, and 0${sup(b)} = ${nf(b)} of 0 = 0.`, `So: ${S(row('1', '0', '0'))}.`],
   }, R, [
     { t: row('1', '0', '0'), ok: true, say: `Yes: ${b}${sup(0)} = 1, but ${b} × 0 and 0${sup(b)} are both 0.` },
     { t: row('0', '0', '0'), mc: MC.zero0, say: `${b}${sup(0)} is not ${b} × 0. It is one step down from ${b}${sup(1)} = ${b}: ${b} ÷ ${b} = 1.` },
     { t: row(String(b), '0', '0'), mc: MC.zeroBase, say: `${b}${sup(1)} is ${b}; ${b}${sup(0)} is one step further down the table: ${b} ÷ ${b} = 1.` },
-    { t: row('1', '0', '1'), say: `0${sup(b)} is ${b} factors of 0, and that is 0. Only a NONZERO base to the power 0 is 1.` },
+    { t: row('1', '0', '1'), say: `0${sup(b)} is ${nf(b)} of 0, and that is 0. Only a NONZERO base to the power 0 is 1.` },
   ]);
 };
 
@@ -525,7 +533,7 @@ const tenDec: Gen = (R, n) => {
   return valItem({
     id: `td-${n}`, family: 'tenDec',
     prompt: asDec ? `Write ${A(`10${sup(-k)}`)} as a decimal.` : `Write ${A(`10${sup(-k)}`)} as a fraction.`, board: `10^{-${k}} = \\ ?`,
-    solution: [`10${sup(-k)} = 1 ÷ ${tenK} = ${fr(1, qPow(B10, k).p)}: ${k === 1 ? 'one factor' : `${k} factors`} of 10 below the bar.`, `Dividing 1 by 10 ${times10} moves the 1 ${places} to the right of the decimal point: ${S(dec)}.`],
+    solution: [`10${sup(-k)} = 1 ÷ ${tenK} = ${asDec ? fr(1, qPow(B10, k).p) : S(fr(1, qPow(B10, k).p))}: ${k === 1 ? 'one factor' : `${nf(k)}`} of 10 below the bar.`, `Dividing 1 by 10 ${times10} moves the 1 ${places} to the right of the decimal point: ${asDec ? S(dec) : dec}.`],
     picture: pic,
   }, want, asDec ? 'num' : 'frac', `Yes: 10${sup(-k)} = ${fr(1, qPow(B10, k).p)} = ${dec}.`, [
     { v: qNeg(qPow(B10, k)), mc: MC.negNeg, say: `A negative exponent does not make the number negative: 10${sup(-k)} is 1 divided by 10${sup(k)}, a small positive number, ${dec}.` },
@@ -606,7 +614,7 @@ const negExp: Gen = (R, n, sg) => {
   return valItem({
     id: `ne-${n}`, family: 'negExp',
     prompt: `What is ${A(P(base, e))}?`, board: `${T(base, e)} = \\ ?`,
-    solution: e === 0 ? [`Every nonzero base to the power 0 is 1: ${S(`${P(base, 0)} = 1`)}.`] : base.q === 1
+    solution: e === 0 ? [`${P(base, 0)} has no factors of ${baseHtml(base)}: only the starting 1 is left.`, `Every nonzero base to the power 0 is 1: ${P(base, 0)} = ${S('1')}.`] : base.q === 1
       ? [`${P(base, e)} = 1 ÷ ${P(base, ae)}: ${ae} factor${ae > 1 ? 's' : ''} of ${baseHtml(base)} below the bar.`, `${P(base, ae)} = ${vHtml(pos)}, so ${P(base, e)} = ${S(vHtml(want))}.`]
       : [`A negative exponent flips the fraction: ${P(base, e)} = ${P(qPow(base, -1), ae)}.`, `${P(qPow(base, -1), ae)} = ${S(vHtml(want))}.`],
     picture: pic,
@@ -638,7 +646,7 @@ const negWhich: Gen = (R, n, sg) => {
   return choiceItem({
     id: `nw-${n}`, family: 'negWhich',
     prompt: `Which number is equal to ${A(P(base, e))}?`, board: T(base, e),
-    solution: base.q === 1 ? [`${P(base, e)} = 1 ÷ ${P(base, ae)} = 1 ÷ ${vHtml(pos)}.`, `So ${S(vHtml(want))}.`] : [`Flip the fraction and make the exponent positive: ${P(qPow(base, -1), ae)}.`, `So ${S(vHtml(want))}.`],
+    solution: base.q === 1 ? [`${P(base, e)} = 1 ÷ ${P(base, ae)} = 1 ÷ ${pos.p < 0 ? `(${vHtml(pos)})` : vHtml(pos)}.`, `So ${S(vHtml(want))}.`] : [`Flip the fraction and make the exponent positive: ${P(qPow(base, -1), ae)}.`, `So ${S(vHtml(want))}.`],
   }, R, uniq);
 };
 
@@ -680,7 +688,7 @@ const zeroMix: Gen = (R, n) => {
   return valItem({
     id: `zm-${n}`, family: 'zeroMix',
     prompt: `Find the value: ${A(html)}.`, board: `${board} = \\ ?`,
-    solution: [`Every zero power of a nonzero base is 1${kind === 'minus' ? `, and the minus is applied after the power: −${a}${sup(0)} = −1` : ''}.`, `So the value is ${S(String(want))}.`],
+    solution: [`Every zero power of a nonzero base is 1${kind === 'minus' ? `, and the minus is applied after the power: −${a}${sup(0)} = −1` : ''}.`, `So ${kind === 'sum' ? `${c} × 1 + 1` : kind === 'diff' ? `${c + 3} − 1` : kind === 'series' ? `1 + ${a} + ${a * a}` : `−1 + ${c}`} = ${S(String(want))}.`],
   }, Z(want), 'num', `Yes: ${want}.`, [
     ...(extra ? [extra] : []),
     { v: Z(w0), mc: MC.zero0, say: `A zero power is 1, not 0. Put 1 in for each zero power: ${want}.` },
@@ -698,7 +706,7 @@ const lawVal: Gen = (R, n, sg) => {
     else { m = int(R, -6, 6); k = int(R, -6, 6); e = law === 'prod' ? m + k : m - k; if (m === 0 || k === 0 || (m > 0 && k > 0 && (law === 'prod' || m > k))) continue; }
     if (Math.abs(e) <= lim && e !== 0) break;
   }
-  if (law === 'prod') { board = `${T(b, m)} \\times ${T(b, k)}`; html = `${P(b, m)} × ${P(b, k)}`; how = `${minus(m)} + ${minus(k)} = ${minus(e)}`; }
+  if (law === 'prod') { board = `${T(b, m)} \\times ${T(b, k)}`; html = `${P(b, m)} × ${P(b, k)}`; how = `${minus(m)} + ${par(k)} = ${minus(e)}`; }
   else if (law === 'quot') { board = `\\frac{${T(b, m)}}{${T(b, k)}}`; html = `${P(b, m)} ÷ ${P(b, k)}`; how = `${minus(m)} − ${k < 0 ? `(${minus(k)})` : k} = ${minus(e)}`; }
   else { board = `\\left(${T(b, m)}\\right)^{${k}}`; html = `(${P(b, m)})${sup(k)}`; how = `${minus(m)} × ${k < 0 ? `(${minus(k)})` : k} = ${minus(e)}`; }
   const want = qPow(b, e);
@@ -745,9 +753,9 @@ const justify: Gen = (R, n) => {
   const bq = Z(b), vk = qPow(bq, k).p;
   if (kind === 'zero') return choiceItem({
     id: `j-z-${n}`, family: 'justify', prompt: `Why must ${A(`${b}${sup(0)}`)} be 1?`, board: `${b}^{${k}} \\times ${b}^{0} = ${b}^{${k}+0} = ${b}^{${k}}`,
-    solution: [`The product rule gives ${b}${sup(k)} × ${b}${sup(0)} = ${b}${sup(k)}: multiplying by ${b}${sup(0)} changes nothing.`, `Only 1 does that, so ${S(`${b}${sup(0)} = 1`)}.`],
+    solution: [`The product rule gives ${b}${sup(k)} × ${b}${sup(0)} = ${b}${sup(k)}: multiplying by ${b}${sup(0)} changes nothing.`, `Only 1 does that, so ${b}${sup(0)} = ${S('1')}.`],
   }, R, [
-    { t: `${b}${sup(k)} × ${b}${sup(0)} = ${b}${sup(k + 0)} = ${b}${sup(k)}, and only multiplying by 1 changes nothing.`, ok: true, say: `Yes: that is the only value that keeps the product rule true.` },
+    { t: `${b}${sup(k)} × ${b}${sup(0)} = ${b}${sup(`${k}+0`)} = ${b}${sup(k)}, and only multiplying by 1 changes nothing.`, ok: true, say: `Yes: that is the only value that keeps the product rule true.` },
     { t: `It is a rule you have to memorize.`, mc: MC.arbitrary, say: `It is not arbitrary: ${b}${sup(k)} × ${b}${sup(0)} must be ${b}${sup(k)} by the product rule, and only × 1 changes nothing.` },
     { t: `No factors of ${b} leave the ${b} itself, and ${b} × 1 = ${b}.`, mc: MC.zeroBase, say: `If ${b}${sup(0)} were ${b}, then ${b}${sup(k)} × ${b}${sup(0)} would be ${b}${sup(k + 1)}, not ${b}${sup(k)}.` },
   ]);
@@ -761,7 +769,7 @@ const justify: Gen = (R, n) => {
   ]);
   if (kind === 'sam') return choiceItem({
     id: `j-s-${n}`, family: 'justify', prompt: `Sam says ${A(`${b}${sup(0)} = 0`)}, “because there are no ${b}s.” Which argument shows Sam is wrong?`, board: `${b}^{0} = 0\\ ?`,
-    solution: [`If ${b}${sup(0)} were 0, then ${b}${sup(k)} × ${b}${sup(0)} would be 0.`, `But the product rule says it is ${b}${sup(k + 0)} = ${b}${sup(k)} = ${vk}. So ${S(`${b}${sup(0)} = 1`)}.`],
+    solution: [`If ${b}${sup(0)} were 0, then ${b}${sup(k)} × ${b}${sup(0)} would be 0.`, `But the product rule says it is ${b}${sup(`${k}+0`)} = ${b}${sup(k)} = ${vk}. So ${b}${sup(0)} = ${S('1')}.`],
   }, R, [
     { t: `Then ${b}${sup(k)} × ${b}${sup(0)} would be 0, but the product rule says it is ${b}${sup(k)} = ${vk}.`, ok: true, say: `Yes: Sam's value breaks the product rule, and 1 is the only value that keeps it.` },
     { t: `Sam is right: no ${b}s means nothing is there.`, mc: MC.zero0, say: `No factors means nothing is multiplied, and the 1 you start from is left: ${b}${sup(0)} = 1.` },
@@ -777,7 +785,7 @@ const justify: Gen = (R, n) => {
   ]);
   return choiceItem({
     id: `j-e-${n}`, family: 'justify', prompt: `Mia checked ${b}${sup(0)}, ${b + 1}${sup(0)} and 10${sup(0)} on a calculator: all 1. Does that prove ${A(`a${sup(0)} = 1`)} for every nonzero a?`, board: `${b}^{0} = ${b + 1}^{0} = 10^{0} = 1`,
-    solution: [`Examples can suggest a rule, but they do not prove it for bases nobody checked.`, `The product rule argument does: a${sup('n')} × a${sup(0)} = a${sup('n')}, so ${S(`a${sup(0)} = 1`)} for every nonzero a.`],
+    solution: [`Examples can suggest a rule, but they do not prove it for bases nobody checked.`, `The product rule argument does: a${sup('n')} × a${sup(0)} = a${sup('n')}, so a${sup(0)} = ${S('1')} for every nonzero a.`],
   }, R, [
     { t: `No: examples do not cover every base. The product rule argument does: a${sup('n')} × a${sup(0)} = a${sup('n')}.`, ok: true, say: `Yes: a proof works for every base at once; checked examples cannot.` },
     { t: `Yes: three bases are enough to be sure.`, mc: MC.examples, say: `However many bases you check, there are always more. The product rule argument covers them all.` },
@@ -796,7 +804,7 @@ const monoExp: Gen = (R, n) => {
     if ((m < 0 || k < 0 || e <= 0) && Math.abs(e) <= 12) break;
   }
   const kk = k < 0 ? `(${minus(k)})` : String(k);
-  const how = law === 'prod' ? `${minus(m)} + ${minus(k)} = ${minus(e)}` : law === 'quot' ? `${minus(m)} − ${kk} = ${minus(e)}` : `${minus(m)} × ${kk} = ${minus(e)}`;
+  const how = law === 'prod' ? `${minus(m)} + ${par(k)} = ${minus(e)}` : law === 'quot' ? `${minus(m)} − ${kk} = ${minus(e)}` : `${minus(m)} × ${kk} = ${minus(e)}`;
   const html = law === 'prod' ? `${varHtml(x, m)} · ${varHtml(x, k)}` : law === 'quot' ? `${varHtml(x, m)} ÷ ${varHtml(x, k)}` : `(${varHtml(x, m)})${sup(k)}`;
   const board = law === 'prod' ? `${varPow(x, m)} \\cdot ${varPow(x, k)}` : law === 'quot' ? `\\frac{${varPow(x, m)}}{${varPow(x, k)}}` : `\\left(${varPow(x, m)}\\right)^{${k}}`;
   const wrongs: W[] = [];
@@ -806,7 +814,7 @@ const monoExp: Gen = (R, n) => {
   return valItem({
     id: `me-${n}`, family: 'monoExp',
     prompt: `${A(html)} = <i>${x}</i> to what power? (<i>${x}</i> ≠ 0) Type the exponent.`, board: `${board} = ${x}^{\\,?}`,
-    solution: [`<i>${x}</i> is a base like any number (not 0).`, `${law === 'prod' ? 'Multiply: add' : law === 'quot' ? 'Divide: subtract' : 'Power of a power: multiply'} the exponents: ${how}, so ${S(varHtml(x, e))}.`],
+    solution: [`<i>${x}</i> is a base like any number (not 0).`, `${law === 'prod' ? 'Multiply: add' : law === 'quot' ? 'Divide: subtract' : 'Power of a power: multiply'} the exponents: ${how}, so ${VS(x, e)}.`],
   }, Z(e), 'num', `Yes: ${how}, so ${varHtml(x, e)}.`, wrongs, `${law === 'prod' ? 'Add' : law === 'quot' ? 'Subtract' : 'Multiply'} the exponents: ${how}.`);
 };
 
@@ -854,8 +862,8 @@ const monoPick: Gen = (R, n) => {
     solution: [`<i>${x}</i> and <i>${y}</i> are different bases: nothing combines.`, `It stays ${S(`${varHtml(x, m)}${varHtml(y, q)}`)}.`],
   }, R, [
     { t: `${varHtml(x, m)}${varHtml(y, q)}: different bases do not combine`, ok: true, say: `Yes: the rules add exponents only for the same base.` },
-    { t: `(<i>${x}${y}</i>)${sup(m + q)}`, mc: MC.diffBase, say: `That would need ${m + q} factors of <i>${x}${y}</i>, but there are ${m} <i>${x}</i>s and ${q} <i>${y}</i>s. Nothing combines.` },
-    { t: `${varHtml(x, m + q)}`, say: `The ${q} factors of <i>${y}</i> do not turn into <i>${x}</i>s. Different bases do not combine: ${varHtml(x, m)}${varHtml(y, q)}.` },
+    { t: `(<i>${x}${y}</i>)${sup(m + q)}`, mc: MC.diffBase, say: `That would need ${nf(m + q)} of <i>${x}${y}</i>, but there are ${m} <i>${x}</i>s and ${q} <i>${y}</i>s. Nothing combines.` },
+    { t: `${varHtml(x, m + q)}`, say: `The ${nf(q)} of <i>${y}</i> do not turn into <i>${x}</i>s. Different bases do not combine: ${varHtml(x, m)}${varHtml(y, q)}.` },
   ]);
 };
 

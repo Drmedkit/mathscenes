@@ -4,7 +4,8 @@
 // never shown). Money is exact (interestMaths.ts). Pure: no DOM, no canvas.
 // Colours follow the model: principal = amber (A), interest and rate = teal (B), balance / amount owed = lime (S).
 // Items that ASK which amount plays which role print the amounts plain, so the colour does not give it away.
-import { type Item, type Response, type Verdict, A, B, S, int, pick, shuffle } from '../../runtime/item';
+import { type Item, type Response, type Verdict, A, B, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import type { TapeParams, TapeStep } from './InterestTape';
 import {
   U_CENT, cents, decOf, digits, exactCents, interestU, multDec, pct, rateDec, roundHalfUp, sameDec,
@@ -58,6 +59,13 @@ const LOAN = ['a used car', 'a laptop for school', 'a dirt bike', 'college books
 const $ = (c: number) => usd(c, c % 100 !== 0);
 /** cents -> TeX */
 const $T = (c: number) => usdTex(c, c % 100 !== 0);
+/** the balance's colour (lime). Class "s bal", not "s": the steps card reads <b class="s"> as the answer
+ *  (runtime/explain.ts), so the role colour stays out of that. The answer the worked solution reaches is marked with
+ *  aN (lime, the answer colour); aA / aB / aS name the role it plays. Not the `ans` class: lesson.css styles `.ans` as
+ *  the flex answer row, which breaks the step line apart. */
+const S = (s: string) => `<b class="s bal">${s}</b>`;
+const aN = (s: string | number) => `<b class="s">${s}</b>`;
+const aA = aN, aB = aN, aS = aN;
 /** the cents value of an amount typed as a whole number of dollars plus cents */
 const dollars = (d: number) => d * 100;
 const two = (R: () => number): [string, string] => { const a = pick(R, NAMES); let b = pick(R, NAMES); while (b === a) b = pick(R, NAMES); return [a, b]; };
@@ -93,7 +101,7 @@ function choiceItem(R: () => number, base: Omit<SIItem, 'input' | 'choices' | 'a
   const o = shuffle(R, [...opts]);
   const right = o.findIndex(x => x.ok);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right },
+    ...base, solution: endOnChoice(base.solution, o[right]!.t), input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right },
     check: r => { if (r.kind !== 'choice') return { ok: false, say: 'Pick one.' }; const x = o[r.i]; return x ? { ok: !!x.ok, mc: x.ok ? undefined : x.mc, say: x.say } : { ok: false, say: 'Pick one.' }; },
   };
 }
@@ -141,7 +149,7 @@ const whoIsP: Gen = (R, n) => {
     : `At the end of the year, ${name}’s statement shows a balance of ${$(Bal)}. That includes ${$(I)} of interest on the money ${name} put in at the start: ${$(P)}.`;
   return choiceItem(R, {
     id: `whoIsP-${n}`, family: 'whoIsP', prompt: `${story} Which amount is the <b>principal</b>?`, board: `\\text{principal} = \\$\\,?`,
-    solution: [`The principal is the starting amount, the money that earns the interest: ${A($(P))}.`, `${B($(I))} is the interest it earned, and ${S($(Bal))} is the ending balance: ${$(P)} + ${$(I)}.`],
+    solution: [`The principal is the starting amount, the money that earns the interest: ${aA($(P))}.`, `${B($(I))} is the interest it earned, and ${S($(Bal))} is the ending balance: ${$(P)} + ${$(I)}.`],
     picture: { tape: tapeOne(P, bp), pre: ['tape'], post: ['whole', 'y1'], work: [`\\text{principal} = ${$T(P)}`] },
   }, [
     { t: $(P), ok: true, say: `Yes: ${$(P)} is what ${name} started with. The interest is figured on it.` },
@@ -156,7 +164,7 @@ const findP: Gen = (R, n) => {
     id: `findP-${n}`, family: 'findP',
     prompt: `${name}’s bank statement for account #${acct}: “Balance on Jan 1: ${$(P)}. Interest paid Dec 31: ${$(I)}. Balance on Dec 31: ${$(Bal)}.” No money was added or taken out. What is the principal?`,
     board: `\\text{principal} = \\$\\,?`,
-    solution: [`The principal is the amount at the start, before any interest: ${A($(P))} on Jan 1.`, `The other two amounts came from it: interest ${B($(I))}, end balance ${S($(Bal))}.`],
+    solution: [`The principal is the amount at the start, before any interest: ${aA($(P))} on Jan 1.`, `The other two amounts came from it: interest ${B($(I))}, end balance ${S($(Bal))}.`],
     picture: { tape: tapeOne(P, bp, { hide: { P: true } }), pre: ['tape', 'whole'], post: ['y1'], work: [`\\text{principal} = ${$T(P)}`] },
   }, P, moneyCheck(P, [
     { c: Bal, mc: MC.principal, say: `${$(Bal)} is the balance at the END, with the interest in it. The principal is the balance at the start.` },
@@ -176,7 +184,7 @@ const per100: Gen = (R, n) => {
     id: `per100-${n}`, family: 'per100',
     prompt: `${name}’s account pays ${B(pct(bp) + '%')} interest per year on ${A($(P))}. ${pct(bp)}% means ${$(per)} for every $100. How much interest does ${$(P)} earn in one year?`,
     board: `${pct(bp)}\\%\\ \\text{of}\\ ${$T(P)} = \\$\\,?`,
-    solution: [`${pct(bp)}% of $100 is ${$(per)}.`, `${$(P)} is ${k} hundreds, so the interest is ${k} × ${$(per)} = ${B($(I))}.`],
+    solution: [`${pct(bp)}% of $100 is ${$(per)}.`, `${$(P)} is ${k} hundreds, so the interest is ${k} × ${$(per)} = ${aB($(I))}.`],
     picture: { tape: tapeOne(P, bp, { hide: { rows: [1] } }), pre: ['tape', 'whole', 'cells'], post: ['y1'], rings: [{ row: 0, at: 'P' }], work: [`${k} \\times ${$T(per)} = ${$T(I)}`] },
   }, I, moneyCheck(I, [
     { c: per, mc: MC.fixed, say: `${$(per)} is the interest on just $100. ${$(P)} has ${k} hundreds, and each one earns ${$(per)}.` },
@@ -233,7 +241,7 @@ const oneYearUnit: Gen = (R, n) => {
     id: `oneYearUnit-${n}`, family: 'oneYearUnit',
     prompt: `${name} keeps ${A($(P))} in an account at ${B(pct(bp) + '% per year')} ${how}. How much interest is that?`,
     board: `${pct(bp)}\\%\\ \\text{per year} \\times 1\\ \\text{year}`,
-    solution: [`The rate is per year and the time is one year: the rate applies once.`, `${pct(bp)}% of ${$(P)} = ${B($(I))}.`],
+    solution: [`The rate is per year and the time is one year: the rate applies once.`, `${pct(bp)}% of ${$(P)} = ${aB($(I))}.`],
     picture: { tape: tapeOne(P, bp, { hide: { rows: [1] } }), pre: ['tape', 'whole'], post: ['y1'], work: [`${pct(bp)}\\% \\times ${$T(P)} = ${$T(I)}`] },
   }, opts);
 };
@@ -243,7 +251,7 @@ const oneYearUnit: Gen = (R, n) => {
 // ===================================================================================================================
 const loanRoles: Gen = (R, n) => {
   const name = pick(R, NAMES), what = pick(R, LOAN), bp = pick(R, [300, 400, 500, 600, 800]), P = principal(R), I = cents(P, bp);
-  const extra = R() < 0.5 ? pick(R, [`${name} is ${int(R, 18, 24)} years old.`, `The loan number is ${int(R, 2000, 9800)}.`, `A helmet for it costs ${$(dollars(int(R, 40, 180)))}.`]) : '';
+  const extra = R() < 0.5 ? pick(R, [`${name} is ${int(R, 18, 24)} years old.`, `The loan number is ${int(R, 2000, 9800)}.`, `${name} signs the papers on day ${int(R, 2, 28)} of the month.`]) : '';
   if (R() < 0.5) {
     return choiceItem(R, {
       id: `loanRoles-${n}`, family: 'loanRoles',
@@ -267,7 +275,7 @@ const loanRoles: Gen = (R, n) => {
     id: `loanRoles-${n}`, family: 'loanRoles',
     prompt: `${name} borrows money for ${what} at ${pct(bp)}% per year. ${extra} At the end of one year, ${name} pays back ${$(owed)}, which includes ${$(I)} interest. What is the principal of the loan?`,
     board: `\\text{loan:}\\ ${$T(owed)}\\ \\text{repaid}`,
-    solution: [`The principal of a loan is the amount borrowed: ${A($(P))}.`, `${name} pays it back plus ${B($(I))} interest: ${S($(owed))}.`],
+    solution: [`The principal of a loan is the amount borrowed: ${aA($(P))}.`, `${name} pays it back plus ${B($(I))} interest: ${S($(owed))}.`],
     picture: { tape: tapeOne(P, bp, { loan: true, hide: { P: true } }), pre: ['tape', 'whole', 'y1'], post: [], work: [`${$T(owed)} - ${$T(I)} = ${$T(P)}`] },
   }, opts);
 };
@@ -298,7 +306,7 @@ const oneYear: Gen = (R, n) => {
     prompt: loan ? `${name} borrows ${A($(P))} at ${B(pct(bp) + '% per year')} for one year. How much interest does ${name} owe for the year?`
       : `${name} deposits ${A($(P))} at ${B(pct(bp) + '% per year')}. How much interest does it earn in one year?`,
     board: `${pct(bp)}\\% \\times ${$T(P)} = \\$\\,?`,
-    solution: [`10% of ${$(P)} is ${$(ten)} (one cell of the tape).`, `${pct(bp)}% = ${rateDec(bp)}, so the interest is ${rateDec(bp)} × ${$(P)} = ${B($(I))}.`],
+    solution: [`10% of ${$(P)} is ${$(ten)} (one cell of the tape).`, `${pct(bp)}% = ${rateDec(bp)}, so the interest is ${rateDec(bp)} × ${$(P)} = ${aB($(I))}.`],
     picture: { tape: tapeOne(P, bp, { loan, hide: { rows: [1] } }), pre: ['tape', 'whole', 'cells'], post: ['y1'], rings: [{ row: 0, at: 'P' }], work: [`${rateDec(bp)} \\times ${$T(P)} = ${$T(I)}`] },
   }, I, moneyCheck(I, [
     { c: dollars(bp / 100), mc: MC.fixed, say: `${pct(bp)}% is not ${pct(bp)} dollars: it is ${pct(bp)} cents of every dollar, ${pct(bp)} dollars of every $100.` },
@@ -314,7 +322,7 @@ const fromTen: Gen = (R, n) => {
     id: `fromTen-${n}`, family: 'fromTen',
     prompt: `${name}’s CD holds ${A($(P))}. 10% of ${$(P)} is ${$(ten)}. The rate is ${B(pct(bp) + '% per year')}. How much interest in one year?`,
     board: `10\\% = ${$T(ten)},\\ \\ ${pct(bp)}\\% = \\$\\,?`,
-    solution: [`${pct(bp)}% is ${how}.`, `So the interest is ${B($(I))}.`],
+    solution: [`${pct(bp)}% is ${how}.`, `10% of ${$(P)} is ${$(ten)}, so the interest is ${aB($(I))}.`],
     picture: { tape: tapeOne(P, bp, { hide: { rows: [1] } }), pre: ['tape', 'whole', 'cells'], post: ['y1'], work: [`${pct(bp)}\\%\\ \\text{of}\\ ${$T(P)} = ${$T(I)}`] },
   }, I, moneyCheck(I, [
     { c: dollars(bp / 100), mc: MC.fixed, say: `${pct(bp)}% is a part of ${$(P)}, not ${pct(bp)} dollars.` },
@@ -331,7 +339,7 @@ const decInterest: Gen = (R, n) => {
     id: `decInterest-${n}`, family: 'decInterest',
     prompt: `${name} keeps ${A($(P))} in ${pick(R, SAVE)} at ${B(pct(bp) + '% per year')}. How much interest does it earn in one year? ${calc ? '(calculator)' : '(by hand)'}`,
     board: `${rateDec(bp)} \\times ${$T(P)} = \\$\\,?`,
-    solution: [`${pct(bp)}% = ${pct(bp)} ÷ 100 = ${rateDec(bp)}.`, `${rateDec(bp)} × ${$(P)} = ${B(usd(I, true))}.`],
+    solution: [`${pct(bp)}% = ${pct(bp)} ÷ 100 = ${rateDec(bp)}.`, `${rateDec(bp)} × ${$(P)} = ${aB(usd(I, true))}.`],
     picture: { tape: tapeOne(P, bp, { hide: { rows: [1] } }), pre: ['tape', 'whole'], post: ['y1'], work: [`${pct(bp)}\\% = ${rateDec(bp)}`, `${rateDec(bp)} \\times ${$T(P)} = ${usdTex(I, true)}`] },
   }, I, moneyCheck(I, [
     { c: I * 10, mc: MC.point, say: `The decimal point moved one place too few: ${pct(bp)}% is ${rateDec(bp)}, so the interest is ${usd(I, true)}.` },
@@ -353,7 +361,7 @@ const pctToDec: Gen = (R, n) => {
     id: `pctToDec-${n}`, family: 'pctToDec',
     prompt: `${name}’s savings rate is ${B(pct(bp) + '% per year')}. Which decimal do you multiply the principal by to find one year’s interest? (no calculator)`,
     board: `${pct(bp)}\\% = \\,?`,
-    solution: [`Percent means “per hundred”: divide by 100.`, `${pct(bp)} ÷ 100 = ${rateDec(bp)}: move the point two places left.`],
+    solution: [`Percent means “per hundred”: divide by 100.`, `${pct(bp)} ÷ 100 = ${aN(rateDec(bp))}: move the point two places left.`],
     picture: { pre: [], post: [], work: [`${pct(bp)}\\% = ${pct(bp)} \\div 100 = ${rateDec(bp)}`] },
   }, opts);
 };
@@ -368,7 +376,7 @@ const endBalance: Gen = (R, n) => {
     prompt: loan ? `${name} borrows ${A($(P))} for ${pick(R, LOAN)} at ${B(pct(bp) + '% per year')}, repaid in one payment after one year. The interest is ${B(usd(I, true))}. How much does ${name} owe at the end of the year?`
       : `${name} deposits ${A($(P))} at ${B(pct(bp) + '% per year')}. The interest for the year is ${B(usd(I, true))}. What is the ending balance?`,
     board: `${$T(P)} + ${usdTex(I, true)} = \\$\\,?`,
-    solution: [`${loan ? 'Amount owed' : 'Ending balance'} = principal + interest.`, `${usd(P, true)} + ${usd(I, true)} = ${S(usd(Bal, true))} (line up the decimal points).`],
+    solution: [`${loan ? 'Amount owed' : 'Ending balance'} = principal + interest.`, `${usd(P, true)} + ${usd(I, true)} = ${aS(usd(Bal, true))} (line up the decimal points).`],
     picture: { tape: tapeOne(P, bp, { loan }), pre: ['tape', 'whole', 'y1'], post: ['gain'], work: [`${usdTex(P, true)} + ${usdTex(I, true)} = ${usdTex(Bal, true)}`] },
   }, Bal, moneyCheck(Bal, [
     { c: I, mc: MC.changeFinal, say: `${usd(I, true)} is the interest, what was ADDED. The ${loan ? 'amount owed' : 'balance'} is the principal plus it.` },
@@ -384,7 +392,7 @@ const labelBoth: Gen = (R, n) => {
     board: `I = \\$\\,?,\\ \\ ${loan ? '\\text{owed}' : '\\text{balance}'} = \\$\\,?`,
     input: 'pair', pairLead: 'interest $', pairOp: loan ? 'owed $' : 'balance $',
     answer: { kind: 'pair', x: I / 100, y: Bal / 100 },
-    solution: [`Interest: ${rateDec(bp)} × ${$(P)} = ${B(usd(I, true))}.`, `${loan ? 'Owed' : 'Balance'}: ${$(P)} + ${usd(I, true)} = ${S(usd(Bal, true))}.`],
+    solution: [`Interest: ${rateDec(bp)} × ${$(P)} = ${aB(usd(I, true))}.`, `${loan ? 'Owed' : 'Balance'}: ${$(P)} + ${usd(I, true)} = ${aS(usd(Bal, true))}.`],
     picture: { tape: tapeOne(P, bp, { loan, hide: { rows: [1] } }), pre: ['tape', 'whole'], post: ['y1', 'gain'], work: [`I = ${rateDec(bp)} \\times ${$T(P)} = ${usdTex(I, true)}`, `${$T(P)} + ${usdTex(I, true)} = ${usdTex(Bal, true)}`] },
     check: r => {
       if (r.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
@@ -416,6 +424,7 @@ function multPair(R: () => number): [number, number] {
 const appended = (bp: number): [number, number] => { const d = pct(bp).replace('.', ''); return [Number('1' + d), d.length]; };
 const multExpr: Gen = (R, n) => {
   const [P, bp] = multPair(R), name = pick(R, NAMES), Pd = digits(P), Bal = P + cents(P, bp);
+  if (P === dollars(100)) return multExpr(R, n);   // on $100, "100 + r" is the balance too
   const [an, ap] = appended(bp);
   const app = decOf(an, ap);
   return choiceItem(R, {
@@ -441,7 +450,7 @@ const multValue: Gen = (R, n) => {
       id: `multValue-${n}`, family: 'multValue',
       prompt: `${name} saves ${A($(P))} at ${B(pct(bp) + '% per year')}. Use ONE multiplication: what is the balance after one year?`,
       board: `${$T(P)} \\times ${multDec(bp)} = \\$\\,?`,
-      solution: [`The multiplier is 1 + ${rateDec(bp)} = ${multDec(bp)}.`, `${$(P)} × ${multDec(bp)} = ${S($(Bal))}.`],
+      solution: [`The multiplier is 1 + ${rateDec(bp)} = ${multDec(bp)}.`, `${$(P)} × ${multDec(bp)} = ${aS($(Bal))}.`],
       picture: { tape: tapeOne(P, bp), pre: ['tape', 'whole'], post: ['y1', 'gain'], work: [`${$T(P)} \\times ${multDec(bp)} = ${$T(Bal)}`] },
     }, Bal, moneyCheck(Bal, [
       { c: Bal - P, mc: MC.changeFinal, say: `That is the interest. The balance keeps the ${$(P)} too: × ${multDec(bp)}.` },
@@ -453,7 +462,7 @@ const multValue: Gen = (R, n) => {
     prompt: `The rate is ${B(pct(bp) + '% per year')}. ${A($(P))} × ? gives the balance after one year in ONE step. What is the multiplier?`,
     board: `${$T(P)} \\times \\,? = \\text{balance}`,
     input: 'num', unit: '', answer: { kind: 'num', v: mN / 10000 },
-    solution: [`100% (keep the principal) + ${pct(bp)}% (the interest) = ${100 + bp / 100}%.`, `As a decimal: 1 + ${rateDec(bp)} = ${S(multDec(bp))}.`],
+    solution: [`100% (keep the principal) + ${pct(bp)}% (the interest) = ${100 + bp / 100}%.`, `As a decimal: 1 + ${rateDec(bp)} = ${aN(multDec(bp))}.`],
     picture: { tape: tapeOne(P, bp), pre: ['tape', 'whole'], post: ['y1', 'gain'], work: [`1 + ${rateDec(bp)} = ${multDec(bp)}`] },
     check: decCheck(mN, 4, [
       { n: an, places: ap, mc: MC.appends, say: `${pct(bp)}% is ${rateDec(bp)}, so it is 1 + ${rateDec(bp)} = ${multDec(bp)}.` },
@@ -477,13 +486,15 @@ function roundPair(R: () => number, needDiff = false): [number, number] {
     return pr;
   }
 }
+/** the third digit after the point of an exact amount ("74.7909" -> 0) */
+const third = (ex: string) => Number(ex.replace(/,/g, '').split('.')[1]![2] ?? 0);
 const roundI: Gen = (R, n) => {
   const [P, bp] = roundPair(R), u = interestU(P, bp), I = roundHalfUp(u), T = truncCents(u), name = pick(R, NAMES), ex = unitsStr(u);
   return numItem({
     id: `roundI-${n}`, family: 'roundI',
     prompt: `${name}’s account holds ${A(usd(P, true))} at ${B(pct(bp) + '% per year')}. The bank rounds interest to the nearest cent (a half cent rounds up). The exact interest is ${rateDec(bp)} × ${usd(P, true)} = $${ex}. What interest is credited?`,
     board: `I = \\$${ex.replace(/,/g, '{,}')} \\approx \\$\\,?`,
-    solution: [`Exact: $${ex}. The cent place is the 2nd digit after the point; look at the 3rd digit.`, `${Number(ex.replace(/,/g, '').split('.')[1]![2])} ${Number(ex.replace(/,/g, '').split('.')[1]![2]) >= 5 ? '≥ 5: round up' : '< 5: round down'}: ${B(usd(I, true))}.`],
+    solution: [`Exact: $${ex}. The cent place is the 2nd digit after the point; look at the 3rd digit.`, `The 3rd digit is ${third(ex)}: ${third(ex) >= 5 ? '5 or more, so the cent rounds up' : 'less than 5, so the cent stays'}: ${aB(usd(I, true))}.`],
     picture: { tape: tapeOne(P, bp, { hide: { rows: [1] } }), pre: ['tape', 'whole', 'y1'], post: [], work: [`\\$${ex.replace(/,/g, '{,}')} \\approx ${usdTex(I, true)}`] },
   }, I, moneyCheck(I, [
     ...(T !== I ? [{ c: T, mc: MC.trunc, say: `That cuts the digits off. The next digit is 5 or more, so the cent rounds UP: ${usd(I, true)}.` }] : []),
@@ -570,7 +581,7 @@ const tableCell: Gen = (R, n) => {
     id: `tableCell-${n}`, family: 'tableCell',
     prompt: `${name} saves ${A($(P))} at ${B(pct(bp) + '% simple interest per year')}: interest once a year, no other deposits. Fill the table: what is the ${ask === 'bal' ? 'balance' : 'interest'} in year ${k}?`,
     board: `${$T(P)},\\ ${pct(bp)}\\%\\ \\text{simple}`,
-    solution: [`Simple interest is always ${pct(bp)}% of the principal ${A($(P))}: ${B($(sim[1]!.interest))} every year.`, ask === 'bal' ? `Year ${k}: ${$(P)} + ${k} × ${$(sim[1]!.interest)} = ${S($(ans))}.` : `Year ${k} adds ${B($(ans))}, the same as year 1.`],
+    solution: [`Simple interest is always ${pct(bp)}% of the principal ${A($(P))}: ${B($(sim[1]!.interest))} every year.`, ask === 'bal' ? `Year ${k}: ${$(P)} + ${k} × ${$(sim[1]!.interest)} = ${aS($(ans))}.` : `Year ${k} adds ${aB($(ans))}, the same as year 1.`],
     picture: { tape: { P, bp, years }, pre: ['tape', 'whole', ...Array.from({ length: k - 1 }, (_, i) => `y${i + 1}` as TapeStep)], post: Array.from({ length: years - k + 1 }, (_, i) => `y${k + i}` as TapeStep), rings: [{ row: k - 1, at: 'P' }], table: { head: HEAD, rows: shown, solved: rows }, work: [] },
   }, ans, moneyCheck(ans, [
     { c: ask === 'bal' ? comp[k]!.balance : comp[k]!.interest, mc: MC.compounds, say: `That takes ${pct(bp)}% of the growing balance (compound). Simple interest is ${pct(bp)}% of the original ${$(P)} every year.` },
@@ -584,7 +595,7 @@ const sameEach: Gen = (R, n) => {
     id: `sameEach-${n}`, family: 'sameEach',
     prompt: `${name}’s ${A($(P))} earns ${B(pct(bp) + '% simple interest per year')}. Year 1 adds ${B($(I))}. How much interest does year ${k} add?`,
     board: `\\text{year}\\ 1:\\ +${$T(I)},\\ \\ \\text{year}\\ ${k}:\\ +\\,?`,
-    solution: [`Simple interest is figured on the principal ${A($(P))} only, and the principal never changes.`, `So every year adds the same ${B($(I))}.`],
+    solution: [`Simple interest is figured on the principal ${A($(P))} only, and the principal never changes.`, `So every year adds the same ${aB($(I))}.`],
     picture: { tape: { P, bp, years: k }, pre: ['tape', 'whole', 'y1'], post: Array.from({ length: k - 1 }, (_, i) => `y${i + 2}` as TapeStep), rings: [{ row: k - 1, at: 'P' }], work: [`${pct(bp)}\\% \\times ${$T(P)} = ${$T(I)}`] },
   }, [
     { t: $(I), ok: true, say: `Yes: always ${pct(bp)}% of the same ${$(P)}.` },
@@ -611,7 +622,7 @@ const formulaI: Gen = (R, n) => {
     prompt: loan ? `${name} takes a ${t}-year loan of ${A($(P))} at ${B(pct(bp) + '% simple interest per year')}, repaid in one payment at the end. How much interest is that in all?`
       : `${name} leaves ${A($(P))} in ${pick(R, SAVE)} for ${t} years at ${B(pct(bp) + '% simple interest per year')}. How much interest does it earn in all?`,
     board: `I = P \\times r \\times t`,
-    solution: [`One year: ${rateDec(bp)} × ${$(P)} = ${$(y1)}. Every year adds the same.`, `I = P × r × t = ${$(P)} × ${rateDec(bp)} × ${t} = ${B($(I))}.`],
+    solution: [`One year: ${rateDec(bp)} × ${$(P)} = ${$(y1)}. Every year adds the same.`, `I = P × r × t = ${$(P)} × ${rateDec(bp)} × ${t} = ${aB($(I))}.`],
     picture: { tape: { P, bp, months: t * 12, loan }, pre: ['tape', 'whole', 'rows', 'y1'], post: [...Array.from({ length: t - 1 }, (_, i) => `y${i + 2}` as TapeStep), 'gain'], work: [`I = ${$T(P)} \\times ${rateDec(bp)} \\times ${t}`, `I = ${$T(I)}`] },
   }, I, moneyCheck(I, [
     { c: y1, mc: MC.omitsTime, say: `That is one year of interest. Multiply by the ${t} years: I = P × r × t.` },
@@ -625,7 +636,7 @@ const formulaTotal: Gen = (R, n) => {
     prompt: loan ? `${name} borrows ${A($(P))} for ${t} years at ${B(pct(bp) + '% simple interest per year')}, all paid back at the end. What is the total amount owed?`
       : `${A($(P))} is saved for ${t} years at ${B(pct(bp) + '% simple interest per year')}. What is the ending balance?`,
     board: `${$T(P)} + I = \\$\\,?`,
-    solution: [`I = ${$(P)} × ${rateDec(bp)} × ${t} = ${B($(I))}.`, `${loan ? 'Owed' : 'Balance'} = ${$(P)} + ${$(I)} = ${S($(P + I))}.`],
+    solution: [`I = ${$(P)} × ${rateDec(bp)} × ${t} = ${B($(I))}.`, `${loan ? 'Owed' : 'Balance'} = ${$(P)} + ${$(I)} = ${aS($(P + I))}.`],
     picture: { tape: { P, bp, months: t * 12, loan }, pre: ['tape', 'whole', 'rows'], post: [...Array.from({ length: t }, (_, i) => `y${i + 1}` as TapeStep), 'gain'], work: [`I = ${$T(P)} \\times ${rateDec(bp)} \\times ${t} = ${$T(I)}`, `${$T(P)} + ${$T(I)} = ${$T(P + I)}`] },
   }, P + I, moneyCheck(P + I, [
     { c: I, mc: MC.changeFinal, say: `${$(I)} is the interest. The ${loan ? 'amount owed' : 'balance'} is the principal plus the interest.` },
@@ -692,7 +703,7 @@ const monthsI: Gen = (R, n) => {
     prompt: loan ? `${name} borrows ${A($(P))} for ${m} months at ${B(pct(bp) + '% simple interest per year')}. How much interest is owed?`
       : `${name} keeps ${A($(P))} in ${pick(R, SAVE)} for ${m} months at ${B(pct(bp) + '% simple interest per year')}. How much interest does it earn?`,
     board: `I = ${$T(P)} \\times ${rateDec(bp)} \\times t`,
-    solution: [`t in years: ${m} ÷ 12 = ${t}.`, `I = ${$(P)} × ${rateDec(bp)} × ${t} = ${B($(I))}.`],
+    solution: [`t in years: ${m} ÷ 12 = ${t}.`, `I = ${$(P)} × ${rateDec(bp)} × ${t} = ${aB($(I))}.`],
     picture: { tape: { P, bp, months: m, loan }, pre: ['tape', 'whole', 'rows'], post: [...Array.from({ length: Math.ceil(m / 12) }, (_, i) => `y${i + 1}` as TapeStep), 'gain'], work: [`t = ${yearsFracTex(m)} = ${t}`, `I = ${$T(P)} \\times ${rateDec(bp)} \\times ${t} = ${$T(I)}`] },
   }, I, moneyCheck(I, [
     { c: y1 * m, mc: MC.units, say: `That uses t = ${m}, as if the rate were per month. t must be in years: ${t}.` },
@@ -713,7 +724,7 @@ const compoundCell: Gen = (R, n) => {
     id: `compoundCell-${n}`, family: 'compoundCell',
     prompt: `${A($(P))} earns ${B(pct(bp) + '% compound interest per year')}: each year’s interest is credited and left in the account. What is the ${ask === 'bal' ? 'balance' : 'interest'} in year ${k}? (calculator allowed)`,
     board: `${$T(P)},\\ ${pct(bp)}\\%\\ \\text{compound}`,
-    solution: [`Compound: year ${k}’s interest is ${pct(bp)}% of the balance after year ${k - 1}, ${$(comp[k - 1]!.balance)}: ${B($(comp[k]!.interest))}.`, `Balance: ${$(comp[k - 1]!.balance)} + ${$(comp[k]!.interest)} = ${S($(comp[k]!.balance))}.`],
+    solution: [`Compound: year ${k}’s interest is ${pct(bp)}% of the balance after year ${k - 1}, ${$(comp[k - 1]!.balance)}: ${(ask === 'int' ? aB : B)($(comp[k]!.interest))}.`, `Balance: ${$(comp[k - 1]!.balance)} + ${$(comp[k]!.interest)} = ${(ask === 'bal' ? aS : S)($(comp[k]!.balance))}.`],
     picture: { tape: { P, bp, years, rule: 'compound' }, pre: ['tape', 'whole', ...Array.from({ length: k - 1 }, (_, i) => `y${i + 1}` as TapeStep)], post: Array.from({ length: years - k + 1 }, (_, i) => `y${k + i}` as TapeStep), rings: [{ row: k - 1, at: 'row' }], table: { head: HEAD, rows: shown, solved: rows }, work: [] },
   }, ans, moneyCheck(ans, [
     { c: ask === 'bal' ? sim[k]!.balance : sim[k]!.interest, mc: MC.successive, say: `That takes ${pct(bp)}% of the original ${$(P)} again (simple). Compound takes it of the LATEST balance, ${$(comp[k - 1]!.balance)}.` },
@@ -763,7 +774,7 @@ const gapGrows: Gen = (R, n) => {
     id: `gapGrows-${n}`, family: 'gapGrows',
     prompt: `${pick(R, NAMES)} compares two accounts for ${A($(P))} at ${B(pct(bp) + '% per year')}: simple gives ${$(s[3]!.balance)} after 3 years, compound gives ${$(c[3]!.balance)}. After 2 years the gap was ${$(g2)}. What is the gap after 3 years?`,
     board: `\\text{gap:}\\ \\ 0,\\ ${$T(g2)},\\ \\,?`,
-    solution: [`Gap after 3 years: ${$(c[3]!.balance)} − ${$(s[3]!.balance)} = ${$(g3)}.`, `It grows: the compound account earns interest on its earlier interest too.`],
+    solution: [`Gap after 3 years: ${$(c[3]!.balance)} − ${$(s[3]!.balance)} = ${aN($(g3))}.`, `It grows: the compound account earns interest on its earlier interest too.`],
     picture: { tape: { P, bp, years: 3 }, pre: ['tape', 'whole', 'y1', 'y2', 'y3'], post: [], table: { head: ['year', '\\text{simple}', '\\text{compound}'], rows: s.map((r, i) => [String(i), $T(r.balance), $T(c[i]!.balance)]) }, work: [] },
   }, g3, moneyCheck(g3, [
     { c: g2, mc: MC.gapSmall, say: `The gap does not stay ${$(g2)}: ${$(c[3]!.balance)} − ${$(s[3]!.balance)} = ${$(g3)}. It keeps growing.` },

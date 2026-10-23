@@ -262,3 +262,32 @@ take longest), B about 30-60 minutes (mark answers, choice helper, adapter, fix 
 Work in waves of about 6 lessons, two agents per lesson that never share files: O writes only `tests/oracle/<slug>.mjs`,
 B writes only that lesson's topic folder, page hook and test; the lead runs `sweep --all --quiet`, `check-placement`,
 `quality-layer.test.ts`, commits and pushes. Start with the 9 lessons the baseline sweep already flags.
+
+## Result (2026-10-23)
+
+All 63 lessons: an independent oracle, `explain.ts` + the page hook, a `placement.ts` adapter. Done in six groups of
+ten (one O and one B agent per group, the lead committing per group). `sweep --all --quiet`: 0 errors over all 63
+(about 1.1 million items per run, every family answered by an oracle); `check-placement`: 63 adapters, 0 failing;
+`quality-layer.test.ts` and every lesson test pass; typecheck clean. The oracles agreed with the lessons' arithmetic
+almost everywhere; what they found was in the worlds and the choices: two right choices (reflections verify, perfect
+squares nearer, ratio rates, slope meaning, systems method, a 75%-of route keyed as ÷ 4), a keyed answer that was not
+in the picture (functions witness pairs), false statements keyed right (3, 6, 9 called not proportional; turned
+similar rectangles called not similar; 31.40 < 10π < 31.50 called undecidable), factors glued to brackets ((−2)51(−5)),
+and sizes and prices that ignore the object (a 38 ft tabletop, a 28 ft marble, 37° wheelchair ramps, a $1,000 water
+bottle, sales tax up to 50%). Every fix has a regression probe in its lesson test.
+
+Lead fixes in shared code: the runtime reads every thousands comma (7,400,000) and `&minus;`; the view reads a
+fraction with markup inside (x/5); `alt` is hidden from oracles; `b.ans` stays inline in a step; two oracles had
+reading bugs (cylinders converted a height twice; sales-tax and dilations did not read "an").
+
+Open:
+- Picture fields that carry the answer and are still visible to oracles (the oracles never read them): map-scale
+  `p.ans`, `lines.ask.v`; composite-figures `fig.area`, `fig.perimeter`; reading-maps solve overlays and the ruler's
+  `mark`; scale-drawings `labels2`; one-step-inequalities graph `board`/`tests`; sampling `mark`/`bands`. Per lesson,
+  make them non-enumerable or move them to the replay data.
+- The steps card can push the practice panel past the screen (up to ~250 px with long choices; POLISH.md).
+- The check-in per strand is within one lesson ~78-80% in simulation; ratio (61-67%) and geometry (67-68%) are lower
+  because those strands are long and the budget is ~20 questions.
+- A negative fraction answer is read per lesson (`resultOf` has no sign convention for `frac`); see the lessons'
+  explain.ts overrides (add-subtract-rational-numbers, multiply-divide-rational-numbers, integer-exponents).
+

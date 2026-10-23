@@ -127,3 +127,32 @@ describe('voice', () => {
     }
   });
 });
+
+describe('integer-exponents: quality layer (docs/lessons/QUALITY_LAYER.md)', () => {
+  const G = GENS as Record<string, (R: () => number, n: number, sg?: string) => Item>;
+  const txt = (h: string) => h.replace(/<[^>]+>/g, '');
+  const all = () => PLAN.flatMap(p => p.families.map(f => [p.id, f] as const));
+  it('signed sums are written with brackets ("2 + (−5)"), plurals agree ("1 factor"), the minus is a real minus', () => {
+    for (const [sg, f] of all()) for (let s = 1; s <= 80; s++) {
+      const it = G[f]!(rng(s * 17 + 9), s, sg);
+      for (const l of it.solution.map(txt)) {
+        expect(l, f).not.toMatch(/[+−÷] [−-]\d/);
+        expect(l, f).not.toMatch(/(^|[^\d.])1 factors/);
+        expect(l, f).not.toMatch(/\(-\d/);
+      }
+    }
+  });
+  it('"a^3 × a^0 = a^(3+0) = a^3": the step shows the sum, not "a^3 = a^3"', () => {
+    for (let s = 1; s <= 300; s++) {
+      const it = G.justify!(rng(s * 3 + 2), s, 'justify-zero-negative-definitions');
+      for (const t of [...it.solution, ...(it.choices ?? [])]) expect(t, t).not.toMatch(/(<sup>(\d+)<\/sup>) = \d+\1/);
+    }
+  });
+  it('"type the exponent" steps end on the exponent (3^6 is not read as 36)', async () => {
+    const { explain } = await import('../src/lesson/topics/integer-exponents/explain');
+    for (const [sg, f] of all().filter(([, f]) => ['prodExp', 'quotExp', 'powPow', 'monoExp'].includes(f))) for (let s = 1; s <= 60; s++) {
+      const it = G[f]!(rng(s * 5 + 1), s, sg);
+      expect(explain(it)?.result, `${f}: ${txt(it.prompt)}`).toEqual(it.answer);
+    }
+  });
+});

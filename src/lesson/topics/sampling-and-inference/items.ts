@@ -4,6 +4,7 @@
 // samples come from the seeded rng, never Math.random. Wrong answers the classifier recognises carry the misconception
 // id (logged, never shown). A miss shows the worked solution and replays it on the canvas (picture.post / work).
 import { type Gen, type Item, type Response, int, pick, shuffle } from '../../runtime/item';
+import { ans as mark, endOnChoice } from '../../runtime/explain';
 import type { SamplerParams } from './Sampler';
 import type { ScaleBarsParams } from './ScaleBars';
 import type { NestedParams } from './Nested';
@@ -54,7 +55,7 @@ function choice(R: () => number, b: Base, opts: Opt[], okSay: string): Item {
   const choices = order.map(i => opts[i]!.t);
   const ans = order.findIndex(i => opts[i]!.ok);
   return {
-    ...b, picture: b.picture as unknown as Record<string, unknown> | undefined, input: 'choice', choices, answer: { kind: 'choice', i: ans },
+    ...b, solution: endOnChoice(b.solution, opts.find(o => o.ok)!.t), picture: b.picture as unknown as Record<string, unknown> | undefined, input: 'choice', choices, answer: { kind: 'choice', i: ans },
     check(r: Response) {
       if (r.kind !== 'choice') return { ok: false, say: 'Pick one of the answers.' };
       const o = opts[order[r.i] ?? -1];
@@ -420,7 +421,7 @@ const estimate: Gen = (R, n) => {
       prompt: `${name} drew a random sample of <b class="b">${m}</b> of the <b class="a">${N} ${c.who}</b> at ${c.place}. Their ${c.what}: ${list(xs)}. Use the sample to estimate the <b>${stat}</b> for all ${N} ${c.who}.`,
       board: `${T('sample of ')}${m}\\ \\to\\ ${T(`${stat}?`)}`,
       picture: { kind: 'plots', pre: ['row0'], post: ['mark0'], work, p: { axis: { ...axisFor(xs), unit: c.unit }, rows: [{ label: `sample of ${m}`, values: xs, col: 'second', bin: 0, mark: { at: v, col: 'link' } }] } },
-      solution: stat === 'mean' ? [`Add the ${m} values: ${sum(xs)}. Divide by ${m}: ${dec(v, 1)}.`, `The sample mean, ${dec(v, 1)}, is the estimate for all ${N}: about ${dec(v, 1)} ${c.unit}.`] : [`Put the ${m} values in order: ${sorted.join(', ')}.`, `The middle ${m % 2 ? 'value' : 'two values average to'} ${dec(v, 1)}: about ${dec(v, 1)} ${c.unit} for all ${N}.`],
+      solution: stat === 'mean' ? [`Add the ${m} values: ${sum(xs)}. Divide by ${m}: ${dec(v, 1)}.`, `The sample mean, ${dec(v, 1)}, is the estimate for all ${N}: about ${mark(dec(v, 1))} ${c.unit}.`] : [`Put the ${m} values in order: ${sorted.join(', ')}.`, `The middle ${m % 2 ? 'value' : 'two values average to'} ${dec(v, 1)}: about ${mark(dec(v, 1))} ${c.unit} for all ${N}.`],
     }, v, c.unit, [
       { v: sum(xs), say: `That is the total of the ${m} values. Divide by ${m} for the mean.` },
       { v: other, say: stat === 'mean' ? 'That is the middle value (the median). The question asks for the mean.' : 'That is the mean. The question asks for the median: the middle value in order.' },
@@ -505,7 +506,7 @@ const scaleCount: Gen = (R, n) => {
     prompt: `${name} asked a random sample of <b class="b">${m}</b> of the <b class="a">${commas(N)} ${c.who}</b> at ${c.place}: <b class="s">${a}</b> ${c.verb}. Estimate how many of all ${commas(N)} ${c.who} ${c.verb}.`,
     board: `${a}\\ ${T('of')}\\ ${m}\\ \\to\\ ?\\ ${T('of')}\\ ${texNum(N)}`,
     picture: { kind: 'bars', pre: ['top', 'bottom'], post: ['shade', 'factor', 'nums'], work: [`${m} \\times ${k} = ${texNum(N)}`, `${a} \\times ${k} = ${texNum(est)}`, `${T('about ')}${texNum(est)}`], p: bars(a, m, N, c.who, commas(est), `×${k}`) },
-    solution: [`${commas(N)} is ${k} times ${m}, so scale the sample up by ×${k}.`, `${a} × ${k} = ${commas(est)}: about ${commas(est)} of the ${commas(N)} ${c.who} ${c.verb}.`],
+    solution: [`${commas(N)} is ${k} times ${m}, so scale the sample up by ×${k}.`, `${a} × ${k} = ${commas(est)}: about ${mark(commas(est))} of the ${commas(N)} ${c.who} ${c.verb}.`],
   }, est, c.who, [
     { v: N - m + a, mc: MC.additive, say: `That adds the same amount to both numbers. Scale by multiplying: ${commas(N)} is ${k} times ${m}.` },
     { v: N - est, say: `That is the estimate for the ones who ${c.not}. The question asks about the ones who ${c.verb}.` },
@@ -587,7 +588,7 @@ const madUnits: Gen = (R, n) => {
       prompt: `Random samples of 10 ${c.A} and 10 ${c.B}, ${c.what}. Both are roughly symmetric.<br>${row(c.A, t.mA, t.M, medA, iA, 'a')}<br>${row(c.B, t.mB, t.M, medB, iB, 'b')}<br>The difference of the means is how many MADs?`,
       board: `${T('means ')}${t.mA}\\ ${T('and')}\\ ${t.mB},\\ ${T('MAD ')}${t.M}`,
       picture: twoPicture(t, ['mark0', 'mark1', 'gap'], [`${t.mA} - ${t.mB} = ${t.diff}`, `${t.diff} \\div ${t.M} = ${dec(t.q, 2)}`, `${dec(t.q, 2)}\\ ${T(t.q === 1 ? 'MAD apart' : 'MADs apart')}`]),
-      solution: [`Difference of the means: ${t.mA} − ${t.mB} = ${t.diff}.`, `Divide by the MAD (both are ${t.M}): ${t.diff} ÷ ${t.M} = ${dec(t.q, 2)}. The means are ${dec(t.q, 2)} ${t.q === 1 ? 'MAD' : 'MADs'} apart.`],
+      solution: [`Difference of the means: ${t.mA} − ${t.mB} = ${t.diff}.`, `Divide by the MAD (both are ${t.M}): ${t.diff} ÷ ${t.M} = ${dec(t.q, 2)}. The means are ${mark(dec(t.q, 2))} ${t.q === 1 ? 'MAD' : 'MADs'} apart.`],
     }, t.q, 'MADs', [
       { v: t.diff, mc: MC.ignoresSpread, say: `${t.diff} is the gap in ${c.unit}. Measure it in MADs: divide by ${t.M}.` },
       { v: t.diff / iA, mc: MC.unrequested, say: 'That divides by the IQR. Means go with the MAD: divide by the MAD.' },
@@ -595,9 +596,16 @@ const madUnits: Gen = (R, n) => {
     ], `Yes: ${dec(t.q, 2)} MADs. The ruler on the picture fits ${dec(t.q, 2)} MAD-lengths between the means.`, `Subtract the means, then divide by the MAD.`);
   }
 };
+/** a value more than 1.5 IQRs below the lower or above the upper quartile */
+export function hasOutlier(xs: readonly number[]): boolean {
+  const [q1, q3] = quartiles(xs), k = 1.5 * (q3 - q1);
+  return xs.some(x => x < q1 - k || x > q3 + k);
+}
 const pickMeasure: Gen = (R, n) => {
   const t = twoGroups(R, 10, [1, 1.5, 2], [3, 4, 5]);
   const outlier = R() < 0.6;
+  // "no outliers" must be true of the plotted samples: no value beyond 1.5 IQRs from the quartiles
+  if (!outlier && (hasOutlier(t.A) || hasOutlier(t.B))) return pickMeasure(R, n);
   const c = t.ctx;
   let B = t.B;
   if (outlier) { B = [...t.B]; const i = B.indexOf(Math.max(...B)); B[i] = Math.min(100, Math.max(...t.A, ...t.B) + int(R, 15, 25)); }
@@ -741,8 +749,10 @@ const whichBiased: Gen = (R, n) => {
 // 15 scope-of-generalization: say it for the group the sample came from, as an estimate
 // =====================================================================================================
 const scope: Gen = (R, n) => {
-  const c = pick(R, NUM), m = int(R, 4, 16) * 5, s = c.mu + int(R, -6, 6);
+  const c0 = pick(R, NUM), m = int(R, 4, 16) * 5;
   const kind = pick(R, ['random', 'volunteer', 'two'] as const);
+  // only people answer an online survey: no tomato plants among the volunteers
+  const c = kind === 'volunteer' && /plants/.test(c0.who) ? pick(R, NUM.filter(x => !/plants/.test(x.who))) : c0, s = c.mu + int(R, -6, 6);
   if (kind === 'random') return choice(R, {
     id: `scope-${n}`, family: 'scope',
     prompt: `A random sample of <b class="b">${m} ${c.who}</b> from ${c.place} has a mean of <b class="b">${s} ${c.unit}</b> (${c.what}). Which claim does the study support?`,
@@ -802,7 +812,7 @@ const scaleNonWhole: Gen = (R, n) => {
       prompt: `${name} asked a random sample of <b class="b">${m}</b> of the <b class="a">${commas(N)} ${c.who}</b> in ${c.place}: <b class="s">${a}</b> ${c.verb}. Estimate how many of all ${commas(N)} ${c.verb}. Round to the nearest whole number once, at the end.`,
       board: `${a}\\ ${T('of')}\\ ${m}\\ \\to\\ ?\\ ${T('of')}\\ ${texNum(N)}`,
       picture: a / m >= 0.18 ? { kind: 'bars', pre: ['top', 'bottom'], post: ['shade', ...(factor ? ['factor'] : []), 'nums'], work: [`\\tfrac{${a}}{${m}} \\times ${texNum(N)} ${exact ? '=' : '\\approx'} ${texNum(+dec(S.value, 2))}`, `${T('about ')}${texNum(S.rounded)}`], p: bars(a, m, N, c.who, commas(S.rounded), factor) } : undefined,
-      solution: [`Keep it exact: ${a}/${m} × ${commas(N)} = ${a} × ${commas(N)} ÷ ${m} ${exact ? '=' : '≈'} ${dec(S.value, 2)}.`, `Round once, at the end: about ${commas(S.rounded)}.`],
+      solution: [`Keep it exact: ${a}/${m} × ${commas(N)} = ${a} × ${commas(N)} ÷ ${m} ${exact ? '=' : '≈'} ${dec(S.value, 2)}.`, `Round once, at the end: about ${mark(commas(S.rounded))}.`],
     }, S.rounded, c.who, [
       { v: early, mc: MC.early, say: `That rounds ${commas(N)} ÷ ${m} = ${dec(f, 3)} to ${Math.round(f)} first. Keep the exact value and round only the final answer.` },
       { v: N - m + a, mc: MC.additive, say: `That adds the same amount to both numbers. Scale by multiplying: ${a}/${m} of ${commas(N)}.` },
@@ -828,7 +838,7 @@ const complementPct: Gen = (R, n) => {
     prompt: `In a random sample of <b class="b">${m}</b> of the <b class="a">${commas(N)} ${c.who}</b> at ${c.place}, ${res}. Predict the percent of all ${commas(N)} who ${c.not}.`,
     board: form === 'count' ? `${a}\\ ${T('of')}\\ ${m}` : form === 'decimal' ? dec(p / 100, 2) : `${p}\\%`,
     picture: { kind: 'bars', pre: ['top', 'bottom'], post: ['shade', 'nums'], work: [`${form === 'count' ? `${a} \\div ${m} = ` : ''}${p}\\%\\ ${T(c.verb.split(' ')[0]!)}`, `100\\% - ${p}\\% = ${100 - p}\\%`, `${T('about ')}${100 - p}\\%`], p: { topLabel: `sample: ${m} ${c.who}`, bottomLabel: `all ${commas(N)} ${c.who}`, segs: [{ share: p / 100, col: 'faint', top: `${p}%` }, { share: 1 - p / 100, col: 'link', top: `${100 - p}%`, bottom: `${100 - p}%` }] } },
-    solution: [`${form === 'count' ? `${a} of ${m} is ${p}%. ` : ''}${p}% ${c.verb}, so 100% − ${p}% = ${100 - p}% ${c.not}.`, `Predict about ${100 - p}% of all ${commas(N)}: the sample share stands in for the population share.`],
+    solution: [`${form === 'count' ? `${a} of ${m} is ${p}%. ` : ''}${p}% ${c.verb}, so 100% − ${p}% = ${100 - p}% ${c.not}.`, `Predict about ${mark(`${100 - p}%`)} of all ${commas(N)}: the sample share stands in for the population share.`],
   }, 100 - p, '%', [
     { v: p, say: `${p}% is the share who ${c.verb}. The question asks about the ones who ${c.not}.` },
     { v: 100 - a, mc: MC.complement, say: `That subtracts the count ${a} from 100%. First turn ${a} of ${m} into a percent: ${p}%.` },
@@ -846,7 +856,7 @@ const complementCount: Gen = (R, n) => {
       prompt: `A random sample of <b class="b">${m}</b> of the <b class="a">${commas(N)} ${c.who}</b> at ${c.place} voted on ${c.topic}: <b>${p1}%</b> chose ${c.opts[0]}, <b>${p2}%</b> chose ${c.opts[1]}, the rest chose <b class="s">${c.opts[2]}</b>. About how many of all ${commas(N)} would choose ${c.opts[2]}?`,
       board: `${p1}\\%,\\ ${p2}\\%,\\ ${T('the rest')}`,
       picture: { kind: 'bars', pre: ['top', 'bottom'], post: ['shade', 'nums'], work: [`100\\% - ${p1}\\% - ${p2}\\% = ${rest}\\%`, `${dec(rest / 100, 2)} \\times ${texNum(N)} = ${texNum(ans)}`, `${T('about ')}${texNum(ans)}`], p: { topLabel: `sample: ${m} ${c.who}`, bottomLabel: `all ${commas(N)} ${c.who}`, segs: [{ share: p1 / 100, col: 'faint', top: `${p1}%` }, { share: p2 / 100, col: 'dim', top: `${p2}%` }, { share: rest / 100, col: 'link', top: `${rest}%`, bottom: commas(ans) }] } },
-      solution: [`The rest: 100% − ${p1}% − ${p2}% = ${rest}%.`, `${rest}% of ${commas(N)} = ${commas(ans)}: about ${commas(ans)} would choose ${c.opts[2]}.`],
+      solution: [`The rest: 100% − ${p1}% − ${p2}% = ${rest}%.`, `${rest}% of ${commas(N)} = ${commas(ans)}: about ${mark(commas(ans))} would choose ${c.opts[2]}.`],
     }, ans, c.who, [
       { v: N - p1 - p2, mc: MC.complement, say: `${p1} and ${p2} are percents, not counts. The rest is ${rest}% of ${commas(N)}.` },
       { v: pctCount(rest, m), mc: MC.pctOfN, say: `That is ${rest}% of the ${m} in the sample. Predict for all ${commas(N)}.` },
@@ -864,7 +874,7 @@ const complementCount: Gen = (R, n) => {
     prompt: `In a random sample of <b class="b">${m}</b> of the <b class="a">${commas(N)} ${c.who}</b> at ${c.place}, <b class="s">${a}</b> ${c.verb}. About how many of all ${commas(N)} ${c.not}?`,
     board: `${a}\\ ${T('of')}\\ ${m}\\ \\to\\ ?\\ ${T('of')}\\ ${texNum(N)}`,
     picture: { kind: 'bars', pre: ['top', 'bottom'], post: ['shade', 'nums'], work: [`${a} \\div ${m} = ${p}\\%`, `100\\% - ${p}\\% = ${100 - p}\\%`, `${dec((100 - p) / 100, 2)} \\times ${texNum(N)} = ${texNum(ans)}`], p: { topLabel: `sample: ${m} ${c.who}`, bottomLabel: `all ${commas(N)} ${c.who}`, ticks: m <= 50 ? m : undefined, segs: [{ share: p / 100, col: 'faint', top: String(a) }, { share: 1 - p / 100, col: 'link', top: String(m - a), bottom: commas(ans) }] } },
-    solution: [`${a} of ${m} is ${p}%, so ${100 - p}% ${c.not}.`, `${100 - p}% of ${commas(N)} = ${commas(ans)}: about ${commas(ans)}.`],
+    solution: [`${a} of ${m} is ${p}%, so ${100 - p}% ${c.not}.`, `${100 - p}% of ${commas(N)} = ${commas(ans)}: about ${mark(commas(ans))}.`],
   }, ans, c.who, [
     { v: N - a, mc: MC.complement, say: `${a} is a count in the sample of ${m}. Scale up first: ${100 - p}% of ${commas(N)}.` },
     { v: pctCount(100 - p, m), mc: MC.pctOfN, say: `That is ${100 - p}% of the ${m} in the sample. Use all ${commas(N)}.` },
@@ -873,11 +883,14 @@ const complementCount: Gen = (R, n) => {
 };
 
 // ---------- registry ----------
-export const GENS: Record<string, Gen> = {
+const FAMS: Record<string, Gen> = {
   popSample, spreadCompare, statParam, isRandom, randomDiffers, whatDot, twoSamples, whichSize, biggerSample,
   drawNumbers, absent, estimate, report, typical, plan, scaleCount, reportCount, madUnits, pickMeasure, compare,
   biasWay, biasOrChance, whichBiased, scope, scaleNonWhole, complementPct, complementCount,
 };
+/** a prompt that opens on a place ("the community garden knows …") starts with a capital, past any leading tags */
+export const capFirst = (h: string) => h.replace(/^((?:<[^>]+>)*)([a-z])/, (_, tags: string, c: string) => tags + c.toUpperCase());
+export const GENS: Record<string, Gen> = Object.fromEntries(Object.entries(FAMS).map(([k, g]) => [k, ((R, n, sg) => { const it = g(R, n, sg); it.prompt = capFirst(it.prompt); return it; }) as Gen]));
 export const FAMILY_NAMES: Record<string, string> = {
   popSample: 'Population or sample?', spreadCompare: 'Spread: sample vs population', statParam: 'Sample value or population value?',
   isRandom: 'Which method is random?', randomDiffers: 'A random sample that misses', whatDot: 'What one dot stands for',

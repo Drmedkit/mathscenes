@@ -4,6 +4,7 @@
 // Pure: no DOM, no canvas. PROBES records, per item, typical wrong responses and the id they must get (tests).
 import type { Q } from '../../../core/math';
 import { type Gen, type Item, type Response, type Verdict, A, B, S, fr, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import { type Form, q, dq, qAdd, qMul, qDiv, qNeg, qAbs, qSub, qSame, qPow, sgn, val, hq, hp, tq, tp, isDec, expand, readQ, respond } from './rq';
 import { jumpsFit } from './TimeJumps';
 import { type CounterGroup, matFits } from './Counters';
@@ -46,7 +47,7 @@ export type Picture = JumpPicture | MatPicture;
 
 /** wrong responses with the misconception they must be classified as (tests) */
 export const PROBES = new WeakMap<Item, { r: Response; mc: string }[]>();
-const M = '&minus;';
+const M = '−';   // the real minus sign (not &minus;): the steps card reads the answer out of the text
 const MC = {
   partial: 'mc.properties.partial-distribution',
   addRules: 'mc.integers.addition-rules-in-multiplication',
@@ -116,7 +117,7 @@ function choose(o: Base, R: () => number, opts: Opt[], keep = false): Item {
   const os = keep ? opts.slice() : shuffle(R, opts.slice());
   const right = os.findIndex(x => x.ok);
   return {
-    ...o, picture: o.picture as unknown as Record<string, unknown> | undefined, input: 'choice', choices: os.map(x => x.t), answer: { kind: 'choice', i: right },
+    ...o, solution: endOnChoice(o.solution, os[right]!.t), picture: o.picture as unknown as Record<string, unknown> | undefined, input: 'choice', choices: os.map(x => x.t), answer: { kind: 'choice', i: right },
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !os[r.i]) return { ok: false, say: 'Pick one answer.' };
       const x = os[r.i]!;
@@ -550,8 +551,11 @@ const intMul: Gen = (R, n) => {
     if (R() < 0.5) fs.reverse();
   }
   const prod = fs.reduce((a, b) => a * b, 1), negs = fs.filter(x => x < 0).length;
-  const e = fs.map((x, i) => (i === 0 ? (x < 0 ? `(${M}${-x})` : String(x)) : neg(x))).join(fs.length > 2 ? '' : ' × ');
-  const et = fs.map((x, i) => (i === 0 ? (x < 0 ? `(${x})` : String(x)) : tn(x))).join(fs.length > 2 ? '' : ' \\times ');
+  // three or more factors are written side by side, so every factor after the first gets its own brackets:
+  // (−2)(5)(−5), never (−2)5(−5), which reads as a 5 glued to its neighbours
+  const glue = fs.length > 2;
+  const e = fs.map((x, i) => (i === 0 ? (x < 0 ? `(${M}${-x})` : String(x)) : glue ? `(${ni(x)})` : neg(x))).join(glue ? '' : ' × ');
+  const et = fs.map((x, i) => (i === 0 ? (x < 0 ? `(${x})` : String(x)) : glue ? `(${x})` : tn(x))).join(glue ? '' : ' \\times ');
   const wrongs: Wrong[] = prod === 0 ? [] : [{
     v: q(-prod), mc: negs >= 3 && negs % 2 === 1 ? MC.manyFactors : negs >= 2 && negs % 2 === 0 ? MC.anyNeg : negs === 1 ? MC.dropSign : undefined,
     say: `Count the negative factors: ${negs}, an ${negs % 2 ? 'odd' : 'even'} number, so the product is ${prod > 0 ? 'positive' : 'negative'}: ${ni(prod)}.`,
@@ -749,7 +753,7 @@ const compound: Gen = (R, n) => {
     const prod = qMul(q(b), c), right = qAdd(q(a), prod);
     const negs = [a, b, c.p].filter(x => x < 0).length;
     const oneSign = qMul(q(negs % 2 ? -1 : 1), qAdd(q(Math.abs(a)), qAbs(prod)));
-    return typed(base(`${ni(a)} + ${ni(b)}${hp(c, 'dec')}`, `${a} + ${b}${tp(c, 'dec')}`, [`Multiply first: ${ni(b)} × ${hp(c, 'dec')} = ${hq(prod, 'dec')}.`, `Then add: ${ni(a)} + ${hp(prod, 'dec')} = ${S(hq(right, 'dec'))}.`]),
+    return typed(base(`${ni(a)} + ${neg(b)} × ${hp(c, 'dec')}`, `${a} + ${tn(b)} \\times ${tp(c, 'dec')}`, [`Multiply first: ${ni(b)} × ${hp(c, 'dec')} = ${hq(prod, 'dec')}.`, `Then add: ${ni(a)} + ${hp(prod, 'dec')} = ${S(hq(right, 'dec'))}.`]),
     'num', right, `Yes: ${hq(right, 'dec')}.`, [
       { v: oneSign, mc: MC.oneSign, say: `Each part keeps its own sign. The product ${ni(b)} × ${hp(c, 'dec')} = ${hq(prod, 'dec')}, then ${ni(a)} + ${hp(prod, 'dec')} = ${hq(right, 'dec')}.` },
       { v: qMul(qAdd(q(a), q(b)), c), say: `Multiplication comes before addition: ${ni(b)} × ${hp(c, 'dec')} first.` },
@@ -935,7 +939,7 @@ const argument: Gen = (R, n) => {
     if (qq === s || p >= qq || r >= s) return argument(R, n);
     const prod = q(p * r, qq * s);
     return choose(base(`A new example: 0 = (${M}${fr(p, qq)})(${fr(r, s)} + (${M}${fr(r, s)})) = ▢ + (${M}${fr(p, qq)})(${M}${fr(r, s)}). What goes in the box?`, `0 = \\square + (-\\tfrac{${p}}{${qq}})(-\\tfrac{${r}}{${s}})`,
-      [`Distribute: the first part is (${M}${fr(p, qq)})(${fr(r, s)}) = ${M}${hq(prod)} (one negative factor).`, `So (${M}${fr(p, qq)})(${M}${fr(r, s)}) is its opposite: ${S(hq(prod))}.`]), R, [
+      [`The box is the first part: (${M}${fr(p, qq)})(${fr(r, s)}) = ${S(`${M}${hq(prod)}`)} (one negative factor).`, `The two parts add to 0, so (${M}${fr(p, qq)})(${M}${fr(r, s)}) is its opposite, ${hq(prod)}: positive.`]), R, [
       { t: `${M}${hq(prod)}`, ok: true, say: `Yes: (${M}${fr(p, qq)})(${fr(r, s)}) = ${M}${hq(prod)}, so the other part must be ${hq(prod)}.` },
       { t: hq(prod), mc: MC.dropSign, say: `(${M}${fr(p, qq)})(${fr(r, s)}) has one negative factor: ${M}${hq(prod)}.` },
       { t: `${M}${fr(p, qq)}`, mc: MC.partial, say: `The ${M}${fr(p, qq)} multiplies the ${fr(r, s)}: (${M}${fr(p, qq)})(${fr(r, s)}) = ${M}${hq(prod)}.` },
@@ -1005,7 +1009,7 @@ const story1: Gen = (R, n) => {
     const w = int(R, 1, 2), half = pick(R, [[1, 2], [1, 4], [3, 4]] as const), rate = qAdd(q(w), q(half[0], half[1])), t = int(R, 2, 4);
     const right = qMul(rate, q(t));
     return typed(base(`The water level in a pond drops ${A(`${w}&#8202;${fr(half[0], half[1])} in. every day`)} in a dry spell. Compared with now, what was the level ${B(`${t} days ago`)}? (+ is higher, ${M} is lower)`, `${tn(-t)} \\times (-${w}\\tfrac{${half[0]}}{${half[1]}}) = \\,?`, 'in.',
-      [`Rate ${M}${w}&#8202;${fr(half[0], half[1])} in. per day; ${t} days ago is time ${M}${t}.`, `(${M}${t}) × (${M}${w}&#8202;${fr(half[0], half[1])}) = ${S('+' + hq(right, 'dec'))} in.: it was higher before the drops.`]),
+      [`Rate ${M}${w}&#8202;${fr(half[0], half[1])} in. per day; ${t} days ago is time ${M}${t}.`, `(${M}${t}) × (${M}${w}&#8202;${fr(half[0], half[1])}) = +${S(hq(right, 'dec'))} in.: it was higher before the drops.`]),
     'num', right, `Yes: ${hq(right, 'dec')} in. higher than now.`, [
       { v: qNeg(right), mc: MC.anyNeg, say: `${t} days ago the drops had not happened yet, so the level was HIGHER: (${M}${t}) × (${M}${hq(rate, 'dec')}) = ${hq(right, 'dec')}.` },
     ], `Time before now is negative: (${M}${t}) × (${M}${hq(rate, 'dec')}).`);

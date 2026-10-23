@@ -46,7 +46,7 @@ export function expand(a: Q): { int: string; pre: string; rep: string } {
   return { int, pre: digits.slice(0, at), rep: digits.slice(at) };
 }
 
-const MINUS = '&minus;';
+const MINUS = '−';   // the real minus sign (not &minus;): the steps card reads the answer out of the text
 
 /** the number in its form, HTML, with a real minus sign */
 export function hq(a: Q, form: Form = a.q === 1 ? 'int' : 'frac'): string {

@@ -24,6 +24,7 @@ import { FactorMat, type MatBlock, type MatFocus, type MatParams, type Tile } fr
 import { dish } from '../../src/lesson/topics/integer-exponents/Colony';
 import { readQ } from '../../src/lesson/topics/integer-exponents/expo';
 import { FAMILY_NAMES, GENS, type Pic } from '../../src/lesson/topics/integer-exponents/items';
+import { explain } from '../../src/lesson/topics/integer-exponents/explain';
 import { PLAN } from '../../src/lesson/topics/integer-exponents/plan';
 import { SCRIPT } from '../../src/lesson/topics/integer-exponents/script';
 
@@ -462,7 +463,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it),
   });

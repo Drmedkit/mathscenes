@@ -5,7 +5,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import { rng, type Response } from '../src/lesson/runtime/item';
-import { GENERATORS, FAMILY_NAMES, MC, type PaItem } from '../src/lesson/topics/percent-applications/items';
+import { GENERATORS, FAMILY_NAMES, MC, PRICE_RANGE, type PaItem } from '../src/lesson/topics/percent-applications/items';
 import { PLAN } from '../src/lesson/topics/percent-applications/plan';
 import { PercentTape } from '../src/lesson/topics/percent-applications/PercentTape';
 import { applyC, chainC, money, moneyTex, multStr, partC, partRound, rateStr, simpleInterest } from '../src/lesson/topics/percent-applications/money';
@@ -205,5 +205,50 @@ describe('the tape model', () => {
   it('refuses rows that cannot fit', () => {
     const row = { lead: '$1', segs: [{ amt: 1, role: 'base' as const }] };
     expect(() => PercentTape({ rows: [row, row, row, row, row] }, TF)).toThrow();
+  });
+});
+
+describe('percent-applications: quality layer (docs/lessons/QUALITY_LAYER.md)', () => {
+  const G = GENERATORS as Record<string, (R: () => number, n: number, sg?: string) => import('../src/lesson/runtime/item').Item>;
+  const txt = (h: string) => h.replace(/<[^>]+>/g, '');
+  it('"an 18% tip", "an 8% fee", "an $80 item": never "a 8" / "a 11" / "a 18"', () => {
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 60; s++) {
+      const it = G[f]!(rng(s * 19 + 2), s, p.id);
+      for (const t of [it.prompt, ...it.solution, ...(it.choices ?? [])]) expect(txt(t), `${f}`).not.toMatch(/\b[Aa] \$?(8|11(?!\d)|18(?!\d))/);
+    }
+  });
+  it('the untaxed purchase reads right ("medicine is not taxed") and the taxed one costs something believable', () => {
+    for (const sg of ['base-sales-tax']) for (const f of ['base', 'baseCalc']) for (let s = 1; s <= 300; s++) {
+      const it = G[f]!(rng(s * 23 + 1), s, sg), t = txt(it.prompt);
+      expect(t).not.toMatch(/medicine are/);
+      const m = /You buy an? ([a-z ]+?) for \$(\d+)/.exec(t);
+      if (m) { const r = PRICE_RANGE[m[1]!]!; expect(Number(m[2]) >= r[0] && Number(m[2]) <= r[1], t).toBe(true); }
+    }
+  });
+  it('one year of interest is not written "$280 × 1 = $280 = $280"', () => {
+    for (let s = 1; s <= 300; s++) for (const l of G.interest!(rng(s * 29 + 7), s, 'simple-interest-years').solution) expect(txt(l)).not.toMatch(/= (\$[\d,.]+) = \1/);
+  });
+});
+
+describe('percent-applications: oracle findings (phase 2)', () => {
+  const G = GENERATORS as Record<string, (R: () => number, n: number, sg?: string) => import('../src/lesson/runtime/item').Item>;
+  const txt = (h: string) => h.replace(/<[^>]+>/g, '');
+  it('every named item costs something believable for it ($1,000 water bottle, $24 guitar, $400 hoodie are out)', () => {
+    const names = Object.keys(PRICE_RANGE).sort((a, b) => b.length - a.length);
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 120; s++) {
+      const t = txt(G[f]!(rng(s * 31 + 9), s, p.id).prompt);
+      for (const m of t.matchAll(/\ban? ((?:[a-z]+ ){0,2}[a-z]+) for \$([\d,]+(?:\.\d\d)?)\b|\$([\d,]+) ([a-z]+(?: [a-z]+)?) (?:is|game|lamp|jacket|speaker|hoodie)/g)) {
+        const item = names.find(g => (m[1] ?? '').endsWith(g)), v = Number((m[2] ?? '').replace(/,/g, ''));
+        if (item && v) { const r = PRICE_RANGE[item]!; expect(v >= r[0] && v <= r[1], `${f}: ${t}`).toBe(true); }
+      }
+    }
+  });
+  it('sales tax and savings rates at most 10%; a markup base item never makes cost and markup the same amount', () => {
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 120; s++) {
+      const it = G[f]!(rng(s * 43 + 1), s, p.id), t = txt(it.prompt);
+      for (const m of t.matchAll(/(\d+(?:\.\d+)?)% sales tax/g)) expect(Number(m[1]), t).toBeLessThanOrEqual(10);
+      for (const m of t.matchAll(/(\d+(?:\.\d+)?)% simple interest/g)) if (/savings/.test(t)) expect(Number(m[1]), t).toBeLessThanOrEqual(10);
+      if (f === 'base' && it.choices) expect(new Set(it.choices.map(c => (txt(c).match(/\$[\d,.]+/) ?? [c])[0])).size, `${f}: ${t} ${it.choices.join(' | ')}`).toBe(it.choices.length);
+    }
   });
 });

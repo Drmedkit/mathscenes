@@ -4,6 +4,7 @@
 // (math-curriculum-essentials/misconceptions.json). Pure: no DOM, no canvas. Every solve is checked by substitution
 // (ineq.ts) in the tests; every picture is a SignLine the tests build.
 import { type Gen, type Item, type Response, type Verdict, A, B, S, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import { stepTex, type N, type OneStep, type Rel, type Style, N as Nq, REL_HTML, REL_TEX, abs, add, cmp, dec, dirOf, div, eq, exprHtml, exprTex, flip, holds, invTex, invWords, isInt, lhs, mul, nHtml, nPlain, nTex, neg, showsNegative, solHtml, solTex, solve, stHtml, stTex, strict, sub, terminates, val } from './ineq';
 import { type SignLineParams, type TestSpec, SignLine, autoAxis, fmt } from './SignLine';
 import { frame } from '../../../blocks/block';
@@ -152,13 +153,13 @@ function checkLine(f: OneStep, t: number): string {
   return `${f.v ?? 'x'} = ${nHtml(x, st)}: ${exprHtml({ ...f, v: sv(f, x, st) }).replace(/<i>|<\/i>/g, '')} = ${nHtml(lhs(f, x), st)}, and ${nHtml(lhs(f, x), st)} ${REL_HTML[f.rel]} ${nHtml(f.q, st)} is ${ok ? 'true' : 'false'}.`;
 }
 /** the worked solution of a one-step inequality, in panel lines */
-function ineqSolution(f: OneStep, tin: number, tout: number): string[] {
+function ineqSolution(f: OneStep, tin: number, tout: number, markB = false): string[] {
   const s = solve(f), v = f.v ?? 'x', st = f.st ?? 'dec';
   const lines = [`${stHtml(f)}: ${invWords(f)}.`];
   lines.push(s.flips
     ? `You ${f.op === 'mul' ? 'divided' : 'multiplied'} by a negative number, so the order reverses: ${REL_HTML[f.rel]} becomes ${REL_HTML[s.rel]}.`
     : f.op === 'add' || f.op === 'sub' ? 'Adding or subtracting the same number keeps the symbol, even when the numbers are negative.' : `${nHtml(f.p, st)} is positive, so the symbol stays.`);
-  lines.push(`${sol(v, s.rel, s.b, st)}. Check one value on each side: ${checkLine(f, tin)} ${checkLine(f, tout)}`);
+  lines.push(`${markB ? `<i>${v}</i> ${REL_HTML[s.rel]} ${S(nHtml(s.b, st))}` : sol(v, s.rel, s.b, st)}. Check one value on each side: ${checkLine(f, tin)} ${checkLine(f, tout)}`);
   return lines;
 }
 /** the reversed-symbol answer: which misconception does it show for this statement? */
@@ -387,7 +388,7 @@ const boundaryNum: Gen = (R, n, sg) => {
     prompt: `Solve ${B(stHtml(f))}. The answer is <i>${v}</i> ${REL_HTML[s.rel]} ? &nbsp;Type the boundary number.`,
     board: `${stTex(f)} \\quad\\Rightarrow\\quad ${v} ${REL_TEX[s.rel]} \\,?`,
     input: 'num', unit: '', picture: pic as unknown as Record<string, unknown>,
-    solution: ineqSolution(f, tests.find(t => t.key === 't.in')!.v, tests.find(t => t.key === 't.out')?.v ?? val(s.b)),
+    solution: ineqSolution(f, tests.find(t => t.key === 't.in')!.v, tests.find(t => t.key === 't.out')?.v ?? val(s.b), true),
     answer: numR(s.b),
     check: r => numCheck(r, s.b, `Yes: ${invWords(f)}: ${sol(v, s.rel, s.b, st)}.`, [
       ...(s.flips && !eq(nb, s.b) ? [{ v: nb, mc: MC.noSign, say: `Keep the sign: the number next to ${v} is ${nHtml(f.p, st)}, so ${invWords(f)}. That gives ${nHtml(s.b, st)}.` }] : []),
@@ -435,7 +436,7 @@ const contextCount: Gen = (R, n, sg) => {
     prompt: `${sk.ask(p, q)} <span class="dim">Write ${B(`${p}${v} ${REL_HTML[f.rel]} ${q}`)} first.</span>`,
     board: stTex(f), input: 'num', unit: sk.unit, picture: pic as unknown as Record<string, unknown>,
     solution: [`${p}<i>${v}</i> ${REL_HTML[f.rel]} ${q}: divide both sides by ${p}: <i>${v}</i> ${REL_HTML[f.rel]} ${bWhole}&#8202;${fr0(q % p, p)}.`,
-      sk.max ? `Only whole ${sk.unit} count, and you may not go over: ${bWhole}&#8202;${fr0(q % p, p)} is between ${ans} and ${ans + 1}, so round DOWN to ${ans}.` : `Only whole ${sk.unit} count, and you need enough: ${bWhole}&#8202;${fr0(q % p, p)} is between ${ans - 1} and ${ans}, so round UP to ${ans}.`,
+      sk.max ? `Only whole ${sk.unit} count, and you may not go over: ${bWhole}&#8202;${fr0(q % p, p)} is between ${ans} and ${ans + 1}, so round DOWN to ${S(String(ans))}.` : `Only whole ${sk.unit} count, and you need enough: ${bWhole}&#8202;${fr0(q % p, p)} is between ${ans - 1} and ${ans}, so round UP to ${S(String(ans))}.`,
       `Check: ${p} × ${ans} = ${p * ans} ${REL_HTML[f.rel]} ${q}, but ${p} × ${sk.max ? ans + 1 : ans - 1} = ${p * (sk.max ? ans + 1 : ans - 1)} is not.`],
     answer: { kind: 'num', v: ans },
     check: r => numCheck(r, I(ans), `Yes: <i>${v}</i> ${REL_HTML[f.rel]} ${bWhole}&#8202;${fr0(q % p, p)}, and the count must be whole: ${ans}.`, [
@@ -584,7 +585,7 @@ const addEq: Gen = (R, n, sg) => {
   const wrongs: NumWrong[] = [{ v: w.b, mc: w.mc, say: w.say }];
   if (b.n < 0) wrongs.push({ v: neg(b), mc: MC.negReject, say: `Check it: ${exprHtml({ ...f, v: `${nHtml(neg(b))}` }).replace(/<\/?i>/g, '')} is ${nHtml(lhs(f, neg(b)))}, not ${nHtml(f.q)}. The answer can be negative: <i>${v}</i> = ${nHtml(b)}.` });
   else wrongs.push({ v: neg(b), say: `Check it: ${exprHtml({ ...f, v: sv(f, neg(b)) }).replace(/<\/?i>/g, '')} is ${nHtml(lhs(f, neg(b)))}, not ${nHtml(f.q)}.` });
-  const solution = [`${stHtml(f)}: ${invWords(f)}.`, `<i>${v}</i> = ${nHtml(b)}. On the number line: start at ${nHtml(f.q)} and go ${back.n > 0 ? 'up' : 'down'} ${nHtml(abs(back))}.`, `Check: ${exprHtml({ ...f, v: sv(f, b) }).replace(/<\/?i>/g, '')} = ${nHtml(f.q)}.`];
+  const solution = [`${stHtml(f)}: ${invWords(f)}.`, `<i>${v}</i> = ${S(nHtml(b))}. On the number line: start at ${nHtml(f.q)} and go ${back.n > 0 ? 'up' : 'down'} ${nHtml(abs(back))}.`, `Check: ${exprHtml({ ...f, v: sv(f, b) }).replace(/<\/?i>/g, '')} = ${nHtml(f.q)}.`];
   let it: Item;
   if (asChoice) {
     const o = options(R, [
@@ -642,7 +643,7 @@ const mulEq: Gen = (R, n, sg) => {
   if (isInt(w.b) && !eq(w.b, b) && !eq(w.b, nb)) wrongs.push({ v: w.b, mc: w.mc, say: w.say });
   const it: Item = {
     id: `me-${n}`, family: 'mulEq', subgoal: sg, prompt, board: stTex(f), input: 'num', unit: temp ? '°F per hour' : '',
-    solution: [`${stHtml(f)}: ${invWords(f)}.`, `<i>${v}</i> = ${nHtml(f.q)} ${f.op === 'mul' ? '÷' : '×'} ${f.p.n < 0 ? `(${nHtml(f.p)})` : nHtml(f.p)} = ${nHtml(b)}.`, `Check: ${exprHtml({ ...f, v: sv(f, b) }).replace(/<\/?i>/g, '').replace(/<span class="fr"><span>\(([^)]*)\)<\/span><span>([^<]*)<\/span><\/span>/, '($1) ÷ $2')} = ${nHtml(f.q)}.`],
+    solution: [`${stHtml(f)}: ${invWords(f)}.`, `<i>${v}</i> = ${nHtml(f.q)} ${f.op === 'mul' ? '÷' : '×'} ${f.p.n < 0 ? `(${nHtml(f.p)})` : nHtml(f.p)} = ${S(nHtml(b))}.`, `Check: ${exprHtml({ ...f, v: sv(f, b) }).replace(/<\/?i>/g, '').replace(/<span class="fr"><span>\(([^)]*)\)<\/span><span>([^<]*)<\/span><\/span>/, '($1) ÷ $2')} = ${nHtml(f.q)}.`],
     answer: numR(b), check: r => numCheck(r, b, `Yes: <i>${v}</i> = ${nHtml(b)}. Check: it gives ${nHtml(f.q)}.`, wrongs, `Not quite: ${invWords(f)}, and watch the sign.`),
   };
   for (const x of wrongs) if (x.mc) probe(it, numR(x.v), x.mc);
@@ -672,7 +673,7 @@ const ratEq: Gen = (R, n, sg) => {
   const wrongs: NumWrong[] = [];
   if (nb && !eq(nb, b)) wrongs.push({ v: nb, mc: MC.noSign, say: `Keep the sign of ${nHtml(f.p, st)}: ${invWords(f)}. The signs decide whether the answer is positive or negative.` });
   if (!eq(w.b, b) && !(nb && eq(w.b, nb))) wrongs.push({ v: w.b, mc: w.mc, say: w.say });
-  const solution = [`${stHtml(f)}: ${invWords(f)}.`, `<i>${v}</i> = ${nHtml(b, st)}${!isInt(b) && terminates(b) && st === 'frac' ? ` = ${nHtml(b, 'dec')}` : ''}.`, `Check: put ${nHtml(b, st)} in for <i>${v}</i>: the ${f.op === 'add' || f.op === 'sub' ? 'sum' : f.op === 'mul' ? 'product' : 'quotient'} is ${nHtml(f.q, st)}.`];
+  const solution = [`${stHtml(f)}: ${invWords(f)}.`, `<i>${v}</i> = ${S(nHtml(b, st))}${!isInt(b) && terminates(b) && st === 'frac' ? ` = ${nHtml(b, 'dec')}` : ''}.`, `Check: put ${nHtml(b, st)} in for <i>${v}</i>: the ${f.op === 'add' || f.op === 'sub' ? 'sum' : f.op === 'mul' ? 'product' : 'quotient'} is ${nHtml(f.q, st)}.`];
   const ok = `Yes: <i>${v}</i> = ${nHtml(b, st)}. Substituting gives ${nHtml(f.q, st)}.`;
   let it: Item;
   if (terminates(b)) {
@@ -847,7 +848,7 @@ const signedContext: Gen = (R, n, sg) => {
     };
     const it: Item = {
       id: `sc-${n}`, family: 'signedContext', subgoal: sg, prompt, board: stTex(f), input: 'num', unit, picture: pic as unknown as Record<string, unknown>,
-      solution: [`${stHtml(f)}: ${invWords(f)}.`, `<i>x</i> = ${nHtml(b)} ${unit}.`, kind === 'sub' ? `It started at ${nHtml(b)} ft: ${start} ft above where it ended.` : `From ${String(start).replace('-', '−')} up to ${String(end).replace('-', '−')} is ${nHtml(b)} ${unit}: a rise, so positive.`],
+      solution: [`${stHtml(f)}: ${invWords(f)}.`, `<i>x</i> = ${S(nHtml(b))} ${unit}.`, kind === 'sub' ? `It started at ${nHtml(b)} ft: ${start} ft above where it ended.` : `From ${String(start).replace('-', '−')} up to ${String(end).replace('-', '−')} is ${nHtml(b)} ${unit}: a rise, so positive.`],
       answer: numR(b), check: r => numCheck(r, b, `Yes: <i>x</i> = ${nHtml(b)} ${unit}.`, wrongs, `Not quite: ${invWords(f)}.`),
     };
     for (const x of wrongs) if (x.mc && !eq(x.v, b)) probe(it, numR(x.v), x.mc);
@@ -862,7 +863,7 @@ const signedContext: Gen = (R, n, sg) => {
       id: `sc-${n}`, family: 'signedContext', subgoal: sg,
       prompt: `${A(`${k} friends`)} share a debt equally. Together their balance is ${B(`−$${k * each}`)}. What is each friend's share <i>s</i>, as a signed number? <span class="dim">(${stHtml(f)})</span>`,
       board: stTex(f), input: 'num', unit: 'dollars',
-      solution: [`${stHtml(f)}: divide both sides by ${k}.`, `<i>s</i> = −${k * each} ÷ ${k} = −${each}: each friend's balance goes down $${each}.`],
+      solution: [`${stHtml(f)}: divide both sides by ${k}.`, `<i>s</i> = −${k * each} ÷ ${k} = ${S(`−${each}`)}: each friend's balance goes down $${each}.`],
       answer: numR(b), check: r => numCheck(r, b, `Yes: <i>s</i> = −${each}: a debt of $${each} each.`, [{ v: I(each), mc: MC.negReject, say: `A debt is a negative balance: the share is −${each}, not ${each}.` }, { v: I(total * k), mc: MC.visible, say: `That multiplies. Each share is the total divided by ${k}.` }], `Divide −${k * each} by ${k}.`),
     };
     probe(it, { kind: 'num', v: each }, MC.negReject);
@@ -912,6 +913,13 @@ const signedContext: Gen = (R, n, sg) => {
   return it;
 };
 
-export const GENS: Record<FamilyId, Gen> = { solveAdd, graph, testPoint, solveScale, boundaryNum, contextCount, contextSet, geometry, addEq, mulEq, ratEq, flipMap, justify, signedContext };
+const FAMS: Record<FamilyId, Gen> = { solveAdd, graph, testPoint, solveScale, boundaryNum, contextCount, contextSet, geometry, addEq, mulEq, ratEq, flipMap, justify, signedContext };
+/** a choice item's worked solution ends on the right choice ("So: …" when no line names it yet: the steps card) */
+const endsOnChoice = (g: Gen): Gen => (R, n, sg) => {
+  const it = g(R, n, sg);
+  if (it.input === 'choice' && it.answer.kind === 'choice' && it.choices) it.solution = endOnChoice(it.solution, it.choices[it.answer.i]!);
+  return it;   // the same object: PROBES and FORMS are keyed on it
+};
+export const GENS = Object.fromEntries(Object.entries(FAMS).map(([k, g]) => [k, endsOnChoice(g)])) as Record<FamilyId, Gen>;
 // referenced so tree-shaking keeps the helpers honest
 void exprTex; void invTex; void nPlain;

@@ -23,6 +23,7 @@ import { IsoBox, type BoxBlock, type BoxFocus, type BoxStep } from '../../src/le
 import { SquareTiles, type SquareBlock, type SquareFocus, type SquareStep } from '../../src/lesson/topics/square-and-cube-roots/SquareTiles';
 import { RootRuler, type RulerBlock, type RulerStep } from '../../src/lesson/topics/square-and-cube-roots/RootRuler';
 import { FAMILY_NAMES, GENS, MC, type Pic } from '../../src/lesson/topics/square-and-cube-roots/items';
+import { explain } from '../../src/lesson/topics/square-and-cube-roots/explain';
 import { PLAN } from '../../src/lesson/topics/square-and-cube-roots/plan';
 import { SCRIPT } from '../../src/lesson/topics/square-and-cube-roots/script';
 
@@ -467,7 +468,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it),
   });

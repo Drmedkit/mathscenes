@@ -267,3 +267,28 @@ describe('voice', () => {
     }
   });
 });
+
+describe('sampling-and-inference: oracle findings (phase 2)', () => {
+  const txt = (h: string) => h.replace(/<[^>]+>/g, '');
+  it('only people answer an online survey (no tomato plants "chose to answer")', () => {
+    for (let s = 1; s <= 600; s++) {
+      const p = txt(GENS.scope!(rng(s * 7 + 5), s, 'scope-of-generalization').prompt);
+      if (/chose to answer/.test(p)) expect(p, p).not.toMatch(/plants/);
+    }
+  });
+  it('"no outliers" holds for the plotted samples (no value beyond 1.5 IQRs)', async () => {
+    const { hasOutlier } = await import('../src/lesson/topics/sampling-and-inference/items');
+    for (let s = 1; s <= 600; s++) {
+      const it = GENS.pickMeasure!(rng(s * 11 + 3), s, 'center-difference-in-mad-units');
+      if (!/no outliers/.test(txt(it.prompt))) continue;
+      const pic = picOf(it) as unknown as { p: { rows: { values: number[] }[] } };
+      for (const r of pic.p.rows) expect(hasOutlier(r.values), txt(it.prompt)).toBe(false);
+    }
+  });
+  it('every prompt starts with a capital letter', () => {
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 60; s++) {
+      const t = txt(GENS[f]!(rng(s * 13 + 1), s, p.id).prompt);
+      expect(t, `${f}: ${t}`).toMatch(/^[^a-z]/);
+    }
+  });
+});

@@ -20,6 +20,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import { PercentTape, type TapeBlock, type TapeFocus, type TapeRow } from '../../src/lesson/topics/percent-applications/PercentTape';
 import { TF, drawSplit } from '../../src/lesson/topics/percent-applications/scenes';
 import { FAMILY_NAMES, GENERATORS, MC, type PaItem } from '../../src/lesson/topics/percent-applications/items';
+import { explain } from '../../src/lesson/topics/percent-applications/explain';
 import { PLAN } from '../../src/lesson/topics/percent-applications/plan';
 import { SCRIPT } from '../../src/lesson/topics/percent-applications/script';
 
@@ -429,7 +430,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as PaItem),
   });

@@ -4,7 +4,8 @@
 // misconceptions.json (logged, never shown). All money is exact (taxMaths.ts). Pure: no DOM, no canvas.
 // Colours follow the model: pre-tax price = amber (A), tax = teal (B), total = lime (S). Items that ASK which amount
 // plays which role print the amounts plain, so the colour does not give the answer away.
-import { type Gen, type Item, type Response, type Verdict, A, B, S, int, pick, shuffle } from '../../runtime/item';
+import { type Gen, type Item, type Response, type Verdict, A, B, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import type { TaxTapeParams, TaxTapeStep } from './TaxTape';
 import {
   M_WHOLE, U_CENT, budgetMax, budgetQuotientU, decOf, digitsU, multDec, pct, priceFromTotal, pricesForTax, rateDec,
@@ -79,10 +80,19 @@ const NAMES = ['Maya', 'Leo', 'Ava', 'Sam', 'Nora', 'Eli', 'Zoe', 'Omar', 'Lily'
 const STORES = ['Corner Shop', 'Mega Mart', 'Town Outlet', 'Main Street Sports', 'Gadget Hub', 'River Mall', 'Bay Store', 'Hilltop Market'];
 const GROCERY = ['Milk', 'Bread', 'Apples', 'Eggs', 'Rice', 'Cereal', 'Bananas', 'Cheese'];
 const TAXABLE = ['Pens', 'Soap', 'Batteries', 'Notebook', 'Socks', 'Cap', 'Glue', 'Markers', 'Towel', 'Mug'];
+/** the total's colour (lime). Class "s tot", not "s": the steps card reads <b class="s"> as the answer
+ *  (runtime/explain.ts), so the role colour stays out of that. The answer the worked solution reaches is marked with
+ *  aN (lime, the answer colour); aA / aB / aS name the role it plays. Not the `ans` class: lesson.css styles `.ans` as
+ *  the flex answer row, which breaks the step line apart. */
+const S = (s: string) => `<b class="s tot">${s}</b>`;
+const aN = (s: string | number) => `<b class="s">${s}</b>`;
+const aA = aN, aB = aN, aS = aN;
 const NOCALC = '<span class="calc">No calculator.</span>';
 const CALC = '<span class="calc">Calculator allowed.</span>';
 const RULE = '<span class="calc">Tax rounds to the nearest cent, halves up.</span>';
 const cap = (s: string) => s[0]!.toUpperCase() + s.slice(1);
+/** "a" or "an" before a rate read aloud: an 8%, an 11%, an 18%, a 7.5% */
+const an = (rateM: number) => (/^(8|11|18)(\D|$)/.test(pct(rateM)) ? 'an' : 'a');
 /** a whole-number percent rate in milli-percent */
 const WHOLE = (R: () => number, lo = 5, hi = 10) => int(R, lo, hi) * 1000;
 /** US-style non-integer rates (all multiples of 0.125%, so a whole-dollar multiple of $8 is always exact) */
@@ -149,7 +159,7 @@ function choiceItem(R: () => number, o: Base & { opts: Choice[] }): Item {
   const seen = new Set<string>(), uniq = opts.filter(c => (seen.has(c.t) ? false : (seen.add(c.t), true)));
   const sh = shuffle(R, uniq.slice());
   return {
-    ...rest, input: 'choice', choices: sh.map(c => c.t), answer: { kind: 'choice', i: sh.findIndex(c => c.ok) },
+    ...rest, solution: endOnChoice(rest.solution, sh.find(c => c.ok)!.t), input: 'choice', choices: sh.map(c => c.t), answer: { kind: 'choice', i: sh.findIndex(c => c.ok) },
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !sh[r.i]) return { ok: false, say: 'Pick one answer.' };
       const c = sh[r.i]!;
@@ -162,13 +172,13 @@ const ALL: TaxTapeStep[] = ['receipt', 'rPrice', 'rTax', 'rTotal', 'tape', 'whol
 /** worked lines for the tax at a whole rate by the 1% (or 10%) route */
 function taxRoute(price: number, rateM: number): { html: string[]; tex: string[] } {
   const t = salesTax(price, rateM), p = rateM / 1000;
-  if (rateM === 10000) return { html: [`10% is one tenth: ${$(price)} ÷ 10 = ${B($c(t.tax))}.`], tex: [`10\\%\\ \\text{of}\\ ${T$(price)} = ${usdTex(t.tax)}`] };
-  if (rateM === 5000 && price % 20 === 0) return { html: [`10% of ${$(price)} is ${$(price / 10)}. 5% is half of that: ${B($c(t.tax))}.`], tex: [`10\\% \\to ${T$(price / 10)}`, `5\\% \\to ${usdTex(t.tax)}`] };
+  if (rateM === 10000) return { html: [`10% is one tenth: ${$(price)} ÷ 10 = ${aB($c(t.tax))}.`], tex: [`10\\%\\ \\text{of}\\ ${T$(price)} = ${usdTex(t.tax)}`] };
+  if (rateM === 5000 && price % 20 === 0) return { html: [`10% of ${$(price)} is ${$(price / 10)}. 5% is half of that: ${aB($c(t.tax))}.`], tex: [`10\\% \\to ${T$(price / 10)}`, `5\\% \\to ${usdTex(t.tax)}`] };
   if (rateM % 1000 === 0 && price % 100 === 0) {
     const one = price / 100;
-    return { html: [`1% of ${$(price)} is ${$c(one)}.`, `${p}% is ${p} × ${$c(one)} = ${B($c(t.tax))}.`], tex: [`1\\% \\to ${usdTex(one)}`, `${p}\\% \\to ${p} \\times ${usdTex(one)} = ${usdTex(t.tax)}`] };
+    return { html: [`1% of ${$(price)} is ${$c(one)}.`, `${p}% is ${p} × ${$c(one)} = ${aB($c(t.tax))}.`], tex: [`1\\% \\to ${usdTex(one)}`, `${p}\\% \\to ${p} \\times ${usdTex(one)} = ${usdTex(t.tax)}`] };
   }
-  return { html: [`${pH(rateM)} = ${rateDec(rateM)}. The tax is ${rateDec(rateM)} × ${$c(price)} = ${B(usdU(t.taxU))}.`], tex: [`${rateDec(rateM)} \\times ${usdTex(price)} = ${usdUTex(t.taxU)}`] };
+  return { html: [`${pH(rateM)} = ${rateDec(rateM)}. The tax is ${rateDec(rateM)} × ${$c(price)} = ${aB(usdU(t.taxU))}.`], tex: [`${rateDec(rateM)} \\times ${usdTex(price)} = ${usdUTex(t.taxU)}`] };
 }
 
 // =============== 1. identify-quantities ===============
@@ -202,7 +212,7 @@ const roles: Gen = (R, n) => {
   return choiceItem(R, {
     id: `roles-${n}`, family: 'roles', prompt: `${story} Which amount is <b>${role}</b>? ${NOCALC}`, board: `\\text{${role}} = \\ ?`,
     picture: { tape: { price, rate, item: C.tag }, pre: [], post: ALL, pulse: [ask], work: [`${usdTex(price)} + ${usdTex(t.tax)} = ${usdTex(t.total)}`] } satisfies TaxPicture,
-    solution: [`The shelf price ${A($c(price))} is the pre-tax price: tax is added at the register.`, `${A($c(price))} + ${B($c(t.tax))} = ${S($c(t.total))}, the total.`],
+    solution: [`The shelf price ${A($c(price))} is the pre-tax price: tax is added at the register.`, `${A($c(price))} + ${B($c(t.tax))} = ${S($c(t.total))}, the total.`, `So ${role} is ${aN($(v[ask]))}.`],
     opts,
   });
 };
@@ -225,7 +235,7 @@ const missingAmt: Gen = (R, n) => {
     { u: U(t.total), mc: MC.shelf, say: `${$c(t.total)} already has the tax in it. The pre-tax price is less.` },
     { u: U(t.total + t.tax), say: 'The tax was added to get the total. Going back, take it off.' },
   ];
-  const sol = unk === 'total' ? `${A($c(price))} + ${B($c(t.tax))} = ${S($c(t.total))}.` : unk === 'tax' ? `${S($c(t.total))} − ${A($c(price))} = ${B($c(t.tax))}.` : `${S($c(t.total))} − ${B($c(t.tax))} = ${A($c(price))}.`;
+  const sol = unk === 'total' ? `${A($c(price))} + ${B($c(t.tax))} = ${aS($c(t.total))}.` : unk === 'tax' ? `${S($c(t.total))} − ${A($c(price))} = ${aB($c(t.tax))}.` : `${S($c(t.total))} − ${B($c(t.tax))} = ${aA($c(price))}.`;
   return moneyItem({
     id: `missingAmt-${n}`, family: 'missingAmt',
     prompt: `On a receipt for ${C.a}, ${givens.join(' and ')}. What is ${ask}? ${NOCALC}`,
@@ -264,7 +274,7 @@ const rateOrAmount: Gen = (R, n) => {
     q = 'What do you pay in total?';
     opts = [
       { t: $c(t.total), ok: true, say: `Yes: ${$c(price)} + ${$c(t.tax)} = ${$c(t.total)}.` },
-      { t: $c(price + rateAsC), ok: false, mc: MC.numeral, say: `That adds ${pH(rate)} as $${pct(rate)}. The tax is ${pH(rate)} OF the price: ${$c(t.tax)}.` },
+      { t: $c(price + rateAsC), ok: false, mc: MC.numeral, say: `That adds ${pH(rate)} as ${$(rate / 10)}. The tax is ${pH(rate)} OF the price: ${$c(t.tax)}.` },
       { t: $c(price), ok: false, mc: MC.shelf, say: 'The shelf price is before tax. The total has the tax added.' },
     ];
   }
@@ -272,7 +282,8 @@ const rateOrAmount: Gen = (R, n) => {
     id: `rateOrAmount-${n}`, family: 'rateOrAmount', prompt: `${story} ${q} ${NOCALC}`,
     board: `\\text{Tax}\\ (${pT(rate)})\\quad ${usdTex(t.tax)}`,
     picture: { tape: { price, rate, item: C.tag, ...(ask === 'total' ? { hide: { total: true } } : {}) }, solved: { price, rate, item: C.tag }, pre: ['receipt', 'rPrice', 'rTax', ...(ask === 'total' ? [] : ['rTotal' as const])], post: ['rTotal', 'tape', 'whole', 'tax', 'total', 'totalPct'], pulse: [ask === 'total' ? 'total' : 'tax'], work: [`${pT(rate)}\\ \\text{of}\\ ${usdTex(price)} = ${usdTex(t.tax)}`] } satisfies TaxPicture,
-    solution: [`The rate ${pH(rate)} is a percent: ${pct(rate)} dollars of tax for every $100 of price.`, `The tax amount is dollars: ${pH(rate)} of ${A($c(price))} = ${B($c(t.tax))}.`],
+    solution: [`The rate ${ask === 'rate' ? aN(pH(rate)) : pH(rate)} is a percent: ${pct(rate)} dollars of tax for every $100 of price.`, `The tax amount is dollars: ${pH(rate)} of ${A($c(price))} = ${ask === 'amount' ? aB($c(t.tax)) : B($c(t.tax))}.`,
+      ...(ask === 'total' ? [`You pay the price plus the tax: ${$c(price)} + ${$c(t.tax)} = ${aS($c(t.total))}.`] : [])],
     opts,
   });
 };
@@ -282,17 +293,17 @@ const perHundred: Gen = (R, n) => {
   const C = pick(R, THINGS);
   return moneyItem({
     id: `perHundred-${n}`, family: 'perHundred',
-    prompt: `A ${pH(rate)} sales tax means ${B('$' + pct(rate))} of tax for every ${A('$100')} of price. ${cap(C.a)} costs ${A($(price))} before tax. How much tax is added? ${NOCALC}`,
+    prompt: `${cap(an(rate))} ${pH(rate)} sales tax means ${B($(rate / 10))} of tax for every ${A('$100')} of price. ${cap(C.a)} costs ${A($(price))} before tax. How much tax is added? ${NOCALC}`,
     board: `${pT(rate)}\\ \\text{of}\\ ${T$(price)}`,
     picture: { tape: { price, rate, cells: hund > 1 ? hund : 0, hide: { tax: true, total: true } }, solved: { price, rate, cells: hund > 1 ? hund : 0 }, pre: ['tape', 'whole', 'cells'], post: ['tax', 'total', 'totalPct'], pulse: ['tax'], work: [`${hund} \\times ${usdTex(rate / 10, false)} = ${usdTex(t.tax)}`] } satisfies TaxPicture,
-    solution: [`${$(price)} is ${hund} hundred${hund > 1 ? 's' : ''} of dollars.`, `${hund} × $${pct(rate)} = ${B($c(t.tax))}.`],
+    solution: [`${$(price)} is ${hund} hundred${hund > 1 ? 's' : ''} of dollars.`, `${hund} × ${$(rate / 10)} = ${B($c(t.tax))}.`],
     c: t.tax,
     wrongs: [
-      ...(hund > 1 ? [{ u: U(rate / 10), mc: MC.fixed, say: `$${pct(rate)} is the tax on $100. This price is ${hund} hundreds.` }] : []),
+      ...(hund > 1 ? [{ u: U(rate / 10), mc: MC.fixed, say: `${$(rate / 10)} is the tax on $100. This price is ${hund} hundreds.` }] : []),
       { u: U(t.total), say: `${$c(t.total)} is the total. The tax is only the part added.` },
       { u: U(price) * rate / 1000, mc: MC.noDiv100, say: `${pH(rate)} is ${pct(rate)} per hundred, so divide by 100: ${$c(t.tax)}.` },
     ],
-    right: `Yes: ${hund} × $${pct(rate)} = ${$c(t.tax)}.`, hint: `Count the hundreds in ${$(price)}, then $${pct(rate)} for each.`,
+    right: `Yes: ${hund} × ${$(rate / 10)} = ${$c(t.tax)}.`, hint: `Count the hundreds in ${$(price)}, then ${$(rate / 10)} for each.`,
   });
 };
 
@@ -313,7 +324,7 @@ const whichWhole: Gen = (R, n) => {
   ];
   return choiceItem(R, {
     id: `whichWhole-${n}`, family: 'whichWhole',
-    prompt: `${cap(C.a)} costs ${$(price)} before a ${pH(rate)} sales tax; the tax is ${$(t.tax)} and the total ${$(t.total)}. On a tape diagram, which amount sits at <b>${ask === '100' ? '100%' : `${tot}%`}</b>? ${NOCALC}`,
+    prompt: `${cap(C.a)} costs ${$(price)} before ${an(rate)} ${pH(rate)} sales tax; the tax is ${$(t.tax)} and the total ${$(t.total)}. On a tape diagram, which amount sits at <b>${ask === '100' ? '100%' : `${tot}%`}</b>? ${NOCALC}`,
     board: ask === '100' ? '100\\% = \\ ?' : `${tot}\\% = \\ ?`,
     picture: { tape: { price, rate, cells: 10 }, pre: [], post: ['tape', 'whole', 'cells', 'tax', 'total', 'totalPct'], pulse: [ask === '100' ? 'price' : 'total'], work: [`100\\% = ${T$(price)}`, `${tot}\\% = ${T$(t.total)}`] } satisfies TaxPicture,
     solution: [`The tax is a percent OF the pre-tax price, so ${A($(price))} = 100%.`, `The tax sticks out ${pH(rate)} more: ${S($(t.total))} = ${tot}%.`],
@@ -327,7 +338,7 @@ const totalPct: Gen = (R, n) => {
     prompt: `The pre-tax price of ${pick(R, THINGS).a} is ${A($(price))}, the 100% on the tape. A ${B(pH(rate) + ' tax')} is added. The total is what percent of the pre-tax price? ${NOCALC}`,
     board: `100\\% + ${pT(rate)} = \\ ?`,
     picture: { tape: { price, rate, hide: { totalPct: true } }, solved: { price, rate }, pre: ['tape', 'whole', 'tax', 'total'], post: ['totalPct'], pulse: ['total'], work: [`100\\% + ${pT(rate)} = ${100 + r}\\%`] } satisfies TaxPicture,
-    solution: [`The pre-tax price is the whole: 100%.`, `The tax adds ${pH(rate)} of the same whole: ${S(`${100 + r}%`)}.`],
+    solution: [`The pre-tax price is the whole: 100%.`, `The tax adds ${pH(rate)} of the same whole: 100% + ${pH(rate)} = ${aS(`${100 + r}%`)}.`],
     v: 100 + r,
     wrongs: [
       { v: r, mc: MC.changeFinal, say: `${r}% is just the tax. The total is the price AND the tax.` },
@@ -344,7 +355,7 @@ const dollarAt: Gen = (R, n) => {
     prompt: `On a double number line, 0% lines up with $0 and ${A(`100% with ${$(price)}`)}, the pre-tax price. The tax rate is ${B(pH(rate))}. What dollar amount lines up with ${S(`${100 + r}%`)}? ${NOCALC}`,
     board: `100\\% \\to ${T$(price)},\\ \\ ${100 + r}\\% \\to \\ ?`,
     picture: { tape: { price, rate, cells: 10, hide: { tax: true, total: true } }, solved: { price, rate, cells: 10 }, pre: ['tape', 'whole', 'cells', 'tax', 'total', 'totalPct'], post: [], pulse: ['tax', 'total'], work: [`${r}\\%\\ \\text{of}\\ ${T$(price)} = ${T$(t.tax)}`, `${T$(price)} + ${T$(t.tax)} = ${T$(t.total)}`] } satisfies TaxPicture,
-    solution: [`${pH(rate)} of ${A($(price))} is ${B($(t.tax))}.`, `${100 + r}% lines up with ${$(price)} + ${$(t.tax)} = ${S($(t.total))}.`],
+    solution: [`${pH(rate)} of ${A($(price))} is ${B($(t.tax))}.`, `${100 + r}% lines up with ${$(price)} + ${$(t.tax)} = ${aS($(t.total))}.`],
     c: t.total,
     wrongs: [
       { u: U(price + r * 100), mc: MC.numeral, say: `That adds ${r} dollars. The ${r}% is ${r}% of ${$(price)}: ${$(t.tax)}.` },
@@ -366,7 +377,7 @@ const taxAmt: Gen = (R, n) => {
     prompt: `${cap(C.a)} costs ${A($(price))} before tax. The sales tax is ${B(pH(rate))}.${oneP ? ` (1% of ${$(price)} is ${$c(price / 100)}.)` : ''} How much is the tax? ${NOCALC}`,
     board: `${pT(rate)}\\ \\text{of}\\ ${T$(price)}`,
     picture: { tape: { price, rate, item: C.tag, cells: 10, hide: { tax: true, total: true } }, solved: { price, rate, item: C.tag, cells: 10 }, pre: ['receipt', 'rPrice', 'tape', 'whole', 'cells'], post: ['tax', 'rTax'], pulse: ['tax'], work: route.tex } satisfies TaxPicture,
-    solution: route.html,
+    solution: [`The tax is ${pH(rate)} of ${A($(price))}.`, ...route.html],
     c: t.tax,
     wrongs: [
       { u: U(rate / 10), mc: MC.fixed, say: `${p}% is not $${p}. It is ${p} hundredths of the price: ${$c(t.tax)}.` },
@@ -389,7 +400,7 @@ const totalPay: Gen = (R, n) => {
     prompt: `${cap(C.a)} is marked ${A($(price))}. The sales tax is ${B(pH(rate))}. What do you pay in total? ${NOCALC}`,
     board: `${T$(price)} + ${pT(rate)}\\ \\text{tax}`,
     picture: { tape: { price, rate, item: C.tag, hide: { tax: true, total: true } }, solved: { price, rate, item: C.tag }, pre: ['receipt', 'rPrice', 'tape', 'whole'], post: ['tax', 'rTax', 'total', 'rTotal', 'totalPct'], pulse: ['tax', 'total'], work: [...route.tex, `${usdTex(price)} + ${usdTex(t.tax)} = ${usdTex(t.total)}`] } satisfies TaxPicture,
-    solution: [...route.html, `Add it: ${A($c(price))} + ${B($c(t.tax))} = ${S($c(t.total))}.`],
+    solution: [...route.html, `Add it: ${A($c(price))} + ${B($c(t.tax))} = ${aS($c(t.total))}.`],
     c: t.total,
     wrongs: [
       { u: U(price + rate / 10), mc: MC.numeral, say: `That adds $${p}. The tax is ${p}% OF ${$(price)}: ${$c(t.tax)}.` },
@@ -404,10 +415,11 @@ const totalPay: Gen = (R, n) => {
 };
 const planTotal: Gen = (R, n) => {
   const rate = WHOLE(R, 4, 10), price = int(R, 12, 180) * 100 + (R() < 0.5 ? pick(R, [50, 25, 75, 99]) : 0), p = rate / 1000;
+  if (price === 10000) return planTotal(R, n);   // at $100, "add $r" would be the total too
   const C = pick(R, THINGS);
   return choiceItem(R, {
     id: `planTotal-${n}`, family: 'planTotal',
-    prompt: `${cap(C.a)} is marked ${A($(price))}, with a ${B(pH(rate))} sales tax. Which plan gives what you pay? ${NOCALC}`,
+    prompt: `${cap(C.a)} is marked ${A($(price))}, with ${an(rate)} ${B(pH(rate))} sales tax. Which plan gives what you pay? ${NOCALC}`,
     board: `${T$(price)} + ${pT(rate)}\\ \\text{tax} = \\ ?`,
     picture: { tape: { price, rate, item: C.tag }, pre: [], post: ['receipt', 'rPrice', 'tape', 'whole', 'tax', 'rTax', 'total', 'rTotal'], pulse: ['total'], work: [`\\text{tax} = ${pT(rate)}\\ \\text{of}\\ ${T$(price)}`, `\\text{total} = ${T$(price)} + \\text{tax}`] } satisfies TaxPicture,
     solution: [`Step 1: the tax is ${pH(rate)} of ${A($(price))}.`, `Step 2: add the tax to ${$(price)}: that is the ${S('total')}.`],
@@ -451,7 +463,7 @@ const compareDec: Gen = (R, n) => {
     id: `compareDec-${n}`, family: 'compareDec',
     prompt: `Which decimal is greater: <b>${Sd}</b> or <b>${L}</b>? ${NOCALC}`,
     board: `${Sd}\\ \\ \\text{or}\\ \\ ${L}`,
-    solution: [`Write both with ${places} places: ${Sd} = ${Sd}${'0'.repeat(places - 2)}.`, `Compare ${Sd}${'0'.repeat(places - 2)} with ${L}: ${big} is greater.`],
+    solution: [`Write both with ${places} places: ${Sd} = ${Sd}${'0'.repeat(places - 2)}.`, `Compare ${Sd}${'0'.repeat(places - 2)} with ${L}: ${aN(big)} is greater.`],
     opts: [
       { t: big, ok: true, say: `Yes: with the same number of places, ${big} is greater.` },
       { t: longGreater ? Sd : L, ok: false, mc: longGreater ? undefined : MC.longer, say: longGreater ? `Line them up: ${Sd}${'0'.repeat(places - 2)} is less than ${L}.` : `More digits does not mean more. ${Sd} = ${Sd}${'0'.repeat(places - 2)}, which is greater than ${L}.` },
@@ -468,7 +480,7 @@ const placeDigit: Gen = (R, n) => {
     id: `placeDigit-${n}`, family: 'placeDigit',
     prompt: `A calculator shows <b>${shown}</b>. Which digit is in the <b>${PLACE[ask]}</b> place? ${NOCALC}`,
     board: `${shown}`,
-    solution: [`After the point: tenths, hundredths, thousandths, ten-thousandths, ...`, `The ${PLACE[ask]} digit is place ${ask} after the point: ${ds[ask - 1]}.`],
+    solution: [`After the point: tenths, hundredths, thousandths, ten-thousandths, ...`, `The ${PLACE[ask]} digit is place ${ask} after the point: ${aN(ds[ask - 1]!)}.`],
     opts: [
       { t: String(ds[ask - 1]), ok: true, say: `Yes: ${ds[ask - 1]} is ${ask} places after the point.` },
       { t: String(ds[ask - 2]), ok: false, say: `That digit is in the ${PLACE[ask - 1]} place. Count ${ask} places after the point.` },
@@ -485,7 +497,7 @@ const pctToDec: Gen = (R, n) => {
     id: `pctToDec-${n}`, family: 'pctToDec',
     prompt: `Write the rate <b>${pH(rate)}</b> as a decimal. ${NOCALC}`,
     board: `${pT(rate)} = \\ ?`,
-    solution: [`Percent means per 100: divide by 100.`, `${pct(rate)} ÷ 100 moves the point two places left: ${pH(rate)} = <b>${rateDec(rate)}</b>.`],
+    solution: [`Percent means per 100: divide by 100.`, `${pct(rate)} ÷ 100 moves the point two places left: ${pH(rate)} = ${aN(rateDec(rate))}.`],
     v: d,
     wrongs: [
       { v: d * 10, mc: MC.pointShift, say: `The point moved only one place. Divide by 100: two places, ${rateDec(rate)}.` },
@@ -591,7 +603,7 @@ const roundTotal: Gen = (R, n) => {
     prompt: `${cap(C.a)} costs ${A($c(price))}, with ${B(pH(rate))} sales tax. What is the total on the receipt? ${CALC} ${RULE}`,
     board: `${usdTex(price)} + ${pT(rate)}\\ \\text{tax}`,
     picture: { tape: { price, rate, item: C.tag, hide: { tax: true, total: true } }, solved: { price, rate, item: C.tag }, pre: ['receipt', 'rPrice', 'tape', 'whole'], post: ['tax', 'rTax', 'total', 'rTotal'], pulse: ['tax', 'total'], work: [`${rateDec(rate)} \\times ${usdTex(price)} = ${usdUTex(t.taxU)} \\approx ${usdTex(t.tax)}`, `${usdTex(price)} + ${usdTex(t.tax)} = ${usdTex(t.total)}`] } satisfies TaxPicture,
-    solution: [`The tax: ${rateDec(rate)} × ${$c(price)} = ${usdU(t.taxU)}, rounded once: ${B($c(t.tax))}.`, `The total: ${A($c(price))} + ${B($c(t.tax))} = ${S($c(t.total))}.`],
+    solution: [`The tax: ${rateDec(rate)} × ${$c(price)} = ${usdU(t.taxU)}, rounded once: ${B($c(t.tax))}.`, `The total: ${A($c(price))} + ${B($c(t.tax))} = ${aS($c(t.total))}.`],
     c: t.total,
     wrongs: [
       { u: U(price) + t.taxU, mc: MC.digits, say: `A receipt shows whole cents. Round the tax to ${$c(t.tax)} first, then add.` },
@@ -634,7 +646,7 @@ const boundsPick: Gen = (R, n) => {
   const L = salesTax(price, lo * 1000).tax, Hh = salesTax(price, hi * 1000).tax;
   return choiceItem(R, {
     id: `boundsPick-${n}`, family: 'boundsPick',
-    prompt: `Before computing a ${B(pH(rate))} tax on ${A($(price))}, bracket it. The tax must be between which two amounts? ${NOCALC}`,
+    prompt: `Before computing ${an(rate)} ${B(pH(rate))} tax on ${A($(price))}, bracket it. The tax must be between which two amounts? ${NOCALC}`,
     board: `${pT(rate)}\\ \\text{of}\\ ${T$(price)}`,
     picture: { tape: { price, rate, bench: [lo, hi], cells: 10, hide: { tax: true, total: true } }, solved: { price, rate, bench: [lo, hi], cells: 10 }, pre: ['tape', 'whole', 'cells'], post: ['bench', 'tax'], pulse: ['tax'], work: [`${lo}\\% \\to ${usdTex(L)},\\ \\ ${hi}\\% \\to ${usdTex(Hh)}`] } satisfies TaxPicture,
     solution: [`${pH(rate)} is between ${lo}% and ${hi}%.`, `${lo}% of ${$(price)} is ${$c(L)}; ${hi}% is ${$c(Hh)}.`],
@@ -666,11 +678,11 @@ const exemptCart: Gen = (R, n) => {
     prompt: `A cart: ${list}. The sales tax is ${B(pH(rate))}${items.some(i => i.exempt) ? ', and food is tax-exempt' : ''}. ${askTotal ? 'What is the total?' : 'How much is the tax?'} ${CALC} ${RULE}`,
     board: `${pT(rate)}\\ \\text{of}\\ ${usdTex(taxable)}`,
     picture: { tape: { price: taxable, rate, items, tape: items.length <= 2, hide: { tax: true, total: true } }, solved: { price: taxable, rate, items, tape: items.length <= 2 }, pre: ['receipt', 'rPrice', 'tape', 'whole'], post: ['tax', 'rTax', 'total', 'rTotal', 'totalPct'], pulse: ['tax', ...(askTotal ? ['total' as const] : [])], work: [`\\text{taxable} = ${usdTex(taxable)}`, `${rateDec(rate)} \\times ${usdTex(taxable)} \\approx ${usdTex(t.tax)}`, ...(askTotal ? [`${usdTex(all)} + ${usdTex(t.tax)} = ${usdTex(all + t.tax)}`] : [])] } satisfies TaxPicture,
-    solution: [`Add the taxable items only: ${A($c(taxable))}.`, `Tax: ${rateDec(rate)} × ${$c(taxable)} = ${usdU(t.taxU)}, rounded once: ${B($c(t.tax))}.`, ...(askTotal ? [`Total: ${$c(all)} + ${$c(t.tax)} = ${S($c(all + t.tax))}.`] : [])],
+    solution: [`Add the taxable items only: ${A($c(taxable))}.`, `Tax: ${rateDec(rate)} × ${$c(taxable)} = ${usdU(t.taxU)}, rounded once: ${askTotal ? B($c(t.tax)) : aB($c(t.tax))}.`, ...(askTotal ? [`Total: every item, ${$c(all)}, plus the tax: ${$c(all)} + ${$c(t.tax)} = ${aS($c(all + t.tax))}.`] : [])],
     c,
     wrongs: [
       { u: U(askTotal ? all + allT.tax : allT.tax), mc: MC.exempt, say: 'The food items are tax-exempt. Tax only the taxable items.' },
-      { u: askTotal ? U(all) + perItemU : perItemU, mc: MC.perItem, say: `${pH(rate)} is not $${pct(rate)} per item. It is ${pH(rate)} of the taxable subtotal.` },
+      { u: askTotal ? U(all) + perItemU : perItemU, mc: MC.perItem, say: `${pH(rate)} is not ${$(rate / 10)} per item. It is ${pH(rate)} of the taxable subtotal.` },
       ...(askTotal ? [{ u: U(t.tax), mc: MC.changeFinal, say: 'That is the tax. Add it to the whole cart.' }, { u: U(taxable + t.tax), say: 'The food still costs money: add every item, then the tax.' }] : []),
     ],
     right: askTotal ? `Yes: ${$c(all)} + ${$c(t.tax)} = ${$c(all + t.tax)}.` : `Yes: ${pH(rate)} of ${$c(taxable)} is ${$c(t.tax)}.`,
@@ -691,7 +703,7 @@ const taxableBase: Gen = (R, n) => {
     opts: [
       { t: `${$c(taxable)}, the taxable items`, ok: true, say: 'Yes: only the taxable items, added together.' },
       { t: `${$c(all)}, everything in the cart`, ok: false, mc: MC.exempt, say: 'The food is tax-exempt: leave it out of the taxed amount.' },
-      { t: `None: add $${pct(rate)} for each taxable item`, ok: false, mc: MC.perItem, say: `A ${pH(rate)} rate is a percent of the price, not $${pct(rate)} per item.` },
+      { t: `None: add ${$(rate / 10)} for each taxable item`, ok: false, mc: MC.perItem, say: `A ${pH(rate)} rate is a percent of the price, not ${$(rate / 10)} per item.` },
     ],
   });
 };
@@ -709,7 +721,7 @@ const findRate: Gen = (R, n) => {
       : `A receipt for ${C.a}: price ${A($c(price))}, tax ${B($c(t.tax))}. The tax was exact. What is the tax rate? ${rate % 1000 ? CALC : NOCALC}`,
     board: viaTotal ? `(${usdTex(t.total)} - ${usdTex(price)}) \\div ${usdTex(price)}` : `${usdTex(t.tax)} \\div ${usdTex(price)}`,
     picture: { tape: { price, rate, item: C.tag, hide: { rate: true, ...(viaTotal ? { tax: true } : { total: true }) } }, solved: { price, rate, item: C.tag }, pre: ['receipt', 'rPrice', viaTotal ? 'rTotal' : 'rTax', 'tape', 'whole', 'tax', 'total'], post: ['rTax', 'rTotal', 'totalPct'], pulse: ['tax', 'price'], work: [...(viaTotal ? [`${usdTex(t.total)} - ${usdTex(price)} = ${usdTex(t.tax)}`] : []), `${usdTex(t.tax)} \\div ${usdTex(price)} = ${rateDec(rate)} = ${pT(rate)}`] } satisfies TaxPicture,
-    solution: [...(viaTotal ? [`The tax: ${$c(t.total)} − ${$c(price)} = ${B($c(t.tax))}.`] : []), `Rate = tax ÷ pre-tax price: ${$c(t.tax)} ÷ ${$c(price)} = ${rateDec(rate)} = <b>${pH(rate)}</b>.`],
+    solution: [...(viaTotal ? [`The tax: ${$c(t.total)} − ${$c(price)} = ${B($c(t.tax))}.`] : []), `Rate = tax ÷ pre-tax price: ${$c(t.tax)} ÷ ${$c(price)} = ${rateDec(rate)}.`, `As a percent: ${rateDec(rate)} = ${aN(pH(rate))}.`],
     v: r,
     wrongs: [
       { v: (t.tax / t.total) * 100, tol: 0.005, mc: MC.newBase, say: `That divides by the total. The rate is a percent of the PRE-tax price: divide by ${$c(price)}.` },
@@ -731,7 +743,7 @@ const priceFromTaxG: Gen = (R, n) => {
     prompt: `The receipt for ${C.a} shows ${B(`${$c(t.tax)} of tax`)} at ${B(pH(rate))}. The tax was exact. What was the pre-tax price? ${rate % 1000 ? CALC : NOCALC}`,
     board: `${d} \\times \\$\\,? = ${usdTex(t.tax)}`,
     picture: { tape: { price, rate, item: C.tag, hide: { price: true, total: true } }, solved: { price, rate, item: C.tag }, pre: ['receipt', 'rTax', 'tape', 'whole', 'tax'], post: ['rPrice', 'rTotal', 'total'], pulse: ['price'], work: [`${pT(rate)} \\to ${usdTex(t.tax)}`, `${usdTex(t.tax)} \\div ${d} = ${usdTex(price)}`] } satisfies TaxPicture,
-    solution: [`The tax is ${pH(rate)} OF the price: ${d} × price = ${B($c(t.tax))}.`, `Undo the multiply: ${$c(t.tax)} ÷ ${d} = ${A($c(price))}. Check: ${pH(rate)} of ${$c(price)} is ${$c(t.tax)}.`],
+    solution: [`The tax is ${pH(rate)} OF the price: ${d} × price = ${B($c(t.tax))}.`, `Undo the multiply: ${$c(t.tax)} ÷ ${d} = ${aA($c(price))}. Check: ${pH(rate)} of ${$c(price)} is ${$c(t.tax)}.`],
     c: price,
     wrongs: [
       { u: Math.round(t.tax * rate), mc: MC.multNotDiv, say: `That multiplies by the rate again. The tax is the part; the price is the whole: divide by ${d}.` },
@@ -749,10 +761,10 @@ const multiplier: Gen = (R, n) => {
   const rate = R() < 0.5 ? WHOLE(R, 3, 10) : decRate(R), d = rate / M_WHOLE;
   return numItem({
     id: `multiplier-${n}`, family: 'multiplier',
-    prompt: `With a ${B(pH(rate) + ' tax')}, total = <b>?</b> × pre-tax price. What is the multiplier? ${rate % 1000 ? CALC : NOCALC}`,
+    prompt: `With ${an(rate)} ${B(pH(rate) + ' tax')}, total = <b>?</b> × pre-tax price. What is the multiplier? ${rate % 1000 ? CALC : NOCALC}`,
     board: `\\text{total} = \\ ? \\times \\text{price}`,
     picture: { tape: { price: 10000, rate, hide: { price: true, total: true, totalPct: true } }, solved: { price: 10000, rate }, pre: ['tape', 'whole', 'tax', 'total'], post: ['totalPct'], pulse: ['total'], work: [`100\\% + ${pT(rate)} = ${pct(M_WHOLE + rate)}\\%`, `= ${multDec(rate)}`] } satisfies TaxPicture,
-    solution: [`The total is 100% of the price plus ${pH(rate)}: ${pct(M_WHOLE + rate)}%.`, `As a decimal: <b>${multDec(rate)}</b> = 1 + ${rateDec(rate)}.`],
+    solution: [`The total is 100% of the price plus ${pH(rate)}: ${pct(M_WHOLE + rate)}%.`, `As a decimal: ${aN(multDec(rate))} = 1 + ${rateDec(rate)}.`],
     v: 1 + d,
     wrongs: [
       { v: d, mc: MC.changeFinal, say: `${rateDec(rate)} × the price is just the tax. The total also keeps the price: 1 + ${rateDec(rate)}.` },
@@ -779,7 +791,7 @@ const multExpr: Gen = (R, n) => {
     id: `multExpr-${n}`, family: 'multExpr',
     prompt: `The pre-tax price is <b>${v}</b> dollars and the sales tax is ${B(pH(rate))}. Which expression is the total? ${NOCALC}`,
     board: `${v} + ${rateDec(rate)}${v} = \\ ?`,
-    solution: [`Total = price + tax = ${v} + ${rateDec(rate)}${v}.`, `${v} is 1${v}, so ${v} + ${rateDec(rate)}${v} = (1 + ${rateDec(rate)})${v} = <b>${multDec(rate)}${v}</b>.`],
+    solution: [`Total = price + tax = ${v} + ${rateDec(rate)}${v}.`, `${v} is 1${v}, so ${v} + ${rateDec(rate)}${v} = (1 + ${rateDec(rate)})${v} = ${aN(`${multDec(rate)}${v}`)}.`],
     opts: opts.slice(0, 1).concat(shuffle(R, opts.slice(1)).slice(0, 3)),
   });
 };
@@ -789,10 +801,10 @@ const oneStepTotal: Gen = (R, n) => {
   const ap = appended(rate);
   return moneyItem({
     id: `oneStepTotal-${n}`, family: 'oneStepTotal',
-    prompt: `${cap(C.a)} costs ${A($(price))} before a ${B(pH(rate))} tax. Find the total in ONE multiplication. ${rate % 1000 ? CALC : NOCALC}`,
+    prompt: `${cap(C.a)} costs ${A($(price))} before ${an(rate)} ${B(pH(rate))} tax. Find the total in ONE multiplication. ${rate % 1000 ? CALC : NOCALC}`,
     board: `${m} \\times ${T$(price)}`,
     picture: { tape: { price, rate, item: C.tag, hide: { tax: true, total: true } }, solved: { price, rate, item: C.tag }, pre: ['receipt', 'rPrice', 'tape', 'whole'], post: ['tax', 'total', 'totalPct', 'rTax', 'rTotal'], pulse: ['total'], work: [`100\\% + ${pT(rate)} = ${pct(M_WHOLE + rate)}\\%`, `${m} \\times ${T$(price)} = ${usdTex(t.total)}`] } satisfies TaxPicture,
-    solution: [`The total is ${pct(M_WHOLE + rate)}% of the price: the multiplier is ${m}.`, `${m} × ${$(price)} = ${S($c(t.total))}. (Two steps agree: ${$(price)} + ${$c(t.tax)}.)`],
+    solution: [`The total is ${pct(M_WHOLE + rate)}% of the price: the multiplier is ${m}.`, `${m} × ${$(price)} = ${aS($c(t.total))}. (Two steps agree: ${$(price)} + ${$c(t.tax)}.)`],
     c: t.total,
     wrongs: [
       { u: t.taxU, mc: MC.changeFinal, say: `${rateDec(rate)} × ${$(price)} is only the tax. Use 1 + ${rateDec(rate)} = ${m}.` },
@@ -820,12 +832,12 @@ const priceFromTotalG: Gen = (R, n) => {
       : `You paid ${S($c(t.total))} for ${C.a}, including ${B(pH(rate))} sales tax (exact). What was the shelf price? ${price % 100 || rate % 1000 ? CALC : NOCALC}`,
     board: `${m} \\times \\$\\,? = ${usdTex(t.total)}`,
     picture: { tape: { price, rate, item: C.tag, hide: { price: true, tax: true } }, solved: { price, rate, item: C.tag }, pre: ['receipt', 'rTotal', 'tape', 'whole', 'tax', 'total', 'totalPct'], post: ['rPrice', 'rTax'], pulse: ['price'], work: [`${usdTex(t.total)} = ${pct(M_WHOLE + rate)}\\%\\ \\text{of the price}`, `${usdTex(t.total)} \\div ${m} = ${usdTex(price)}`] } satisfies TaxPicture,
-    solution: [`The total is ${pct(M_WHOLE + rate)}% of the pre-tax price: ${m} × price = ${S($c(t.total))}.`, `Undo it: ${$c(t.total)} ÷ ${m} = ${A($c(price))}. Check: ${$c(price)} + ${$c(t.tax)} = ${$c(t.total)}.`],
+    solution: [`The total is ${pct(M_WHOLE + rate)}% of the pre-tax price: ${m} × price = ${S($c(t.total))}.`, `Undo it: ${$c(t.total)} ÷ ${m} = ${aA($c(price))}. Check: ${$c(price)} + ${$c(t.tax)} = ${$c(t.total)}.`],
     c: price,
     wrongs: [
       { u: Math.round(U(t.total) * M_WHOLE / rate), mc: MC.divRate, say: `Dividing by ${rateDec(rate)} gives a huge price. The total is ${m} times the price: divide by ${m}.` },
       { u: oppU, mc: MC.opposite, say: `${pH(rate)} of the TOTAL is more than the tax: the tax was ${pH(rate)} of the smaller pre-tax price. Divide by ${m}.` },
-      { u: U(t.total - rate / 10), mc: MC.numeral, say: `${pH(rate)} is not $${pct(rate)}. Divide the total by ${m}.` },
+      { u: U(t.total - rate / 10), mc: MC.numeral, say: `${pH(rate)} is not ${$(rate / 10)}. Divide the total by ${m}.` },
       { u: Math.round(U(t.total) * (M_WHOLE + rate) / M_WHOLE), mc: MC.multNotDiv, say: `That adds the tax again. Going back, divide by ${m}.` },
     ],
     right: `Yes: ${$c(t.total)} ÷ ${m} = ${$c(price)}.`, hint: `The total is ${m} × the price. Divide the total by ${m}, then check forward.`,
@@ -833,9 +845,10 @@ const priceFromTotalG: Gen = (R, n) => {
 };
 const whichDivision: Gen = (R, n) => {
   const { rate, price } = totalCase(R), t = salesTax(price, rate), m = multDec(rate), d = rateDec(rate), T = $c(t.total);
+  if (price === 10000) return whichDivision(R, n);   // at $100, "total − $r" would be the price too
   return choiceItem(R, {
     id: `whichDivision-${n}`, family: 'whichDivision',
-    prompt: `A total of ${S(T)} includes a ${B(pH(rate))} sales tax. Which calculation gives the pre-tax price? ${NOCALC}`,
+    prompt: `A total of ${S(T)} includes ${an(rate)} ${B(pH(rate))} sales tax. Which calculation gives the pre-tax price? ${NOCALC}`,
     board: `${usdTex(t.total)} \\to \\$\\,?`,
     picture: { tape: { price, rate, hide: { price: true, tax: true } }, solved: { price, rate }, pre: ['tape', 'whole', 'tax', 'total', 'totalPct'], post: [], pulse: ['price'], work: [`${usdTex(t.total)} \\div ${m} = ${usdTex(price)}`] } satisfies TaxPicture,
     solution: [`The total is ${pct(M_WHOLE + rate)}% of the pre-tax price.`, `So the price is ${T} ÷ ${m} = ${A($c(price))}.`],
@@ -843,7 +856,7 @@ const whichDivision: Gen = (R, n) => {
       { t: `${T} ÷ ${m}`, ok: true, say: `Yes: the total is ${m} times the price.` },
       { t: `${T} ÷ ${d}`, ok: false, mc: MC.divRate, say: `${d} × the price is only the tax. The total is ${m} × the price.` },
       { t: `${T} − ${d} × ${T}`, ok: false, mc: MC.opposite, say: `${pH(rate)} of the total is more than the tax: the tax was ${pH(rate)} of the smaller price.` },
-      { t: `${T} − $${pct(rate)}`, ok: false, mc: MC.numeral, say: `${pH(rate)} is not $${pct(rate)}.` },
+      { t: `${T} − ${$(rate / 10)}`, ok: false, mc: MC.numeral, say: `${pH(rate)} is not ${$(rate / 10)}.` },
     ],
   });
 };
@@ -852,6 +865,7 @@ const whichDivision: Gen = (R, n) => {
 const subtractFails: Gen = (R, n) => {
   const rate = WHOLE(R, 4, 10), base = rate === 8000 || rate === 4000 ? 2500 : rate % 5000 === 0 ? 2000 : 10000;
   const price = base * (base === 10000 ? int(R, 1, 6) : int(R, 2, 12));
+  if (price === 10000) return subtractFails(R, n);   // at $100, "take $r off" would give the price back
   const t = salesTax(price, rate), name = pick(R, NAMES);
   const wrongTaxU = t.total * rate, ana = U(t.total) - wrongTaxU;
   return choiceItem(R, {
@@ -863,7 +877,7 @@ const subtractFails: Gen = (R, n) => {
     opts: [
       { t: `${pH(rate)} of ${$c(t.total)} is more than the tax: the total is a bigger whole.`, ok: true, say: 'Yes: the whole changed. Undo the tax by dividing by the multiplier.' },
       { t: `Nothing: +${pH(rate)} and −${pH(rate)} cancel.`, ok: false, mc: MC.successive, say: `They do not cancel: the ${pH(rate)} taken off is of a bigger whole. Try ${$c(price)}: it ends at ${usdU(ana)}.` },
-      { t: `${name} should take $${pct(rate)} off instead.`, ok: false, mc: MC.numeral, say: `${pH(rate)} is not $${pct(rate)}. The tax here was ${$c(t.tax)}.` },
+      { t: `${name} should take ${$(rate / 10)} off instead.`, ok: false, mc: MC.numeral, say: `${pH(rate)} is not ${$(rate / 10)}. The tax here was ${$c(t.tax)}.` },
       { t: `Divide ${$c(t.total)} by ${rateDec(rate)} instead.`, ok: false, mc: MC.divRate, say: `That gives a huge price. Divide by ${multDec(rate)}, the total multiplier.` },
     ],
   });
@@ -873,10 +887,10 @@ const testNumber: Gen = (R, n) => {
   const back = U(t.total) - t.total * rate;
   return moneyItem({
     id: `testNumber-${n}`, family: 'testNumber',
-    prompt: `Test the idea "take ${pH(rate)} of the total off to undo a ${pH(rate)} tax". A ${A($(price))} price with ${B(pH(rate))} tax makes ${S($(t.total))}. Now take ${pH(rate)} of ${$(t.total)} off. What do you get? ${NOCALC}`,
+    prompt: `Test the idea "take ${pH(rate)} of the total off to undo ${an(rate)} ${pH(rate)} tax". A ${A($(price))} price with ${B(pH(rate))} tax makes ${S($(t.total))}. Now take ${pH(rate)} of ${$(t.total)} off. What do you get? ${NOCALC}`,
     board: `${T$(t.total)} - ${pT(rate)}\\ \\text{of}\\ ${T$(t.total)}`,
     picture: { tape: { price, rate, cells: 10, rebase: true }, pre: ['tape', 'whole', 'cells', 'tax', 'total', 'totalPct'], post: ['rebase'], pulse: ['total'], work: [`${pT(rate)}\\ \\text{of}\\ ${T$(t.total)} = ${usdUTex(t.total * rate)}`, `${T$(t.total)} - ${usdUTex(t.total * rate)} = ${usdUTex(back)}`] } satisfies TaxPicture,
-    solution: [`${pH(rate)} of ${$(t.total)} is ${usdU(t.total * rate)}, more than the ${$(t.tax)} tax.`, `${$(t.total)} − ${usdU(t.total * rate)} = ${usdU(back)}: not back to ${A($(price))}.`],
+    solution: [`${pH(rate)} of ${$(t.total)} is ${usdU(t.total * rate)}, more than the ${$(t.tax)} tax.`, `${$(t.total)} − ${usdU(t.total * rate)} = ${aN(usdU(back))}: not back to ${A($(price))}.`],
     c: Math.round(back / U_CENT),
     wrongs: [
       { u: U(price), mc: MC.successive, say: `That is what you might expect, but do the arithmetic: ${pH(rate)} of ${$(t.total)} is ${usdU(t.total * rate)}, not ${$(t.tax)}.` },
@@ -971,7 +985,7 @@ const budgetMaxG: Gen = (R, n) => {
     board: `${usdTex(budget)} \\div ${m} = ${qTxt.replace('...', '\\ldots')}`,
     solution: [`Start safe: cut the quotient to ${$c(trunc)}. Its total is ${$c(totalOf(trunc, rate))}.`,
       ...(best > trunc ? [`Step up: ${$c(best)} gives ${$c(totalOf(best, rate))}, still in budget.`] : []),
-      `${$c(best + 1)} gives ${$c(totalOf(best + 1, rate))}: over. So the most is ${A($c(best))}.`],
+      `${$c(best + 1)} gives ${$c(totalOf(best + 1, rate))}: over. So the most is ${aA($c(best))}.`],
     c: best,
     wrongs: [
       ...(up !== best ? [{ u: U(up), mc: MC.fixedRound, say: `Rounding up is not always safe: ${$c(up)} gives ${$c(totalOf(up, rate))}, over the budget.` }] : []),
@@ -1024,7 +1038,7 @@ const saveGap: Gen = (R, n) => {
     id: `saveGap-${n}`, family: 'saveGap',
     prompt: `${cap(C.a)}: ${a.name} charges ${$c(a.price)} plus ${pH(a.rate)} tax; ${b.name} charges ${$c(b.price)} plus ${pH(b.rate)} tax. How much do you save by buying where the total is lower? ${CALC} ${RULE}`,
     board: `|\\text{total}_A - \\text{total}_B| = \\ ?`,
-    solution: [`${a.name}: ${$c(a.price)} + ${$c(taxOf(a.price, a.rate))} = ${S($c(ta))}. ${b.name}: ${$c(b.price)} + ${$c(taxOf(b.price, b.rate))} = ${S($c(tb))}.`, `The difference: ${$c(Math.max(ta, tb))} − ${$c(Math.min(ta, tb))} = <b>${$c(gap)}</b>.`],
+    solution: [`${a.name}: ${$c(a.price)} + ${$c(taxOf(a.price, a.rate))} = ${S($c(ta))}. ${b.name}: ${$c(b.price)} + ${$c(taxOf(b.price, b.rate))} = ${S($c(tb))}.`, `The difference: ${$c(Math.max(ta, tb))} − ${$c(Math.min(ta, tb))} = ${aN($c(gap))}.`],
     c: gap,
     wrongs: [
       { u: U(Math.abs(a.price - b.price)), mc: MC.pretaxOnly, say: 'That compares the shelf prices. Compare the totals, with tax.' },
@@ -1055,12 +1069,22 @@ export const FAMILY_NAMES: Record<string, string> = {
   budgetMax: 'The most you can spend',
   compareStores: 'Compare two stores', saveGap: 'How much you save',
 };
-export const GENERATORS: Record<string, Gen> = {
+/** "an 8% tax", "an $80 tent", "An 11% rate": the article before a number read aloud (eight, eleven, eighteen, eighty) */
+export const articles = (s: string) => s.replace(/\b([Aa]) ((?:<[^>]+>)*\$?)(8|11(?!\d)|18(?!\d))/g, '$1n $2$3');
+const FAMS: Record<string, Gen> = {
   roles, missingAmt, rateOrAmount, perHundred, whichWhole, totalPct, dollarAt, taxAmt, totalPay, planTotal,
   readDecimal, compareDec, placeDigit, pctToDec, decBetween, decTax, placePoint, roundTax, roundTotal,
   benchCheck, boundsPick, exemptCart, taxableBase, findRate, priceFromTax: priceFromTaxG,
   multiplier, multExpr, oneStepTotal, priceFromTotal: priceFromTotalG, whichDivision,
   subtractFails, testNumber, roundedTotal, roundedTaxRange, roundedRate, budgetMax: budgetMaxG, compareStores, saveGap,
 };
+/** every family's prompt, solution and choices with "an 8%" (the item object itself: the page keeps its picture) */
+export const GENERATORS: Record<string, Gen> = Object.fromEntries(Object.entries(FAMS).map(([k, g]) => [k, ((R, n, sg) => {
+  const it = g(R, n, sg);
+  it.prompt = articles(it.prompt);
+  it.solution = it.solution.map(articles);
+  if (it.choices) it.choices = it.choices.map(articles);
+  return it;
+}) as Gen]));
 // re-exported for the page and the tests
 export { priceFromTotal, rateDec, multDec };

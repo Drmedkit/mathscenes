@@ -120,3 +120,53 @@ describe('voice', () => {
     }
   });
 });
+
+describe('square-and-cube-roots: quality layer (docs/lessons/QUALITY_LAYER.md)', () => {
+  const G = GENS as Record<string, (R: () => number, n: number, sg?: string) => import('../src/lesson/runtime/item').Item>;
+  const strip = (h: string) => h.replace(/<[^>]+>/g, '');
+  it('the same seed gives the same item (no module counter in the id)', () => {
+    for (const [f, sg] of pairs) {
+      const a = G[f]!(rng(4242), 1, sg), b = G[f]!(rng(4242), 1, sg);
+      expect(a.id, f).toBe(b.id);
+      expect(a.prompt, f).toBe(b.prompt);
+    }
+  });
+  it('"10 < √120 < 11" survives taking the tags out (the < is &lt;, not the start of a tag)', () => {
+    for (const [f, sg] of pairs) for (let s = 1; s <= 60; s++) {
+      const it = G[f]!(rng(s * 7 + 3), s, sg);
+      for (const t of [it.prompt, ...it.solution, ...(it.choices ?? []), it.pairOp ?? '']) expect(t, `${f}: ${t}`).not.toMatch(/<(?=[\s=\d.−-])/);
+    }
+    const it = G.refine!(rng(11), 1, 'refine-decimal-bounds');
+    expect(strip(it.prompt)).toMatch(/^\d+ &lt; √\d+ &lt; \d+\. /);
+  });
+  it('a two-box answer ends on its two marked numbers', async () => {
+    const { explain } = await import('../src/lesson/topics/square-and-cube-roots/explain');
+    for (const [f, sg] of pairs.filter(([f]) => ['boundSq', 'boundCube', 'refine', 'isolate'].includes(f))) for (let s = 1; s <= 60; s++) {
+      const it = G[f]!(rng(s * 5 + 2), s, sg);
+      expect(explain(it)?.result, `${f}: ${strip(it.prompt)}`).toEqual(it.answer);
+    }
+  });
+});
+
+describe('square-and-cube-roots: oracle findings (phase 2)', () => {
+  it('every square or cube thing has a side it believably has (no 3 in chessboard, 14 ft solar panel, 2 in fish tank)', async () => {
+    const { SQ_THINGS, CUBE_THINGS } = await import('../src/lesson/topics/square-and-cube-roots/items');
+    const G = GENS as Record<string, (R: () => number, n: number, sg?: string) => Item>;
+    const all = [...SQ_THINGS, ...CUBE_THINGS];
+    let seen = 0;
+    for (const [f, sg] of pairs) for (let s = 1; s <= 120; s++) {
+      const it = G[f]!(rng(s * 29 + 3), s, sg);
+      const t = it.prompt.replace(/<[^>]+>/g, '');
+      const th = all.filter(x => new RegExp(`(square|cube-shaped) ${x.t}\\b`).test(t)).sort((a, b) => b.t.length - a.t.length)[0];
+      if (!th) continue;
+      const sq = new RegExp(`square ${th.t}`).test(t);
+      const m = /(?:covers|of|holds) (\d+) (?:sq|cubic)/.exec(t) ?? /(\d+) sq/.exec(t);
+      if (!m) continue;
+      const side = sq ? Math.sqrt(Number(m[1])) : Math.cbrt(Number(m[1]));
+      expect(side >= th.r[0] - 1e-9 && side <= th.r[1] + 1e-9, `${f}: ${t}`).toBe(true);
+      expect(t, t).not.toMatch(/\b1 cubic [a-z]+s\b/);
+      seen++;
+    }
+    expect(seen).toBeGreaterThan(200);
+  });
+});

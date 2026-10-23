@@ -22,6 +22,7 @@ import type { Item } from '../../src/lesson/runtime/item';
 import { SignLine, type SignLineBlock, type SignLineParams } from '../../src/lesson/topics/one-step-inequalities/SignLine';
 import { drawVLead, type VLead } from '../../src/lesson/topics/one-step-inequalities/vlead';
 import { FAMILY_NAMES, GENS, type LinePicture } from '../../src/lesson/topics/one-step-inequalities/items';
+import { explain } from '../../src/lesson/topics/one-step-inequalities/explain';
 import { PLAN } from '../../src/lesson/topics/one-step-inequalities/plan';
 import { SCRIPT } from '../../src/lesson/topics/one-step-inequalities/script';
 
@@ -467,7 +468,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it),
   });

@@ -231,3 +231,23 @@ describe('misconceptions are diagnosed', () => {
     expect(fence).toBeGreaterThan(40); expect(floor).toBeGreaterThan(40);
   });
 });
+
+describe('scale-drawings: oracle findings (phase 2)', () => {
+  it('every side of an audited plan is drawn at its labelled length (the slanted plan too: only its corners are wrong)', () => {
+    const G = GENERATORS as Record<string, (R: () => number, n: number, sg?: string) => ScaleItem>;
+    let slants = 0;
+    for (let s = 1; s <= 400; s++) {
+      const it = G.audit!(rng(s * 7 + 1), s, 'check-scale-drawing');
+      const fig = (it.picture as unknown as { plan: { figs: { pts: [number, number][]; labels: (string | null)[] }[] } }).plan.figs[0]!;
+      fig.labels.forEach((lab, i) => {
+        if (!lab) return;
+        const a = fig.pts[i]!, b = fig.pts[(i + 1) % fig.pts.length]!;
+        const m = /^(\d*)(?:\\tfrac\{(\d+)\}\{(\d+)\})?/.exec(lab)!;
+        const want = Number(m[1] || 0) + (m[2] ? Number(m[2]) / Number(m[3]) : 0);
+        expect(Math.hypot(b[0] - a[0], b[1] - a[1]), `${lab} ${JSON.stringify(fig.pts)}`).toBeCloseTo(want, 6);
+      });
+      if (fig.pts[0]![0] !== 0) slants++;
+    }
+    expect(slants).toBeGreaterThan(50);
+  });
+});

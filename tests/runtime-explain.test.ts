@@ -7,6 +7,10 @@ describe('runtime explain: reading numbers from steps', () => {
     expect(leadValue('$1,234,567.89')?.v).toBe(1234567.89);
     expect(lastNumber('so the total is 12,345,678.')).toBe(12345678);
   });
+  it('reads &minus; as a minus sign', () => {
+    expect(leadValue('&minus;12 °F')?.v).toBe(-12);
+    expect(lastNumber('so x = &minus;3.5')).toBe(-3.5);
+  });
   it('keeps a list of numbers apart', () => {
     expect(lastNumber('2, 4, 6, 8')).toBe(8);
     expect(leadValue('1,450 m')?.v).toBe(1450);

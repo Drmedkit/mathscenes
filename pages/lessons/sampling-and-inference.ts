@@ -29,6 +29,7 @@ import { Sampler, type SamplerBlock, type SamplerFocus, type SamplerParams } fro
 import { ScaleBars, type ScaleBarsBlock } from '../../src/lesson/topics/sampling-and-inference/ScaleBars';
 import { Nested, type NestedBlock } from '../../src/lesson/topics/sampling-and-inference/Nested';
 import { FAMILY_NAMES, GENS, picOf } from '../../src/lesson/topics/sampling-and-inference/items';
+import { explain } from '../../src/lesson/topics/sampling-and-inference/explain';
 import { PLAN } from '../../src/lesson/topics/sampling-and-inference/plan';
 import { SCRIPT } from '../../src/lesson/topics/sampling-and-inference/script';
 import {
@@ -468,7 +469,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed), show: showItem,
   });
 }

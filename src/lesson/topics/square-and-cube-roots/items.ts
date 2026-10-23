@@ -6,6 +6,7 @@
 // Pictures: an item can carry a square of tiles (seen from above), a cube of unit cubes (isometric) or a root ruler
 // (number line); the page draws it and, after a miss, replays the worked solution on it.
 import { type Item, type Response, type Verdict, type Gen, A, B, int, pick, shuffle, fr, fracValue, same, gcd } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import type { RulerMark } from './RootRuler';
 
 // ---------- pictures ----------
@@ -91,6 +92,8 @@ const trunc = (v: number, d: number) => Math.floor(v * 10 ** d) / 10 ** d;
 const round = (v: number, d: number) => Math.round(v * 10 ** d) / 10 ** d;
 const sqUnit = (u: string) => `sq ${u}`;
 const cubic = (u: string) => (u === 'in' ? 'cubic inches' : u === 'ft' ? 'cubic feet' : u === 'yd' ? 'cubic yards' : u === 'cm' ? 'cubic centimeters' : 'cubic meters');
+/** "1 cubic centimeter", "8 cubic centimeters" */
+const cubicN = (V: number, u: string) => (V === 1 ? cubic(u).replace(/inches$/, 'inch').replace(/feet$/, 'foot').replace(/s$/, '') : cubic(u));
 const longU = (u: string) => (u === 'in' ? 'inches' : u === 'ft' ? 'feet' : u === 'yd' ? 'yards' : u === 'cm' ? 'centimeters' : 'meters');
 const tU = (u: string) => `\\text{ ${u}}`;
 const nonSquare = (R: () => number, lo: number, hi: number): number => { let n = 0; do n = int(R, lo, hi); while (isSquare(n)); return n; };
@@ -154,7 +157,7 @@ interface Opt { html: string; ok: boolean; mc?: string; say: string }
 function choose(base: Omit<RItem, 'check' | 'answer' | 'input' | 'choices'>, R: () => number, opts: Opt[], keep = false): RItem {
   const os = keep ? opts : shuffle(R, [...opts]);
   const it: RItem = {
-    ...base, input: 'choice', choices: os.map(o => o.html), answer: { kind: 'choice', i: os.findIndex(o => o.ok) },
+    ...base, solution: endOnChoice(base.solution, os.find(o => o.ok)!.html), input: 'choice', choices: os.map(o => o.html), answer: { kind: 'choice', i: os.findIndex(o => o.ok) },
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !os[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const o = os[r.i]!;
@@ -164,18 +167,30 @@ function choose(base: Omit<RItem, 'check' | 'answer' | 'input' | 'choices'>, R: 
   PROBES.set(it, os.map((o, i) => ({ o, i })).filter(x => !x.o.ok && x.o.mc).map(x => ({ r: { kind: 'choice', i: x.i } as Response, mc: x.o.mc! })));
   return it;
 }
-let uid = 0;
-const id = (f: string, n: number) => `${f}-${n}-${++uid}`;
+/** the item id: family and practice number (no module counter: the same seed gives the same item) */
+const id = (f: string, n: number) => `${f}-${n}`;
 
 // ---------- contexts ----------
-const SQ_THINGS = [
-  { t: 'rug', u: 'ft' }, { t: 'patio', u: 'ft' }, { t: 'garden bed', u: 'ft' }, { t: 'floor tile', u: 'in' }, { t: 'photo print', u: 'in' },
-  { t: 'quilt', u: 'ft' }, { t: 'chessboard', u: 'in' }, { t: 'solar panel', u: 'ft' }, { t: 'dance floor', u: 'yd' }, { t: 'sticky note', u: 'cm' },
-] as const;
-const CUBE_THINGS = [
-  { t: 'gift box', u: 'in' }, { t: 'storage cube', u: 'in' }, { t: 'fish tank', u: 'in' }, { t: 'shipping crate', u: 'ft' }, { t: 'ice block', u: 'cm' },
-  { t: 'planter', u: 'in' }, { t: 'water tank', u: 'ft' }, { t: 'dice mold', u: 'cm' },
-] as const;
+/** square and cube things with the sides (in their unit) they believably have: a 3 in chessboard or a 14 ft solar
+ *  panel is never asked (thingFor picks one whose range holds the side) */
+interface Thing { t: string; u: string; r: readonly [number, number] }
+const SQ_THINGS: readonly Thing[] = [
+  { t: 'rug', u: 'ft', r: [2, 12] }, { t: 'patio', u: 'ft', r: [6, 30] }, { t: 'garden bed', u: 'ft', r: [2, 12] }, { t: 'floor tile', u: 'in', r: [4, 24] },
+  { t: 'photo print', u: 'in', r: [3, 12] }, { t: 'quilt', u: 'ft', r: [3, 10] }, { t: 'chessboard', u: 'in', r: [8, 24] }, { t: 'solar panel', u: 'ft', r: [2, 6] },
+  { t: 'dance floor', u: 'yd', r: [3, 15] }, { t: 'sticky note', u: 'cm', r: [3, 10] }, { t: 'postage stamp', u: 'cm', r: [1, 4] },
+];
+const CUBE_THINGS: readonly Thing[] = [
+  { t: 'gift box', u: 'in', r: [3, 20] }, { t: 'storage cube', u: 'in', r: [10, 16] }, { t: 'fish tank', u: 'in', r: [8, 30] }, { t: 'shipping crate', u: 'ft', r: [2, 8] },
+  { t: 'ice block', u: 'cm', r: [5, 30] }, { t: 'planter', u: 'in', r: [6, 24] }, { t: 'water tank', u: 'ft', r: [2, 10] }, { t: 'dice mold', u: 'cm', r: [1, 5] },
+];
+/** a thing whose believable side range holds this side (else the nearest one) */
+export function thingFor(R: () => number, list: readonly Thing[], side: number): Thing {
+  const ok = list.filter(x => side >= x.r[0] && side <= x.r[1]);
+  if (ok.length) return pick(R, ok);
+  const off = (x: Thing) => (side < x.r[0] ? x.r[0] / side : side / x.r[1]);
+  return list.slice().sort((a, b) => off(a) - off(b))[0]!;
+}
+export { SQ_THINGS, CUBE_THINGS };
 const sqPic = (area: number, unit: string, tiles: SqPic['tiles'], side: SqPic['side'], extra: Partial<SqPic> = {}): SqPic => ({ kind: 'sq', area, unit, tiles, side, ...extra });
 const cubePic = (vol: number, unit: string, closed: boolean, edge: CubePic['edge'], extra: Partial<CubePic> = {}): CubePic => ({ kind: 'cube', vol, unit, closed, edge, ...extra });
 
@@ -185,7 +200,7 @@ const cubePic = (vol: number, unit: string, closed: boolean, edge: CubePic['edge
 const sqSide: Gen = (R, n) => {
   const v = R();
   if (v < 0.45) {
-    const k = int(R, 1, 12), p = k * k, th = pick(R, SQ_THINGS);
+    const k = int(R, 1, 12), p = k * k, th = thingFor(R, SQ_THINGS, k);
     return typed({
       id: id('sqSide', n), family: 'sqSide',
       prompt: `A square ${th.t} covers ${A(`${p} ${sqUnit(th.u)}`)}. How long is one side?`,
@@ -277,10 +292,10 @@ const principal: Gen = (R, n) => {
 const cubeEdge: Gen = (R, n) => {
   const v = R();
   if (v < 0.45) {
-    const k = pick(R, [1, 2, 3, 4, 5, 10, 2, 3, 4, 5]), V = k ** 3, th = pick(R, CUBE_THINGS);
+    const k = pick(R, [1, 2, 3, 4, 5, 10, 2, 3, 4, 5]), V = k ** 3, th = thingFor(R, CUBE_THINGS, k);
     return typed({
       id: id('cubeEdge', n), family: 'cubeEdge',
-      prompt: `A cube-shaped ${th.t} holds ${A(`${V} ${cubic(th.u)}`)}. How long is each edge?`,
+      prompt: `A cube-shaped ${th.t} holds ${A(`${V} ${cubicN(V, th.u)}`)}. How long is each edge?`,
       board: `e \\times e \\times e = ${V}${tU(th.u)}^3`, unit: th.u,
       picture: cubePic(V, th.u, true, 'solve'),
       solution: [`A cube with edge e holds e × e × e.`, `${k} × ${k} × ${k} = ${A(V)}, so each edge is ${S(`${k} ${th.u}`)}.`, `The edge undoes the cubing: ${cb(V)} = ${k}.`],
@@ -625,7 +640,7 @@ const boundSq: Gen = (R, n) => {
     id: id('boundSq', n), family: 'boundSq', prompt: `${sq(m)} lies between which two whole numbers in a row?`,
     board: `\\square < \\sqrt{${m}} < \\square`, pairLead: '', pairOp: `< √${m} <`,
     picture: { kind: 'line', solveTex: [`${k * k} < ${m} < ${(k + 1) ** 2}`, `${k} < \\sqrt{${m}} < ${k + 1}`], lo: Math.max(0, k - 1), hi: k + 2, minor: 1, labels: Array.from({ length: k + 3 - Math.max(0, k - 1) }, (_, i) => Math.max(0, k - 1) + i), powers: 2, marks: [{ v: Math.sqrt(m), tex: `\\sqrt{${m}}`, col: 'link' }], solveMarks: 0, band: [k, k + 1], bandOnSolve: true } satisfies LinePic,
-    solution: [`The perfect squares around ${A(m)}: ${k}² = ${k * k} and ${k + 1}² = ${(k + 1) ** 2}.`, `${k * k} < ${m} < ${(k + 1) ** 2}.`, `Take the square roots (the order stays): ${S(`${k} < ${sq(m)} < ${k + 1}`)}.`],
+    solution: [`The perfect squares around ${A(m)}: ${k}² = ${k * k} and ${k + 1}² = ${(k + 1) ** 2}.`, `${k * k} < ${m} < ${(k + 1) ** 2}.`, `Take the square roots (the order stays): ${S(String(k))} < ${sq(m)} < ${S(String(k + 1))}.`],
   }, [k, k + 1], true, `Yes: ${k * k} < ${m} < ${(k + 1) ** 2}, so ${k} < ${sq(m)} < ${k + 1}.`, [
     { p: [k * k, (k + 1) ** 2], mc: MC.squaresBounds, say: `Those are the squares around ${m}. Their roots bound ${sq(m)}: ${k} < ${sq(m)} < ${k + 1}.` },
     { p: [k + 1, k], say: `Put the smaller number first: ${k} < ${sq(m)} < ${k + 1}.` },
@@ -647,7 +662,7 @@ const boundCube: Gen = (R, n) => {
     id: id('boundCube', n), family: 'boundCube', prompt: `${cb(m)} lies between which two whole numbers in a row?`,
     board: `\\square < \\sqrt[3]{${m}} < \\square`, pairLead: '', pairOp: `< ∛${hn(m)} <`,
     picture: pic,
-    solution: [`The perfect cubes around ${A(hn(m))}: ${hn(k)}³ = ${hn(lo3)} and ${hn(k + 1)}³ = ${hn(hi3)}.`, `${hn(lo3)} < ${hn(m)} < ${hn(hi3)}.`, `Take the cube roots (the order stays): ${S(`${hn(k)} < ${cb(m)} < ${hn(k + 1)}`)}.`],
+    solution: [`The perfect cubes around ${A(hn(m))}: ${hn(k)}³ = ${hn(lo3)} and ${hn(k + 1)}³ = ${hn(hi3)}.`, `${hn(lo3)} < ${hn(m)} < ${hn(hi3)}.`, `Take the cube roots (the order stays): ${S(hn(k))} < ${cb(m)} < ${S(hn(k + 1))}.`],
   }, [k, k + 1], true, `Yes: ${hn(lo3)} < ${hn(m)} < ${hn(hi3)}, so ${hn(k)} < ${cb(m)} < ${hn(k + 1)}.`, [
     ...(m > 0 ? [{ p: [s, s + 1] as [number, number], mc: MC.ignoreIndex, say: `${s} and ${s + 1} bound the SQUARE root (${s * s} < ${m} < ${(s + 1) ** 2}). For the cube root use cubes: ${lo3} < ${m} < ${hi3}.` }] : []),
     { p: [lo3, hi3], mc: MC.squaresBounds, say: `Those are the cubes around ${hn(m)}. Their cube roots bound ${cb(m)}: ${hn(k)} and ${hn(k + 1)}.` },
@@ -672,7 +687,7 @@ const refine: Gen = (R, n) => {
     prompt: `${k} < ${sq(m)} < ${k + 1}. Trial squares: ${trials.map(x => `${t1(x / 10)}² = ${sqr(x)}`).join(', ')}. Between which two tenths is ${sq(m)}?`,
     board: `\\square < \\sqrt{${m}} < \\square`, pairLead: '', pairOp: `< √${m} <`,
     picture: { kind: 'line', solveTex: [`${sqr(t)} < ${m} < ${sqr(t + 1)}`, `${t1(t / 10)} < \\sqrt{${m}} < ${t1((t + 1) / 10)}`], lo: k, hi: k + 1, minor: 0.1, labels: [k, k + 1], marks: [{ v: Math.sqrt(m), tex: `\\sqrt{${m}}`, col: 'link' }], solveMarks: 0, band: [tenth(t), tenth(t + 1)], bandOnSolve: true },
-    solution: [`Find the two trial squares that sit around ${A(m)}: ${t1(t / 10)}² = ${sqr(t)} < ${m} < ${sqr(t + 1)} = ${t1((t + 1) / 10)}².`, `Take the square roots: ${S(`${t1(t / 10)} < ${sq(m)} < ${t1((t + 1) / 10)}`)}.`, `The closest square is not the point: the lower bound is the trial whose square is still BELOW ${m}.`],
+    solution: [`Find the two trial squares that sit around ${A(m)}: ${t1(t / 10)}² = ${sqr(t)} < ${m} < ${sqr(t + 1)} = ${t1((t + 1) / 10)}².`, `Take the square roots: ${S(t1(t / 10))} < ${sq(m)} < ${S(t1((t + 1) / 10))}.`, `The closest square is not the point: the lower bound is the trial whose square is still BELOW ${m}.`],
   }, [tenth(t), tenth(t + 1)], true, `Yes: ${sqr(t)} < ${m} < ${sqr(t + 1)}.`, [
     ...(closest ? [{ p: [tenth(t + 1), tenth(t + 2)] as [number, number], mc: MC.closeTrial, say: `${t1((t + 1) / 10)}² = ${sqr(t + 1)} is closest to ${m}, but it is ABOVE ${m}, so ${t1((t + 1) / 10)} is the upper bound: ${t1(t / 10)} < ${sq(m)} < ${t1((t + 1) / 10)}.` }] : []),
     ...(ti !== t ? [{ p: [tenth(ti), tenth(ti + 1)] as [number, number], mc: MC.interp, say: `Going ${m - k * k} of the ${2 * k + 1} steps from ${k * k} to ${(k + 1) ** 2} is not exact for roots. Square the trials: ${sqr(t)} < ${m} < ${sqr(t + 1)}.` }] : []),
@@ -805,7 +820,7 @@ const solveSq: Gen = (R, n) => {
       id: id('solveSq', n), family: 'solveSq', prompt: `Solve ${B(`x² = ${p}`)}. List both solutions and check each.`, board: `x^2 = ${p}`,
       pairLead: 'x =', pairOp: 'or x =',
       picture: { kind: 'line', solveTex: [`x = \\pm\\sqrt{${p}} = \\pm ${k}`], lo: -(k + 1), hi: k + 1, minor: 1, labels: [-(k + 1), 0, k + 1], marks: [{ v: -k, tex: `-${k}`, col: 'link' }, { v: k, tex: String(k), col: 'link' }], solveMarks: 0, arcs: true },
-      solution: [`${k}² = ${p} ✓ and (−${k})² = (−${k}) × (−${k}) = ${p} ✓.`, `So ${S(`x = ${k} or x = −${k}`)}, written x = ±${sq(p)} = ±${k}.`, `${sq(p)} alone names only ${k}; the ± comes from the equation.`],
+      solution: [`${k}² = ${p} ✓ and (−${k})² = (−${k}) × (−${k}) = ${p} ✓.`, `So x = ${S(String(k))} or x = ${S(`−${k}`)}, written x = ±${sq(p)} = ±${k}.`, `${sq(p)} alone names only ${k}; the ± comes from the equation.`],
     }, [k, -k], false, `Yes: ${k}² = ${p} and (−${k})² = ${p}.`, [
       { p: [k, k], mc: MC.onlyPos, say: `${k} works, and so does −${k}: (−${k}) × (−${k}) = ${p}. The equation has two solutions.` },
       { p: [p / 2, -p / 2], mc: MC.divIndex, say: `Check: (${hn(p / 2)})² = ${hn((p / 2) ** 2)}, not ${p}. The solutions are ${k} and −${k}.` },
@@ -939,7 +954,7 @@ const solveCube: Gen = (R, n) => {
     do { b = int(R, 2, 5); a = int(R, 1, b - 1); } while (gcd(a, b) !== 1);
     return fracTyped({
       id: id('solveCube', n), family: 'solveCube', prompt: `Solve x³ = ${fr(a ** 3, b ** 3)}.`, board: `x^3 = \\tfrac{${a ** 3}}{${b ** 3}}`,
-      solution: [`${fr(a, b)} × ${fr(a, b)} × ${fr(a, b)} = ${fr(a ** 3, b ** 3)} ✓.`, `One solution: ${S(`x = ${fr(a, b)}`)}.`],
+      solution: [`${fr(a, b)} × ${fr(a, b)} × ${fr(a, b)} = ${fr(a ** 3, b ** 3)} ✓.`, `One solution: x = ${S(fr(a, b))}.`],
     }, a, b, `Yes: (${fr(a, b)})³ = ${fr(a ** 3, b ** 3)}.`, [
       { n: a ** 3, d: 3 * b ** 3, mc: MC.divIndex, say: `That divides by 3. Find the fraction used 3 times: ${fr(a, b)}.` },
     ], `Cube root of the top and of the bottom.`);
@@ -947,7 +962,7 @@ const solveCube: Gen = (R, n) => {
   const k = pick(R, [2, 3, 4, 5, 6, 10]), p = k ** 3;
   return typed({
     id: id('solveCube', n), family: 'solveCube', prompt: `Solve x³ = ${p}.`, board: `x^3 = ${p}`,
-    solution: [`${k}³ = ${p}, and no other real number cubes to ${p}.`, `${S(`x = ${k}`)}.`],
+    solution: [`${k}³ = ${p}, and no other real number cubes to ${p}.`, `So x = ${S(String(k))}.`],
   }, k, `Yes: x = ${cb(p)} = ${k}.`, [
     { v: p / 3, tol: 0.05, mc: MC.divIndex, say: `That divides by 3. ${k} × ${k} × ${k} = ${p}, so x = ${k}.` },
     { v: -k, mc: MC.pmOdd, say: `(−${k})³ = −${p}. The solution is ${k}.` },
@@ -965,7 +980,7 @@ const isolate: Gen = (R, n) => {
     return paired({
       id: id('isolate', n), family: 'isolate', prompt: `Solve ${B(`${a}x² = ${p}`)}. List both solutions.`, board: `${a}x^2 = ${p}`,
       pairLead: 'x =', pairOp: 'or x =',
-      solution: [`Divide both sides by ${a}: x² = ${k * k}.`, `Then the roots: ${S(`x = ${k} or x = −${k}`)}.`, `Check: ${a} × ${k}² = ${p} ✓, ${a} × (−${k})² = ${p} ✓.`],
+      solution: [`Divide both sides by ${a}: x² = ${k * k}.`, `Then the roots: x = ${S(String(k))} or x = ${S(`−${k}`)}.`, `Check: ${a} × ${k}² = ${p} ✓, ${a} × (−${k})² = ${p} ✓.`],
     }, [k, -k], false, `Yes: x² = ${k * k}, so x = ±${k}.`, [
       { p: [k, k], mc: MC.onlyPos, say: `x = −${k} works too: ${a} × (−${k})² = ${p}.` },
     ], `First divide both sides by ${a} to get x² alone.`);
@@ -976,7 +991,7 @@ const isolate: Gen = (R, n) => {
     if (!minus) return paired({
       id: id('isolate', n), family: 'isolate', prompt: `Solve ${B(`x² + ${b * b} = ${c * c}`)}. List both solutions.`, board: `x^2 + ${b * b} = ${c * c}`,
       pairLead: 'x =', pairOp: 'or x =',
-      solution: [`Take ${b * b} from both sides first: x² = ${c * c} − ${b * b} = ${a * a}.`, `Then the roots: ${S(`x = ${a} or x = −${a}`)}.`, `You cannot take roots term by term: ${sq(`x² + ${b * b}`)} is not x + ${b}.`],
+      solution: [`Take ${b * b} from both sides first: x² = ${c * c} − ${b * b} = ${a * a}.`, `Then the roots: x = ${S(String(a))} or x = ${S(`−${a}`)}.`, `You cannot take roots term by term: ${sq(`x² + ${b * b}`)} is not x + ${b}.`],
     }, [a, -a], false, `Yes: x² = ${a * a}, so x = ±${a}.`, [
       { p: [c - b, -(c - b)], mc: MC.sumRoot, say: `Roots do not split over a sum: ${sq(`x² + ${b * b}`)} is not x + ${b}. Subtract first: x² = ${a * a}, so x = ±${a}.` },
       { p: [a, a], mc: MC.onlyPos, say: `x = −${a} works too: (−${a})² + ${b * b} = ${c * c}.` },
@@ -984,7 +999,7 @@ const isolate: Gen = (R, n) => {
     return paired({
       id: id('isolate', n), family: 'isolate', prompt: `Solve ${B(`x² − ${a * a} = ${b * b}`)}. List both solutions.`, board: `x^2 - ${a * a} = ${b * b}`,
       pairLead: 'x =', pairOp: 'or x =',
-      solution: [`Add ${a * a} to both sides first: x² = ${b * b} + ${a * a} = ${c * c}.`, `Then the roots: ${S(`x = ${c} or x = −${c}`)}.`],
+      solution: [`Add ${a * a} to both sides first: x² = ${b * b} + ${a * a} = ${c * c}.`, `Then the roots: x = ${S(String(c))} or x = ${S(`−${c}`)}.`],
     }, [c, -c], false, `Yes: x² = ${c * c}, so x = ±${c}.`, [
       { p: [a + b, -(a + b)], mc: MC.sumRoot, say: `Roots do not split over a difference: ${sq(`x² − ${a * a}`)} is not x − ${a}. Add first: x² = ${c * c}, so x = ±${c}.` },
       { p: [c, c], mc: MC.onlyPos, say: `x = −${c} works too.` },
@@ -993,7 +1008,7 @@ const isolate: Gen = (R, n) => {
   const a = int(R, 2, 4), k = int(R, 1, 5), p = a * k ** 3;
   return typed({
     id: id('isolate', n), family: 'isolate', prompt: `Solve ${B(`${a}x³ = ${p}`)}.`, board: `${a}x^3 = ${p}`,
-    solution: [`Divide both sides by ${a}: x³ = ${k ** 3}.`, `Then the cube root: ${S(`x = ${k}`)} (one solution).`],
+    solution: [`Divide both sides by ${a}: x³ = ${k ** 3}.`, `Then the cube root: x = ${S(String(k))} (one solution).`],
   }, k, `Yes: x³ = ${k ** 3}, so x = ${k}.`, [
     { v: k ** 3, say: `${k ** 3} is x³. Now take the cube root: ${k}.` },
     { v: -k, mc: MC.pmOdd, say: `(−${k})³ is negative, so −${k} does not work: x = ${k}.` },
@@ -1006,7 +1021,7 @@ const isolate: Gen = (R, n) => {
 const context: Gen = (R, n) => {
   const v = R();
   if (v < 0.25) {
-    const k = int(R, 3, 15), p = k * k, th = pick(R, SQ_THINGS);
+    const k = int(R, 3, 15), p = k * k, th = thingFor(R, SQ_THINGS, k);
     return typed({
       id: id('context', n), family: 'context', prompt: `A square ${th.t} has an area of ${A(`${p} ${sqUnit(th.u)}`)}. How long is each side?`,
       board: `s^2 = ${p}${tU(th.u)}^2`, unit: th.u,
@@ -1020,7 +1035,7 @@ const context: Gen = (R, n) => {
   if (v < 0.47) {
     const m = R() < 0.6 ? nonSquare(R, 20, 99) : pick(R, [120, 150, 200, 250]);
     const t = tenthsFloor(m), ms = midSquare(t), up = ms < m, right = tenth(up ? t + 1 : t), mid = (2 * t + 1) / 20;
-    const th = pick(R, SQ_THINGS.filter(x => x.u === 'ft'));
+    const th = thingFor(R, SQ_THINGS.filter(x => x.u === 'ft'), Math.sqrt(m));
     return typed({
       id: id('context', n), family: 'context',
       prompt: `A square ${th.t} covers ${A(`${m} ${sqUnit('ft')}`)}. The side is ${sq(m)} ft exactly, between ${t1(t / 10)} and ${t1((t + 1) / 10)}; ${fmt(mid)}² = ${fmt(ms)}${m >= 100 ? ' (calculator)' : ''}. Round the side to the nearest tenth of a foot.`,
@@ -1035,7 +1050,7 @@ const context: Gen = (R, n) => {
   if (v < 0.65) {
     const k = int(R, 3, 12), p = k * k, area = R() < 0.65;
     if (area) {
-      const th = pick(R, SQ_THINGS);
+      const th = thingFor(R, SQ_THINGS, k);
       return choose({
         id: id('context', n), family: 'context', prompt: `For a square ${th.t} of ${p} ${sqUnit(th.u)}, s² = ${p} gives s = ${k} or s = −${k}. Which is the side length?`, board: `s^2 = ${p}`,
         picture: sqPic(p, th.u, 'show', 'solve'),
@@ -1056,7 +1071,7 @@ const context: Gen = (R, n) => {
     ]);
   }
   if (v < 0.78) {
-    const k = int(R, 3, 12), p = k * k, th = pick(R, SQ_THINGS);
+    const k = int(R, 3, 12), p = k * k, th = thingFor(R, SQ_THINGS, k);
     return choose({
       id: id('context', n), family: 'context', prompt: `A square ${th.t} has an area of ${p} ${sqUnit(th.u)}. Its side is:`, board: `s^2 = ${p}${tU(th.u)}^2`,
       solution: [`${k} × ${k} = ${p}, so the side is ${k}.`, `A side is a length, in ${longU(th.u)}: ${S(`${k} ${th.u}`)}. Square units are for the area.`],
@@ -1067,11 +1082,11 @@ const context: Gen = (R, n) => {
     ]);
   }
   if (v < 0.92) {
-    const perfect = R() < 0.55, th = pick(R, CUBE_THINGS);
+    const perfect = R() < 0.55;
     if (perfect) {
-      const k = int(R, 2, 10), V = k ** 3;
+      const k = int(R, 2, 10), V = k ** 3, th = thingFor(R, CUBE_THINGS, k);
       return typed({
-        id: id('context', n), family: 'context', prompt: `A cube-shaped ${th.t} holds ${A(`${V} ${cubic(th.u)}`)}. How long is each edge?`,
+        id: id('context', n), family: 'context', prompt: `A cube-shaped ${th.t} holds ${A(`${V} ${cubicN(V, th.u)}`)}. How long is each edge?`,
         board: `e^3 = ${V}${tU(th.u)}^3`, unit: th.u,
         picture: cubePic(V, th.u, true, 'solve'),
         solution: [`e³ = ${V}: e = ${cb(V)}.`, `${k} × ${k} × ${k} = ${V}, so the edge is ${S(`${k} ${th.u}`)}.`],
@@ -1080,7 +1095,7 @@ const context: Gen = (R, n) => {
         { v: isSquare(V) && V > 1 ? Math.sqrt(V) : null, mc: MC.ignoreIndex, say: `${Math.sqrt(V)} is the side of a flat square of ${V}. The cube's edge is ${cb(V)} = ${k} ${th.u}.` },
       ], `Which number used 3 times makes ${V}?`);
     }
-    const V = nonCube(R, 20, 999), k = cubeFloor(V), s = sqFloor(V);
+    const V = nonCube(R, 20, 999), k = cubeFloor(V), s = sqFloor(V), th = thingFor(R, CUBE_THINGS, Math.cbrt(V));
     return choose({
       id: id('context', n), family: 'context', prompt: `A cube-shaped ${th.t} holds ${V} ${cubic(th.u)}. Its edge is:`, board: `e^3 = ${V}${tU(th.u)}^3`,
       picture: k >= 1 && k <= 4 ? cubePic(V, th.u, false, 'show', { ghosts: true, edgeTex: `\\sqrt[3]{${V}}${tU(th.u)}` }) : undefined,
@@ -1150,7 +1165,7 @@ const multistep: Gen = (R, n) => {
       { v: round(d * d, 6), mc: MC.negPower, say: `Without parentheses the minus is not part of the base: −${hn(d)}² = −${hn(round(d * d, 6))}.` },
     ], `Square ${hn(d)} first, then put the minus in front.`);
   }
-  const k = int(R, 2, 6), V = k ** 3, th = pick(R, CUBE_THINGS);
+  const k = int(R, 2, 6), V = k ** 3, th = thingFor(R, CUBE_THINGS, k);
   return typed({
     id: id('multistep', n), family: 'multistep', prompt: `A cube-shaped ${th.t} holds ${V} ${cubic(th.u)}. What is the area of one face?`, board: `\\left(\\sqrt[3]{${V}}\\right)^2 = \\,?`, unit: sqUnit(th.u),
     picture: cubePic(V, th.u, true, 'solve'),
@@ -1162,7 +1177,23 @@ const multistep: Gen = (R, n) => {
   ], `Find the edge first, then square it.`);
 };
 
-export const GENS: Record<FamilyId, Gen> = {
+const FAMS: Record<FamilyId, Gen> = {
   sqSide, principal, cubeEdge, rootIndex, signRoot, evalSq, evalCube, ratRoot, rational,
   boundSq, boundCube, refine, compare, roundRoot, solveSq, countSol, solveCube, isolate, context, multistep,
 };
+/** a "less than" in panel text as &lt;: "10 < √120 < 11" stays text for every HTML reader (a bare "<" before a tag
+ *  reads as the start of that tag when the text is stripped of its markup) */
+export const lt = (s: string) => s.replace(/<(?=[\s=\d.−-])/g, '&lt;');
+const withLt = (g: Gen): Gen => (R, n, sg) => {
+  const it = g(R, n, sg) as RItem;
+  const check = it.check;
+  it.prompt = lt(it.prompt);
+  it.solution = it.solution.map(lt);
+  if (it.choices) it.choices = it.choices.map(lt);
+  if (it.pairLead) it.pairLead = lt(it.pairLead);
+  if (it.pairOp) it.pairOp = lt(it.pairOp);
+  if (it.pairTail) it.pairTail = lt(it.pairTail);
+  it.check = r => { const v = check(r); return { ...v, say: lt(v.say) }; };
+  return it;   // the same object: PROBES is keyed on it
+};
+export const GENS = Object.fromEntries(Object.entries(FAMS).map(([k, g]) => [k, withLt(g)])) as Record<FamilyId, Gen>;

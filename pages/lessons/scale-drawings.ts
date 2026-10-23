@@ -22,6 +22,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import { PlanSheet, PLAN_STEPS, type PlanBlock, type PlanFocus, type PlanParams } from '../../src/lesson/topics/scale-drawings/PlanSheet';
 import { EXAMPLE, PROVE, QUESTION, TURN } from '../../src/lesson/topics/scale-drawings/lessonPics';
 import { FAMILY_NAMES, GENERATORS, MC, type ScaleItem } from '../../src/lesson/topics/scale-drawings/items';
+import { explain } from '../../src/lesson/topics/scale-drawings/explain';
 import { PLAN } from '../../src/lesson/topics/scale-drawings/plan';
 import { SCRIPT } from '../../src/lesson/topics/scale-drawings/script';
 
@@ -377,7 +378,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as ScaleItem),
   });

@@ -27,6 +27,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import type { Item } from '../../src/lesson/runtime/item';
 import { TaxTape, type TaxTapeBlock, type TaxTapeFocus, type TaxTapeParams, type TaxTapeStep } from '../../src/lesson/topics/sales-tax/TaxTape';
 import { type TaxPicture, FAMILY_NAMES, GENERATORS, MC } from '../../src/lesson/topics/sales-tax/items';
+import { explain } from '../../src/lesson/topics/sales-tax/explain';
 import { PLAN } from '../../src/lesson/topics/sales-tax/plan';
 import { SCRIPT } from '../../src/lesson/topics/sales-tax/script';
 
@@ -465,7 +466,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed), show: showItem,
   });
 }

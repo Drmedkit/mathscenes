@@ -25,6 +25,7 @@ import { AreaTiles, AreaGrid, type TilesBlock, type TilesFocus, type GridBlock, 
 import { TermTiles } from '../../src/lesson/topics/expand-and-factor/TermTiles';
 import { ValueTable, type TableFocus } from '../../src/lesson/topics/expand-and-factor/ValueTable';
 import { FAMILY_NAMES, GENS, type EFItem } from '../../src/lesson/topics/expand-and-factor/items';
+import { explain } from '../../src/lesson/topics/expand-and-factor/explain';
 import { PLAN } from '../../src/lesson/topics/expand-and-factor/plan';
 import { SCRIPT } from '../../src/lesson/topics/expand-and-factor/script';
 import { t, expand } from '../../src/lesson/topics/expand-and-factor/expr';
@@ -409,7 +410,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as EFItem),
   });

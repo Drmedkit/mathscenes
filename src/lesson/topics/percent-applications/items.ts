@@ -4,6 +4,7 @@
 // cents (money.ts), and every classic wrong answer is tagged with its misconception id
 // (math-curriculum-essentials/misconceptions.json). Pure: no DOM, no canvas. A seeded rng makes sessions repeatable.
 import { type Item, type Response, type Verdict, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import { type Slot, type TapeRow } from './PercentTape';
 import { applyC, chainC, decStr, money, moneyTex, mp, multNum, multStr, partC, partRaw, partRound, pctStr, rateStr, simpleInterest } from './money';
 
@@ -100,7 +101,7 @@ function choiceItem(R: () => number, base: Omit<PaItem, 'input' | 'choices' | 'a
   const ts = new Set(O.map(o => o.t));
   if (ts.size !== O.length) throw new Error(`choices not unique: ${O.map(o => o.t).join(' | ')}`);
   return {
-    ...base, input: 'choice', choices: O.map(o => o.t), answer: { kind: 'choice', i: O.findIndex(o => o.ok) },
+    ...base, solution: endOnChoice(base.solution, O.find(o => o.ok)!.t), input: 'choice', choices: O.map(o => o.t), answer: { kind: 'choice', i: O.findIndex(o => o.ok) },
     check: (r: Response): Verdict => {
       const o = r.kind === 'choice' ? O[r.i] : undefined;
       if (!o) return { ok: false, say: 'Pick one.' };
@@ -144,6 +145,20 @@ const D = (c: number) => c / 100;
 
 // ---------- contexts ----------
 const GOODS = ['jacket', 'pair of sneakers', 'video game', 'tablet', 'speaker', 'hoodie', 'backpack', 'skateboard', 'phone case', 'bike helmet', 'desk lamp', 'guitar'] as const;
+/** believable shelf prices, in dollars: an item is only named with a price in its range */
+export const PRICE_RANGE: Record<string, [number, number]> = {
+  'phone case': [8, 60], 'video game': [20, 80], hoodie: [20, 90], backpack: [20, 150], 'desk lamp': [15, 120], 'bike helmet': [20, 150],
+  jacket: [30, 300], 'pair of sneakers': [40, 250], tablet: [100, 1000], speaker: [20, 500], skateboard: [40, 300], guitar: [80, 2000],
+  lamp: [15, 200], 'pair of headphones': [20, 400], 'desk chair': [50, 500], tent: [40, 600], 'soccer ball': [10, 60], 'water bottle': [5, 50], bike: [100, 2000],
+};
+/** an item from the pool whose believable price range holds every amount (in cents) the story names with it */
+export function itemFor(R: () => number, pool: readonly string[], ...cents: number[]): string {
+  const fits = (g: string) => cents.every(c => c / 100 >= PRICE_RANGE[g]![0] && c / 100 <= PRICE_RANGE[g]![1]);
+  const ok = pool.filter(fits);
+  if (ok.length) return pick(R, ok);
+  const off = (g: string) => cents.reduce((s, c) => { const [lo, hi] = PRICE_RANGE[g]!, d = c / 100; return s + (d < lo ? lo / d : d > hi ? d / hi : 1); }, 0);
+  return pool.slice().sort((a, b) => off(a) - off(b))[0]!;
+}
 const STOCK = ['lamp', 'backpack', 'skateboard', 'guitar', 'pair of headphones', 'desk chair', 'tent', 'soccer ball', 'water bottle', 'bike'] as const;
 const NAMES = ['Dana', 'Marcus', 'Priya', 'Leo', 'Sofia', 'Jamal', 'Mei', 'Carlos', 'Aisha', 'Noah', 'Grace', 'Omar'] as const;
 const TAX = [4, 5, 6, 6.25, 6.5, 7, 7.25, 8, 8.25, 8.875, 9, 10] as const;
@@ -159,7 +174,7 @@ function markupNums(R: () => number, big = false): { cost: number; p: number; m:
     const cost = 100 * pick(R, [10, 20, 24, 40, 60, 80, 120, 160, 200, 240, 300, 400, 500, 800, 1000]);
     const p = big ? pick(R, [150, 120, 200]) : pick(R, [20, 25, 40, 50, 60, 75, 100, 150]);
     const m = partC(cost, p);
-    return m === null ? null : { cost, p, m, price: cost + m, item: pick(R, STOCK) };
+    return m === null ? null : { cost, p, m, price: cost + m, item: itemFor(R, STOCK, cost, cost + m) };
   }, 'markup');
 }
 function discountNums(R: () => number): { o: number; p: number; d: number; s: number; item: string } {
@@ -167,7 +182,7 @@ function discountNums(R: () => number): { o: number; p: number; d: number; s: nu
     const o = 100 * pick(R, [20, 24, 30, 40, 50, 60, 80, 90, 120, 150, 200, 240, 300, 400, 500, 640, 800, 1000]);
     const p = pick(R, [10, 15, 20, 25, 30, 40, 50, 60, 75]);
     const d = partC(o, p);
-    return d === null ? null : { o, p, d, s: o - d, item: pick(R, GOODS) };
+    return d === null ? null : { o, p, d, s: o - d, item: itemFor(R, GOODS, o, o - d) };
   }, 'discount');
 }
 
@@ -175,6 +190,7 @@ const baseFam: Gen = (R, n, sg) => {
   const k = baseCtx(R, sg);
   if (k === 'markup') {
     const { cost, p, m, price, item } = markupNums(R, R() < 0.35);
+    if (m === cost) return baseFam(R, n, sg);   // a 100% markup: "the store's cost" and "the markup" would be the same amount
     const opts: Opt[] = [
       { t: `The store’s cost, ${$(cost)}`, ok: true, say: `Yes: a markup is measured against what the store paid. ${$(cost)} is 100%, and the ${P(p)} markup is ${$(m)} on top.` },
       { t: `The selling price, ${$(price)}`, ok: false, mc: MC.newBase, say: `${$(price)} is where the markup ends up. The markup is measured against the cost the store paid: ${$(cost)} is 100%.` },
@@ -193,6 +209,7 @@ const baseFam: Gen = (R, n, sg) => {
   }
   if (k === 'discount') {
     const { o, p, d, s, item } = discountNums(R);
+    if (d === s) return baseFam(R, n, sg);   // 50% off: "the sale price" and "the amount you save" would be the same amount
     return choiceItem(R, {
       id: `base-${n}`, family: 'base',
       prompt: `${an(item)[0]!.toUpperCase() + an(item).slice(1)} is ${B(`${P(p)} off`)}. The sale price is ${$(s)}, and you save ${$(d)}. The ${P(p)} is a percent of which amount?`,
@@ -210,19 +227,19 @@ const baseFam: Gen = (R, n, sg) => {
     const { t, e, r, item } = until(() => {
       const t = 100 * pick(R, [16, 20, 24, 32, 40, 48, 60, 64, 80, 120, 160]), e = 100 * int(R, 6, 40) + pick(R, [0, 50, 25, 75]);
       const r = pick(R, TAX);
-      return partC(t, r) === null ? null : { t, e, r, item: pick(R, GOODS) };
+      return partC(t, r) === null ? null : { t, e, r, item: itemFor(R, GOODS, t) };
     }, 'tax');
-    const food = pick(R, ['groceries', 'school books', 'medicine']);
+    const food = pick(R, ['groceries', 'school books', 'medicine']), are = food === 'medicine' ? 'is' : 'are';
     return choiceItem(R, {
       id: `base-${n}`, family: 'base',
-      prompt: `You buy ${an(item)} for ${A($(t))} and ${$(e)} of ${food}. In this state, ${food} are not taxed, and the sales tax is ${B(P(r))}. (Rates differ from state to state.) The ${P(r)} is taken of which amount?`,
+      prompt: `You buy ${an(item)} for ${A($(t))} and ${$(e)} of ${food}. In this state, ${food} ${are} not taxed, and the sales tax is ${B(P(r))}. (Rates differ from state to state.) The ${P(r)} is taken of which amount?`,
       board: `${Pt(r)}\\ \\text{sales tax}`,
       picture: { kind: 'tape', rows: [{ segs: [seg('plain', D(t), '100%', $(t)), seg('plain', D(e), undefined, $(e))] }], ask: { r: 0, slot: 'pct0' }, hi: [{ r: 0, i: 0, col: 'first' }] },
       work: `\\text{taxed: } ${$t(t)} = 100\\%`,
-      solution: [`Sales tax is added on top of the taxable amount, and only the ${item} is taxable: ${A($(t))} is 100%.`, `The ${food} (${$(e)}) are not taxed, so they are not part of the base.`],
+      solution: [`Sales tax is added on top of the taxable amount, and only the ${item} is taxable: ${A($(t))} is 100%.`, `The ${food} (${$(e)}) ${are} not taxed, so ${food === 'medicine' ? 'it is' : 'they are'} not part of the base.`],
     }, [
-      { t: `${$(t)}, the taxable ${item}`, ok: true, say: `Yes: only the taxable amount is the base. The ${food} are not taxed.` },
-      { t: `${$(t + e)}, everything you buy`, ok: false, mc: MC.exempt, say: `The ${food} are not taxed in this state, so they are not in the base. Only the ${$(t)} ${item} is taxed.` },
+      { t: `${$(t)}, the taxable ${item}`, ok: true, say: `Yes: only the taxable amount is the base. The ${food} ${are} not taxed.` },
+      { t: `${$(t + e)}, everything you buy`, ok: false, mc: MC.exempt, say: `The ${food} ${are} not taxed in this state, so ${food === 'medicine' ? 'it is' : 'they are'} not in the base. Only the ${$(t)} ${item} is taxed.` },
       { t: `The total after tax`, ok: false, mc: MC.newBase, say: `The total after tax already has the tax in it. Tax is a percent of the amount BEFORE tax: the ${$(t)} ${item}.` },
     ]);
   }
@@ -330,7 +347,7 @@ const baseCalc: Gen = (R, n, sg) => {
     const { t, e, r, x, item } = until(() => {
       const t = 100 * pick(R, [16, 20, 24, 32, 40, 48, 60, 64, 80, 120, 160]), e = 100 * pick(R, [8, 10, 12, 15, 20, 24, 30]);
       const r = pick(R, TAX), x = partC(t, r);
-      return x === null ? null : { t, e, r, x, item: pick(R, GOODS) };
+      return x === null ? null : { t, e, r, x, item: itemFor(R, GOODS, t) };
     }, 'tax');
     const all = partRaw(t + e, r);
     return moneyItem({
@@ -390,20 +407,20 @@ const baseCalc: Gen = (R, n, sg) => {
 };
 
 // ===== add-or-subtract =====
-interface DirCtx { word: (p: string) => string; dir: 1 | -1 | 0; story: (b: string, p: string) => string; what: string }
+interface DirCtx { word: (p: string) => string; dir: 1 | -1 | 0; story: (b: string, p: string) => string; what: string; rates?: readonly number[]; bases?: readonly number[] }
 const DIRS: readonly DirCtx[] = [
-  { word: p => `a ${p} markup`, dir: 1, story: (b, p) => `A store marks up a ${b} lamp by ${p}.`, what: 'the selling price' },
-  { word: p => `${p} off`, dir: -1, story: (b, p) => `A ${b} jacket is ${p} off.`, what: 'the sale price' },
+  { word: p => `a ${p} markup`, dir: 1, story: (b, p) => `A store marks up a ${b} lamp by ${p}.`, what: 'the selling price', bases: [20, 40, 50, 60, 80, 120, 200] },
+  { word: p => `${p} off`, dir: -1, story: (b, p) => `A ${b} jacket is ${p} off.`, what: 'the sale price', bases: [40, 50, 60, 80, 120, 200] },
   { word: p => `a ${p} markdown`, dir: -1, story: (b, p) => `A ${b} speaker is marked down ${p}.`, what: 'the new price' },
-  { word: p => `${p} sales tax`, dir: 1, story: (b, p) => `You buy a ${b} game with ${p} sales tax.`, what: 'the total you pay' },
+  { word: p => `${p} sales tax`, dir: 1, story: (b, p) => `You buy a ${b} game with ${p} sales tax.`, what: 'the total you pay', rates: [5, 6, 7, 8, 10], bases: [20, 40, 50, 60] },
   { word: p => `a ${p} tip`, dir: 1, story: (b, p) => `Your dinner bill is ${b}, and you leave a ${p} tip.`, what: 'the total you pay' },
-  { word: p => `a ${p} coupon`, dir: -1, story: (b, p) => `You use a ${p}-off coupon on a ${b} hoodie.`, what: 'the price you pay' },
-  { word: p => `${p} interest`, dir: 1, story: (b, p) => `${b} sits in savings for a year at ${p} simple interest.`, what: 'the balance after a year' },
+  { word: p => `a ${p} coupon`, dir: -1, story: (b, p) => `You use a ${p}-off coupon on a ${b} hoodie.`, what: 'the price you pay', bases: [20, 40, 50, 60, 80] },
+  { word: p => `${p} interest`, dir: 1, story: (b, p) => `${b} sits in savings for a year at ${p} simple interest.`, what: 'the balance after a year', rates: [2, 3, 4, 5] },
   { word: p => `a ${p} commission`, dir: 0, story: (b, p) => `A salesperson sells ${b} of furniture and earns a ${p} commission.`, what: 'the commission' },
 ];
 const direction: Gen = (R, n) => {
   const c = pick(R, DIRS);
-  const base = 100 * pick(R, [20, 40, 50, 60, 80, 120, 200, 400]), p = pick(R, [10, 15, 20, 25, 50]);
+  const base = 100 * pick(R, c.bases ?? [20, 40, 50, 60, 80, 120, 200, 400]), p = pick(R, c.rates ?? [10, 15, 20, 25, 50]);   // tax and savings rates stay real-world
   const d = partC(base, p)!;
   if (R() < 0.5) {
     const opts: Opt[] = [
@@ -488,7 +505,7 @@ const mult: Gen = (R, n) => {
     const down = R() < 0.45;
     const p = down ? pick(R, [20, 35, 15, 40, 5, 12.5, 25, 8]) : pick(R, [7, 8.25, 6.5, 6.25, 150, 4, 12, 3.5, 250]);
     const s = down ? -p : p, ans = multNum(s);
-    const word = down ? `${P(p)} off` : p >= 100 ? `a ${P(p)} increase` : pick(R, [`${P(p)} sales tax`, `a ${P(p)} increase`]);
+    const word = down ? `${P(p)} off` : p > 10 ? `a ${P(p)} increase` : pick(R, [`${P(p)} sales tax`, `a ${P(p)} increase`]);   // sales tax only at a real-world rate
     const wrongs: Wrong[] = [
       { v: p / 100, mc: MC.changeFinal, say: `${rateStr(p)} is just the ${P(p)} part. The new amount is ${down ? '100% − ' : '100% + '}${P(p)}: × ${multStr(s)}.` },
       { v: multNum(-s), mc: MC.direction, say: `That goes the wrong way: ${word} makes the amount ${down ? 'smaller' : 'bigger'}, so × ${multStr(s)}.` },
@@ -551,12 +568,12 @@ const single: Gen = (R, n) => {
   const askChange = kind === 'commission' || R() < 0.4;
   const up = kind !== 'sale';
   const total = up ? b + d : b - d;
-  const good = an(pick(R, GOODS));
+  const good = an(itemFor(R, GOODS, b, total));
   const T = {
     sale: { story: `${good[0]!.toUpperCase()}${good.slice(1)} costs ${A($(b))} and is ${B(`${P(p)} off`)}.`, change: 'How much do you save', total: 'What is the sale price' },
     tax: { story: `Your cart is ${A($(b))} before tax, and the sales tax is ${B(P(p))}.`, change: 'How much is the tax', total: 'What is the total with tax' },
     tip: { story: `A dinner bill is ${A($(b))} before tax. You leave a ${B(`${P(p)} tip`)} on it.`, change: 'How much is the tip', total: 'What is the bill plus the tip' },
-    markup: { story: `A shop pays ${A($(b))} for a ${pick(R, STOCK)} and marks it up ${B(P(p))}.`, change: 'How much is the markup', total: 'What is the selling price' },
+    markup: { story: `A shop pays ${A($(b))} for a ${itemFor(R, STOCK, b, b + d)} and marks it up ${B(P(p))}.`, change: 'How much is the markup', total: 'What is the selling price' },
     commission: { story: `${pick(R, NAMES)} sells ${A($(b))} of phones and earns ${B(`${P(p)} commission`)} on sales.`, change: 'How much commission is that', total: '' },
   }[kind];
   const ans = askChange ? d : total;
@@ -715,7 +732,7 @@ const estimate: Gen = (R, n) => {
   const b = 100 * int(R, 21, 98) + pick(R, [40, 60, 80, 20, 75, 25]);
   const rb = Math.round(b / 100) * 100;     // the friendly amount
   const exact = partRound(b, p), loE = partRound(rb, lo), hiE = partRound(rb, hi);
-  const what = pick(R, [`a ${P(p)} tip on a ${$(b)} bill`, `${P(p)} sales tax on ${$(b)}`, `a ${P(p)} service fee on ${$(b)}`]);
+  const what = pick(R, [`a ${P(p)} tip on a ${$(b)} bill`, p <= 10 ? `${P(p)} sales tax on ${$(b)}` : `a ${P(p)} tip on a ${$(b)} meal`, `a ${P(p)} service fee on ${$(b)}`]);   // no 14% sales tax
   if (R() < 0.5) {
     const slip = R() < 0.5;
     const shown = slip ? exact * 10 : exact * 100;   // a decimal-point slip, or the percent used without dividing by 100
@@ -780,7 +797,7 @@ const successive: Gen = (R, n) => {
   }, 'chain');
   const ans = vals[vals.length - 1]!;
   const added = applyC(b, steps.reduce((s, x) => s + x.p, 0)) ?? Math.round(b + partRaw(b, steps.reduce((s, x) => s + x.p, 0)));
-  const item = pick(R, GOODS);
+  const item = itemFor(R, GOODS, b, ans);
   const { rows, guides } = chainRows(b, steps, false);
   rows[rows.length - 1]!.end = $(ans);
   const mults = steps.map(s => multStr(s.p)).join(' \\times ');
@@ -808,9 +825,9 @@ const reverse: Gen = (R, n) => {
   const s = kind === 'sale' ? -p : p, m = multStr(s);
   const back = applyC(f, kind === 'sale' ? p : -p) ?? Math.round(f + partRaw(f, kind === 'sale' ? p : -p));
   const T = {
-    sale: `After ${B(`${P(p)} off`)}, a ${pick(R, GOODS)} costs ${A($(f))}. What was the original price?`,
+    sale: `After ${B(`${P(p)} off`)}, a ${itemFor(R, GOODS, o, f)} costs ${A($(f))}. What was the original price?`,
     tax: `Your receipt total is ${A($(f))}, including ${B(`${P(p)} sales tax`)} (not rounded). What was the price before tax?`,
-    markup: `A store sells a ${pick(R, STOCK)} for ${A($(f))} after a ${B(`${P(p)} markup`)} on its cost. What was the store’s cost?`,
+    markup: `A store sells a ${itemFor(R, STOCK, o, f)} for ${A($(f))} after a ${B(`${P(p)} markup`)} on its cost. What was the store’s cost?`,
   }[kind];
   return moneyItem({
     id: `reverse-${n}`, family: 'reverse',
@@ -877,7 +894,7 @@ const interest: Gen = (R, n) => {
   const loan = R() < 0.35;
   const { pr, p, t, i } = until(() => {
     const pr = 100 * pick(R, [100, 200, 400, 500, 800, 1000, 1200, 1500, 2000, 2500, 3000, 4000, 5000, 8000, 10000]);
-    const p = int(R, 1, 12), t = int(R, 1, 5);
+    const p = loan ? int(R, 3, 12) : int(R, 1, 6), t = int(R, 1, 5);   // savings rates stay real-world (a loan may cost more)
     const i = simpleInterest(pr, p, t);
     return i === null ? null : { pr, p, t, i };
   }, 'interest');
@@ -893,7 +910,7 @@ const interest: Gen = (R, n) => {
       : `You put ${A($(pr))} in savings at ${B(`${P(p)} simple interest`)} per year. ${askBal ? `What is the balance after ${t} year${t > 1 ? 's' : ''}?` : `How much interest do you earn in ${t} year${t > 1 ? 's' : ''}?`}`,
     board: `I = ${D(pr)} \\times ${rateStr(p)} \\times ${t}`, work: askBal ? `${$t(pr)} + ${$t(i)} = \\cssId{s}{${$t(ans)}}` : `I = \\cssId{s}{${$t(i)}}`,
     picture: { kind: 'tape', rows: [{ lead: 'P', leadCol: 'first', segs, end: askBal ? $(ans) : undefined }], ask: askBal ? { r: 0, slot: 'end' } : undefined, hi: Array.from({ length: t }, (_, k) => ({ r: 0, i: k + 1, col: 'link' as const })) },
-    solution: [`Each year: ${P(p)} of ${$(pr)} = ${B($(per))}, always on the principal.`, `${t} year${t > 1 ? 's' : ''}: ${$(per)} × ${t} = ${$(i)}${askBal ? `; balance ${$(pr)} + ${$(i)} = ${S($(ans))}.` : ` = ${S($(i))}.`}`],
+    solution: [`Each year: ${P(p)} of ${$(pr)} = ${B($(per))}, always on the principal.`, `${t} year${t > 1 ? 's' : ''}: ${$(per)} × ${t} = ${askBal ? `${$(i)}; balance ${$(pr)} + ${$(i)} = ${S($(ans))}.` : `${S($(i))}.`}`],
   }, ans, `Yes: ${$(ans)}.`, [
     { c: askBal ? compC : compC - pr, mc: MC.compound, say: `That adds interest on interest. Simple interest is ${$(per)} every year, on the principal only: ${$(ans)}.`, loose: true },
     { c: askBal ? i : pr + i, mc: MC.interestBalance, say: askBal ? `${$(i)} is the interest only. The ${loan ? 'amount owed' : 'balance'} is ${$(pr)} + ${$(i)} = ${$(ans)}.` : `That is the balance. The interest alone is ${$(i)}.` },
@@ -901,16 +918,17 @@ const interest: Gen = (R, n) => {
   ], `I = P × r × t, with r = ${rateStr(p)}.`);
 };
 const months: Gen = (R, n) => {
+  const isLoan = R() < 0.5;
   const { pr, p, m, i } = until(() => {
     const pr = 100 * pick(R, [400, 600, 800, 1000, 1200, 1500, 2000, 2400, 3000, 4000, 5000]);
-    const p = int(R, 2, 12), m = pick(R, [6, 9, 18, 30, 3, 15, 24]);
+    const p = isLoan ? int(R, 3, 12) : int(R, 2, 6), m = pick(R, [6, 9, 18, 30, 3, 15, 24]);   // savings rates stay real-world
     const i = simpleInterest(pr, p, m / 12);
     return i === null ? null : { pr, p, m, i };
   }, 'months');
   const y = decStr(Math.round((m / 12) * 100), 100);
   return moneyItem({
     id: `months-${n}`, family: 'months',
-    prompt: `A ${R() < 0.5 ? 'loan' : 'savings account'} of ${A($(pr))} has ${B(`${P(p)} simple interest per year`)}. How much interest is that for ${m} months?`,
+    prompt: `A ${isLoan ? 'loan' : 'savings account'} of ${A($(pr))} has ${B(`${P(p)} simple interest per year`)}. How much interest is that for ${m} months?`,
     board: `${m}\\ \\text{months} = \\tfrac{${m}}{12}\\ \\text{year}`, work: `${$t(pr)} \\times ${rateStr(p)} \\times ${y} = \\cssId{s}{${$t(i)}}`,
     picture: { kind: 'tape', rows: [{ lead: 'P', segs: [seg('base', D(pr), '100%', $(pr)), seg('change', D(i), undefined, $(i))] }], ask: { r: 0, slot: 'val1' }, hi: [{ r: 0, i: 1, col: 'link' }] },
     solution: [`The rate is per YEAR, so the time must be in years: ${m} months = ${m}/12 = ${y} year${m === 12 ? '' : 's'}.`, `I = ${$(pr)} × ${rateStr(p)} × ${y} = ${S($(i))}.`],
@@ -923,8 +941,8 @@ const months: Gen = (R, n) => {
 // ===== justify-single-multiplier =====
 const factor: Gen = (R, n) => {
   const v = int(R, 0, 3);
-  const p = pick(R, [20, 15, 25, 30, 8, 6, 40, 12]);
   const down = v === 0 ? true : v === 1 ? false : R() < 0.5;
+  const p = down ? pick(R, [20, 15, 25, 30, 8, 6, 40, 12]) : pick(R, [4, 5, 6, 7, 8, 10]);   // a sales tax stays a real-world rate
   const r = rateStr(p), m = multStr(down ? -p : p);
   const word = down ? `${P(p)} off` : `${P(p)} sales tax`;
   if (v === 0 || v === 1) {
@@ -1042,7 +1060,7 @@ const undo: Gen = (R, n) => {
     prompt: `${what[0]} ${a < 0 ? 'goes down' : 'goes up'} ${B(P(Math.abs(a)))}. What percent ${up ? 'increase' : 'decrease'} brings it back to the ${A(what[1])}?`,
     board: `${ma} \\times \\ ? = 1`, work: `1 \\div ${ma} = ${mb} \\Rightarrow \\cssId{s}{${up ? '+' : '-'}${P(Math.abs(b)).replace('%', '\\%')}}`,
     picture: { kind: 'tape', rows, guides, ask: { r: 1, slot: 'pct1' }, hi: [{ r: 1, i: 1, col: 'link' }] },
-    solution: [`After the change the price is ${ma} of the original, and that is the NEW 100%.`, `To get back: ${ma} × ? = 1, so ? = 1 ÷ ${ma} = ${mb}: ${S(`${up ? 'an increase' : 'a decrease'} of ${P(Math.abs(b))}`)}.`],
+    solution: [`After the change the price is ${ma} of the original, and that is the NEW 100%.`, `To get back: ${ma} × ? = 1, so ? = 1 ÷ ${ma} = ${mb}: ${up ? 'an increase' : 'a decrease'} of ${S(P(Math.abs(b)))}.`],
     answer: { kind: 'num', v: Math.abs(b) },
     check: numCheck(Math.abs(b), `Yes: ${ma} × ${mb} = 1.`, [
       { v: Math.abs(a), mc: MC.adds, say: `${P(Math.abs(a))} of the NEW price is ${up ? 'less' : 'more'} than ${P(Math.abs(a))} of the original. You need ${ma} × ? = 1: ${P(Math.abs(b))}.` },
@@ -1195,7 +1213,14 @@ const offers: Gen = (R, n) => {
   ]);
 };
 
-export const GENERATORS: Record<FamilyId, Gen> = {
+/** "an 8% tip", "an $18 hoodie", "an 11% fee": the article before a number read aloud (eight, eleven, eighteen, eighty) */
+export const articles = (s: string) => s.replace(/\b([Aa]) ((?:<[^>]+>)*\$?)(8|11(?!\d)|18(?!\d))/g, '$1n $2$3');
+const withArticles = (g: Gen): Gen => (R, n, sg) => {
+  const it = g(R, n, sg);
+  return { ...it, prompt: articles(it.prompt), solution: it.solution.map(articles), ...(it.choices ? { choices: it.choices.map(articles) } : {}) };
+};
+const FAMS: Record<FamilyId, Gen> = {
   base: baseFam, baseCalc, direction, pctOf: pctOfFam, mult, single, commission, round, wages, estimate, successive, reverse,
   pctError, interest, months, factor, product, net, undo, order, shared, offers,
 };
+export const GENERATORS = Object.fromEntries(Object.entries(FAMS).map(([k, g]) => [k, withArticles(g)])) as Record<FamilyId, Gen>;
