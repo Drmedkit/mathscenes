@@ -450,6 +450,8 @@ const close: Gen = (R, n) => {
     const forced = [...m.indep]; forced[k - 1] = 360 - m.indep.slice(0, -1).reduce((s, x) => s + x, 0);
     const L = (xs: number[]) => xs.map(x => `${x}°`).join(', ');
     if (L(forced) === L(m.draw) || L(m.indep) === L(m.draw)) continue;
+    // the 'fix only the last angle' list must break the 1° rule, or it is an honest drawing too (two right lists)
+    if (Math.abs(forced[k - 1]! - (360 * cs[k - 1]!) / N) < 1) continue;
     return choiceItem(R, {
       id: `close-${n}`, family: 'close',
       prompt: `${c.title} of ${A(N)} ${c.who}. Rounded one by one, the angles are ${L(m.indep)}: a total of ${indepSum}°. Which list should you draw?`,
@@ -702,6 +704,8 @@ const disclose: Gen = (R, n) => {
     if (T === 100) continue;
     const forced = 100 - m.pctLabel.slice(0, -1).reduce((s, x) => s + x, 0);
     const last = cats[k - 1]!.name;
+    // relabelling the last slice must really misstate it: an exact x.5% could honestly round either way
+    if (Math.abs(forced - (100 * cats[k - 1]!.count) / N) <= 0.5) continue;
     return choiceItem(R, {
       id: `disclose-${n}`, family: 'disclose',
       prompt: `${c.title} of ${A(N)} ${c.who}. The rounded labels total ${B(`${T}%`)}. What is the honest fix?`,
