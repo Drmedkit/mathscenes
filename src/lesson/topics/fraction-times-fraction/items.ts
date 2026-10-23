@@ -4,6 +4,7 @@
 // Pure: no DOM, no canvas. PROBES records, per item, typical wrong responses and the id they must get (tests).
 import { type Gen, type Item, type Response, type Verdict, A, B, S, fr, fracValue, gcd, int, mixed, pick, same, shuffle } from '../../runtime/item';
 import { areaFits } from './AreaModel';
+import { endOnChoice } from '../../runtime/explain';
 
 export type FamilyId = 'ofWhole' | 'areaRead' | 'equation' | 'rule' | 'tiles' | 'compute' | 'simplify' | 'cancel' | 'predict' | 'explain' | 'story' | 'rect';
 export const FAMILY_NAMES: Record<FamilyId, string> = {
@@ -33,6 +34,8 @@ const tf = (n: number | string, d: number | string) => `\\tfrac{${n}}{${d}}`;
 const dfrac = (n: number | string, d: number | string) => `\\frac{${n}}{${d}}`;
 const mixTex = (w: number, n: number, d: number) => `${w}${tf(n, d)}`;
 const simp = (n: number, d: number): [number, number] => { const g = gcd(n, d) || 1; return [n / g, d / g]; };
+/** the plural name of a denominator: thirds, fourths (never "3ths") */
+const ths = (d: number) => ({ 2: 'halves', 3: 'thirds', 4: 'fourths', 5: 'fifths', 6: 'sixths', 7: 'sevenths', 8: 'eighths', 9: 'ninths', 10: 'tenths', 12: 'twelfths' } as Record<number, string>)[d] ?? `${d}ths`;
 const fracOrMixed = (n: number, d: number) => { const [p, q] = simp(n, d); return q === 1 ? String(p) : mixed(p, q); };
 
 interface FracWrong { v: [number, number]; mc?: string; say: string; when?: boolean }
@@ -100,7 +103,7 @@ const ofWhole: Gen = (R, n) => {
     id: `ow-${n}`, family: 'ofWhole',
     prompt: mode === 'multiple' ? `What is ${S(fr(aa, bb))} of ${A(`${qq} ${thing}`)}?` : `There are ${A(`${qq} ${thing}`)}. How much is ${S(fr(aa, bb))} of them?`,
     board: `${dfrac(aa, bb)} \\times ${qq} = \\,?`, input: 'frac', unit: mode === 'multiple' ? thing : thing.split(' ')[0]!,
-    solution: [`${fr(aa, bb)} × ${qq} means ${fr(aa, bb)} of ${qq}: cut ${qq} into ${bb} equal parts and take ${aa}.`, mode === 'multiple' ? `One part is ${qq} ÷ ${bb} = ${qq / bb}; ${aa} parts are ${aa * qq / bb}.` : `One part is ${fr(qq, bb)}; ${aa} parts are ${fr(aa * qq, bb)}.`, `So ${fr(aa, bb)} × ${qq} = ${fracOrMixed(aa * qq, bb)}.`],
+    solution: [`${fr(aa, bb)} × ${qq} means ${fr(aa, bb)} of ${qq}: cut ${qq} into ${bb} equal parts and take ${aa}.`, mode === 'multiple' ? `One part is ${qq} ÷ ${bb} = ${qq / bb}; ${aa} part${aa === 1 ? ' is' : 's are'} ${aa * qq / bb}.` : `One part is ${fr(qq, bb)}; ${aa} part${aa === 1 ? ' is' : 's are'} ${fr(aa * qq, bb)}.`, `So ${fr(aa, bb)} × ${qq} = ${S(fracOrMixed(aa * qq, bb))}.`],
     answer: dd === 1 ? { kind: 'frac', w: nn, n: 0, d: 1 } : F(aa * qq, bb),
     check: r => fracCheck(r, aa * qq, bb, `Yes: ${fr(aa, bb)} of ${qq} is ${fracOrMixed(aa * qq, bb)}.`, [
       { v: [aa, bb], mc: 'mc.fraction-ops.multiplies-both-terms-by-whole-number', say: `That multiplies the top and the bottom by ${qq}, which leaves ${fr(aa, bb)} unchanged. Take ${aa} of ${bb} equal parts of ${qq}: ${fracOrMixed(aa * qq, bb)}.` },
@@ -126,8 +129,10 @@ function areaNumbers(R: () => number, sg?: string): [number, number, number, num
 }
 const areaRead: Gen = (R, n, sg) => {
   const [a, b, c, d] = areaNumbers(R, sg);
-  const sk = pick(R, PAN_SKINS), who = pick(R, WHO);
   const improper = c > d;
+  // more than one whole: only pans of brownies (3/2 of ONE garden bed cannot be planted)
+  const sk0 = pick(R, PAN_SKINS), who = pick(R, WHO);
+  const sk = improper ? PAN_SKINS[0]! : sk0;
   const amount = improper ? `${fr(c, d)} pans` : `${fr(c, d)} of the ${sk.whole}`;
   const prompt = sk.look === 'plot'
     ? `${A(`${fr(c, d)} of the garden bed`)} is planted. ${who} puts carrots in ${B(`${fr(a, b)} of the planted part`)}. What fraction of the whole bed gets carrots?`
@@ -141,8 +146,8 @@ const areaRead: Gen = (R, n, sg) => {
     id: `ar-${n}`, family: 'areaRead', prompt, board: `${dfrac(a, b)} \\text{ of } ${dfrac(c, d)} = \\,?`, input: 'frac', unit, picture: pic as unknown as Record<string, unknown>,
     solution: [
       `The dashed cuts make ${b} × ${d} = ${S(String(D))} equal cells in ONE whole ${improper ? 'pan' : sk.look === 'plot' ? 'bed' : 'pan'}.`,
-      `${fr(a, b)} of the ${A(fr(c, d))}: ${a} of the ${b} rows of the ${sk.first} part, ${a} × ${c} = ${S(String(N))} cells.`,
-      `So ${fr(a, b)} × ${fr(c, d)} = ${fr(N, D)}${gcd(N, D) > 1 ? ` = ${fracOrMixed(N, D)}` : ''}${improper ? ' pans' : ''}.`,
+      `${fr(a, b)} of the ${A(fr(c, d))}: ${a} of the ${b} rows of the ${sk.first} part, ${a} × ${c} = ${S(String(N))} cell${N === 1 ? '' : 's'}.`,
+      `So ${fr(a, b)} × ${fr(c, d)} = ${gcd(N, D) > 1 ? `${fr(N, D)} = ${S(fracOrMixed(N, D))}` : S(fr(N, D))}${improper ? (N === D ? ' pan' : ' pans') : ''}.`,
     ],
     answer: F(N, D),
     check: r => fracCheck(r, N, D, `Yes: ${N} of the ${D} cells of one whole, ${fr(N, D)}${gcd(N, D) > 1 ? ` = ${fracOrMixed(N, D)}` : ''}.`, [
@@ -200,7 +205,7 @@ const rule: Gen = (R, n, sg) => {
     const it: Item = {
       id: `ru-${n}`, family: 'rule', prompt: `The picture shows ${S(`${fr(a1, b1)} of ${fr(c1, d1)}`)} of a pan. How many cells are eaten, and how many equal cells are in the whole pan?`,
       board: `${dfrac(a1, b1)} \\times ${dfrac(c1, d1)} = \\dfrac{\\square}{\\square}`, input: 'pair', pairLead: 'eaten cells', pairOp: 'of', picture: pic as unknown as Record<string, unknown>,
-      solution: [`Rows × columns of the eaten part: ${a1} × ${c1} = ${n1} cells (the top number).`, `Rows × columns of the whole pan: ${b1} × ${d1} = ${D1} cells (the bottom number).`, `So ${fr(a1, b1)} × ${fr(c1, d1)} = ${fr(`${a1} × ${c1}`, `${b1} × ${d1}`)} = ${fr(n1, D1)}.`],
+      solution: [`Rows × columns of the eaten part: ${a1} × ${c1} = ${S(String(n1))} cells (the top number).`, `Rows × columns of the whole pan: ${b1} × ${d1} = ${S(String(D1))} cells (the bottom number).`, `So ${fr(a1, b1)} × ${fr(c1, d1)} = ${fr(`${a1} × ${c1}`, `${b1} × ${d1}`)} = ${fr(n1, D1)}.`],
       answer: { kind: 'pair', x: n1, y: D1 },
       check: r => {
         if (r.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
@@ -219,7 +224,7 @@ const rule: Gen = (R, n, sg) => {
     { t: `The second cuts run through the whole pan, so it has ${b} × ${dd} = ${D} equal cells.`, ok: true, say: `Yes. The bottom number counts the equal cells of ONE whole pan: ${b} rows × ${dd} columns.` },
     { t: `You always multiply the bottoms: that is just the rule.`, say: `The rule is right, but it has a reason: the cuts make ${b} × ${dd} = ${D} equal cells in the whole pan.`, mc: 'mc.fraction-ops.fraction-product-denominator-meaning-unexplained' },
     { t: `The frosted part has ${D} cells.`, say: `The frosted part has ${b} × ${cc} = ${b * cc} cells. ${D} is the whole pan: ${b} × ${dd}.`, mc: 'mc.fractions-concept.part-taken-as-whole' },
-    ...(b === dd ? [{ t: `Both fractions are ${dd}ths, so the answer is ${dd}ths too.`, say: `Not for a product: cutting ${dd}ths into ${b} rows makes ${D} cells in the whole pan.`, mc: 'mc.fraction-ops.keeps-common-denominator-in-product-or-quotient' }] : []),
+    ...(b === dd ? [{ t: `Both fractions are ${ths(dd)}, so the answer is ${ths(dd)} too.`, say: `Not for a product: cutting ${ths(dd)} into ${b} rows makes ${D} cells in the whole pan.`, mc: 'mc.fraction-ops.keeps-common-denominator-in-product-or-quotient' }] : []),
   ]);
   const pic: AreaPicture | undefined = areaFits(a, b, cc, dd) ? { kind: 'area', a, b, c: cc, d: dd, look: 'pan', words: { first: 'frosted', take: 'eaten' }, upto: 'grid' } : undefined;
   return { id: `ru-w-${n}`, family: 'rule', prompt: `The pan shows ${fr(a, b)} of the frosted ${fr(cc, dd)}: ${fr(a, b)} × ${fr(cc, dd)} = ${fr(N, D)}. Why is the bottom number ${S(String(D))}?`, board: `${dfrac(a, b)} \\times ${dfrac(cc, dd)} = ${dfrac(N, D)}`, input: 'choice', choices: o.choices, picture: pic as unknown as Record<string, unknown> | undefined,
@@ -244,7 +249,7 @@ const tiles: Gen = (R, n) => {
     solution: [
       ...(wb !== b ? [`${fr(wa, wb)} ft = ${fr(a, b)} ft, so the width is ${a} tiles.`] : []),
       `${D} tiles fill the square foot, so one tile is ${fr(1, D)} sq ft.`,
-      `The rectangle is ${c} tiles by ${a} tiles: ${N} tiles = ${fr(N, D)} sq ft.`,
+      `The rectangle is ${c} tile${c === 1 ? '' : 's'} by ${a} tile${a === 1 ? '' : 's'}: ${N} tiles = ${S(fr(N, D))} sq ft.`,
       `Check with the rule: ${fr(c, d)} × ${fr(wa, wb)} = ${fr(c * wa, d * wb)} = ${fr(N, D)}.`,
     ],
     answer: F(N, D),
@@ -298,7 +303,7 @@ const compute: Gen = (R, n, sg) => {
   }
   const N = a * c, D = b * d;
   if (d > 1 && b * c !== 0) wrongs.push({ v: [a * d, b * c], mc: 'mc.fraction-ops.cross-multiplies-to-multiply', say: `That multiplies across (${a} × ${d} and ${b} × ${c}), the trick for comparing. To multiply: tops × tops, bottoms × bottoms.` });
-  if (b === d && b > 1) wrongs.push({ v: [N, d], mc: 'mc.fraction-ops.keeps-common-denominator-in-product-or-quotient', say: `Keeping the ${d} is the rule for ADDING. A product of ${d}ths is cut ${b} × ${d} = ${D} ways.` });
+  if (b === d && b > 1) wrongs.push({ v: [N, d], mc: 'mc.fraction-ops.keeps-common-denominator-in-product-or-quotient', say: `Keeping the ${d} is the rule for ADDING. A product of ${ths(d)} is cut ${b} × ${d} = ${D} ways.` });
   if (N > 0 && (a > b || c > d)) wrongs.push({ v: [N, D * 2], say: `Check the size: one factor is more than 1, so the product is bigger than the other factor.` });
   const okSay = N === 0 ? `Yes: zero times anything is 0.` : `Yes: ${fr(`${a} × ${c}`, `${b} × ${d}`)} = ${fr(N, D)}${gcd(N, D) > 1 || N > D ? ` = ${fracOrMixed(N, D)}` : ''}.`;
   const it: Item = {
@@ -306,7 +311,7 @@ const compute: Gen = (R, n, sg) => {
     solution: [
       ...(sg === 'mixed-number-factors' ? [`Write the mixed numbers as fractions: ${fr(a, b)} × ${fr(c, d)}.`] : []),
       `Tops × tops: ${a} × ${c} = ${N}. Bottoms × bottoms: ${b} × ${d} = ${D}.`,
-      `${fr(N, D)}${N > 0 && (gcd(N, D) > 1 || N > D) ? ` = ${fracOrMixed(N, D)}` : ''}${sg === 'mixed-number-factors' ? `. Size check: it lies between the products of the whole parts below and above.` : '.'}`,
+      `${N > 0 && (gcd(N, D) > 1 || N > D) ? `${fr(N, D)} = ${S(fracOrMixed(N, D))}` : S(fr(N, D))}${sg === 'mixed-number-factors' ? `. Size check: it lies between the products of the whole parts below and above.` : '.'}`,
     ],
     answer: N === 0 ? { kind: 'frac', w: 0, n: 0, d: 1 } : F(N, D),
     check: r => {
@@ -346,7 +351,7 @@ const simplify: Gen = (R, n) => {
   const half = (() => { for (const k of [2, 3, 5, 7]) if (g % k === 0 && g !== k) return k; return 0; })();
   const it: Item = {
     id: `si-${n}`, family: 'simplify', prompt: `${fr(a, b)} × ${fr(c, d)} = ${S(fr(N, D))}. Write it in simplest form.`, board: `${dfrac(N, D)} = \\,?`, input: 'frac',
-    solution: g > 1 ? [`The biggest number that divides ${N} and ${D} is ${g}.`, `${N} ÷ ${g} = ${p}, ${D} ÷ ${g} = ${q}: ${fr(p, q)}.`, `Check: ${p} and ${q} share no factor but 1.`] : [`${N} and ${D} share no factor but 1: ${fr(N, D)} is already simplest.`],
+    solution: g > 1 ? [`The biggest number that divides ${N} and ${D} is ${g}.`, `${N} ÷ ${g} = ${p}, ${D} ÷ ${g} = ${q}: ${S(fr(p, q))}.`, `Check: ${p} and ${q} share no factor but 1.`] : [`Look for a number bigger than 1 that divides both ${N} and ${D}.`, `There is none: ${S(fr(N, D))} is already simplest.`],
     answer: F(p, q),
     check: r => {
       if (r.kind === 'frac') {
@@ -383,7 +388,7 @@ const cancel: Gen = (R, n) => {
       solution: [`Write it as one fraction: ${fr(`${a} × ${c}`, `${b} × ${d}`)}.`, `${a} (top) and ${d} (bottom) share ${g1}${g2 > 1 ? `; ${c} (top) and ${b} (bottom) share ${g2}` : ''}: divide them.`, `${fr(a1, b1)} × ${fr(c1, d1)} = ${fr(p, q)}.`], answer: { kind: 'choice', i: o.right }, check: r => choiceCheck(r, o.right, o.says) };
   }
   return { id: `ca-${n}`, family: 'cancel', prompt: `Simplify first, then multiply: ${S(`${fr(a, b)} × ${fr(c, d)}`)}. (Multiplying first and simplifying after is fine too.)`, board: `${dfrac(a, b)} \\times ${dfrac(c, d)} = \\,?`, input: 'frac',
-    solution: [`${fr(`${a} × ${c}`, `${b} × ${d}`)}: divide ${a} and ${d} by ${g1}${g2 > 1 ? `, ${c} and ${b} by ${g2}` : ''}.`, `${fr(a1, b1)} × ${fr(c1, d1)} = ${fr(p, q)}.`], answer: F(p, q),
+    solution: [`${fr(`${a} × ${c}`, `${b} × ${d}`)}: divide ${a} and ${d} by ${g1}${g2 > 1 ? `, ${c} and ${b} by ${g2}` : ''}.`, `${fr(a1, b1)} × ${fr(c1, d1)} = ${S(fr(p, q))}.`], answer: F(p, q),
     check: r => fracCheck(r, N, D, `Yes: ${fr(p, q)}${p * D !== N * q ? '' : ''}.`, [
       { v: [a * d, b * c], mc: 'mc.fraction-ops.cross-multiplies-to-multiply', say: `That multiplies across. For a product: tops × tops, bottoms × bottoms, ${fr(p, q)}.` },
     ], `Simplify a top with a bottom, then multiply: ${fr(p, q)}.`) };
@@ -464,7 +469,7 @@ const story: Gen = (R, n) => {
   const N = a * c, D = b * d, bigger = a > b;
   const it: Item = {
     id: `st-${n}`, family: 'story', prompt: `${text} Then check: should the answer be more or less than ${fr(c, d)}?`, board: `${dfrac(a, b)} \\times ${dfrac(c, d)} = \\,?`, input: 'frac', unit,
-    solution: [kind === 'garden' ? `Area = length × width = ${fr(c, d)} × ${fr(a, b)}.` : `“${a > b ? '1 1/2 times' : fr(a, b) + ' of'}” the amount: ${fr(a, b)} × ${fr(c, d)}.`, `${fr(`${a} × ${c}`, `${b} × ${d}`)} = ${fr(N, D)}${gcd(N, D) > 1 || N > D ? ` = ${fracOrMixed(N, D)}` : ''} ${unit}.`, `Size check: ${fr(a, b)} is ${bigger ? 'more' : 'less'} than 1, so the answer is ${bigger ? 'more' : 'less'} than ${fr(c, d)}. ✓`],
+    solution: [kind === 'garden' ? `Area = length × width = ${fr(c, d)} × ${fr(a, b)}.` : `“${a > b ? '1 1/2 times' : fr(a, b) + ' of'}” the amount: ${fr(a, b)} × ${fr(c, d)}.`, `${fr(`${a} × ${c}`, `${b} × ${d}`)} = ${gcd(N, D) > 1 || N > D ? `${fr(N, D)} = ${S(fracOrMixed(N, D))}` : S(fr(N, D))} ${N === D && unit === 'cups' ? 'cup' : unit}.`, `Size check: ${fr(a, b)} is ${bigger ? 'more' : 'less'} than 1, so the answer is ${bigger ? 'more' : 'less'} than ${fr(c, d)}. ✓`],
     answer: F(N, D),
     check: r => fracCheck(r, N, D, `Yes: ${fr(a, b)} × ${fr(c, d)} = ${fracOrMixed(N, D)} ${unit}, and it is ${bigger ? 'more' : 'less'} than ${fr(c, d)}, as it should be.`, [
       { v: [a, b], mc: 'mc.fraction-ops.fraction-given-instead-of-quantity', say: `${fr(a, b)} is the part that is used, not the amount. The amount is ${fr(a, b)} of ${fr(c, d)}: ${fracOrMixed(N, D)} ${unit}.` },
@@ -487,7 +492,7 @@ const rect: Gen = (R, n) => {
     const L = pick(R, [4.5, 2.5, 3.5, 6.5, 1.5]), Wd = int(R, 2, 5), askP = R() < 0.5;
     const v = askP ? 2 * (L + Wd) : L * Wd;
     const it: Item = { id: `re-d-${n}`, family: 'rect', prompt: `A rectangle is ${A(`${L} m`)} by ${B(`${Wd} m`)}. What is its ${askP ? 'perimeter' : 'area'}?`, board: askP ? `P = 2 \\times (${L} + ${Wd})` : `A = ${L} \\times ${Wd}`, input: 'num', unit: askP ? 'm' : 'sq m',
-      solution: askP ? [`P = 2 × (${L} + ${Wd}) = 2 × ${L + Wd} = ${v} m.`] : [`A = ${L} × ${Wd} = ${v} sq m.`], answer: { kind: 'num', v },
+      solution: askP ? [`Perimeter: all the way round, P = 2 × (length + width).`, `P = 2 × (${L} + ${Wd}) = 2 × ${L + Wd} = ${S(`${v} m`)}.`] : [`Area of a rectangle: A = length × width.`, `A = ${L} × ${Wd} = ${S(`${v} sq m`)}.`], answer: { kind: 'num', v },
       check: r => {
         if (r.kind !== 'num' || !Number.isFinite(r.v)) return { ok: false, say: 'Type a number (a decimal point is fine).' };
         if (Math.abs(r.v - v) < 1e-9) return { ok: true, say: `Yes: ${v} ${askP ? 'm' : 'sq m'}.` };
@@ -516,7 +521,7 @@ const rect: Gen = (R, n) => {
   }
   if (mode === 'P') {
     const it: Item = { id: `re-p-${n}`, family: 'rect', prompt: `A rectangle is ${A(L)} long and ${B(Wh)} wide. What is its perimeter?`, board: `P = 2 \\times (${LT} + ${WT})`, input: 'frac', unit: u,
-      solution: [`P = 2 × (length + width).`, `${L} + ${Wh} = ${fracOrMixed(PN / 2, PD)} ${u}.`, `2 × ${fracOrMixed(PN / 2, PD)} = ${fracOrMixed(PN, PD)} ${u}.`], answer: F(PN, PD),
+      solution: [`P = 2 × (length + width).`, `${L} + ${Wh} = ${fracOrMixed(PN / 2, PD)} ${u}.`, `2 × ${fracOrMixed(PN / 2, PD)} = ${S(`${fracOrMixed(PN, PD)} ${u}`)}.`], answer: F(PN, PD),
       check: r => fracCheck(r, PN, PD, `Yes: ${fracOrMixed(PN, PD)} ${u} all the way round.`, [
         { v: [PN / 2, PD], mc: 'mc.area-perimeter.rectangle-perimeter-length-plus-width', say: `That is one length plus one width, halfway round. Double it: ${fracOrMixed(PN, PD)} ${u}.` },
         { v: [AN, AD], say: `That is the area. Perimeter is the distance around: ${fracOrMixed(PN, PD)} ${u}.` },
@@ -526,7 +531,7 @@ const rect: Gen = (R, n) => {
   }
   const fl = w1 * w2 * d1 * d2 + n1 * n2; // firsts and lasts only: w1*w2 + (n1/d1)(n2/d2), over d1*d2
   const it: Item = { id: `re-a-${n}`, family: 'rect', prompt: `A rectangle is ${A(L)} long and ${B(Wh)} wide. What is its area?`, board: `A = ${LT} \\times ${WT}`, input: 'frac', unit: `sq ${u}`,
-    solution: [`Write the sides as fractions: ${fr(ln, ld)} × ${fr(wn, wd)}.`, `${fr(`${ln} × ${wn}`, `${ld} × ${wd}`)} = ${fr(AN, AD)}${gcd(AN, AD) > 1 || AN > AD ? ` = ${fracOrMixed(AN, AD)}` : ''} sq ${u}.`, `Size check: between ${w1} × ${w2 || 0} and ${w1 + 1} × ${w2 + 1} sq ${u}.`], answer: F(AN, AD),
+    solution: [`Write the sides as fractions: ${fr(ln, ld)} × ${fr(wn, wd)}.`, `${fr(`${ln} × ${wn}`, `${ld} × ${wd}`)} = ${gcd(AN, AD) > 1 || AN > AD ? `${fr(AN, AD)} = ${S(fracOrMixed(AN, AD))}` : S(fr(AN, AD))} sq ${u}.`, `Size check: between ${w1} × ${w2 || 0} and ${w1 + 1} × ${w2 + 1} sq ${u}.`], answer: F(AN, AD),
     check: r => fracCheck(r, AN, AD, `Yes: ${fracOrMixed(AN, AD)} sq ${u}.`, [
       { v: [fl, d1 * d2], mc: 'mc.quadratic-polynomial.firsts-and-lasts-only', say: `Wholes × wholes plus parts × parts misses the cross parts. Convert: ${fr(ln, ld)} × ${fr(wn, wd)} = ${fracOrMixed(AN, AD)} sq ${u}.` },
       { v: [PN, PD], say: `That is the perimeter. Area = length × width = ${fracOrMixed(AN, AD)} sq ${u}.` },
@@ -535,4 +540,11 @@ const rect: Gen = (R, n) => {
   return it;
 };
 
-export const GENS: Record<FamilyId, Gen> = { ofWhole, areaRead, equation, rule, tiles, compute, simplify, cancel, predict, explain, story, rect };
+/** a choice item's solution ends on the right choice ("So: …" when no step names it): the steps card reads it from there */
+const endsOnChoice = (g: Gen): Gen => (R, n, sg) => {
+  const it = g(R, n, sg);
+  if (it.input === 'choice' && it.answer.kind === 'choice') it.solution = endOnChoice(it.solution, it.choices![it.answer.i]!);
+  return it;
+};
+const GENS0: Record<FamilyId, Gen> = { ofWhole, areaRead, equation, rule, tiles, compute, simplify, cancel, predict, explain, story, rect };
+export const GENS = Object.fromEntries(Object.entries(GENS0).map(([k, g]) => [k, endsOnChoice(g)])) as Record<FamilyId, Gen>;

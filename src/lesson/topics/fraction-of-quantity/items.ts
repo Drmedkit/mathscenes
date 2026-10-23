@@ -4,6 +4,7 @@
 // Pure: no DOM, no canvas.
 import { type Gen, type Item, type Response, type Verdict, A, B, S, fr, fracValue, gcd, int, mixed, pick, same, shuffle } from '../../runtime/item';
 import { setFits, tapeFits } from './fractionOfMaths';
+import { endOnChoice } from '../../runtime/explain';
 
 // ---------- contexts (US units, no money) ----------
 interface SetCtx { things: string; thing: string; look: 'cookie' | 'marble'; holder: string; other: string }
@@ -74,12 +75,14 @@ function fracItem(o: Omit<Item, 'input' | 'answer' | 'check'> & { n: number; d: 
     },
   };
 }
+/** "a" or "an" before a number: an 8 ft board, an 11 in sandwich, an 18 */
+const an = (q: number) => (q === 8 || q === 11 || q === 18 || (q >= 80 && q < 90) ? 'an' : 'a');
 interface Choice { t: string; ok: boolean; mc?: string; say: string }
 function choiceItem(R: () => number, o: Omit<Item, 'input' | 'answer' | 'check' | 'choices'> & { opts: Choice[] }): Item {
   const { opts, ...rest } = o;
   const sh = shuffle(R, opts.slice());
   return {
-    ...rest, input: 'choice', choices: sh.map(c => c.t), answer: { kind: 'choice', i: sh.findIndex(c => c.ok) },
+    ...rest, solution: endOnChoice(rest.solution, sh.find(c => c.ok)!.t), input: 'choice', choices: sh.map(c => c.t), answer: { kind: 'choice', i: sh.findIndex(c => c.ok) },
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !sh[r.i]) return { ok: false, say: 'Pick one answer.' };
       const c = sh[r.i]!;
@@ -174,7 +177,7 @@ const equalParts: Gen = (R, n) => {
   parts[0]! -= d; parts[b - 1]! += d;
   const list = shuffle(R, parts.slice()).map(p => `${p} ${C.unit}`).join(', ');
   return choiceItem(R, {
-    id: `equalParts-${n}`, family: 'equalParts', prompt: `${who} cuts a ${A(`${q} ${C.unit}`)} ${C.what} into ${B(b)} pieces: ${list}. Is each piece ${fr(1, b)} of the ${C.what}?`,
+    id: `equalParts-${n}`, family: 'equalParts', prompt: `${who} cuts ${an(q)} ${A(`${q} ${C.unit}`)} ${C.what} into ${B(b)} pieces: ${list}. Is each piece ${fr(1, b)} of the ${C.what}?`,
     board: `${list.replace(/ (ft|in|yd)/g, '\\,\\text{$1}').replace(/, /g, ',\\ ')}`,
     solution: [`${ORD[b]} must be ${B(b)} EQUAL parts.`, `${q} ÷ ${b} = ${s}, so each ${fr(1, b)} would be ${S(`${s} ${C.unit}`)}. These pieces are not all ${s} ${C.unit}.`],
     opts: [
@@ -301,7 +304,7 @@ const unitCheck: Gen = (R, n) => {
   const { a, b, s } = properNumbers(R, 60);
   const q = b * s, C = pick(R, MEAS), who = pick(R, NAMES), r = a * s;
   return choiceItem(R, {
-    id: `unitCheck-${n}`, family: 'unitCheck', prompt: `${who} finds ${fr(a, b)} of a ${A(`${q} ${C.unit}`)} ${C.what}. Which answer is written right?`,
+    id: `unitCheck-${n}`, family: 'unitCheck', prompt: `${who} finds ${fr(a, b)} of ${an(q)} ${A(`${q} ${C.unit}`)} ${C.what}. Which answer is written right?`,
     board: `\\tfrac{${a}}{${b}} \\text{ of } ${q}\\ \\text{${C.unit}}`,
     solution: [`${q} ÷ ${b} × ${a} = ${r}.`, `A part of ${q} ${C.unit} is still measured in ${C.unit}: ${S(`${r} ${C.unit}`)}.`],
     opts: [
@@ -325,7 +328,7 @@ const predict: Gen = (R, n) => {
     return choiceItem(R, {
       id: `predict-${n}`, family: 'predict', prompt: `${pick(R, NAMES)} says ${fr(a, b)} of ${A(q)} is ${claim}. Without working it out, can that be right?`,
       board: `\\tfrac{${a}}{${b}} \\text{ of } ${q} = ${claim}\\ ?`,
-      solution: [`${b} shares make the whole ${q}. ${fr(a, b)} takes ${a} shares: ${more ? 'more' : 'fewer'} than ${b}.`, `So the answer is ${more ? 'more' : 'less'} than ${q}, and ${claim} is ${more ? 'less' : 'more'}. (It is ${a * s}.)`],
+      solution: [`${b} shares make the whole ${q}. ${fr(a, b)} takes ${a} share${a === 1 ? '' : 's'}: ${more ? 'more' : 'fewer'} than ${b}.`, `So the answer is ${more ? 'more' : 'less'} than ${q}, and ${claim} is ${more ? 'less' : 'more'}. (It is ${a * s}.)`],
       opts: [
         { t: `No. ${fr(a, b)} is ${more ? 'more' : 'less'} than 1, so the answer is ${more ? 'more' : 'less'} than ${q}.`, ok: true, say: `Right: compare ${a} with ${b} first.` },
         { t: more ? `Yes. A fraction always makes it smaller.` : `Yes. Multiplying always makes it bigger.`, ok: false, mc: more ? 'mc.fraction-ops.fraction-factor-always-shrinks' : 'mc.mul-div.multiplication-makes-bigger', say: more ? `${fr(a, b)} is more than 1 whole, so ${fr(a, b)} of ${q} is more than ${q}.` : `Times a number less than 1 makes it smaller: ${fr(a, b)} of ${q} is less than ${q}.` },
@@ -336,7 +339,7 @@ const predict: Gen = (R, n) => {
   const ans = a < b ? 0 : a === b ? 1 : 2;
   const T = [`Less than ${q}`, `Equal to ${q}`, `More than ${q}`];
   const mcFor = (i: number) => (i < ans ? 'mc.fraction-ops.fraction-factor-always-shrinks' : i > ans ? 'mc.mul-div.multiplication-makes-bigger' : undefined);
-  const why = [`${a} shares are fewer than the ${b} that make the whole.`, `${b} shares out of ${b} is exactly the whole.`, `${a} shares are more than the ${b} that make the whole.`][ans]!;
+  const why = [`${a === 1 ? '1 share is' : `${a} shares are`} fewer than the ${b} that make the whole.`, `${b} shares out of ${b} is exactly the whole.`, `${a} shares are more than the ${b} that make the whole.`][ans]!;
   return choiceItem(R, {
     id: `predict-${n}`, family: 'predict', prompt: `Without working it out: is ${fr(a, b)} of ${A(q)} less than, equal to, or more than ${q}?`, board: `\\tfrac{${a}}{${b}} \\text{ of } ${q} \\ \\ ? \\ \\ ${q}`,
     solution: [`Compare the top number with the bottom number: ${a} and ${b}.`, why + ` (${fr(a, b)} of ${q} = ${a * s}.)`],
@@ -401,8 +404,9 @@ const whichWhole: Gen = (R, n) => {
 };
 
 // ---------- 13. a unit fraction that gives a fraction ----------
-const SHARE_CTX: readonly { unit: string; what: string }[] = [
-  { unit: 'ft', what: 'board' }, { unit: 'ft', what: 'ribbon' }, { unit: 'in', what: 'sandwich' }, { unit: 'yd', what: 'rope' }];
+// each thing with the lengths it really comes in (a sub sandwich is 6 to 12 in, not 2 in)
+const SHARE_CTX: readonly { unit: string; what: string; lo: number; hi: number }[] = [
+  { unit: 'ft', what: 'board', lo: 2, hi: 12 }, { unit: 'ft', what: 'ribbon', lo: 2, hi: 10 }, { unit: 'in', what: 'sub sandwich', lo: 6, hi: 12 }, { unit: 'yd', what: 'rope', lo: 2, hi: 12 }];
 function fracWrongs(q: number, a: number, b: number, unit: string): FracWrong[] {
   const w: FracWrong[] = [];
   if (a === 1 && q > b) w.push({ n: Math.floor(q / b), d: 1, mc: 'mc.fractions-concept.leftover-not-shared-as-fraction', say: `That leaves the ${q % b} ${unit} left over unshared. Cut it too: each share is ${fr(q, b)} ${unit}.` });
@@ -415,11 +419,11 @@ function fracWrongs(q: number, a: number, b: number, unit: string): FracWrong[] 
   return w;
 }
 const fracShare: Gen = (R, n) => {
-  let b = 4, q = 6;
-  do { b = int(R, 2, 10); q = int(R, 2, 12); } while (q % b === 0 || !tapeFits(q, 1, b));
   const C = pick(R, SHARE_CTX), who = pick(R, NAMES);
+  let b = 4, q = 6;
+  do { b = int(R, 2, 10); q = int(R, C.lo, C.hi); } while (q % b === 0 || !tapeFits(q, 1, b));
   return fracItem({
-    id: `fracShare-${n}`, family: 'fracShare', prompt: `${who} cuts a ${A(`${q} ${C.unit}`)} ${C.what} into ${B(b)} equal pieces. How long is ${fr(1, b)} of it?`,
+    id: `fracShare-${n}`, family: 'fracShare', prompt: `${who} cuts ${an(q)} ${A(`${q} ${C.unit}`)} ${C.what} into ${B(b)} equal pieces. How long is ${fr(1, b)} of it?`,
     board: `\\tfrac{1}{${b}} \\text{ of } ${q}\\ \\text{${C.unit}} = \\ ?`, unit: C.unit,
     picture: { q, a: 1, b, whole: `${q} ${C.unit}`, groups: `${b} equal pieces`, unit: C.unit, ticks: true },
     solution: [`${fr(1, b)} of ${q} = ${q} ÷ ${b}.`, `${q} ÷ ${b} = ${S(`${fr(q, b)} ${C.unit}`)}${q > b ? ` = ${mixed(q, b)} ${C.unit}` : ''}.`],
@@ -429,11 +433,12 @@ const fracShare: Gen = (R, n) => {
 
 // ---------- 14. a/b of q as a fraction ----------
 const fracNonUnit: Gen = (R, n) => {
-  let a = 2, b = 3, q = 4;
-  do { b = int(R, 2, 10); a = int(R, 2, 9); q = int(R, 2, 10); } while (q % b === 0 || a === b || gcd(a, b) !== 1 || !tapeFits(q, a, b) || (a * q) % b === 0);
+  // a < b: you cannot need more of a board than the board (fractions of at least one have their own sub-goal)
   const C = pick(R, SHARE_CTX), who = pick(R, NAMES);
+  let a = 2, b = 3, q = 4;
+  do { b = int(R, 3, 10); a = int(R, 2, b - 1); q = int(R, C.lo, Math.min(C.hi, 10)); } while (q % b === 0 || gcd(a, b) !== 1 || !tapeFits(q, a, b) || (a * q) % b === 0);
   return fracItem({
-    id: `fracNonUnit-${n}`, family: 'fracNonUnit', prompt: `${who} has a ${A(`${q} ${C.unit}`)} ${C.what} and needs ${fr(a, b)} of it. How much is that?`,
+    id: `fracNonUnit-${n}`, family: 'fracNonUnit', prompt: `${who} has ${an(q)} ${A(`${q} ${C.unit}`)} ${C.what} and needs ${fr(a, b)} of it. How much is that?`,
     board: `\\tfrac{${a}}{${b}} \\times ${q} = \\ ?`, unit: C.unit,
     picture: { q, a, b, whole: `${q} ${C.unit}`, groups: `${b} equal parts`, unit: C.unit, ticks: true },
     solution: [`One share: ${q} ÷ ${b} = ${fr(q, b)} ${C.unit}.`, `${a} shares: ${a} × ${fr(q, b)} = ${S(`${fr(a * q, b)} ${C.unit}`)}${a * q > b ? ` = ${mixed(a * q, b)} ${C.unit}` : ''}.`, `The same as ${a} × ${q} ÷ ${b}.`],

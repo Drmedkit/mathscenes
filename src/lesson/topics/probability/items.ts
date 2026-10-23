@@ -5,6 +5,7 @@
 // and the id they must get (tests). Seeded: the same rng gives the same item.
 import { type Gen, type Item, type Response, type Verdict, A, S as S0, fr, fracValue, int, pick, same, shuffle } from '../../runtime/item';
 import type { BarRow, Pin, Sector } from './Chance';
+import { endOnChoice } from '../../runtime/explain';
 import { type Frac, type Group, type MarbleCol, LETTER, WORDS, type Word, asExtreme, bagSpace, batches, digitTrials, expectedCount, gcd, heads, num, tossSpace, twoCubes, wordOf } from './chanceMaths';
 
 export type FamilyId = 'scale' | 'space' | 'event' | 'equal' | 'relFreq' | 'theory' | 'model' | 'complement' | 'forms' | 'predict'
@@ -86,7 +87,7 @@ function choiceCheck(right: number, says: { say: string; mc?: string }[]) {
 /** a choice item from options (shuffled), with its probes = every wrong option that carries an id */
 function choiceItem(R: () => number, base: Omit<ProbItem, 'input' | 'choices' | 'answer' | 'check'>, opts: Opt[]): ProbItem {
   const o = options(R, opts);
-  const it: ProbItem = { ...base, input: 'choice', choices: o.choices, answer: { kind: 'choice', i: o.right }, check: choiceCheck(o.right, o.says) };
+  const it: ProbItem = { ...base, solution: endOnChoice(base.solution, o.choices[o.right]!), input: 'choice', choices: o.choices, answer: { kind: 'choice', i: o.right }, check: choiceCheck(o.right, o.says) };
   o.says.forEach((s, i) => { if (s.mc && i !== o.right) probe(it, { kind: 'choice', i }, s.mc); });
   return it;
 }
@@ -132,7 +133,7 @@ const scale: Gen = (R, n) => {
   if (mode === 'forecast') {
     const high = R() < 0.6, p = high ? pick(R, [60, 70, 80, 90]) : pick(R, [10, 20, 30]);
     const what = pick(R, ['rain', 'snow', 'thunderstorms']);
-    const prompt = `The forecast says a ${A(pct(p))} chance of ${what} today (that is ${p} out of 100). ${high ? `It stays dry all day.` : `It ${what === 'thunderstorms' ? 'storms' : what + 's'} in the afternoon.`} Was the forecast wrong?`;
+    const prompt = `The forecast says ${p === 8 || p === 11 || p === 18 || (p >= 80 && p < 90) ? 'an' : 'a'} ${A(pct(p))} chance of ${what} today (that is ${p} out of 100). ${high ? `It stays dry all day.` : `It ${what === 'thunderstorms' ? 'storms' : what + 's'} in the afternoon.`} Was the forecast wrong?`;
     const w = high ? 'likely' : 'unlikely';
     return choiceItem(R, {
       id: `sc-f-${n}`, family: 'scale', prompt, board: `P(\\text{${what}}) = ${p}\\%`,
@@ -397,7 +398,7 @@ const relFreq: Gen = (R, n) => {
     board: `P(\\text{${e.cats[ask]}}) \\approx \\,?`, input: 'frac', unit: '',
     pic: { kind: 'bars', rows, event: [ask], title: 'results' },
     hero: `P(\\text{${e.cats[ask]}}) \\approx \\frac{${a}}{${T}}`,
-    solution: [`First the total number of trials: ${counts.join(' + ')} = ${A(T)}.`, `${e.cats[ask]} happened ${S(a)} times: ${a} out of ${T}, so about ${S(fr(a, T))}.`],
+    solution: [`First the total number of trials: ${counts.join(' + ')} = ${A(T)}.`, `${e.cats[ask]} happened ${S(a)} ${a === 1 ? 'time' : 'times'}: ${a} out of ${T}, so about ${S(fr(a, T))}.`],
     answer: F(a, T),
     check: r => fracCheck(r, a, T, `Yes: ${a} of the ${T} trials, ${fr(a, T)}.`, [
       { v: [a, T - a], mc: 'mc.ratio-rate.confuses-whole-with-other-part', say: `${T - a} is the other trials. Divide by ALL the trials: ${counts.join(' + ')} = ${T}, so ${fr(a, T)}.` },
@@ -444,7 +445,7 @@ const theory: Gen = (R, n) => {
     prompt = `A bag holds ${A(bagText(g))} marbles. You pull one without looking. What is P(${S(label)})?`;
     board = `P(\\text{${label}}) = \\,?`;
     pic = T <= 12 ? { kind: 'bag', groups: g, labels: true, event: sp.filter(o => (not ? o.group !== tg.col : o.group === tg.col)).map(o => o.id) } : undefined;
-    sol = [`Every marble is one equally likely outcome: ${A(T)} in all.`, `${not ? `Not ${tg.col}: ${T} − ${tg.n}` : `${tg.col}: ${tg.n}`} = ${S(fav)} marbles are in the event.`, `P(${label}) = ${S(fr(fav, T))}.`];
+    sol = [`Every marble is one equally likely outcome: ${A(T)} in all.`, `${not ? `Not ${tg.col}: ${T} − ${tg.n} = ${S(fav)}` : `${tg.col[0]!.toUpperCase() + tg.col.slice(1)}: ${S(fav)}`} ${fav === 1 ? 'marble is' : 'marbles are'} in the event.`, `P(${label}) = ${S(fr(fav, T))}.`];
   } else if (dev === 'cube') {
     const ev = pick(R, CUBE_EVENTS.filter(e => e.set.length > 0 && e.set.length < 6));
     fav = ev.set.length; T = 6; label = ev.s;
@@ -550,7 +551,7 @@ const model: Gen = (R, n) => {
     id: `md-u-${n}`, family: 'model', prompt: `A spinner has ${A(`${d} equal parts`)}: ${a} are A, ${b} are B, the rest are C. The model: P(A) = ${fr(a, d)}, P(B) = ${fr(b, d)}. What is P(${S('C')})?`,
     board: `P(C) = \\,?`, input: 'frac', pic: { kind: 'spinner', sectors, event: [2] },
     hero: `1 - ${tf(a, d)} - ${tf(b, d)} = \\frac{${c}}{${d}}`,
-    solution: ['The probabilities of A, B and C must add to 1.', `${fr(d, d)} − ${fr(a, d)} − ${fr(b, d)} = ${S(fr(c, d))}: that is the ${c} parts that are C.`], answer: F(c, d),
+    solution: ['The probabilities of A, B and C must add to 1.', `${fr(d, d)} − ${fr(a, d)} − ${fr(b, d)} = ${S(fr(c, d))}: that is the ${c} ${c === 1 ? 'part' : 'parts'} that ${c === 1 ? 'is' : 'are'} C.`], answer: F(c, d),
     check: r => fracCheck(r, c, d, `Yes: ${c} of the ${d} parts, and the three add to 1.`, [{ v: [1, 3], mc: 'mc.probability.equiprobability-bias', say: `A, B and C are not equally likely: the parts are ${a}, ${b} and ${c} of ${d}. P(C) = ${fr(c, d)}.` }, { v: [a + b, d], mc: 'mc.probability.probabilities-not-summing-to-one', say: `That adds P(A) and P(B). P(C) is what is LEFT of 1: ${fr(c, d)}.` }], `What is left of 1: ${fr(c, d)}.`),
   };
   if (!same([c, d], 1, 3)) probe(it, F(1, 3), 'mc.probability.equiprobability-bias');
@@ -566,7 +567,7 @@ const complement: Gen = (R, n) => {
     const p = pick(R, [10, 20, 30, 40, 60, 70, 80, 90]);
     const what = pick(R, ['rain', 'snow']);
     const it: ProbItem = {
-      id: `cp-p-${n}`, family: 'complement', prompt: `The forecast says a ${A(pct(p))} chance of ${what} (that is ${p} out of 100). What is the chance of ${S(`no ${what}`)}?`,
+      id: `cp-p-${n}`, family: 'complement', prompt: `The forecast says ${p === 8 || p === 11 || p === 18 || (p >= 80 && p < 90) ? 'an' : 'a'} ${A(pct(p))} chance of ${what} (that is ${p} out of 100). What is the chance of ${S(`no ${what}`)}?`,
       board: `P(\\text{no ${what}}) = \\,?`, input: 'num', unit: '%',
       pic: { kind: 'scale', pins: [{ v: [p, 100], tex: `${p}\\%`, col: 'second' }, { v: [100 - p, 100], tex: `${100 - p}\\%`, col: 'link' }], given: 1 },
       hero: `100\\% - ${p}\\% = ${100 - p}\\%`,
@@ -859,7 +860,7 @@ const longRun: Gen = (R, n) => {
   const cA = Math.abs(s10 - 5), cB = Math.abs(s1000 - 500);
   if (cA >= cB || cB === 0) return longRun(R, n, 'long-run-stabilization');
   return choiceItem(R, {
-    id: `lr-p-${n}`, family: 'longRun', prompt: `After 10 tosses there were ${s10} heads (${cA} away from 5). After 1,000 tosses there were ${s1000} heads (${cB} away from 500). Which ${S('share')} is closer to 1/2?`,
+    id: `lr-p-${n}`, family: 'longRun', prompt: `After 10 tosses there ${s10 === 1 ? 'was 1 head' : `were ${s10} heads`} (${cA} away from 5). After 1,000 tosses there were ${s1000} heads (${cB} away from 500). Which ${S('share')} is closer to 1/2?`,
     board: `${tf(s10, 10)} \\quad \\tfrac{${s1000}}{1{,}000}`, pic, hero, solution,
   }, [
     { t: `After 1,000 tosses: ${s1000 / 1000} is closer to 0.5 than ${s10 / 10}`, ok: true, say: 'Yes: compare shares, not counts.' },
@@ -929,15 +930,17 @@ const discrepancy: Gen = (R, n) => {
     const ext = asExtreme(ref, obs, e);
     if (unusual ? ext !== 0 : ext < 4 || obs === e) continue;
     const devName = ctx.dev.replace(/ \(.*\)$/, '');
+    // a count below the center is compared with the batches that got as few or fewer (asExtreme counts that way)
+    const orMore = obs >= e ? 'or more' : 'or fewer', gap = Math.abs(obs - e);
     const claim = ctx.dev.includes('claim') ? `the claim P = ${fr(1, 2)}` : `a fair ${devName}`;
     const opts: Opt[] = unusual ? [
       { t: `Unusual: none of the ${count} batches came close. The model may be wrong (a biased ${devName}), or the results were recorded wrong.`, ok: true, say: `Yes: ${obs} is outside everything the model produced in ${count} batches.` },
       { t: `Nothing can be said: any count can happen with ${claim}.`, mc: 'mc.probability.no-model-can-be-rejected', say: `Possible isn't the same as believable. None of ${count} model batches got near ${obs}, so the data speak against the model.` },
       { t: `Fine: ${obs} is only ${obs - e} more than ${e}.`, mc: 'mc.statistics.center-difference-ignores-spread', say: `Whether ${obs - e} is a lot depends on how much batches spread. These batches never reached ${obs}.` },
     ] : [
-      { t: `Not unusual: ${ext} of the ${count} batches got ${obs} or more, so chance can explain it.`, ok: true, say: `Yes: ${obs} sits inside the spread of the model's own batches.` },
-      { t: `The model is wrong: it should give exactly ${e}.`, mc: 'mc.statistics.sample-should-mirror-population', say: `The model's own batches spread out a lot; ${e} is only the center. ${ext} of ${count} got ${obs} or more.` },
-      { t: `The model is wrong: ${obs} is ${obs - e} more than ${e}.`, mc: 'mc.statistics.center-difference-ignores-spread', say: `A gap of ${obs - e} is small next to how much batches of ${ctx.size} vary: ${ext} of ${count} got ${obs} or more.` },
+      { t: `Not unusual: ${ext} of the ${count} batches got ${obs} ${orMore}, so chance can explain it.`, ok: true, say: `Yes: ${obs} sits inside the spread of the model's own batches.` },
+      { t: `The model is wrong: it should give exactly ${e}.`, mc: 'mc.statistics.sample-should-mirror-population', say: `The model's own batches spread out a lot; ${e} is only the center. ${ext} of ${count} got ${obs} ${orMore}.` },
+      { t: `The model is wrong: ${obs} is ${gap} ${obs > e ? 'more' : 'less'} than ${e}.`, mc: 'mc.statistics.center-difference-ignores-spread', say: `A gap of ${gap} is small next to how much batches of ${ctx.size} vary: ${ext} of ${count} got ${obs} ${orMore}.` },
     ];
     return choiceItem(R, {
       id: `dc-${unusual ? 'u' : 'n'}-${n}`, family: 'discrepancy',
@@ -945,7 +948,7 @@ const discrepancy: Gen = (R, n) => {
       board: `${obs}\\ \\text{in}\\ ${ctx.size}`,
       pic: { kind: 'dots', ref, obs, title: `${count} batches of ${ctx.size} with ${claim}`, obsLabel: String(obs) },
       hero: `${ext}\\ \\text{of}\\ ${count}\\ \\text{reach}\\ ${obs}`,
-      solution: [`Compare ${obs} with the model's own batches of the same size, not just with the expected ${e}.`, unusual ? `None of the ${count} batches reached ${obs}: unusual. Possible reasons: a biased ${devName}, a wrong model, or recording errors.` : `${ext} of ${count} batches got ${obs} or more: not unusual. Chance can explain it.`],
+      solution: [`Compare ${obs} with the model's own batches of the same size, not just with the expected ${e}.`, unusual ? `None of the ${count} batches reached ${obs}: unusual. Possible reasons: a biased ${devName}, a wrong model, or recording errors.` : `${ext} of ${count} batches got ${obs} ${orMore}: not unusual. Chance can explain it.`],
     }, opts);
   }
 };
@@ -1026,31 +1029,31 @@ const compoundSpace: Gen = (R, n) => {
     return it;
   };
   if (mode === 'coinCube') return mk('cc', `You toss a coin ${S('and')} roll a number cube. How many outcomes are in the sample space?`, `\\text{coin} \\times \\text{cube}`, 12,
-    ['Each of the 2 coin sides goes with each of the 6 faces.', '2 rows × 6 columns = 12 ordered outcomes (H1, H2, ..., T6).'],
+    ['Each of the 2 coin sides goes with each of the 6 faces.', `2 rows × 6 columns = ${S(12)} ordered outcomes (H1, H2, ..., T6).`],
     [{ v: 8, mc: 'mc.probability.incomplete-sample-space', say: '2 + 6 lists the stages, not the outcomes. Every coin side pairs with every face: 2 × 6 = 12.' }],
     { kind: 'table', rows: ['\\mathrm{H}', '\\mathrm{T}'], cols: ['1', '2', '3', '4', '5', '6'], cells: [['', '', '', '', '', ''], ['', '', '', '', '', '']], rowTitle: 'coin', colTitle: 'cube' });
   if (mode === 'coinSpinner') {
     const k = int(R, 3, 8);
     return mk('cs', `You toss a coin ${S('and')} spin a spinner with ${k} equal parts. How many outcomes are in the sample space?`, `\\text{coin} \\times \\text{spinner}`, 2 * k,
-      [`Each of the 2 coin sides goes with each of the ${k} parts.`, `2 × ${k} = ${2 * k} ordered outcomes.`],
+      [`Each of the 2 coin sides goes with each of the ${k} parts.`, `2 × ${k} = ${S(2 * k)} ordered outcomes.`],
       [{ v: 2 + k, mc: 'mc.probability.incomplete-sample-space', say: `2 + ${k} lists the stages, not the outcomes. Every side pairs with every part: 2 × ${k} = ${2 * k}.` }],
       { kind: 'table', rows: ['\\mathrm{H}', '\\mathrm{T}'], cols: Array.from({ length: k }, (_, i) => String(i + 1)), cells: [Array(k).fill(''), Array(k).fill('')], rowTitle: 'coin', colTitle: 'spinner' });
   }
   if (mode === 'cubes') return mk('2c', `You roll ${S('two number cubes')}, a red one and a blue one. How many outcomes are in the sample space?`, `\\text{cube} \\times \\text{cube}`, 36,
-    ['Each of the 6 red faces pairs with each of the 6 blue faces.', '6 × 6 = 36 ordered outcomes: (1, 2) and (2, 1) are different.'],
+    ['Each of the 6 red faces pairs with each of the 6 blue faces.', `6 × 6 = ${S(36)} ordered outcomes: (1, 2) and (2, 1) are different.`],
     [{ v: 21, mc: 'mc.probability.ordered-outcomes-merged', say: '(1, 2) and (2, 1) are different outcomes: red 1 with blue 2 is not red 2 with blue 1. 6 × 6 = 36.' }, { v: 12, mc: 'mc.probability.incomplete-sample-space', say: '6 + 6 lists the faces, not the pairs. Every red face pairs with every blue face: 36.' }],
     { kind: 'table', rows: ['1', '2', '3', '4', '5', '6'], cols: ['1', '2', '3', '4', '5', '6'], cells: Array.from({ length: 6 }, () => Array(6).fill('')), rowTitle: 'red', colTitle: 'blue' });
   if (mode === 'tosses') {
     const k = int(R, 2, 4), ans = 2 ** k;
     return mk('t', `A coin is tossed ${S(`${k} times`)}. How many outcomes (like ${'HT'.repeat(k).slice(0, k)}) are in the sample space?`, `${k}\\ \\text{tosses}`, ans,
-      [`Every toss doubles the list: ${Array(k).fill(2).join(' × ')} = ${ans}.`, k <= 3 ? `The tree has ${ans} leaves: ${tossSpace(k).join(', ')}.` : 'Order matters: HHTT and TTHH are different outcomes.'],
+      [`Every toss doubles the list: ${Array(k).fill(2).join(' × ')} = ${S(ans)}.`, k <= 3 ? `The tree has ${ans} leaves: ${tossSpace(k).join(', ')}.` : 'Order matters: HHTT and TTHH are different outcomes.'],
       [{ v: k + 1, mc: 'mc.probability.ordered-outcomes-merged', say: `${k + 1} counts the number of heads (0 to ${k}). But HT and TH are different outcomes: ${ans}.` }, { v: 2 * k, mc: 'mc.probability.incomplete-sample-space', say: `${k} tosses × 2 sides counts the stages. Each toss doubles the list: ${ans}.` }],
       k <= 3 ? { kind: 'tree', n: k } : undefined);
   }
   if (mode === 'spinners') {
     const a = int(R, 2, 4), b = int(R, 3, 5);
     return mk('sp', `Spinner 1 has ${a} equal parts, spinner 2 has ${b}. You spin both. How many outcomes are in the sample space?`, `${a} \\times ${b}`, a * b,
-      [`Each of the ${a} results of spinner 1 pairs with each of the ${b} of spinner 2.`, `${a} × ${b} = ${a * b}.`],
+      [`Each of the ${a} results of spinner 1 pairs with each of the ${b} of spinner 2.`, `${a} × ${b} = ${S(a * b)}.`],
       [{ v: a + b, mc: 'mc.probability.incomplete-sample-space', say: `${a} + ${b} lists the parts. Each part of spinner 1 pairs with each part of spinner 2: ${a * b}.` }],
       { kind: 'table', rows: Array.from({ length: a }, (_, i) => String(i + 1)), cols: Array.from({ length: b }, (_, i) => String(i + 1)), cells: Array.from({ length: a }, () => Array(b).fill('')), rowTitle: 'spinner 1', colTitle: 'spinner 2' });
   }
@@ -1060,7 +1063,7 @@ const compoundSpace: Gen = (R, n) => {
     const repl = R() < 0.4, ans = repl ? m * m : m * (m - 1);
     const thing = pick(R, ['marbles', 'tiles', 'chips']);
     return mk(repl ? `dr${m}` : `dn${m}`, `A bag holds ${m} ${thing}: ${names}. You pull one, ${repl ? S('put it back') : S('keep it out')}, and pull a second. How many ordered outcomes are there?`, `\\text{${repl ? 'with' : 'without'} replacement}`, ans,
-      [repl ? `The first one goes back, so the second pull has all ${m} again: ${m} × ${m} = ${ans}.` : `The first one stays out, so the second pull has only ${m - 1} left: ${m} × ${m - 1} = ${ans}.`, 'Order matters: B₁ then W is not W then B₁.'],
+      [repl ? `The first one goes back, so the second pull has all ${m} again: ${m} × ${m} = ${S(ans)}.` : `The first one stays out, so the second pull has only ${m - 1} left: ${m} × ${m - 1} = ${S(ans)}.`, 'Order matters: B₁ then W is not W then B₁.'],
       repl ? [{ v: m * (m - 1), say: `It goes back, so the same one can come out twice: ${m} × ${m} = ${ans}.` }] : [{ v: m * m, mc: 'mc.probability.reuses-object-without-replacement', say: `The first one is kept out, so it can’t come out again: B₁ B₁ is impossible. ${m} × ${m - 1} = ${ans}.` }, { v: (m * (m - 1)) / 2, mc: 'mc.probability.ordered-outcomes-merged', say: `B₁ then W and W then B₁ are different ordered outcomes: ${ans}.` }],
       { kind: 'table', rows: objs, cols: objs, cells: objs.map((_, r) => objs.map((__, k) => (!repl && r === k ? null : ''))), rowTitle: 'first', colTitle: 'second' });
   }
@@ -1213,7 +1216,10 @@ const compoundPredict: Gen = (R, n) => {
     if (Number.isInteger(wrongV)) probe(it, N(wrongV), 'mc.probability.prediction-scaled-wrong');
     return it;
   }
-  const obs = Math.max(1, e + pick(R, [-3, -2, 2, 3, 4, -4]));
+  // "close enough" must be honest: the class result stays within 1.5 standard deviations of the prediction
+  const sd = Math.sqrt(T * (ev.p[0] / ev.p[1]) * (1 - ev.p[0] / ev.p[1]));
+  const offs = [-3, -2, 2, 3, 4, -4].filter(d => Math.abs(d) <= 1.5 * sd && e + d >= 1);
+  const obs = e + (offs.length ? pick(R, offs) : 1);
   if (mode === 'estimate') {
     const it: ProbItem = {
       id: `pc-e-${n}`, family: 'compoundPredict', prompt: `A class ran ${A(`${T} trials`)} of ${ev.trial}. ${S(obs)} trials gave ${ev.t.replace(/ in .*/, '')}. What is the experimental probability?`,

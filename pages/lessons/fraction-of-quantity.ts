@@ -18,6 +18,7 @@ import { type Item, fr } from '../../src/lesson/runtime/item';
 import { FractionOf, type FractionOfBlock, type FractionOfFocus, type FractionOfParams } from '../../src/lesson/topics/fraction-of-quantity/FractionOf';
 import { FAMILY_NAMES, GENS } from '../../src/lesson/topics/fraction-of-quantity/items';
 import { PLAN } from '../../src/lesson/topics/fraction-of-quantity/plan';
+import { explain } from '../../src/lesson/topics/fraction-of-quantity/explain';
 
 const SLUG = 'fraction-of-quantity';
 /** tr.set plus a redraw once the animation has ended. Workaround: stage.ts stops drawing when tr.busy() turns false,
@@ -431,7 +432,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed), show: showItem,
   });
 }

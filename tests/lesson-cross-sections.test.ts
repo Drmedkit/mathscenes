@@ -13,6 +13,13 @@ import { Slicer } from '../src/lesson/topics/cross-sections/Slicer';
 import { frame } from '../src/blocks/block';
 import { dusk } from '../src/lesson/dusk';
 
+// ---- quality layer (docs/lessons/QUALITY_LAYER.md): worked steps, check-in adapter, regressions ----
+import { rng as qlRng, plain as qlPlain, type Item as QlItem } from '../src/lesson/runtime/item';
+import { GENS as qlGens } from '../src/lesson/topics/cross-sections/items';
+import { PLAN as qlPlan } from '../src/lesson/topics/cross-sections/plan';
+import { explain as qlExplain } from '../src/lesson/topics/cross-sections/explain';
+import { PLACEMENT as qlPlacement } from '../src/lesson/topics/cross-sections/placement';
+
 // the block measures words with a canvas; in node it falls back to an estimate
 (globalThis as unknown as { document: unknown }).document ??= { createElement: () => ({ getContext: () => null }) };
 
@@ -177,5 +184,35 @@ describe('voice', () => {
       expect(l.text.length, id).toBeGreaterThan(3);
       expect(l.text, id).not.toMatch(/\d\s*\/\s*\d|[<>×÷]/);
     }
+  });
+});
+
+describe('quality layer', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('the steps card ends on an answer the lesson accepts, in every pair (200 seeds)', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 37 + 5), s, p.id);
+      const ex = qlExplain(it0);
+      expect(ex, `${p.id}/${f}: ${it0.prompt}`).not.toBeNull();
+      expect(it0.check(ex!.result).ok, `${p.id}/${f}: ${JSON.stringify(ex!.result)} for ${it0.prompt}`).toBe(true);
+    }
+  });
+  it('the check-in picks are pairs of the plan and their answers pass', () => {
+    for (const pk of qlPlacement.picks) {
+      expect(qlPlan.find(p => p.id === pk.subgoal)?.families as string[] | undefined).toContain(pk.family);
+      for (let s = 1; s <= 50; s++) { const it0 = gens[pk.family]!(qlRng(s), s, pk.subgoal); expect(it0.check(it0.answer).ok).toBe(true); }
+    }
+  });
+  it('the slice size is read as two marked lengths (a pair), in the answer’s order', () => {
+    for (const [f, sg] of [['dims', 'cs-plane-section-parallel'], ['half', 'cs-pyramid-tapering']] as const)
+      for (let s = 1; s <= 100; s++) { const it0 = gens[f]!(qlRng(s), s, sg); expect(qlExplain(it0)!.result).toEqual(it0.answer); }
+  });
+});
+
+describe('quality layer: oracle findings (phase 2)', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('only boxes that really come 2 to 12 in on a side (no 9 in tall bar of soap, no 11 in tall sheet cake)', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 100; s++)
+      expect(qlPlain(gens[f]!(qlRng(s), s, p.id).prompt)).not.toMatch(/soap|sheet cake/);
   });
 });

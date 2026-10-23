@@ -20,6 +20,7 @@ import { AreaModel, type AreaBlock, type AreaFocus, type AreaParams } from '../.
 import { FAMILY_NAMES, GENS, type AreaPicture } from '../../src/lesson/topics/fraction-times-fraction/items';
 import { PLAN } from '../../src/lesson/topics/fraction-times-fraction/plan';
 import { SCRIPT } from '../../src/lesson/topics/fraction-times-fraction/script';
+import { explain } from '../../src/lesson/topics/fraction-times-fraction/explain';
 
 const SLUG = 'fraction-times-fraction';
 let ctx!: LessonCtx;
@@ -437,7 +438,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it),
   });

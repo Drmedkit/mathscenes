@@ -5,6 +5,7 @@
 // lays out readably (picFits). Pure: no DOM, no canvas.
 import { type Item, type Response, type Verdict, int, pick, shuffle } from '../../runtime/item';
 import { type ConstructSpec, type Pic, type TriPic, picFits } from './pictures';
+import { ans, endOnChoice } from '../../runtime/explain';
 import {
   type P2, type Spec, type Unit, ADJ, OPP, countTriangles, existsSSS, len, lenT, sideOpposite, solveASA, solveSAS, solveSSS, thirdAngle, thirdSideRange, within,
 } from './triangleMaths';
@@ -38,7 +39,7 @@ function choice(R: () => number, base: Omit<DTItem, 'input' | 'choices' | 'answe
   const ans = os.findIndex(o => o.ok);
   if (ans < 0 || os.filter(o => o.ok).length !== 1) throw new Error(`${base.family}: needs exactly one right option`);
   return {
-    ...base, input: 'choice', choices: os.map(o => o.t), answer: { kind: 'choice', i: ans },
+    ...base, solution: endOnChoice(base.solution, os[ans]!.t), input: 'choice', choices: os.map(o => o.t), answer: { kind: 'choice', i: ans },
     check: (r: Response): Verdict => {
       if (r.kind !== 'choice') return { ok: false, say: 'Pick one of the options.' };
       const o = os[r.i];
@@ -121,11 +122,17 @@ const sketch: Gen = (R0, n) => fitted(R => {
     movedMc = 'mc.geometric-proof.triangle-angle-at-wrong-vertex';
     movedSay = `That sketch puts the ${q.angles.B}° angle at ${nm(N, 'C')}. Both given angles sit at the ends of ${nm(N, 'AB')}: at ${nm(N, 'A')} and ${nm(N, 'B')}.`;
   } else {
-    moved = reqSketch(q, { AB: q.sides.BC, AC: q.sides.AC, BC: q.sides.AB }, {});
+    // swap two sides that differ (in an isosceles request AB = BC, swapping them would draw the right sketch again)
+    const S3 = q.sides as Record<'AB' | 'AC' | 'BC', number>;
+    const pair = ([['AB', 'BC'], ['AB', 'AC'], ['AC', 'BC']] as const).find(([x, y]) => S3[x] !== S3[y]);
+    if (!pair) return sketch(R, n);
+    const [x, y] = pair;
+    moved = reqSketch(q, { ...S3, [x]: S3[y], [y]: S3[x] }, {});
     movedMc = undefined;
-    movedSay = `That sketch swaps two lengths: ${nm(N, 'AB')} must be ${len(q.sides.AB!, unit)} ${unit}.`;
+    movedSay = `That sketch swaps two lengths: ${nm(N, x)} must be ${len(S3[x], unit)} ${unit}.`;
   }
-  const inv = pick(R, ['right', 'ticks'] as const);
+  // equal marks on AC and BC are only invented when AC and BC differ
+  const inv = q.sides.AC !== undefined && q.sides.AC === q.sides.BC ? 'right' : pick(R, ['right', 'ticks'] as const);
   const freeV: V[] = (['A', 'B', 'C'] as V[]).filter(v => q.angles[v] === undefined);
   const rv = pick(R, freeV);
   const invented = inv === 'right' ? reqSketch(q, q.sides, q.angles, { right: rv }) : reqSketch(q, q.sides, q.angles, { ticks: kind === 'SSS' ? { AC: 1, BC: 1 } : { AC: 1, BC: 1 } });
@@ -230,8 +237,8 @@ const segLen: Gen = (R, n) => fitted(R => {
     board: `${N2.join('')} = \\,?\\ \\text{${u}}`, input: u === 'in' ? 'frac' : 'num', unit: u,
     picture: { kind: 'ruler', unit: u, deg, inset, len: Ln, seg: [edge ? 'edge' : s, e], names: N2 },
     solution: edge
-      ? [`${N2[0]} is at the very end of the ruler; the 0 mark is ${len(inset, u)} ${u} in from that end.`, `So ${N2[0]}${N2[1]} = ${len(e, u)} + ${len(inset, u)} = ${len(want, u)} ${u}.`]
-      : [`${N2[0]} is at the ${len(s, u)} mark, ${N2[1]} at the ${len(e, u)} mark.`, `Length = the spaces between: ${len(e, u)} − ${len(s, u)} = ${len(want, u)} ${u}.`],
+      ? [`${N2[0]} is at the very end of the ruler; the 0 mark is ${len(inset, u)} ${u} in from that end.`, `So ${N2[0]}${N2[1]} = ${len(e, u)} + ${len(inset, u)} = ${ans(`${len(want, u)} ${u}`)}.`]
+      : [`${N2[0]} is at the ${len(s, u)} mark, ${N2[1]} at the ${len(e, u)} mark.`, `Length = the spaces between: ${len(e, u)} − ${len(s, u)} = ${ans(`${len(want, u)} ${u}`)}.`],
     answer: lenAnswer(want, u), check: lenCheck(want, u, wrong, `Yes: ${N2.join('')} = ${len(want, u)} ${u}.`),
   };
 }, R, () => segLen(rngFallback(n), n));
@@ -249,7 +256,7 @@ const endMark: Gen = (R, n) => fitted(R => {
     prompt: edge ? `You start segment ${N2.join('')} at the very end of the ruler (look where its 0 is). At which mark do you put ${N2[1]} for ${N2.join('')} = ${len(L, u)} ${u}?` : `Point ${N2[0]} is at the ${len(s, u)} mark. At which mark do you put ${N2[1]} so that ${N2.join('')} = ${len(L, u)} ${u}?`,
     board: `${N2.join('')} = ${lenT(L, u)}\\ \\text{${u}}`, input: u === 'in' ? 'frac' : 'num', unit: u === 'in' ? 'in mark' : 'cm mark',
     picture: { kind: 'ruler', unit: u, deg: 0, inset, len: Ln, start: s, names: N2 },
-    solution: edge ? [`The ruler's end is ${len(inset, u)} ${u} before 0.`, `${len(L, u)} ${u} from the end reaches the ${len(L, u)} − ${len(inset, u)} = ${len(want, u)} mark.`] : [`Start at ${len(s, u)} and go ${len(L, u)} ${u} further.`, `${len(s, u)} + ${len(L, u)} = ${len(want, u)}: put ${N2[1]} at the ${len(want, u)} mark.`],
+    solution: edge ? [`The ruler's end is ${len(inset, u)} ${u} before 0.`, `${len(L, u)} ${u} from the end reaches the ${len(L, u)} − ${len(inset, u)} = ${ans(len(want, u))} mark.`] : [`Start at ${len(s, u)} and go ${len(L, u)} ${u} further.`, `${len(s, u)} + ${len(L, u)} = ${len(want, u)}: put ${N2[1]} at the ${ans(len(want, u))} mark.`],
     answer: lenAnswer(want, u), check: lenCheck(want, u, wrong, `Yes: from ${len(s, u)} to ${len(want, u)} is ${len(L, u)} ${u}.`),
   };
 }, R, () => endMark(rngFallback(n), n));
@@ -282,7 +289,8 @@ const protractor: Gen = (R, n) => fitted(R => {
   const x = 5 * pick(R, [6, 7, 8, 9, 10, 11, 12, 13, 14, 22, 23, 24, 25, 26, 27, 28, 29, 30]);
   const bRight = R() < 0.5, N = pick(R, NAMES);
   const good = bRight ? x : 180 - x, bad = 180 - good;
-  const [pn, qn] = shuffle(R, ['P', 'Q']) as [string, string];
+  // dot names that are not vertex names (the side PQ with dots P and Q would be two things called P)
+  const [pn, qn] = shuffle(R, (['P', 'Q', 'S', 'T', 'X', 'Y'] as string[]).filter(c => !N.includes(c)).slice(0, 2)) as [string, string];
   const dots = shuffle(R, [{ name: pn, deg: good }, { name: qn, deg: bad }]);
   return choice(R, {
     id: `protractor-${n}`, family: 'protractor',
@@ -348,29 +356,31 @@ const asaWhere: Gen = (R, n) => fitted(R => {
 // 5 compass-transfer: the compass carries a fixed distance
 // =====================================================================================================
 const compassCopy: Gen = (R, n) => fitted(R => {
-  const u = pick(R, ['in', 'cm'] as const), N = pick(R, NAMES), L = u === 'in' ? halves(R, 1.5, 4) : int(R, 3, 9);
-  const pic: Pic = { kind: 'copy', unit: u, L, names: [N[0], N[1], N[2]], rayDeg: pick(R, [0, 12, -10, 20]), segDeg: pick(R, [0, 15, -12, 25]) };
+  const u = pick(R, ['in', 'cm'] as const), N = pick(R, NAMES.filter(x => !x.includes('D'))), L = u === 'in' ? halves(R, 1.5, 4) : int(R, 3, 9);
+  // the new point is D, so the given points never use D (D E F would have two D's); Dn stays a safety net
+  const Dn = ['D', 'X', 'M', 'T'].find(c => !N.includes(c))!;
+  const pic: Pic = { kind: 'copy', unit: u, L, names: [N[0], N[1], N[2]], newName: Dn, rayDeg: pick(R, [0, 12, -10, 20]), segDeg: pick(R, [0, 15, -12, 25]) };
   const PQ = `${N[0]}${N[1]}`;
   if (R() < 0.55) {
     return choice(R, {
       id: `compassCopy-${n}`, family: 'compassCopy',
-      prompt: `Copy ${PQ} (${len(L, u)} ${u}) onto the ray from ${N[2]}, so that ${N[2]}D = ${PQ}, without measuring. What do you do?`,
-      board: `${N[2]}D = ${PQ}`, picture: pic, solvePic: pic,
-      solution: [`Put the compass point on ${N[0]} and open it until the pencil is on ${N[1]}.`, `Keep that opening. Put the point on ${N[2]} and swing an arc across the ray: that is D.`],
+      prompt: `Copy ${PQ} (${len(L, u)} ${u}) onto the ray from ${N[2]}, so that ${N[2]}${Dn} = ${PQ}, without measuring. What do you do?`,
+      board: `${N[2]}${Dn} = ${PQ}`, picture: pic, solvePic: pic,
+      solution: [`Put the compass point on ${N[0]} and open it until the pencil is on ${N[1]}.`, `Keep that opening. Put the point on ${N[2]} and swing an arc across the ray: that is ${Dn}.`],
     }, [
       { t: `Open the compass from ${N[0]} to ${N[1]}, keep that opening, and swing an arc from ${N[2]} across the ray.`, ok: true, say: `Yes: the opening IS the length ${PQ}, so every point of the arc is ${PQ} away from ${N[2]}.` },
       { t: `Open the compass from ${N[0]} to ${N[1]}, then widen it a little so the arc crosses the ray nicely.`, mc: 'mc.geometric-proof.compass-width-changed', say: `Widening the compass changes the length it carries. Keep the opening exactly as ${PQ}.` },
-      { t: `Lay the ruler along the ray and mark D where it looks about as long as ${PQ}.`, mc: 'mc.geometric-proof.construction-by-eye-or-measure', say: `By eye is a guess. The compass carries the exact length of ${PQ} over to the ray.` },
+      { t: `Lay the ruler along the ray and mark ${Dn} where it looks about as long as ${PQ}.`, mc: 'mc.geometric-proof.construction-by-eye-or-measure', say: `By eye is a guess. The compass carries the exact length of ${PQ} over to the ray.` },
     ]);
   }
   const how = pick(R, ['narrower', 'wider'] as const);
   return choice(R, {
     id: `compassCopy-${n}`, family: 'compassCopy',
-    prompt: `Jo opened the compass from ${N[0]} to ${N[1]} (${len(L, u)} ${u}). Then the compass slipped a little ${how}, and Jo swung the arc from ${N[2]} anyway. Is ${N[2]}D still ${len(L, u)} ${u}?`,
+    prompt: `Jo opened the compass from ${N[0]} to ${N[1]} (${len(L, u)} ${u}). Then the compass slipped a little ${how}, and Jo swung the arc from ${N[2]} anyway. Is ${N[2]}${Dn} still ${len(L, u)} ${u}?`,
     board: `${PQ} = ${lenT(L, u)}\\ \\text{${u}}`, picture: pic, solvePic: pic,
-    solution: [`The compass carries whatever its opening is.`, `A ${how} opening gives a ${how === 'narrower' ? 'shorter' : 'longer'} ${N[2]}D. Reset it on ${PQ} and swing again.`],
+    solution: [`The compass carries whatever its opening is.`, `A ${how} opening gives a ${how === 'narrower' ? 'shorter' : 'longer'} ${N[2]}${Dn}. Reset it on ${PQ} and swing again.`],
   }, [
-    { t: `No: ${N[2]}D is now ${how === 'narrower' ? 'shorter' : 'longer'} than ${PQ}.`, ok: true, say: `Right: the opening is the length. Change the opening and you change the length.` },
+    { t: `No: ${N[2]}${Dn} is now ${how === 'narrower' ? 'shorter' : 'longer'} than ${PQ}.`, ok: true, say: `Right: the opening is the length. Change the opening and you change the length.` },
     { t: `Yes: it was set to ${PQ} first, so it still copies ${PQ}.`, mc: 'mc.geometric-proof.compass-width-changed', say: `The compass only remembers its CURRENT opening. A ${how} opening carries a ${how === 'narrower' ? 'shorter' : 'longer'} length.` },
     { t: `Yes, as long as the arc still crosses the ray.`, mc: 'mc.geometric-proof.construction-by-eye-or-measure', say: `Crossing the ray is not the test: the distance from ${N[2]} is. That is the opening, which changed.` },
   ]);
@@ -388,7 +398,7 @@ const compassOpen: Gen = (R, n) => fitted(R => {
     prompt: `Lee set the compass on a ruler like this, then swung an arc from point A that crosses a ray at D. How long is AD?`,
     board: `AD = \\,?\\ \\text{${u}}`, input: u === 'in' ? 'frac' : 'num', unit: u,
     picture: { kind: 'compassRuler', unit: u, s, e, len: Ln },
-    solution: [`The point is at ${len(s, u)}, the pencil at ${len(e, u)}: the opening is ${len(e, u)} − ${len(s, u)} = ${len(L, u)} ${u}.`, `The arc keeps that opening, so AD = ${len(L, u)} ${u}.`],
+    solution: [`The point is at ${len(s, u)}, the pencil at ${len(e, u)}: the opening is ${len(e, u)} − ${len(s, u)} = ${len(L, u)} ${u}.`, `The arc keeps that opening, so AD = ${ans(`${len(L, u)} ${u}`)}.`],
     answer: lenAnswer(L, u), check: lenCheck(L, u, wrong, `Yes: the opening is ${len(L, u)} ${u}, and the arc carries it to D.`),
   };
 }, R, () => compassOpen(rngFallback(n), n));
@@ -537,7 +547,7 @@ const thirdSide: Gen = (R, n) => {
     prompt: `Two sides of a triangle are <b class="a">${p} ${u}</b> and <b class="a">${q} ${u}</b>. The third side is a whole number of ${u === 'in' ? 'inches' : 'centimeters'}. What is the shortest it can be, and the longest?`,
     board: `${p},\\ ${q},\\ ?\\ \\text{${u}}`, input: 'pair', pairLead: 'from', pairOp: 'to',
     picture: { kind: 'sticks', unit: u, lens: [p, q] },
-    solution: [`Longest: the two given sides must add up to MORE than it, so less than ${p} + ${q} = ${s}: at most ${hi}.`, `Shortest: it plus the shorter given side must be MORE than the longer one, so more than ${Math.max(p, q)} − ${Math.min(p, q)} = ${d}: at least ${lo}.`, `So from ${lo} to ${hi} ${u}. ${d} and ${s} would lie flat.`],
+    solution: [`Longest: the two given sides must add up to MORE than it, so less than ${p} + ${q} = ${s}: at most ${hi}.`, `Shortest: it plus the shorter given side must be MORE than the longer one, so more than ${Math.max(p, q)} − ${Math.min(p, q)} = ${d}: at least ${lo}.`, `So from ${ans(lo)} to ${ans(hi)} ${u}. ${d} and ${s} would lie flat.`],
     answer: { kind: 'pair', x: lo, y: hi },
     check: (r: Response): Verdict => {
       if (r.kind !== 'pair' || !Number.isFinite(r.x) || !Number.isFinite(r.y)) return { ok: false, say: 'Fill in both boxes with whole numbers.' };
@@ -621,7 +631,7 @@ const sumCheck: Gen = (R, n) => fitted(R => {
   const pic: Pic = { kind: 'tri', t: anglePic(ang, ang.map(x => `${x}°`), N) };
   return choice(R, {
     id: `sumCheck-${n}`, family: 'sumCheck',
-    prompt: `${who} drew a triangle with sides of about ${small} in, with angles of ${ang[0]}°, ${ang[1]}° and ${ang[2]}°. Then ${who} marked out ${kind === 'acute' ? 'an' : 'a'} ${kind} triangle on the field, ${big} ${bigU} on a side. What do its three angles add up to?`,
+    prompt: `${who} drew a triangle with sides of about ${small} in, with angles of ${ang[0]}°, ${ang[1]}° and ${ang[2]}°. Then ${who} marked out ${kind === 'right' ? 'a' : 'an'} ${kind} triangle on the field, ${big} ${bigU} on a side. What do its three angles add up to?`,
     board: `${ang[0]} + ${ang[1]} + ${ang[2]} = 180`,
     picture: pic,
     solution: [`Size does not change the angle sum, and neither does the shape.`, `Every triangle, ${small} in or ${big} ${bigU}, has angles that total 180°.`],

@@ -9,6 +9,7 @@ import {
   sectionOf, shapeOf, solidFaces, solidVerts, sub, dot, cross, unit,
 } from './sliceMaths';
 import type { Dim, Mark } from './Slicer';
+import { endOnChoice } from '../../runtime/explain';
 
 export type FamilyId = 'name' | 'dims' | 'orient' | 'taper' | 'half' | 'upright' | 'bottom' | 'join' | 'count' | 'equi' | 'possible' | 'most';
 export const FAMILY_NAMES: Record<FamilyId, string> = {
@@ -71,7 +72,7 @@ function options(R: () => number, opts: Opt[]): { choices: string[]; right: numb
 }
 function choiceItem(base: Omit<Item, 'input' | 'choices' | 'answer' | 'check'>, R: () => number, opts: Opt[]): Item {
   const o = options(R, opts);
-  return { ...base, input: 'choice', choices: o.choices, answer: { kind: 'choice', i: o.right }, check: r => choiceCheck(r, o.right, o.says) };
+  return { ...base, solution: endOnChoice(base.solution, o.choices[o.right]!), input: 'choice', choices: o.choices, answer: { kind: 'choice', i: o.right }, check: r => choiceCheck(r, o.right, o.says) };
 }
 interface PairWrong { v: [number, number]; mc?: string; say: string }
 function pairCheck(r: Response, a: number, b: number, okSay: string, wrongs: PairWrong[], fallback: string): Verdict {
@@ -83,6 +84,8 @@ function pairCheck(r: Response, a: number, b: number, okSay: string, wrongs: Pai
 }
 const u2 = (x: number, u: string) => `${x} ${u}`;
 const by = (a: number, b: number, u: string) => `${a} ${u} × ${b} ${u}`;
+/** the two side lengths, each marked as an answer (the steps card reads a pair from the last two marks) */
+const byS = (a: number, b: number, u: string) => `${S(`${a} ${u}`)} × ${S(`${b} ${u}`)}`;
 /** "a" or "an" before a number word or a word (an 8 in, an 11 ft, an octagon) */
 const an = (next: string) => (/^(8|11|18|8\d|[aeiou])/i.test(next.trim()) ? 'an' : 'a');
 const tt = (s: string) => `\\text{${s}}`;
@@ -91,10 +94,12 @@ const SIDE_NAMES: Record<number, string> = { 3: 'triangle', 4: 'rectangle', 5: '
 const FACE_WORDS: Record<FaceName, string> = { bottom: 'bottom face', top: 'top face', front: 'front face', back: 'back face', left: 'left end', right: 'right end', base: 'base', cap: 'cut face' };
 
 // ---------- contexts (US units, no money) ----------
+// boxes come 2 to 12 in on a side (boxDims): only things that really come in those sizes (no 9 in tall bar of soap, no
+// 11 in tall sheet cake)
 const BOXES = [
   { what: 'block of cheese', u: 'in' }, { what: 'brick of clay', u: 'in' }, { what: 'block of tofu', u: 'in' },
-  { what: 'foam block', u: 'in' }, { what: 'sheet cake', u: 'in' }, { what: 'block of ice', u: 'in' },
-  { what: 'bar of soap', u: 'in' }, { what: 'wooden crate', u: 'ft' }, { what: 'stone block', u: 'ft' }, { what: 'block of wax', u: 'in' },
+  { what: 'foam block', u: 'in' }, { what: 'block of marble', u: 'in' }, { what: 'block of ice', u: 'in' },
+  { what: 'wooden block', u: 'in' }, { what: 'wooden crate', u: 'ft' }, { what: 'stone block', u: 'ft' }, { what: 'block of wax', u: 'in' },
 ];
 const CUBES = ['wooden cube', 'cube of cheese', 'foam cube', 'clay cube', 'glass cube'];
 const PYRS = ['glass paperweight', 'pyramid candle', 'chocolate pyramid', 'clay pyramid', 'crystal pyramid', 'wooden pyramid'];
@@ -136,7 +141,7 @@ function boxSolution(c: ReturnType<typeof boxCut>): string[] {
   const { a, b, sk, axis, sq } = c, shape = sq ? 'square' : 'rectangle';
   return [
     `The cut is ${cutWords(axis)}, so the cross-section is the same shape as the ${AXIS_FACE[axis] === 'ends' ? 'end faces' : AXIS_FACE[axis] + ' face'}.`,
-    `Its sides run along the ${u2(a, sk.u)} and ${u2(b, sk.u)} edges: ${an(String(a))} ${S(by(a, b, sk.u))} ${shape}.`,
+    `Its sides run along the ${u2(a, sk.u)} and ${u2(b, sk.u)} edges: ${an(String(a))} ${byS(a, b, sk.u)} ${shape}.`,
     'It is flat, with no thickness: the cut-off piece is a solid, the cross-section is only the face the cut leaves.',
   ];
 }
@@ -312,7 +317,7 @@ const half: Gen = (R, n) => {
     prompt: `This ${A(what)} is a right rectangular pyramid with ${an(String(l))} ${by(l, w, u)} base.${poseWords(pose)} A ${B('plane parallel to the base')} cuts it halfway from the base to the apex. How long are the sides of the cross-section?`,
     board: `? \\times ?`, input: 'pair', pairLead: 'The cross-section is', pairOp: '×',
     picture: { kind: 'slice', solid: { kind: 'pyramid', l, w, h }, pose, unit: u, planes: [planeAxis(2, h / 2)], dims: ['l', 'w'], hero: [tt('rectangle'), texBy(l / 2, w / 2, u)] } as never,
-    solution: ['Halfway to the apex, every side face has come halfway in toward the apex.', `So the rectangle is half as long and half as wide as the base: ${S(by(l / 2, w / 2, u))}.`],
+    solution: ['Halfway to the apex, every side face has come halfway in toward the apex.', `So the rectangle is half as long and half as wide as the base: ${byS(l / 2, w / 2, u)}.`],
     answer: { kind: 'pair', x: l / 2, y: w / 2 },
     check: r => pairCheck(r, l / 2, w / 2, `Yes: half of ${l} and half of ${w}, ${by(l / 2, w / 2, u)}.`,
       [{ v: [l, w], mc: MC.copiesBase, say: `${by(l, w, u)} is the base itself. Halfway to the apex the pyramid is narrower: half as long and half as wide.` }],

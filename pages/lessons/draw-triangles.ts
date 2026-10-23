@@ -25,6 +25,7 @@ import { type BuiltPic, CONSTRUCT_STEPS, type Pic, PROOF_F, SHEET, buildPic, con
 import { solveSSS } from '../../src/lesson/topics/draw-triangles/triangleMaths';
 import { FAMILY_NAMES, GENS, type DTItem, splitBoard } from '../../src/lesson/topics/draw-triangles/items';
 import { PLAN } from '../../src/lesson/topics/draw-triangles/plan';
+import { explain } from '../../src/lesson/topics/draw-triangles/explain';
 
 const SLUG = 'draw-triangles';
 let ctx!: LessonCtx;
@@ -454,7 +455,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as DTItem),
   });

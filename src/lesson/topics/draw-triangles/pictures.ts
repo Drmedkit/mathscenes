@@ -39,7 +39,7 @@ export type Pic =
   | { kind: 'ruler'; unit: Unit; deg: number; inset: number; len: number; seg?: [number | 'edge', number]; start?: number; names: [string, string] }
   | { kind: 'protractor'; x: number; bRight: boolean; dots: { name: string; deg: number }[]; names: [string, string] }
   | { kind: 'compassRuler'; unit: Unit; s: number; e: number; len: number }
-  | { kind: 'copy'; unit: Unit; L: number; names: [string, string, string]; rayDeg: number; segDeg: number }
+  | { kind: 'copy'; unit: Unit; L: number; names: [string, string, string]; newName?: string; rayDeg: number; segDeg: number }
   | { kind: 'sticks'; unit: Unit; lens: number[]; texts?: string[] };
 
 export const CONSTRUCT_STEPS = ['base', 'ruler', 'rulerOff', 'tool1', 'one', 'tool1Off', 'tool2', 'two', 'tool2Off', 'C', 'sides'] as const;
@@ -213,7 +213,7 @@ export function copyDrawing(p: Extract<Pic, { kind: 'copy' }>): Drawing {
       { kind: 'ray', id: 'ray', from: 'A', deg: p.rayDeg, len: p.L * 1.5, role: 'dim', step: 'all', w: 3 },
       { kind: 'vertex', id: 'vA', at: 'A', name: p.names[2], role: 'ink', step: 'all', away: [A[0] + Math.cos(rd), A[1] + Math.sin(rd)] },
       { kind: 'arc', id: 'arc', c: 'A', r: p.L, from: p.rayDeg - 14, to: p.rayDeg + 14, role: 'first', step: 'solve' },
-      { kind: 'vertex', id: 'vD', at: 'D', name: 'D', role: 'link', step: 'solve', away: [A[0] + Math.cos(rd + 1.2), A[1] + Math.sin(rd + 1.2)] },
+      { kind: 'vertex', id: 'vD', at: 'D', name: p.newName ?? 'D', role: 'link', step: 'solve', away: [A[0] + Math.cos(rd + 1.2), A[1] + Math.sin(rd + 1.2)] },
     ],
   };
 }

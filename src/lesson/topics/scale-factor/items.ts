@@ -6,6 +6,7 @@
 import { type Q, qEq, qMul, qNum, qTex, rat, toQ } from '../../../core/math';
 import { frame } from '../../../blocks/block';
 import { type Gen, type Item, type Response, type Verdict, A, B, S, fr, int, mixed, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import {
   type Lab, type Pic, type PicFig, type V, ell, extent, fitsIn, flip, home, layoutPic, move, para, picMaths, rect, scale,
   sides, sss, stretch, tee, turn, yoo, angleAt,
@@ -141,7 +142,7 @@ function choiceItem(b: Base, R: () => number, cs: Choice[], keepOrder = false): 
   const order = keepOrder ? cs : shuffle(R, [...cs]);
   const right = order.findIndex(c => c.ok);
   const it: ScaleItem = {
-    ...b, input: 'choice', choices: order.map(c => c.t), answer: { kind: 'choice', i: right },
+    ...b, solution: endOnChoice(b.solution, order[right]!.t), input: 'choice', choices: order.map(c => c.t), answer: { kind: 'choice', i: right },
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !order[r.i]) return { ok: false, say: 'Pick one answer.' };
       const c = order[r.i]!;
@@ -207,6 +208,8 @@ const q1 = (x: number) => String(x);
 const kLine = (k: K) => `Scale factor ${S(kHtml(k))}: every length of the copy is ${S(kHtml(k))} × the matching length of the original.`;
 
 // ---------- contexts ----------
+/** "An" before a vowel sound (an app icon, an 8 in. photo, an 11 in. poster), else "A" */
+const An = (next: string | number) => (/^(8|11|18)(?!\d)|^8\d(?!\d)|^[aeiou]/i.test(String(next)) ? 'An' : 'A');
 const THINGS = ['logo', 'sticker', 'badge design', 'app icon', 'floor plan', 'banner', 'tile pattern', 'stencil'];
 const PHOTOS = [
   { what: 'photo', copy: 'print', verb: 'printed' },
@@ -365,7 +368,7 @@ const nameK: Gen = (R, n) => fit(() => {
   const a = pick(R, [[w, k * w, 'width'], [h, k * h, 'height']] as const);
   return numItem({
     id: `nameK-${n}`, family: 'nameK', unit: '',
-    prompt: `A ${c} (${A('original')}) is copied into the ${B('teal copy')}. What is the scale factor from the original to the copy? (A whole number goes in the first box.)`,
+    prompt: `${An(c)} ${c} (${A('original')}) is copied into the ${B('teal copy')}. What is the scale factor from the original to the copy? (A whole number goes in the first box.)`,
     board: 'k = \\,?',
     solution: [`Pick a pair: ${a[2]} ${A(a[0])} on the original, ${B(a[1])} on the copy.`, `Scale factor = copy ÷ original = ${a[1]} ÷ ${a[0]} = ${S(String(k))}.`],
     pict: { pic, solve: { tex: `k = ${a[1]} \\div ${a[0]} = ${k}` } },
@@ -386,7 +389,7 @@ const predict: Gen = (R, n, sg) => {
   const why = v > 1 ? `${kHtml(k)} is more than 1, so every length grows.` : v === 1 ? 'Times 1 keeps every length the same.' : `${kHtml(k)} is less than 1: you get only part of each length, so the copy shrinks.`;
   return choiceItem({
     id: `predict-${n}`, family: 'predict',
-    prompt: `A ${c} is copied with scale factor ${S(kHtml(k))}. Without working anything out: the copy is…`,
+    prompt: `${An(c)} ${c} is copied with scale factor ${S(kHtml(k))}. Without working anything out: the copy is…`,
     board: `k = ${kTex(k)}`,
     solution: ['Compare k with 1: more than 1 enlarges, exactly 1 keeps the size, between 0 and 1 reduces.', `For example, a 4-inch side becomes 4 × ${kHtml(k)} = ${nH(4 * v)} inches.`],
   }, R, words.map((t, i) => i === size ? { t, ok: true, say: `Right. ${why}` }
@@ -510,7 +513,7 @@ const readSeg: Gen = (R, n) => fit(() => {
       id: `readSeg-${n}`, family: 'readSeg', unit: 'units',
       prompt: `How long is the ${'<b style="color:var(--pick)">lavender side</b>'}? Count grid units.`,
       board: '\\text{length} = \\,?',
-      solution: ['Count the spaces between grid lines, not the grid lines (or dots) themselves.', `The side spans ${S(String(len))} spaces.`],
+      solution: ['Count the spaces between grid lines, not the grid lines (or dots) themselves.', `The side spans ${S(String(len))} space${len === 1 ? '' : 's'}.`],
       pict: { pic, solve: { show: ['f1a0'], tex: `\\text{length} = ${len}` } },
     }, rat(len), `Yes: ${len} units.`, [
       { v: rat(len + 1), mc: MC.points, say: `That counts the grid lines, start and end included. Count the spaces between them: ${len}.` },
@@ -569,7 +572,7 @@ const drawNext: Gen = (R, n) => fit(() => {
     id: `drawNext-${n}`, family: 'drawNext', unit: 'squares',
     prompt: `You are drawing a copy with scale factor ${S(String(k))}. It started at the dot (the ${A('original')} has the same starting corner) and goes around the same way. Next it goes <b>${dir}</b>. How many squares?`,
     board: `k = ${k}`,
-    solution: [`Find the matching side of the original: it is ${A(String(ol))} squares long.`, `${ol} × ${k} = ${S(String(len))} squares ${dir}.`],
+    solution: [`Find the matching side of the original: it is ${A(String(ol))} square${ol === 1 ? '' : 's'} long.`, `${ol} × ${k} = ${S(String(len))} square${len === 1 ? '' : 's'} ${dir}.`],
     pict: { pic, hide: ['f1', 'f1L'], solve: { show: ['f1', 'f1L', 'f1a' + m], hide: ['k0', 'm0'], tex: `${ol} \\times ${k} = ${len}` } },
   }, rat(len), `Yes: ${ol} × ${k} = ${len} squares ${dir}.`, [
     { v: rat(ol), mc: MC.someSides, say: `That is the original side. In the copy it is ×${k}: ${ol} × ${k} = ${len}.` },
@@ -982,10 +985,10 @@ const resize: Gen = (R, n) => fit(() => {
   const pic: Pic = { cols: ar.cols, rows: ar.rows, grid: false, figs: [
     { pts: ar.placed[0]!, role: 'first', labels: rectLabels(q1(w), q1(h), 'left'), photo: [w, h] },
     { pts: ar.placed[1]!, role: 'second', labels: rectLabels(nT(W), nT(H), 'right'), photo: [w, h], of: yes ? { fig: 0, k } : undefined }] };
-  const story = kind === 'poster' ? `A ${A(`${w} in. × ${h} in.`)} poster is made 6 inches wider and 6 inches taller: ${B(`${W} in. × ${H} in.`)}.`
-    : kind === 'screen' ? `A ${A(`${w} in. × ${h} in.`)} screenshot is resized for a slide to ${B(`${nH(W)} in. × ${nH(H)} in.`)} (scale factor 3/2).`
-      : kind === 'stretched' ? `A ${A(`${w} in. × ${h} in.`)} photo is dragged wider to ${B(`${W} in. × ${H} in.`)}.`
-        : `A ${A(`${w} in. × ${h} in.`)} photo is printed at ${B(`${W} in. × ${H} in.`)}.`;
+  const story = kind === 'poster' ? `${An(w)} ${A(`${w} in. × ${h} in.`)} poster is made 6 inches wider and 6 inches taller: ${B(`${W} in. × ${H} in.`)}.`
+    : kind === 'screen' ? `${An(w)} ${A(`${w} in. × ${h} in.`)} screenshot is resized for a slide to ${B(`${nH(W)} in. × ${nH(H)} in.`)} (scale factor 3/2).`
+      : kind === 'stretched' ? `${An(w)} ${A(`${w} in. × ${h} in.`)} photo is dragged wider to ${B(`${W} in. × ${H} in.`)}.`
+        : `${An(w)} ${A(`${w} in. × ${h} in.`)} photo is printed at ${B(`${W} in. × ${H} in.`)}.`;
   const fW = qH(rat(Math.round(W * 2), w * 2)), fH = qH(rat(Math.round(H * 2), h * 2));
   const right = yes ? `Yes: both sides are ×${kind === 'screen' ? fr(3, 2) : k} (${nH(W)} ÷ ${w} = ${nH(H)} ÷ ${h})`
     : `No: the width is ×${fW} but the height is ×${fH}`;
@@ -1023,7 +1026,7 @@ const fixIt: Gen = (R, n) => fit(() => {
     { pts: fixed, role: 'second', labels: [null, null, null, qT(good)], photo: [w, h], of: { fig: 0, k: kN(k) } }] };
   return numItem({
     id: `fixIt-${n}`, family: 'fixIt', unit: 'in.',
-    prompt: `A ${A(`${w} in. × ${h} in.`)} ${c.what} was ${c.verb} to ${W} in. × ${bad} in. (red): ${W - w} inches added to each side, so it looks stretched. Keep the width at ${B(`${W} inches`)}. What height makes it a scaled copy?`,
+    prompt: `${An(w)} ${A(`${w} in. × ${h} in.`)} ${c.what} was ${c.verb} to ${W} in. × ${bad} in. (red): ${W - w} inches added to each side, so it looks stretched. Keep the width at ${B(`${W} inches`)}. What height makes it a scaled copy?`,
     board: `${w} \\to ${W}, \\quad ${h} \\to\\ ?`,
     solution: [`The width tells the factor: ${W} ÷ ${w} = ${S(kHtml(k))}.`, `So the height must be ${h} × ${kHtml(k)} = ${S(qH(good))} in., not ${bad}.`],
     pict: { pic, hide: ['f2', 'f2L'], solve: { show: ['f2', 'f2L'], tex: `${h} \\times ${kTex(k)} = ${qT(good)}` } },

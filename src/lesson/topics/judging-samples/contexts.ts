@@ -246,7 +246,7 @@ export const CONTEXTS: readonly Ctx[] = [
     ],
     others: [
       { group: 'students in Mr. Park’s homeroom', tag: 'Mr. Park’s class', n: [24, 30], why: 'they are in a different homeroom' },
-      { group: 'the music teachers', tag: 'music teachers', n: [3, 5], why: 'teachers are not students in the homeroom' },
+      { group: 'music teachers', tag: 'music teachers', n: [3, 5], why: 'teachers are not students in the homeroom' },
     ],
     census: 'asked all 28 students and counted every answer',
     missing: {

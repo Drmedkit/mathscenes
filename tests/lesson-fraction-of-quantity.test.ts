@@ -9,6 +9,13 @@ import { PLAN } from '../src/lesson/topics/fraction-of-quantity/plan';
 import { computeFractionOf, setFits, setGeom, tapeFits } from '../src/lesson/topics/fraction-of-quantity/fractionOfMaths';
 import { qEq, rat } from '../src/core/math';
 
+// ---- quality layer (docs/lessons/QUALITY_LAYER.md): worked steps, check-in adapter, regressions ----
+import { rng as qlRng, plain as qlPlain, type Item as QlItem } from '../src/lesson/runtime/item';
+import { GENS as qlGens } from '../src/lesson/topics/fraction-of-quantity/items';
+import { PLAN as qlPlan } from '../src/lesson/topics/fraction-of-quantity/plan';
+import { explain as qlExplain } from '../src/lesson/topics/fraction-of-quantity/explain';
+import { PLACEMENT as qlPlacement } from '../src/lesson/topics/fraction-of-quantity/placement';
+
 const TOPIC = 'C:/Users/stelt/Claude code foler/math-curriculum-essentials/topics/primary.fractions.fraction-of-quantity.json';
 const MC = 'C:/Users/stelt/Claude code foler/math-curriculum-essentials/misconceptions.json';
 const mcIds = existsSync(MC) ? new Set((JSON.parse(readFileSync(MC, 'utf8')) as { misconceptions: { id: string }[] }).misconceptions.map(m => m.id)) : null;
@@ -163,5 +170,45 @@ describe('the FractionOf model maths', () => {
     expect(setGeom(13, 4)).toBeNull();
     expect(setGeom(40, 4)).toBeNull();
     for (const b of [2, 3, 4, 6, 8]) for (let s = 1; s <= 6 && b * s <= 24; s++) expect(setGeom(b * s, b), `${b * s} in ${b}`).not.toBeNull();
+  });
+});
+
+describe('quality layer', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('the steps card ends on an answer the lesson accepts, in every pair (200 seeds)', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 37 + 5), s, p.id);
+      const ex = qlExplain(it0);
+      expect(ex, `${p.id}/${f}: ${it0.prompt}`).not.toBeNull();
+      expect(it0.check(ex!.result).ok, `${p.id}/${f}: ${JSON.stringify(ex!.result)} for ${it0.prompt}`).toBe(true);
+    }
+  });
+  it('the check-in picks are pairs of the plan and their answers pass', () => {
+    for (const pk of qlPlacement.picks) {
+      expect(qlPlan.find(p => p.id === pk.subgoal)?.families as string[] | undefined).toContain(pk.family);
+      for (let s = 1; s <= 50; s++) { const it0 = gens[pk.family]!(qlRng(s), s, pk.subgoal); expect(it0.check(it0.answer).ok).toBe(true); }
+    }
+  });
+  it('no "1 …s" in questions, choices or steps', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 7 + 3), s, p.id);
+      const text = qlPlain([it0.prompt, ...(it0.choices ?? []), ...it0.solution].join(' | '));
+      expect(text, `${p.id}/${f}`).not.toMatch(/(?<![\d.\/])1 shares\b/);
+    }
+  });
+});
+
+describe('quality layer: oracle findings (phase 2)', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('fractional shares: real sizes (a sub sandwich is 6 in or more) and never more of a thing than you have', () => {
+    for (const [f, sg] of [['fracShare', 'fractional-unit-share'], ['fracNonUnit', 'fractional-non-unit-share']] as const)
+      for (let s = 1; s <= 300; s++) {
+        const it0 = gens[f]!(qlRng(s), s, sg), p = qlPlain(it0.prompt);
+        const m = /a (\d+) in sub sandwich/.exec(p);
+        if (m) expect(Number(m[1]), p).toBeGreaterThanOrEqual(6);
+        expect(p).not.toMatch(/\ba (8|11|18)\b/);
+        const fr = /tfrac\{(\d+)\}\{(\d+)\}/.exec(it0.board)!;
+        expect(Number(fr[1]), p).toBeLessThan(Number(fr[2]));
+      }
   });
 });

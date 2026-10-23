@@ -23,6 +23,7 @@ import { CounterMat, type CounterMatBlock, type MatStep } from '../../src/lesson
 import { FAMILY_NAMES, GENS, type Pic } from '../../src/lesson/topics/add-subtract-rational-numbers/items';
 import { PLAN } from '../../src/lesson/topics/add-subtract-rational-numbers/plan';
 import { SCRIPT } from '../../src/lesson/topics/add-subtract-rational-numbers/script';
+import { explain } from '../../src/lesson/topics/add-subtract-rational-numbers/explain';
 import { frame } from '../../src/blocks/block';
 
 const SLUG = 'add-subtract-rational-numbers';
@@ -418,7 +419,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it),
   });

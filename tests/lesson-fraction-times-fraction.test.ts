@@ -7,6 +7,13 @@ import { PLAN } from '../src/lesson/topics/fraction-times-fraction/plan';
 import { SCRIPT } from '../src/lesson/topics/fraction-times-fraction/script';
 import { areaFits, computeArea } from '../src/lesson/topics/fraction-times-fraction/AreaModel';
 
+// ---- quality layer (docs/lessons/QUALITY_LAYER.md): worked steps, check-in adapter, regressions ----
+import { rng as qlRng, plain as qlPlain, type Item as QlItem } from '../src/lesson/runtime/item';
+import { GENS as qlGens } from '../src/lesson/topics/fraction-times-fraction/items';
+import { PLAN as qlPlan } from '../src/lesson/topics/fraction-times-fraction/plan';
+import { explain as qlExplain } from '../src/lesson/topics/fraction-times-fraction/explain';
+import { PLACEMENT as qlPlacement } from '../src/lesson/topics/fraction-times-fraction/placement';
+
 const TOPIC = 'C:/Users/stelt/Claude code foler/math-curriculum-essentials/topics/primary.fractions.multiply-fraction-by-fraction.json';
 const SEEDS = 300;
 
@@ -113,6 +120,52 @@ describe('voice', () => {
     for (const [id, l] of Object.entries(lines)) {
       expect(l.text.length, id).toBeGreaterThan(3);
       expect(l.text, id).not.toMatch(/\d\s*\/\s*\d|[<>×÷]/);
+    }
+  });
+});
+
+describe('quality layer', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('the steps card ends on an answer the lesson accepts, in every pair (200 seeds)', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 37 + 5), s, p.id);
+      const ex = qlExplain(it0);
+      expect(ex, `${p.id}/${f}: ${it0.prompt}`).not.toBeNull();
+      expect(it0.check(ex!.result).ok, `${p.id}/${f}: ${JSON.stringify(ex!.result)} for ${it0.prompt}`).toBe(true);
+    }
+  });
+  it('the check-in picks are pairs of the plan and their answers pass', () => {
+    for (const pk of qlPlacement.picks) {
+      expect(qlPlan.find(p => p.id === pk.subgoal)?.families as string[] | undefined).toContain(pk.family);
+      for (let s = 1; s <= 50; s++) { const it0 = gens[pk.family]!(qlRng(s), s, pk.subgoal); expect(it0.check(it0.answer).ok).toBe(true); }
+    }
+  });
+  it('no "1 …s" in questions, choices or steps', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 7 + 3), s, p.id);
+      const text = qlPlain([it0.prompt, ...(it0.choices ?? []), ...it0.solution].join(' | '));
+      expect(text, `${p.id}/${f}`).not.toMatch(/(?<![\d.\/])1 (parts|cells|tiles|pans|cups)\b/);
+    }
+  });
+  it('every choice item ends on its right choice, marked (So: …)', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 40; s++) {
+      const it0 = gens[f]!(qlRng(s * 13), s, p.id);
+      if (it0.input !== 'choice' || it0.answer.kind !== 'choice') continue;
+      expect(qlExplain(it0)!.result, `${f}: ${it0.prompt}`).toEqual(it0.answer);
+    }
+  });
+});
+
+describe('quality layer: oracle findings (phase 2)', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('more than one whole is only ever pans of brownies, never a garden bed; no "3ths"', () => {
+    for (let s = 1; s <= 300; s++) {
+      const it0 = gens.areaRead!(qlRng(s), s, 'improper-factors');
+      expect(qlPlain(it0.prompt)).not.toMatch(/garden bed/);
+    }
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 60; s++) {
+      const it0 = gens[f]!(qlRng(s * 3), s, p.id);
+      expect(qlPlain([it0.prompt, ...(it0.choices ?? []), ...it0.solution].join(' ')), f).not.toMatch(/\d+ths\b/);
     }
   });
 });

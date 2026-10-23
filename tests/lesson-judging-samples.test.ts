@@ -15,6 +15,13 @@ import { frame } from '../src/blocks/block';
 import { dusk } from '../src/lesson/dusk';
 import { CONTEXTS } from '../src/lesson/topics/judging-samples/contexts';
 
+// ---- quality layer (docs/lessons/QUALITY_LAYER.md): worked steps, check-in adapter, regressions ----
+import { rng as qlRng, plain as qlPlain, type Item as QlItem } from '../src/lesson/runtime/item';
+import { GENERATORS as qlGens } from '../src/lesson/topics/judging-samples/items';
+import { PLAN as qlPlan } from '../src/lesson/topics/judging-samples/plan';
+import { explain as qlExplain } from '../src/lesson/topics/judging-samples/explain';
+import { PLACEMENT as qlPlacement } from '../src/lesson/topics/judging-samples/placement';
+
 // words.ts measures with a canvas in the browser; in node it falls back to an estimate (0.52 em per character)
 if (typeof document === 'undefined') (globalThis as unknown as { document: unknown }).document = { createElement: () => ({ getContext: () => null }) };
 
@@ -148,5 +155,40 @@ describe('the model maths', () => {
     const prove = SampleMap({ popLabel: '600 students', N: 600, match: 'part', sampleLabel: '200 in the lunch line', n: 200, leftLabel: '400 not asked' }, MF, dusk);
     expect(prove.exact).toBe(false);
     for (const c of CONTEXTS) expect(c.popShort.length).toBeLessThanOrEqual(22);
+  });
+});
+
+describe('quality layer', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('the steps card ends on an answer the lesson accepts, in every pair (200 seeds)', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 37 + 5), s, p.id);
+      const ex = qlExplain(it0);
+      expect(ex, `${p.id}/${f}: ${it0.prompt}`).not.toBeNull();
+      expect(it0.check(ex!.result).ok, `${p.id}/${f}: ${JSON.stringify(ex!.result)} for ${it0.prompt}`).toBe(true);
+    }
+  });
+  it('the check-in picks are pairs of the plan and their answers pass', () => {
+    for (const pk of qlPlacement.picks) {
+      expect(qlPlan.find(p => p.id === pk.subgoal)?.families as string[] | undefined).toContain(pk.family);
+      for (let s = 1; s <= 50; s++) { const it0 = gens[pk.family]!(qlRng(s), s, pk.subgoal); expect(it0.check(it0.answer).ok).toBe(true); }
+    }
+  });
+  it('no "1 …s" in questions, choices or steps', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 7 + 3), s, p.id);
+      const text = qlPlain([it0.prompt, ...(it0.choices ?? []), ...it0.solution].join(' | '));
+      expect(text, `${p.id}/${f}`).not.toMatch(/\b\d+ the /);
+    }
+  });
+});
+
+describe('quality layer: oracle findings (phase 2)', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('school days and apples are checked, not asked', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s), s, p.id);
+      expect(qlPlain([it0.prompt, ...(it0.choices ?? [])].join(' '))).not.toMatch(/asked (the )?\d+ (school days|apples|days)/);
+    }
   });
 });

@@ -12,6 +12,13 @@ import { computeMat, matFits } from '../src/lesson/topics/add-subtract-rational-
 import { N, D, readQ, sumQ, exprTex, tx, hx, as } from '../src/lesson/topics/add-subtract-rational-numbers/num';
 import { rat } from '../src/core/math';
 
+// ---- quality layer (docs/lessons/QUALITY_LAYER.md): worked steps, check-in adapter, regressions ----
+import { rng as qlRng, plain as qlPlain, type Item as QlItem } from '../src/lesson/runtime/item';
+import { GENS as qlGens } from '../src/lesson/topics/add-subtract-rational-numbers/items';
+import { PLAN as qlPlan } from '../src/lesson/topics/add-subtract-rational-numbers/plan';
+import { explain as qlExplain } from '../src/lesson/topics/add-subtract-rational-numbers/explain';
+import { PLACEMENT as qlPlacement } from '../src/lesson/topics/add-subtract-rational-numbers/placement';
+
 const TOPIC = 'C:/Users/stelt/Claude code foler/math-curriculum-essentials/topics/secondary-t5-17-operations-with-rational-numbers.json';
 const MISC = 'C:/Users/stelt/Claude code foler/math-curriculum-essentials/misconceptions.json';
 const SEEDS = 300;
@@ -122,6 +129,54 @@ describe('voice', () => {
     for (const [id, l] of Object.entries(LINES)) {
       expect(json[id]!.text, id).toBe(l.say);
       expect(l.say, id).not.toMatch(/[<>]|\d\/\d|−\d/);   // read-aloud text: no HTML, no "3/4", no symbol minus before a digit
+    }
+  });
+});
+
+describe('quality layer', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('the steps card ends on an answer the lesson accepts, in every pair (200 seeds)', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 37 + 5), s, p.id);
+      const ex = qlExplain(it0);
+      expect(ex, `${p.id}/${f}: ${it0.prompt}`).not.toBeNull();
+      expect(it0.check(ex!.result).ok, `${p.id}/${f}: ${JSON.stringify(ex!.result)} for ${it0.prompt}`).toBe(true);
+    }
+  });
+  it('the check-in picks are pairs of the plan and their answers pass', () => {
+    for (const pk of qlPlacement.picks) {
+      expect(qlPlan.find(p => p.id === pk.subgoal)?.families as string[] | undefined).toContain(pk.family);
+      for (let s = 1; s <= 50; s++) { const it0 = gens[pk.family]!(qlRng(s), s, pk.subgoal); expect(it0.check(it0.answer).ok).toBe(true); }
+    }
+  });
+  it('no "1 …s" in questions, choices or steps', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 7 + 3), s, p.id);
+      const text = qlPlain([it0.prompt, ...(it0.choices ?? []), ...it0.solution].join(' | '));
+      expect(text, `${p.id}/${f}`).not.toMatch(/(?<![\d.\/])1 dollars\b/);
+    }
+  });
+  it('a negative fraction or mixed number in the steps is read as a signed fraction the lesson accepts', () => {
+    for (const [f, sg] of [['fracSigned', 'fraction-add-sub-signed'], ['mixedOps', 'mixed-number-add-sub-signed'], ['opposite', 'minus-sign-roles']] as const)
+      for (let s = 1; s <= 200; s++) {
+        const it0 = gens[f]!(qlRng(s), s, sg), r = qlExplain(it0)!.result;
+        if (r.kind === 'frac') expect([r.w, r.n, r.d].every(Number.isInteger), JSON.stringify(r)).toBe(true);
+        expect(it0.check(r).ok, `${it0.board}: ${JSON.stringify(r)}`).toBe(true);
+      }
+  });
+});
+
+describe('quality layer: oracle findings (phase 2)', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('a property step always changes something; a submarine stays under water; no "− −"', () => {
+    for (let s = 1; s <= 400; s++) {
+      const pr = gens.property!(qlRng(s), s, 'additive-properties-strategies');
+      const [l, r] = pr.board.split(' = ');
+      expect(l, pr.board).not.toBe(r);
+      const st = gens.story!(qlRng(s), s, 'apply-one-step-add-sub');
+      if (/submarine/.test(st.prompt) && st.answer.kind === 'num') expect(st.answer.v, st.prompt).toBeLessThan(0);
+      const sr = gens.signRole!(qlRng(s), s, 'minus-sign-roles');
+      expect(qlPlain(sr.prompt)).not.toMatch(/[−-]\s+[−-]\s*\(/);
     }
   });
 });

@@ -12,6 +12,13 @@ import { LESSON_FRAME, LESSON_PICS } from '../src/lesson/topics/scale-factor/les
 import { picSteps } from '../src/lesson/topics/scale-factor/ScaleGrid';
 import { qEq, rat } from '../src/core/math';
 
+// ---- quality layer (docs/lessons/QUALITY_LAYER.md): worked steps, check-in adapter, regressions ----
+import { rng as qlRng, plain as qlPlain, type Item as QlItem } from '../src/lesson/runtime/item';
+import { GENS as qlGens } from '../src/lesson/topics/scale-factor/items';
+import { PLAN as qlPlan } from '../src/lesson/topics/scale-factor/plan';
+import { explain as qlExplain } from '../src/lesson/topics/scale-factor/explain';
+import { PLACEMENT as qlPlacement } from '../src/lesson/topics/scale-factor/placement';
+
 const TOPIC = 'C:/Users/stelt/Claude code foler/math-curriculum-essentials/topics/primary.geometry.enlarge-reduce-scale-factor.json';
 const MCS = 'C:/Users/stelt/Claude code foler/math-curriculum-essentials/misconceptions.json';
 const mcIds = existsSync(MCS) ? new Set((JSON.parse(readFileSync(MCS, 'utf8')) as { misconceptions: { id: string }[] }).misconceptions.map(m => m.id)) : null;
@@ -136,6 +143,41 @@ describe('voice', () => {
     for (const [id, v] of Object.entries(SCRIPT)) {
       expect(lines[id]!.text, id).toBe(v.s);
       expect(v.s, id).not.toMatch(/[0-9]\/[0-9]|<|×|÷/);   // read aloud: "one half", not "1/2"
+    }
+  });
+});
+
+describe('quality layer', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('the steps card ends on an answer the lesson accepts, in every pair (200 seeds)', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 37 + 5), s, p.id);
+      const ex = qlExplain(it0);
+      expect(ex, `${p.id}/${f}: ${it0.prompt}`).not.toBeNull();
+      expect(it0.check(ex!.result).ok, `${p.id}/${f}: ${JSON.stringify(ex!.result)} for ${it0.prompt}`).toBe(true);
+    }
+  });
+  it('the check-in picks are pairs of the plan and their answers pass', () => {
+    for (const pk of qlPlacement.picks) {
+      expect(qlPlan.find(p => p.id === pk.subgoal)?.families as string[] | undefined).toContain(pk.family);
+      for (let s = 1; s <= 50; s++) { const it0 = gens[pk.family]!(qlRng(s), s, pk.subgoal); expect(it0.check(it0.answer).ok).toBe(true); }
+    }
+  });
+  it('no "1 …s" in questions, choices or steps', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 7 + 3), s, p.id);
+      const text = qlPlain([it0.prompt, ...(it0.choices ?? []), ...it0.solution].join(' | '));
+      expect(text, `${p.id}/${f}`).not.toMatch(/(?<![\d.\/])1 (spaces|squares)\b/);
+    }
+  });
+});
+
+describe('quality layer: oracle findings (phase 2)', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('"an" before a vowel sound: an app icon, an 8 in. photo', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 100; s++) {
+      const it0 = gens[f]!(qlRng(s), s, p.id);
+      expect(qlPlain(it0.prompt)).not.toMatch(/\bA (app|[aeiou]\w*|8 in\.|11 in\.|18 in\.)/);
     }
   });
 });

@@ -10,6 +10,7 @@ import { type Q, rat, qAdd, qNum } from '../../../core/math';
 import { type Item, type Response, type Verdict, type Gen, A, B, S, int, pick, shuffle } from '../../runtime/item';
 import { niceRange, onTick } from './NumberLine';
 import { matFits } from './CounterMat';
+import { endOnChoice } from '../../runtime/explain';
 import { type Num, type Term, type Form, N, D, as, hx, tx, neg, abs, sgn, val, qSub, qNeg, qAbs, qSame, sumQ, exprTex, exprHtml, readQ, respond, decQ, places, isDec } from './num';
 
 // ---------- item shape ----------
@@ -62,7 +63,7 @@ interface Opt { html: string; ok: boolean; mc?: string; say: string }
 function choose(base: Omit<RItem, 'check' | 'answer' | 'input' | 'choices'>, R: () => number, opts: Opt[], keep = false): RItem {
   const os = keep ? opts : shuffle(R, [...opts]);
   const it: RItem = {
-    ...base, input: 'choice', choices: os.map(o => o.html), answer: { kind: 'choice', i: os.findIndex(o => o.ok) },
+    ...base, solution: endOnChoice(base.solution, os.find(o => o.ok)!.html), input: 'choice', choices: os.map(o => o.html), answer: { kind: 'choice', i: os.findIndex(o => o.ok) },
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !os[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const o = os[r.i]!;
@@ -117,7 +118,8 @@ const signRole: Gen = (R, n) => {
     { parts: [{ role: 'neg' }, tx(a), ' + ', tx(b)], html: () => '' },
     { parts: [{ role: 'opp' }, '(', { role: 'neg' }, tx(a), ')'], html: () => '' },
     { parts: [{ role: 'neg' }, tx(a), ' ', { role: 'sub' }, ' (', { role: 'neg' }, tx(b), ')'], html: () => '' },
-    { parts: [tx(a), ' ', { role: 'sub' }, ' ', { role: 'opp' }, '(', { role: 'neg' }, tx(b), ')'], html: () => '' },
+    // a − (−(−b)), not a − −(−b): two minus signs side by side are hard to read
+    { parts: [tx(a), ' ', { role: 'sub' }, ' (', { role: 'opp' }, '(', { role: 'neg' }, tx(b), '))'], html: () => '' },
     { parts: [{ role: 'opp' }, '(', tx(a), ' ', { role: 'sub' }, ' ', tx(b), ')'], html: () => '' },
   ];
   const sh = pick(R, shapes);
@@ -376,21 +378,22 @@ const distChange: Gen = (R, n) => {
   const change = b - a, dist = Math.abs(change);
   const pic: GapPic | undefined = Math.max(Math.abs(a), Math.abs(b)) <= 20 ? (() => { const r = niceRange([a, b], 1, 8); return r ? { kind: 'gap' as const, ...r, den: 1, a, b } : undefined; })() : undefined;
   const u = unit === '$' ? ' dollars' : ` ${unit}`;
+  const uOf = (v: number) => (Math.abs(v) === 1 && u === ' dollars' ? ' dollar' : u);
   const it: RItem = {
     id: `distChange-${n}`, family: 'distChange', prompt, board: '\\text{change} = \\,? \\qquad \\text{distance} = \\,?',
     input: 'pair', pairLead: 'change', pairOp: 'distance', picture: pic,
-    solution: [`Change = final − first = ${fmtInt(b)} − ${a < 0 ? `(${fmtInt(a)})` : fmtInt(a)} = ${S(fmtInt(change))}${u}${change < 0 ? ' (it went DOWN)' : ' (it went up)'}.`,
-      `Distance = |${fmtInt(change)}| = ${S(fmtInt(dist))}${u}. A distance is never negative.`],
+    solution: [`Change = final − first = ${fmtInt(b)} − ${a < 0 ? `(${fmtInt(a)})` : fmtInt(a)} = ${S(fmtInt(change))}${uOf(change)}${change < 0 ? ' (it went DOWN)' : ' (it went up)'}.`,
+      `Distance = |${fmtInt(change)}| = ${S(fmtInt(dist))}${uOf(dist)}. A distance is never negative.`],
     answer: { kind: 'pair', x: change, y: dist },
     check(r: Response): Verdict {
       if (r.kind !== 'pair' || !Number.isFinite(r.x) || !Number.isFinite(r.y)) return { ok: false, say: 'Fill in both boxes with a number (a change can be negative).' };
       const okX = r.x === change, okY = r.y === dist;
-      if (okX && okY) return { ok: true, say: `Yes: the change is ${S(fmtInt(change))}${u} and the distance is ${S(fmtInt(dist))}${u}. Same size, but only the change has a direction.` };
-      if (r.y < 0) return { ok: false, mc: 'mc.integers.distance-reported-negative', say: `A distance is how far apart, so it is never negative: ${S(fmtInt(dist))}${u}. Only the change carries a sign${change < 0 ? `: here it is ${fmtInt(change)}` : ''}.` };
-      if (!okX && change < 0 && r.x === dist) return { ok: false, mc: 'mc.integers.records-negative-quantity-unsigned', say: `It went DOWN, so the change is negative: ${S(fmtInt(change))}${u}. The size alone, ${dist}, is the distance.` };
-      if (!okY && Math.sign(a) !== Math.sign(b) && r.y === Math.abs(Math.abs(a) - Math.abs(b))) return { ok: false, mc: 'mc.integers.gap-across-zero-subtracts-magnitudes', say: `The two readings are on opposite sides of 0, so the gap goes THROUGH 0: ${Math.abs(a)} + ${Math.abs(b)} = ${S(fmtInt(dist))}${u}.` };
+      if (okX && okY) return { ok: true, say: `Yes: the change is ${S(fmtInt(change))}${uOf(change)} and the distance is ${S(fmtInt(dist))}${uOf(dist)}. Same size, but only the change has a direction.` };
+      if (r.y < 0) return { ok: false, mc: 'mc.integers.distance-reported-negative', say: `A distance is how far apart, so it is never negative: ${S(fmtInt(dist))}${uOf(dist)}. Only the change carries a sign${change < 0 ? `: here it is ${fmtInt(change)}` : ''}.` };
+      if (!okX && change < 0 && r.x === dist) return { ok: false, mc: 'mc.integers.records-negative-quantity-unsigned', say: `It went DOWN, so the change is negative: ${S(fmtInt(change))}${uOf(change)}. The size alone, ${dist}, is the distance.` };
+      if (!okY && Math.sign(a) !== Math.sign(b) && r.y === Math.abs(Math.abs(a) - Math.abs(b))) return { ok: false, mc: 'mc.integers.gap-across-zero-subtracts-magnitudes', say: `The two readings are on opposite sides of 0, so the gap goes THROUGH 0: ${Math.abs(a)} + ${Math.abs(b)} = ${S(fmtInt(dist))}${uOf(dist)}.` };
       if (!okX && r.x === -change) return { ok: false, say: `Change is final minus first: ${fmtInt(b)} − ${a < 0 ? `(${fmtInt(a)})` : fmtInt(a)} = ${S(fmtInt(change))}.` };
-      return { ok: false, say: `Change = final − first = ${S(fmtInt(change))}${u}; distance = its size, ${S(fmtInt(dist))}${u}.` };
+      return { ok: false, say: `Change = final − first = ${S(fmtInt(change))}${uOf(change)}; distance = its size, ${S(fmtInt(dist))}${uOf(dist)}.` };
     },
   };
   const probes: { r: Response; mc: string }[] = [{ r: { kind: 'pair', x: change, y: -dist }, mc: 'mc.integers.distance-reported-negative' }];
@@ -810,7 +813,9 @@ const regroup: Gen = (R, n) => {
 };
 const property: Gen = (R, n) => {
   const p = pick(R, [() => N(pick(R, [1, 3]), 4), () => D(int(R, 11, 89) / 10), () => N(int(R, 1, 4), 5), () => N(int(R, 2, 9))])();
-  const o = pick(R, [() => N(int(R, 1, 4), 5), () => N(int(R, 2, 9)), () => D(int(R, 11, 49) / 10)])();
+  // o and p must differ: with o = p the commutative swap changes nothing (both sides the same, no step to name)
+  let o = pick(R, [() => N(int(R, 1, 4), 5), () => N(int(R, 2, 9)), () => D(int(R, 11, 49) / 10)])();
+  while (Math.abs(val(o) - val(p)) < 1e-9) o = N(int(R, 2, 9));
   const kind = pick(R, ['comm', 'assoc', 'inv'] as const);
   const np = neg(p);
   let lhs: string, rhs: string, tl: string, trr: string;
@@ -948,7 +953,8 @@ const story: Gen = (R, n) => {
     prompt = `Maya's account has ${A(money(a, 2))}. She pays a ${B(money(c, 2))} bill from it. What is her balance now? (Money owed is negative.)`;
     expl = `${money(a, 2)} − ${money(c, 2)}`;
   } else if (kind === 'elevation') {
-    const a = -int(R, 10, 120), c = pick(R, [-1, 1]) * int(R, 5, 60);
+    // a submarine stays under water: it rises less than its depth
+    const a = -int(R, 10, 120), c = R() < 0.5 ? int(R, 5, Math.min(60, -a - 2)) : -int(R, 5, 60);
     ts = [T(null, N(a)), T('+', N(c))]; right = sumQ(ts); unit = 'ft';
     prompt = `A submarine is at ${A(fmtInt(a) + ' ft')} (below sea level is negative). It ${c > 0 ? `rises ${B(c + ' ft')}` : `dives ${B(-c + ' ft')} deeper`}. What is its elevation now?`;
     expl = `${fmtInt(a)} + ${c < 0 ? `(${fmtInt(c)})` : c}`;
@@ -966,12 +972,13 @@ const story: Gen = (R, n) => {
     tempReading: '\\text{at midnight: }\\ ?\\ {}^{\\circ}\\mathrm{F}', tempChange: '\\text{change: }\\ ?\\ {}^{\\circ}\\mathrm{F}',
     balance: '\\text{balance: }\\ ?\\ \\text{dollars}', elevation: '\\text{elevation: }\\ ?\\ \\text{ft}', length: '\\text{bucket: }\\ ?\\ \\text{ft}',
   };
+  const unitW = unit === 'dollars' && Math.abs(qNum(right)) === 1 ? 'dollar' : unit;
   return typed({ id: `story-${n}`, family: 'story', prompt, board: ask[kind]!, unit,
-    solution: [`${expl} = ${S(H(right, 'dec'))} ${unit}.`, sgn(right) < 0 ? `The answer is negative: ${kind === 'balance' ? 'she owes money (an overdraft)' : kind === 'tempChange' ? 'the temperature went DOWN' : below[kind]}.` : 'The answer is positive.'],
-  }, 'num', right, `Yes: ${S(H(right, 'dec'))} ${unit}.${sgn(right) < 0 ? ' The minus sign carries the meaning.' : ''}`, [
-    { q: sgn(right) < 0 ? mag : null, mc: 'mc.integers.negative-result-rejected', say: `A negative answer is fine here, and it matters: ${S(H(right, 'dec'))} ${unit} ${kind === 'balance' ? 'means she owes money' : kind === 'tempChange' ? 'means it got colder' : `means ${below[kind]}`}.` },
-    { q: sgn(right) > 0 ? qNeg(right) : null, mc: 'mc.integers.result-sign-has-no-contextual-meaning', say: `The sign has a meaning here. ${expl} = ${S(H(right, 'dec'))} ${unit}: positive.` },
-  ], `${expl} = ${S(H(right, 'dec'))} ${unit}.`);
+    solution: [`${expl} = ${S(H(right, 'dec'))} ${unitW}.`, sgn(right) < 0 ? `The answer is negative: ${kind === 'balance' ? 'she owes money (an overdraft)' : kind === 'tempChange' ? 'the temperature went DOWN' : below[kind]}.` : 'The answer is positive.'],
+  }, 'num', right, `Yes: ${S(H(right, 'dec'))} ${unitW}.${sgn(right) < 0 ? ' The minus sign carries the meaning.' : ''}`, [
+    { q: sgn(right) < 0 ? mag : null, mc: 'mc.integers.negative-result-rejected', say: `A negative answer is fine here, and it matters: ${S(H(right, 'dec'))} ${unitW} ${kind === 'balance' ? 'means she owes money' : kind === 'tempChange' ? 'means it got colder' : `means ${below[kind]}`}.` },
+    { q: sgn(right) > 0 ? qNeg(right) : null, mc: 'mc.integers.result-sign-has-no-contextual-meaning', say: `The sign has a meaning here. ${expl} = ${S(H(right, 'dec'))} ${unitW}: positive.` },
+  ], `${expl} = ${S(H(right, 'dec'))} ${unitW}.`);
 };
 const signMeaning: Gen = (R, n) => {
   const ctx = pick(R, ['temp', 'money', 'elev'] as const);

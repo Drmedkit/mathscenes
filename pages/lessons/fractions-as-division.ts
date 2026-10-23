@@ -19,6 +19,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import { fr } from '../../src/lesson/runtime/item';
 import { classifyShare, FAMILY_NAMES, GENERATORS, type ShareItem } from '../../src/lesson/topics/fractions-as-division/items';
 import { PLAN } from '../../src/lesson/topics/fractions-as-division/plan';
+import { explain } from '../../src/lesson/topics/fractions-as-division/explain';
 
 const SLUG = 'fractions-as-division';
 const I = { fr, classifyShare };
@@ -462,7 +463,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as ShareItem),
   });

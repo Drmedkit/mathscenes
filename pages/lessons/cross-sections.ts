@@ -24,6 +24,7 @@ import { planeAxis, planeThrough, type SolidSpec } from '../../src/lesson/topics
 import { FAMILY_NAMES, GENS, MC, type SlicePicture } from '../../src/lesson/topics/cross-sections/items';
 import { PLAN } from '../../src/lesson/topics/cross-sections/plan';
 import { SCRIPT } from '../../src/lesson/topics/cross-sections/script';
+import { explain } from '../../src/lesson/topics/cross-sections/explain';
 
 const SLUG = 'cross-sections';
 let ctx!: LessonCtx;
@@ -458,7 +459,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it),
   });

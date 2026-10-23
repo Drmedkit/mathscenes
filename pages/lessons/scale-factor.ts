@@ -24,6 +24,7 @@ import { FAMILY_NAMES, GENS, MC, PF, type ScaleItem, valueOf } from '../../src/l
 import { PLAN } from '../../src/lesson/topics/scale-factor/plan';
 import { SCRIPT } from '../../src/lesson/topics/scale-factor/script';
 import type { Pic } from '../../src/lesson/topics/scale-factor/scaleMaths';
+import { explain } from '../../src/lesson/topics/scale-factor/explain';
 
 const SLUG = 'scale-factor';
 let ctx!: LessonCtx;
@@ -432,7 +433,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as ScaleItem),
   });

@@ -30,6 +30,7 @@ import { type Row, tableTest } from '../../src/lesson/topics/proportional-relati
 import { FAMILY_NAMES, GENS, type RatePicture } from '../../src/lesson/topics/proportional-relationships/items';
 import { PLAN } from '../../src/lesson/topics/proportional-relationships/plan';
 import { SCRIPT } from '../../src/lesson/topics/proportional-relationships/script';
+import { explain } from '../../src/lesson/topics/proportional-relationships/explain';
 
 const SLUG = 'proportional-relationships';
 let ctx!: LessonCtx;
@@ -500,7 +501,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it),
   });

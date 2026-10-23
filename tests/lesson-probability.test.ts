@@ -10,6 +10,13 @@ import { PLAN } from '../src/lesson/topics/probability/plan';
 import { LINES } from '../src/lesson/topics/probability/script';
 import { asExtreme, bagSpace, batches, complementOf, cubeSpace, digitTrials, eqF, eventOf, expectedCount, isModel, pairs, prob, running, simulate, tossSpace, twoCubes, wordOf } from '../src/lesson/topics/probability/chanceMaths';
 
+// ---- quality layer (docs/lessons/QUALITY_LAYER.md): worked steps, check-in adapter, regressions ----
+import { rng as qlRng, plain as qlPlain, type Item as QlItem } from '../src/lesson/runtime/item';
+import { GENS as qlGens } from '../src/lesson/topics/probability/items';
+import { PLAN as qlPlan } from '../src/lesson/topics/probability/plan';
+import { explain as qlExplain } from '../src/lesson/topics/probability/explain';
+import { PLACEMENT as qlPlacement } from '../src/lesson/topics/probability/placement';
+
 const TOPIC = 'C:/Users/stelt/Claude code foler/math-curriculum-essentials/topics/secondary-t5-24-probability-concepts.json';
 const MC = 'C:/Users/stelt/Claude code foler/math-curriculum-essentials/misconceptions.json';
 const mcIds = existsSync(MC) ? new Set((JSON.parse(readFileSync(MC, 'utf8')) as { misconceptions: { id: string }[] }).misconceptions.map(m => m.id)) : null;
@@ -144,6 +151,54 @@ describe('voice', () => {
       expect(l.text, id).toBe(LINES[id]!.say);
       expect(l.text.length, id).toBeGreaterThan(3);
       expect(l.text, id).not.toMatch(/\d\s*\/\s*\d|[<>×÷=]|\bP\(/);
+    }
+  });
+});
+
+describe('quality layer', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('the steps card ends on an answer the lesson accepts, in every pair (200 seeds)', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 37 + 5), s, p.id);
+      const ex = qlExplain(it0);
+      expect(ex, `${p.id}/${f}: ${it0.prompt}`).not.toBeNull();
+      expect(it0.check(ex!.result).ok, `${p.id}/${f}: ${JSON.stringify(ex!.result)} for ${it0.prompt}`).toBe(true);
+    }
+  });
+  it('the check-in picks are pairs of the plan and their answers pass', () => {
+    for (const pk of qlPlacement.picks) {
+      expect(qlPlan.find(p => p.id === pk.subgoal)?.families as string[] | undefined).toContain(pk.family);
+      for (let s = 1; s <= 50; s++) { const it0 = gens[pk.family]!(qlRng(s), s, pk.subgoal); expect(it0.check(it0.answer).ok).toBe(true); }
+    }
+  });
+  it('no "1 …s" in questions, choices or steps', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 7 + 3), s, p.id);
+      const text = qlPlain([it0.prompt, ...(it0.choices ?? []), ...it0.solution].join(' | '));
+      expect(text, `${p.id}/${f}`).not.toMatch(/(?<![\d.\/,])1 (times|marbles|parts|heads)\b/);
+    }
+  });
+  it('compoundSpace marks the count in every mode', () => {
+    for (let s = 1; s <= 200; s++) { const it0 = gens.compoundSpace!(qlRng(s), s, 'compound-sample-space'); expect(qlExplain(it0)!.result).toEqual(it0.answer); }
+  });
+});
+
+describe('quality layer: oracle findings (phase 2)', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('discrepancy compares the right way (or fewer below the center, never "is -2 more"); "close enough" is within 1.5 SD', () => {
+    for (let s = 1; s <= 400; s++) {
+      const d = gens.discrepancy!(qlRng(s), s, 'model-data-discrepancy');
+      for (const c of d.choices ?? []) expect(c).not.toMatch(/is -\d/);
+      const ok = (d.choices ?? [])[d.answer.kind === 'choice' ? d.answer.i : -1] ?? '';
+      const m = /got (\d+) or (more|fewer)/.exec(ok), obs = Number(/gave (\d+)/.exec(qlPlain(d.prompt))?.[1]);
+      if (m) expect(Number(m[1])).toBe(obs);
+      const c = gens.compoundPredict!(qlRng(s), s, 'compound-predict-and-compare'), p = qlPlain(c.prompt);
+      const mm = /= (\d+)\/(\d+), so about (\d+) of (\d+) trials\. The class got (\d+)/.exec(p);
+      if (mm) {
+        const [, a, b, e, T, o] = mm.map(Number) as number[];
+        const sd = Math.sqrt(T! * (a! / b!) * (1 - a! / b!));
+        expect(Math.abs(o! - e!), p).toBeLessThanOrEqual(1.5 * sd);
+      }
     }
   });
 });

@@ -5,6 +5,7 @@
 // typical wrong responses and the id they must get (tests).
 import { type Gen, type Item, type Response, type Verdict, A, B, S, int, pick, shuffle } from '../../runtime/item';
 import { type RateGraphParams } from './RateGraph';
+import { ans, endOnChoice } from '../../runtime/explain';
 import { type Row, fmt, hundredths, money, niceAxis, quotient, qDecimal, qText, tableTest, times, timesExact } from './rateMaths';
 
 export type FamilyId = 'tableTest' | 'rowRate' | 'zeroRow' | 'situation' | 'nameK' | 'writeEq' | 'plotPoint' | 'readScale' | 'domain'
@@ -107,7 +108,7 @@ function options(R: () => number, opts: Opt[]): { choices: string[]; right: numb
 function choiceItem(base: Omit<Item, 'input' | 'choices' | 'answer' | 'check'>, R: () => number, opts: Opt[]): Item {
   const o = options(R, opts);
   const it: Item = {
-    ...base, input: 'choice', choices: o.choices, answer: { kind: 'choice', i: o.right },
+    ...base, solution: endOnChoice(base.solution, o.choices[o.right]!), input: 'choice', choices: o.choices, answer: { kind: 'choice', i: o.right },
     check: r => {
       if (r.kind !== 'choice' || !o.says[r.i]) return { ok: false, say: 'Pick one answer.' };
       return { ok: r.i === o.right, mc: r.i === o.right ? undefined : o.says[r.i]!.mc, say: o.says[r.i]!.say };
@@ -137,6 +138,8 @@ function axes(s: Skin, rows: Row[], extra: { x?: number; y?: number } = {}): Pic
 }
 const ptsOf = (rows: Row[], label = true) => rows.map((r, i) => ({ x: r.x, y: r.y, id: 'r' + i, label }));
 const rowsHtml = (s: Skin, rows: Row[]) => rows.map(r => `${xAmt(s, r.x)} → ${yAmt(s, r.y)}`).join(', ');
+/** the rate's unit after a value: "1 cup of sugar per cup of flour", "2 cups of sugar per cup of flour" */
+const perOf = (s: Skin, v: string | number) => (String(v) === '1' ? s.per.replace(/^(\w+?)s\b/, '$1') : s.per);
 const qLine = (s: Skin, r: Row) => { const q = quotient(r.x, r.y); return `${s.money ? money(r.y) : fmt(r.y)} ÷ ${fmt(r.x)} = ${q ? qText(q) : 'no value'}`; };
 const tex$ = (s: Skin, v: number) => (s.money ? `\\$${money(v)}` : fmt(v));
 
@@ -160,25 +163,25 @@ const tableTest_: Gen = (R, n, sg) => {
   const qB = quotient(rows[br]!.x, rows[br]!.y)!, q0 = quotient(rows[0]!.x, rows[0]!.y)!;
   const sample = sg === 'evidence-vs-guarantee';
   const who = pick(R, NAMES);
-  const prompt = `${sample ? `${who} wrote down a few prices for ${s.what} (the table)` : `The table is the full price list for ${s.what}`}. Is ${B(s.y)} proportional to ${A(s.x)}?`;
+  const prompt = `${sample ? `${who} wrote down a few ${s.money ? 'prices for' : 'amounts for'} ${s.what} (the table)` : s.money ? `The table is the full price list for ${s.what}` : `The table lists all the amounts for ${s.what}`}. Is ${B(s.y)} proportional to ${A(s.x)}?`;
   const opts: Opt[] = [];
   const kTxt = qText(k);
   if (T.proportional) {
-    opts.push({ t: sample ? `Consistent with proportional: every row gives ${kTxt} ${s.per}, but only these rows were checked` : `Proportional: every row gives ${kTxt} ${s.per}`, ok: true, say: `Yes. ${s.y} ÷ ${s.x} is ${kTxt} in every row: one multiplier fits them all${sample ? ', at least for the rows that were written down' : ''}.` });
-    if (sample) opts.push({ t: `Proven proportional: every row gives ${kTxt} ${s.per}`, mc: 'mc.reasoning-language.examples-as-proof', say: `The rows fit, but they are only a few prices. Nothing says every other amount has the same rate, so the rows are consistent with proportional, not proof.` });
+    opts.push({ t: sample ? `Consistent with proportional: every row gives ${kTxt} ${perOf(s, kTxt)}, but only these rows were checked` : `Proportional: every row gives ${kTxt} ${perOf(s, kTxt)}`, ok: true, say: `Yes. ${s.y} ÷ ${s.x} is ${kTxt} in every row: one multiplier fits them all${sample ? ', at least for the rows that were written down' : ''}.` });
+    if (sample) opts.push({ t: `Proven proportional: every row gives ${kTxt} ${perOf(s, kTxt)}`, mc: 'mc.reasoning-language.examples-as-proof', say: `The rows fit, but they are only a few prices. Nothing says every other amount has the same rate, so the rows are consistent with proportional, not proof.` });
     else opts.push({ t: `Not proportional: each ${s.y1} amount is not the same multiple of the one above it`, mc: 'mc.ratio-rate.tests-proportionality-by-successive-output-ratios', say: `Comparing each row with the row above is not the test. Divide ${s.y} by ${s.x} inside each row: ${kTxt} every time.` });
     const inv = quotient(rows[0]!.y, rows[0]!.x)!;
     opts.push({ t: `Not proportional: row 1 gives ${qText(inv)} and the other rows give ${kTxt}`, mc: 'mc.ratio-rate.mixed-rate-orientation', say: `${qText(inv)} is ${s.x} ÷ ${s.y}, the other order. Divide the same way in every row (${s.y} ÷ ${s.x}): ${kTxt} each time.` });
   } else {
-    opts.push({ t: `Not proportional: row ${br + 1} gives ${qText(qB)} ${s.per}, row 1 gives ${qText(q0)}`, ok: true, say: `Right. Two rows with different ${s.per}: no single multiplier fits.` });
-    if (kind === 'late') opts.push({ t: `Proportional: the first rows all give ${qText(q0)} ${s.per}`, mc: 'mc.ratio-rate.too-few-checks-for-proportionality', say: `Check every row. Row ${br + 1} gives ${qText(qB)}, so one multiplier does not fit them all.` });
+    opts.push({ t: `Not proportional: row ${br + 1} gives ${qText(qB)} ${perOf(s, qText(qB))}, row 1 gives ${qText(q0)}`, ok: true, say: `Right. Two rows with different ${s.per}: no single multiplier fits.` });
+    if (kind === 'late') opts.push({ t: `Proportional: the first rows all give ${qText(q0)} ${perOf(s, qText(q0))}`, mc: 'mc.ratio-rate.too-few-checks-for-proportionality', say: `Check every row. Row ${br + 1} gives ${qText(qB)}, so one multiplier does not fit them all.` });
     else if (kind === 'doubling') opts.push({ t: `Proportional: each ${s.y1} amount is double the one before`, mc: 'mc.ratio-rate.tests-proportionality-by-successive-output-ratios', say: `Doubling from row to row is not the test. Divide inside each row: ${qText(q0)}, then ${qText(quotient(rows[1]!.x, rows[1]!.y)!)}. Not the same.` });
     else opts.push({ t: `Proportional: the ${s.y} go up as the ${s.x} go up`, mc: 'mc.ratio-rate.scales-non-proportional', say: `Going up together is not enough. Divide inside each row: ${qText(q0)} and ${qText(qB)} are different.` });
-    opts.push({ t: `Proportional: row 1 gives ${qText(q0)} ${s.per}`, mc: 'mc.ratio-rate.too-few-checks-for-proportionality', say: `One row only gives one rate. Check every row: row ${br + 1} gives ${qText(qB)}.` });
+    opts.push({ t: `Proportional: row 1 gives ${qText(q0)} ${perOf(s, qText(q0))}`, mc: 'mc.ratio-rate.too-few-checks-for-proportionality', say: `One row only gives one rate. Check every row: row ${br + 1} gives ${qText(qB)}.` });
   }
   const pic: RatePicture = { graph: { ...axes(s, rows), points: ptsOf(rows, false) }, show: ['axes', ...rows.map((_, i) => 'pt:r' + i)], solve: rows.map((_, i) => 'ray:r' + i), table: { cols: s.head, rows, money: [false, s.money], showQ: false }, breaks: T.breaks.map(i => 'r' + i) };
   return choiceItem({ id: `tt-${n}`, family: 'tableTest', prompt, board: `\\text{${s.head[1]}} \\div \\text{${s.head[0]}}`, picture: pic as unknown as Record<string, unknown>,
-    solution: [...rows.map(r => qLine(s, r)), T.proportional ? `Every row: ${kTxt} ${s.per}. One multiplier.` : `The rates are not all the same: not proportional.`] }, R, opts);
+    solution: [`${s.y} ÷ ${s.x} in every row: ${rows.map(r => qLine(s, r)).join('; ')}.`, T.proportional ? `Every row: ${kTxt} ${perOf(s, kTxt)}. One multiplier.` : `The rates are not all the same: not proportional.`] }, R, opts);
 };
 
 // 2. the rate in one row [table-test]
@@ -191,9 +194,9 @@ const rowRate: Gen = (R, n) => {
     id: `rr-${n}`, family: 'rowRate', prompt: `${cap(s.story(x, y))}. How many ${B(s.per)} is that?`, board: `${tex$(s, y)} \\div ${fmt(x)} = \\,?`,
     input: 'num', unit: s.per,
     picture: { table: { cols: s.head, rows: [{ x, y }], money: [false, s.money], showQ: false }, show: [], solve: [], lines: [`${tex$(s, y)} \\div ${fmt(x)} = ${fmt(k)}`] } as unknown as Record<string, unknown>,
-    solution: [`Same order as the question: ${s.y} ÷ ${s.x}.`, `${s.money ? money(y) : fmt(y)} ÷ ${fmt(x)} = ${fmt(k)} ${s.per}.`],
+    solution: [`Same order as the question: ${s.y} ÷ ${s.x}.`, `${s.money ? money(y) : fmt(y)} ÷ ${fmt(x)} = ${fmt(k)} ${perOf(s, fmt(k))}.`],
     answer: num(k),
-    check: r => numCheck(r, k, `Yes: ${fmt(k)} ${s.per}.`, [
+    check: r => numCheck(r, k, `Yes: ${fmt(k)} ${perOf(s, fmt(k))}.`, [
       { v: inv, tol: 0.006, mc: 'mc.ratio-rate.mixed-rate-orientation', say: `That is ${s.x} per ${s.y1}: ${fmt(x)} ÷ ${s.money ? money(y) : fmt(y)}. The question asks ${s.per}, so divide ${s.y} by ${s.x}.` },
       { v: y, say: `That is the total for ${xAmt(s, x)}. Per ${s.x1}, divide by ${fmt(x)}.` },
     ], `Divide ${s.y} by ${s.x}: ${s.money ? money(y) : fmt(y)} ÷ ${fmt(x)}.`),
@@ -210,7 +213,7 @@ const zeroRow: Gen = (R, n) => {
   const kt = fmt(k);
   if (kind === 'zz') {
     const rows: Row[] = [{ x: 0, y: 0 }, ...xs.sort((a, b) => a - b).map(x => ({ x, y: times(k, x) }))];
-    return choiceItem({ id: `zr-${n}`, family: 'zeroRow', prompt: `The table for ${s.what} has a row with ${A(`0 ${s.x}`)}. The other rows give ${kt} ${s.per}. How do you check the 0 row?`,
+    return choiceItem({ id: `zr-${n}`, family: 'zeroRow', prompt: `The table for ${s.what} has a row with ${A(`0 ${s.x}`)}. The other rows give ${kt} ${perOf(s, kt)}. How do you check the 0 row?`,
       board: `0 \\to 0`, picture: { table: { cols: s.head, rows, money: [false, s.money], showQ: false }, graph: { ...axes(s, rows), points: ptsOf(rows, false) }, show: ['axes', 'pt:r1', 'pt:r2'], solve: ['ray:r1', 'origin'], lines: [`${kt} \\times 0 = 0`] } as unknown as Record<string, unknown>,
       solution: [`0 ÷ 0 has no value: every number times 0 is 0, so the row cannot pick a multiplier.`, `Check it by multiplying: ${kt} × 0 = 0. The row fits.`] }, R, [
       { t: `Multiply: ${kt} × 0 = 0, so the row fits`, ok: true, say: `Yes. A zero row is checked by multiplying: the rate times 0 must be 0, and it is.` },
@@ -221,7 +224,7 @@ const zeroRow: Gen = (R, n) => {
   if (kind === 'fee') {
     const b = s.money ? pick(R, [2, 3, 5, 10]) : pick(R, [2, 3, 5]);
     const rows: Row[] = [{ x: 0, y: b }, ...xs.sort((a, c) => a - c).map(x => ({ x, y: times(k, x) }))];
-    return choiceItem({ id: `zr-${n}`, family: 'zeroRow', prompt: `In the table, the rows without 0 give ${kt} ${s.per}. Look at the row with ${A(`0 ${s.x}`)}. Is ${B(s.y)} proportional to ${A(s.x)}?`,
+    return choiceItem({ id: `zr-${n}`, family: 'zeroRow', prompt: `In the table, the rows without 0 give ${kt} ${perOf(s, kt)}. Look at the row with ${A(`0 ${s.x}`)}. Is ${B(s.y)} proportional to ${A(s.x)}?`,
       board: `0 \\to ${tex$(s, b)}`, picture: { table: { cols: s.head, rows, money: [false, s.money], showQ: false }, show: [], solve: [], lines: [`${kt} \\times 0 = 0`] } as unknown as Record<string, unknown>,
       solution: [`A proportional relationship gives ${kt} × 0 = 0 at 0 ${s.x}.`, `This row says ${yAmt(s, b)} at 0, so it is not proportional.`] }, R, [
       { t: `Not proportional: ${kt} × 0 = 0, but the 0 row says ${yAmt(s, b)}`, ok: true, say: `Right. At 0 ${s.x} a proportional relationship must give 0.` },
@@ -232,7 +235,7 @@ const zeroRow: Gen = (R, n) => {
   const rows: Row[] = xs.map(x => ({ x, y: times(k, x) }));
   return choiceItem({ id: `zr-${n}`, family: 'zeroRow', prompt: `${cap(s.story(rows[0]!.x, rows[0]!.y))}, and ${s.story(rows[1]!.x, rows[1]!.y)}. If the relationship is proportional, what goes with ${A(`0 ${s.x}`)}?`,
     board: `0\\ \\text{${s.head[0]}} \\to\\ ?`, picture: { graph: { ...axes(s, rows), points: ptsOf(rows, false), lines: [{ id: 'L', k, ends: 'ray' }] }, show: ['axes', 'pt:r0', 'pt:r1'], solve: ['line:L', 'origin'], lines: [`${kt} \\times 0 = 0`] } as unknown as Record<string, unknown>,
-    solution: [`Both rows give ${kt} ${s.per}.`, `At 0: ${kt} × 0 = 0. The graph goes through (0, 0).`] }, R, [
+    solution: [`Both rows give ${kt} ${perOf(s, kt)}.`, `At 0: ${kt} × 0 = 0. The graph goes through (0, 0).`] }, R, [
     { t: `${s.money ? '$0' : `0 ${s.y}`}: ${kt} × 0 = 0`, ok: true, say: `Yes: the multiplier times 0 is 0.` },
     { t: `${yAmt(s, k)}: the rate for 1 ${s.x1}`, say: `${yAmt(s, k)} goes with 1 ${s.x1}, not 0. At 0: ${kt} × 0 = 0.` },
     { t: `You can't tell: 0 ÷ 0 has no value`, mc: 'mc.ratio-rate.rejects-proportional-over-zero-point', say: `You don't need to divide. Multiply: ${kt} × 0 = 0.` },
@@ -306,7 +309,7 @@ const nameK: Gen = (R, n) => {
     const s = pick(R, SKINS.filter(x => x.money)), k = pick(R, s.ks);
     const [x, y] = s.L;
     return mkNum({ id: `nk-eq-${n}`, family: 'nameK', prompt: `The cost of ${s.what} is ${S(`${y} = ${fmt(k)}${x}`)}, with ${x} in ${s.x} and ${y} in dollars. What is k?`, board: `${y} = ${fmt(k)}${x}`, unit: s.per,
-      solution: [`y = kx: k is the number multiplying ${x}.`, `k = ${fmt(k)} ${s.per}.`] }, k, [{ v: 1 / k, tol: 0.006, mc: 'mc.ratio-rate.scale-factor-inverted', say: `That is 1 ÷ ${fmt(k)}. In ${y} = ${fmt(k)}${x}, k is the number in front of ${x}: ${fmt(k)}.` }], 'k is the number that multiplies the input.');
+      solution: [`y = kx: k is the number multiplying ${x}.`, `k = ${fmt(k)} ${perOf(s, fmt(k))}.`] }, k, [{ v: 1 / k, tol: 0.006, mc: 'mc.ratio-rate.scale-factor-inverted', say: `That is 1 ÷ ${fmt(k)}. In ${y} = ${fmt(k)}${x}, k is the number in front of ${x}: ${fmt(k)}.` }], 'k is the number that multiplies the input.');
   }
   if (kind === 'over') {
     const d = pick(R, [2, 4, 5, 10]);
@@ -327,7 +330,7 @@ const nameK: Gen = (R, n) => {
     const yb = R() < 0.5; // ask yellow per blue (q/p), else blue per yellow (p/q)
     const kk = yb ? q / p : p / q;
     const top = yb ? 'yellow' : 'blue', bot = yb ? 'blue' : 'yellow';
-    return mkNum({ id: `nk-rv-${n}`, family: 'nameK', prompt: `A paint mix uses ${p} cups of blue for every ${q} cups of yellow. How many cups of ${B(top)} per cup of ${A(bot)}?`, board: `${p} \\text{ blue} : ${q} \\text{ yellow}`, unit: `cups of ${top} per cup of ${bot}`,
+    return mkNum({ id: `nk-rv-${n}`, family: 'nameK', prompt: `A paint mix uses ${p} cups of blue for every ${q} cup${q > 1 ? 's' : ''} of yellow. How many cups of ${B(top)} per cup of ${A(bot)}?`, board: `${p} \\text{ blue} : ${q} \\text{ yellow}`, unit: `cups of ${top} per cup of ${bot}`,
       solution: [`Per cup of ${bot}: divide the ${top} by the ${bot}.`, `${yb ? q : p} ÷ ${yb ? p : q} = ${fmt(kk)}.`] }, kk, [{ v: 1 / kk, tol: 0.006, mc: 'mc.ratio-rate.scale-factor-inverted', say: `That is the other direction. Cups of ${top} per cup of ${bot}: ${yb ? q : p} ÷ ${yb ? p : q} = ${fmt(kk)}.` }], `Divide the amount asked for by the amount after "per".`);
   }
   const s = pick(R, SKINS);
@@ -336,11 +339,11 @@ const nameK: Gen = (R, n) => {
   if (kind === 'dnl') {
     return mkNum({ id: `nk-dnl-${n}`, family: 'nameK', prompt: `A double number line for ${s.what} matches ${A(`0, ${fmt(rows[0]!.x)}, ${fmt(rows[1]!.x)} ${s.x}`)} with ${B(`0, ${s.money ? money(rows[0]!.y) : fmt(rows[0]!.y)}, ${s.money ? money(rows[1]!.y) : fmt(rows[1]!.y)} ${s.y}`)}. What is k in ${s.per}?`,
       board: `\\begin{array}{l} \\text{${s.head[0]}}:\\ 0,\\ ${fmt(rows[0]!.x)},\\ ${fmt(rows[1]!.x)} \\\\ \\text{${s.head[1]}}:\\ 0,\\ ${s.money ? money(rows[0]!.y) : fmt(rows[0]!.y)},\\ ${s.money ? money(rows[1]!.y) : fmt(rows[1]!.y)} \\end{array}`, unit: s.per,
-      solution: [qLine(s, rows[0]!), `k = ${fmt(k)} ${s.per}.`] }, k, [{ v: 1 / k, tol: 0.006, mc: 'mc.ratio-rate.scale-factor-inverted', say: `That is ${s.x} per ${s.y1}. k is ${s.y} ÷ ${s.x}: ${fmt(k)}.` }], `Divide ${s.y} by ${s.x} for one pair.`);
+      solution: [qLine(s, rows[0]!), `k = ${fmt(k)} ${perOf(s, fmt(k))}.`] }, k, [{ v: 1 / k, tol: 0.006, mc: 'mc.ratio-rate.scale-factor-inverted', say: `That is ${s.x} per ${s.y1}. k is ${s.y} ÷ ${s.x}: ${fmt(k)}.` }], `Divide ${s.y} by ${s.x} for one pair.`);
   }
   const it = mkNum({ id: `nk-t-${n}`, family: 'nameK', prompt: `The table shows ${s.what}. What is the constant of proportionality k, in ${B(s.per)}?`, board: `k = \\,?`, unit: s.per,
     picture: { table: { cols: s.head, rows, money: [false, s.money], showQ: false }, show: [], solve: [], lines: [`k = ${fmt(k)}`] },
-    solution: [qLine(s, rows[0]!), qLine(s, rows[1]!), `k = ${fmt(k)} ${s.per}.`] }, k, [
+    solution: [qLine(s, rows[0]!), qLine(s, rows[1]!), `k = ${fmt(k)} ${perOf(s, fmt(k))}.`] }, k, [
     { v: 1 / k, tol: 0.006, mc: 'mc.ratio-rate.scale-factor-inverted', say: `That is ${s.x} per ${s.y1}, the other direction. k = ${s.y} ÷ ${s.x} = ${fmt(k)}.` },
     { v: rows[0]!.y, mc: 'mc.ratio-rate.confuses-rate-with-total', say: `${yAmt(s, rows[0]!.y)} is the total for ${xAmt(s, rows[0]!.x)}. k is the amount for 1 ${s.x1}: divide.` },
   ], `k = ${s.y} ÷ ${s.x} in any row.`);
@@ -404,7 +407,7 @@ const plotPoint: Gen = (R, n) => {
       id: `pp-o-${n}`, family: 'plotPoint', prompt: `${S(`${y} = ${fmt(k)}${x}`)} for any amount ${x} ≥ 0 (${s.what}). The table starts at ${xAmt(s, rows[0]!.x)}. At which point does the graph start?`,
       board: `${y} = ${fmt(k)}${x}`, input: 'pair', pairLead: '(', pairOp: ',',
       picture: { graph: { ...g, points: [{ x: rows[0]!.x, y: rows[0]!.y, id: 'r0', label: true }] }, show: ['axes', 'pt:r0'], solve: ['line:L', 'origin'] } as unknown as Record<string, unknown>,
-      solution: [`0 ${s.x} is allowed: ${fmt(k)} × 0 = 0.`, `The graph starts at (0, 0) and runs as a ray through (${fmt(rows[0]!.x)}, ${fmt(rows[0]!.y)}).`],
+      solution: [`0 ${s.x} is allowed: ${fmt(k)} × 0 = 0.`, `The graph starts at (${ans(0)}, ${ans(0)}) and runs as a ray through (${fmt(rows[0]!.x)}, ${fmt(rows[0]!.y)}).`],
       answer: { kind: 'pair', x: 0, y: 0 },
       check: r => {
         if (r.kind !== 'pair') return { ok: false, say: 'Fill in both numbers.' };
@@ -422,7 +425,7 @@ const plotPoint: Gen = (R, n) => {
     id: `pp-${n}`, family: 'plotPoint', prompt: `${S(`${y} = ${fmt(k)}${x}`)} for ${s.what} (${x} in ${s.x}, ${y} in ${s.y}). Which point of the graph goes with ${A(`${x} = ${fmt(tx)}`)}?`,
     board: `${y} = ${fmt(k)} \\times ${fmt(tx)}`, input: 'pair', pairLead: '(', pairOp: ',',
     picture: { graph: { ...g, mark: { x: tx, y: ty, label: true } }, show: ['axes', 'line:L'], solve: ['mark'] } as unknown as Record<string, unknown>,
-    solution: [`${y} = ${fmt(k)} × ${fmt(tx)} = ${fmt(ty)}.`, `The point is (${fmt(tx)}, ${fmt(ty)}): input first, output second.`],
+    solution: [`${y} = ${fmt(k)} × ${fmt(tx)} = ${fmt(ty)}.`, `The point is (${ans(fmt(tx))}, ${ans(fmt(ty))}): input first, output second.`],
     answer: { kind: 'pair', x: tx, y: ty },
     check: r => {
       if (r.kind !== 'pair') return { ok: false, say: 'Fill in both numbers.' };
@@ -556,13 +559,13 @@ const interpret: Gen = (R, n) => {
   const g: RateGraphParams = { ...ax, lines: [{ id: 'L', k, ends: s.discrete ? 'points' : 'ray', from: 0, to: s.discrete ? ax.xMax : undefined }], mark: { x: mx, y: my, label: !origin } };
   const opts: Opt[] = origin ? [
     { t: cap(s.story(0, 0)), ok: true, say: `Yes: (0, 0) is a pair of amounts too, both 0.` },
-    { t: `The rate is 0 ${s.per}`, mc: 'mc.ratio-rate.zero-over-zero-as-rate', say: `The rate is the same everywhere on the line: ${fmt(k)} ${s.per}. (0, 0) only says 0 goes with 0.` },
+    { t: `The rate is 0 ${s.per}`, mc: 'mc.ratio-rate.zero-over-zero-as-rate', say: `The rate is the same everywhere on the line: ${fmt(k)} ${perOf(s, fmt(k))}. (0, 0) only says 0 goes with 0.` },
     { t: `Start here, then go right and up`, mc: 'mc.coordinate-geometry.point-not-two-quantities', say: `A point on this graph is two amounts: 0 ${s.x} and 0 ${s.y}.` },
   ] : [
     { t: cap(s.story(mx, my)), ok: true, say: `Yes: first the ${s.x}, then the ${s.y}.` },
     { t: cap(s.story(my, mx)), mc: 'mc.coordinate-geometry.ordered-pair-as-unordered', say: `The order matters: the first number is on the ${s.x} axis.` },
     { t: `Go ${fmt(mx)} right and ${fmt(my)} up`, mc: 'mc.coordinate-geometry.point-not-two-quantities', say: `That is how you find it. What it says: ${s.story(mx, my)}.` },
-    { t: `The rate is ${fmt(my)} ${s.per}`, mc: 'mc.ratio-rate.confuses-rate-with-total', say: `${fmt(my)} is the total for ${xAmt(s, mx)}. The rate is ${fmt(my)} ÷ ${fmt(mx)} = ${fmt(k)}.` },
+    { t: `The rate is ${fmt(my)} ${perOf(s, fmt(my))}`, mc: 'mc.ratio-rate.confuses-rate-with-total', say: `${fmt(my)} is the total for ${xAmt(s, mx)}. The rate is ${fmt(my)} ÷ ${fmt(mx)} = ${fmt(k)}.` },
   ];
   return choiceItem({ id: `ip-${n}`, family: 'interpret', prompt: `The graph shows ${s.what}. What does the marked point ${S(`(${fmt(mx)}, ${fmt(my)})`)} say?`, board: `(\\text{${s.head[0]}},\\ \\text{${s.head[1]}})`,
     picture: { graph: g, show: ['axes', 'line:L', 'mark', ...(origin ? ['origin'] : [])], solve: [] } as unknown as Record<string, unknown>,
@@ -590,8 +593,8 @@ const kGraph: Gen = (R, n) => {
     const big = ka > kb ? 'A' : 'B';
     const totalBig = times(ka, xa) > times(kb, xb) ? 'A' : 'B';
     const opts: Opt[] = [
-      { t: `Line A`, ok: big === 'A', say: big === 'A' ? `Yes: A gives ${fmt(ka)}, B gives ${fmt(kb)} ${s.per}.` : `A's rate is ${fmt(times(ka, xa))} ÷ ${fmt(xa)} = ${fmt(ka)}; B's is ${fmt(kb)}.`, mc: big === 'A' ? undefined : (totalBig === 'A' ? 'mc.ratio-rate.confuses-rate-with-total' : undefined) },
-      { t: `Line B`, ok: big === 'B', say: big === 'B' ? `Yes: B gives ${fmt(kb)}, A gives ${fmt(ka)} ${s.per}.` : `B's rate is ${fmt(times(kb, xb))} ÷ ${fmt(xb)} = ${fmt(kb)}; A's is ${fmt(ka)}.`, mc: big === 'B' ? undefined : (totalBig === 'B' ? 'mc.ratio-rate.confuses-rate-with-total' : undefined) },
+      { t: `Line A`, ok: big === 'A', say: big === 'A' ? `Yes: A gives ${fmt(ka)}, B gives ${fmt(kb)} ${perOf(s, fmt(kb))}.` : `A's rate is ${fmt(times(ka, xa))} ÷ ${fmt(xa)} = ${fmt(ka)}; B's is ${fmt(kb)}.`, mc: big === 'A' ? undefined : (totalBig === 'A' ? 'mc.ratio-rate.confuses-rate-with-total' : undefined) },
+      { t: `Line B`, ok: big === 'B', say: big === 'B' ? `Yes: B gives ${fmt(kb)}, A gives ${fmt(ka)} ${perOf(s, fmt(ka))}.` : `B's rate is ${fmt(times(kb, xb))} ÷ ${fmt(xb)} = ${fmt(kb)}; A's is ${fmt(ka)}.`, mc: big === 'B' ? undefined : (totalBig === 'B' ? 'mc.ratio-rate.confuses-rate-with-total' : undefined) },
       { t: `Neither: both go through (0, 0), so k is the same`, say: `Both go through (0, 0), but they climb at different rates: ${fmt(ka)} and ${fmt(kb)}.` },
     ];
     return choiceItem({ id: `kg-2-${n}`, family: 'kGraph', prompt: `Two stores sell ${s.id === 'gas' ? 'gas' : s.what}. Line A goes through ${A(`(${xa}, ${fmt(times(ka, xa))})`)}, line B through ${B(`(${xb}, ${fmt(times(kb, xb))})`)}. Which has the bigger k?`, board: `k = \\dfrac{y}{x}`,
@@ -612,7 +615,7 @@ const kGraph: Gen = (R, n) => {
   if (onGrid && ax.yStep !== 1 && sq >= 1 && Math.abs(sq - py) > 1e-9 && Math.abs(sq - px / py) > 0.01) wrongs.push({ v: sq, mc: 'mc.measurement-units.misjudges-interval-value', say: `${sq} is the number of grid steps up. Each step is ${fmt(ax.yStep)}: k = ${fmt(k)}.` });
   return mkNum({ id: `kg-${n}`, family: 'kGraph', prompt: `The graph shows ${s.what}. What is k, in ${B(s.per)}?`, board: `k = \\,?`, unit: s.per,
     picture: { graph: g, show: ['axes', 'line:L', 'mark'], solve: ['unit'], lines: [`k = \\dfrac{${fmt(py)}}{${fmt(px)}} = ${fmt(k)}`] },
-    solution: [onGrid ? `The point (1, ${fmt(k)}) is on the line: 1 ${s.x1} → ${fmt(k)}.` : `(1, k) is between grid lines, so use the marked point.`, `k = ${fmt(py)} ÷ ${fmt(px)} = ${fmt(k)} ${s.per}.`] }, k, wrongs, `Divide the marked point's ${s.y} by its ${s.x}.`);
+    solution: [onGrid ? `The point (1, ${fmt(k)}) is on the line: 1 ${s.x1} → ${fmt(k)}.` : `(1, k) is between grid lines, so use the marked point.`, `k = ${fmt(py)} ÷ ${fmt(px)} = ${fmt(k)} ${perOf(s, fmt(k))}.`] }, k, wrongs, `Divide the marked point's ${s.y} by its ${s.x}.`);
 };
 
 // 13. same k in every form [translate-check]
@@ -624,7 +627,7 @@ const translate: Gen = (R, n) => {
     const k = pick(R, s.ks), tx = pick(R, [0.5, 1.5, 2.5, 0.25, 3.5].filter(v => timesExact(k, v)));
     const ty = times(k, tx);
     return mkNum({ id: `tr-e-${n}`, family: 'translate', prompt: `${S(`${y} = ${fmt(k)}${x}`)} for ${s.what}. Fill in the table: ${A(`${x} = ${fmt(tx)}`)} → ${y} = ?`, board: `${y} = ${fmt(k)} \\times ${fmt(tx)}`, unit: s.y,
-      solution: [`${fmt(k)} × ${fmt(tx)} = ${fmt(ty)}.`] }, ty, [
+      solution: [`${fmt(k)}${x} means ${fmt(k)} × ${x}: put in ${x} = ${fmt(tx)}.`, `${y} = ${fmt(k)} × ${fmt(tx)} = ${ans(fmt(ty))}.`] }, ty, [
       { v: tx + k, mc: 'mc.ratio-rate.wrong-form-proportional-equation', say: `${fmt(k)}${x} means ${fmt(k)} × ${x}: ${fmt(k)} × ${fmt(tx)} = ${fmt(ty)}.` },
     ], `Multiply k by the input: ${fmt(k)} × ${fmt(tx)}.`);
   }
@@ -694,7 +697,7 @@ const fixedFee: Gen = (R, n) => {
   const ca = F + r * a, cb = F + r * b;
   const it = mkNum({ id: `ff-${kind}-${n}`, family: 'fixedFee', prompt: `${what}. ${A(`${a} ${unit}`)} cost ${B($(ca))}. What do ${A(`${b} ${unit}`)} cost?`, board: `${a} \\to \\$${ca},\\quad ${b} \\to\\ ?`, unit: 'dollars',
     picture: { graph: { xMax: 8, yMax: niceAxis((F + r * 8) * 1.08).max, xStep: 1, yStep: niceAxis((F + r * 8) * 1.08).step, xName: unit, yName: 'dollars', points: [{ x: a, y: ca, id: 'r0', label: true }], lines: [{ id: 'L', k: r, b: F, ends: 'ray' }] }, show: ['axes', 'pt:r0'], solve: ['line:L'], lines: [`${F} + ${r} \\times ${b} = ${cb}`] },
-    solution: [`The ${$(F)} is paid once; only the per-unit part doubles.`, `${$(F)} + ${$(r)} × ${b} = ${$(cb)}, not 2 × ${$(ca)} = ${$(2 * ca)}.`] }, cb, [
+    solution: [`The ${$(F)} is paid once; only the per-unit part doubles.`, `Not 2 × ${$(ca)} = ${$(2 * ca)}, but ${$(F)} + ${$(r)} × ${b} = ${ans($(cb))}.`] }, cb, [
     { v: 2 * ca, mc: 'mc.ratio-rate.scales-non-proportional', say: `Doubling only works for proportional costs. The ${$(F)} is paid once: ${F} + ${r} × ${b} = ${cb}.` },
   ], `Start with ${$(F)}, then add ${$(r)} for each of the ${b} ${unit}.`);
   return it;
@@ -706,7 +709,7 @@ const changingRate: Gen = (R, n) => {
   if (kind === 'tiles') {
     const p = pick(R, [2, 3, 4, 5]), sd = pick(R, [2, 3, 4]);
     return mkNum({ id: `cg-t-${n}`, family: 'changingRate', prompt: `Square tiles are priced by area: ${$(p)} per square foot. A tile 1 ft on a side (1 sq ft) costs ${$(p)}. A tile ${A(`${sd} ft`)} on a side has an area of ${sd * sd} sq ft. What does it cost?`, board: `${sd} \\times ${sd} = ${sd * sd}\\ \\text{sq ft}`, unit: 'dollars',
-      solution: [`Price per square foot × area: ${p} × ${sd * sd} = ${p * sd * sd}.`, `Side × ${sd} gives cost × ${sd * sd}: cost is not proportional to the side length.`] }, p * sd * sd, [
+      solution: [`Price per square foot × area: ${p} × ${sd * sd} = ${ans($(p * sd * sd))}.`, `Side × ${sd} gives cost × ${sd * sd}: cost is not proportional to the side length.`] }, p * sd * sd, [
       { v: p * sd, mc: 'mc.area-perimeter.area-scales-by-length-factor', say: `The side is ${sd} times as long, but the area is ${sd * sd} times as big: ${p} × ${sd * sd} = ${p * sd * sd}.` },
     ], `Multiply the price per square foot by the area.`);
   }
@@ -721,7 +724,7 @@ const changingRate: Gen = (R, n) => {
     ]);
   }
   if (kind === 'pattern') {
-    const a = pick(R, [3, 4, 5]), dd = pick(R, [2, 3]);
+    const a = pick(R, [3, 4, 5]), dd = pick(R, [2, 3].filter(x => x !== a));   // dd = a would be a, 2a, 3a: proportional
     const t = [a, a + dd, a + 2 * dd];
     return choiceItem({ id: `cg-p-${n}`, family: 'changingRate', prompt: `A growing pattern: figure 1 has ${t[0]} squares, figure 2 has ${t[1]}, figure 3 has ${t[2]}. Is the number of squares proportional to the figure number?`, board: `${t[0]},\\ ${t[1]},\\ ${t[2]}`,
       solution: [`Squares ÷ figure: ${t[0]}, ${fmt(Math.round(t[1]! / 2 * 100) / 100)}, ${fmt(Math.round(t[2]! / 3 * 100) / 100)}.`, `The rate changes: not proportional.`] }, R, [
@@ -800,7 +803,7 @@ const applyModel: Gen = (R, n) => {
   const k = pick(R, s.ks), tx = pick(R, [1.5, 2.5, 3.5, 0.5, 4.5].filter(v => timesExact(k, v)));
   const ty = times(k, tx);
   return mkNum({ id: `am-u-${n}`, family: 'applyModel', prompt: `${s.id === 'trail' ? 'Trail mix' : 'Gas'} costs ${$(k)} per ${s.x1}, for any amount. What do ${A(xAmt(s, tx))} cost? (check: between ${$(times(k, Math.floor(tx)))} and ${$(times(k, Math.ceil(tx)))})`, board: `c = ${fmt(k)}${s.L[0]}`, unit: 'dollars',
-    solution: [`c = ${fmt(k)} × ${fmt(tx)} = ${money(ty)}.`] }, ty, [
+    solution: [`The rate is ${$(k)} per ${s.x1}, so c = ${fmt(k)} × ${s.L[0]}.`, `c = ${fmt(k)} × ${fmt(tx)} = ${ans($(ty))}.`] }, ty, [
     { v: k + tx, mc: 'mc.ratio-rate.wrong-form-proportional-equation', say: `Multiply the rate by the amount: ${fmt(k)} × ${fmt(tx)} = ${money(ty)}.` },
   ], `Multiply: ${fmt(k)} × ${fmt(tx)}.`);
 };

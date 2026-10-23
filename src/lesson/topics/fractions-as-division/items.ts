@@ -5,6 +5,7 @@
 // context, the order of the story and the wording. A generator gets the SUB-GOAL it practises (plan.ts) and uses
 // that sub-goal's number ranges from the topic JSON. Pure: no DOM, no canvas; a seeded rng makes sessions repeatable.
 import { equalShareFits } from '../../shareLayout';
+import { endOnChoice } from '../../runtime/explain';
 import { type Item, type Response, type Verdict, A, B, S, fr, fracValue, gcd, int, mixed, pick, rng, same, shuffle } from '../../runtime/item';
 export { fr, mixed, rng, fracValue, same };
 export type { Response, Verdict };
@@ -93,9 +94,10 @@ export function classifyShare(r: Response, a: number, b: number, what: string): 
   };
   return { ok: false, say: `Not quite. Sharing ${A(a)} among ${B(b)} gives each ${a} ÷ ${b} = ${fr(a, b)}.` };
 }
+const pieces = (k: number) => `${k} piece${k === 1 ? '' : 's'}`;
 function shareSolution(a: number, b: number, unit: string): string[] {
   const lines = [`Cut every one of the ${A(a)} into ${B(b)} equal pieces: each piece is ${fr(1, b)}.`,
-    `Each share takes one piece from each, so ${a} pieces of ${fr(1, b)}: ${a} × ${fr(1, b)} = ${fr(a, b)}.`,
+    `Each share takes one piece from each, so ${pieces(a)} of ${fr(1, b)}: ${a} × ${fr(1, b)} = ${fr(a, b)}.`,
     `So ${A(a)} ÷ ${B(b)} = ${S(fr(a, b))}${unit ? ' ' + unit : ''}${a % b && a > b ? ` = ${mixed(a, b)}` : ''}.`];
   return lines;
 }
@@ -162,7 +164,7 @@ const toDiv: Gen = (R, n) => {
   return {
     id: `toDiv-${n}`, family: 'toDiv', prompt: 'Which division does this fraction mean?', board: `\\frac{${a}}{${b}} = \\,?\\, \\div \\,?`, input: 'pair',
     pairLead: `${fr(a, b)} =`, pairOp: '÷',
-    solution: [`The top number is shared, the bottom number is how many shares: ${fr(a, b)} = ${S(`${a} ÷ ${b}`)}.`],
+    solution: [`The fraction bar means “divided by”: the top number is shared, the bottom number is how many shares.`, `${fr(a, b)} = ${S(String(a))} ÷ ${S(String(b))}.`],
     answer: { kind: 'pair', x: a, y: b },
     check: r => {
       if (r.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
@@ -191,7 +193,7 @@ const between: Gen = (R, n) => {
   const C = order.map(i => chosen[i]!);
   return {
     id: `between-${n}`, family: 'between', prompt: `Between which whole numbers is this share?`, board: `\\frac{${a}}{${b}}`, input: 'choice',
-    choices: C.map(c => c.t), solution: [why], answer: { kind: 'choice', i: C.findIndex(c => c.ok) },
+    choices: C.map(c => c.t), solution: endOnChoice([`Find the multiples of ${b} next to ${a}.`, why], right), answer: { kind: 'choice', i: C.findIndex(c => c.ok) },
     check: r => {
       if (r.kind !== 'choice') return { ok: false, say: 'Pick one.' };
       const c = C[r.i];
@@ -222,7 +224,7 @@ const checkBack: Gen = (R, n) => {
     id: `checkBack-${n}`, family: 'checkBack',
     prompt: `${B(`${b} ${c.sharers}`)} each got ${fr(a, b)} of a ${c.thing}. Nothing was left over. How many ${c.things} were shared?`,
     board: `${b} \\times \\frac{${a}}{${b}} = \\,?`, input: 'num', unit: c.things,
-    solution: [`Each share is ${a} pieces of ${fr(1, b)}. ${b} shares make ${a * b} pieces of ${fr(1, b)}.`,
+    solution: [`Each share is ${pieces(a)} of ${fr(1, b)}. ${b} shares make ${a * b} pieces of ${fr(1, b)}.`,
       `Every ${b} pieces of ${fr(1, b)} make one whole ${c.thing}: ${a * b} ÷ ${b} = ${S(String(a))}. The shares add back to the whole amount.`],
     answer: { kind: 'num', v: a },
     check: r => {
@@ -239,7 +241,8 @@ const slip: Gen = (R, n) => {
   const kind = pick(R, ['flip', 'over', 'drop'] as const);
   const c = pick(R, OBJECTS);
   let a: number, b: number;
-  if (kind === 'flip') do { b = int(R, 3, 6); a = int(R, 1, b - 1); } while (!equalShareFits(a, b));
+  // a ≥ 2: with 1 bar, "3/1" also has the bottom 3 = 1 × 3 pieces (two right reasons) and reads "1 bars", "cut into 1 pieces"
+  if (kind === 'flip') do { b = int(R, 3, 6); a = int(R, 2, b - 1); } while (!equalShareFits(a, b));
   else do { b = int(R, 3, 6); a = b * int(R, 1, 2) + int(R, 1, b - 1); } while (!equalShareFits(a, b));
   const q = Math.floor(a / b), rem = a % b;
   const wrote = kind === 'flip' ? fr(b, a) : kind === 'over' ? `${q}&#8202;${fr(rem, a)}` : String(q);
@@ -266,7 +269,7 @@ const slip: Gen = (R, n) => {
     board: `\\text{Jordan: } ${a} \\div ${b} = ${kind === 'flip' ? `\\frac{${b}}{${a}}` : kind === 'over' ? `${q}\\tfrac{${rem}}{${a}}` : String(q)}`,
     input: 'choice', choices: C.map(o => o.t),
     model: { a, b, words: [c.things, c.sharers], one: [c.thing, c.sharer], look: c.look },
-    solution: shareSolution(a, b, `of a ${c.thing}`),
+    solution: endOnChoice(shareSolution(a, b, `of a ${c.thing}`), reasons[kind]),
     answer: { kind: 'choice', i: C.findIndex(o => o.ok) },
     check: r => {
       if (r.kind !== 'choice') return { ok: false, say: 'Pick one.' };
@@ -303,7 +306,7 @@ const storyToDiv: Gen = (R, n) => {
   return {
     id: `storyToDiv-${n}`, family: 'storyToDiv', prompt, board: `\\,?\\, \\div \\,?`, input: 'pair', pairLead: `one ${objects ? 'share' : x.sharer} =`, pairOp: '÷',
     ...(objects ? { model: { a, b, words: [c.things, c.sharers] as [string, string], one: [c.thing, c.sharer] as [string, string], look: c.look } } : { strip: { a, b, unit: x.unit, sharers: x.sharers } }),
-    solution: [`The amount that is shared comes first: ${A(a)}. The number of shares comes second: ${B(b)}.`, `One share = ${A(a)} ÷ ${B(b)} = ${S(fr(a, b))}.`],
+    solution: [`The amount that is shared comes first: ${A(a)}. The number of shares comes second: ${B(b)}.`, `One share = <b class="a ans">${a}</b> ÷ <b class="b ans">${b}</b> = ${fr(a, b)}.`],
     answer: { kind: 'pair', x: a, y: b },
     check: r => {
       if (r.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
@@ -359,7 +362,7 @@ const twoWays: Gen = (R, n) => {
     id: `twoWays-${n}`, family: 'twoWays',
     prompt: `${A(`${a} ${c.things}`)} for ${B(`${b} ${c.sharers}`)}. Kai cuts every one into ${b} and deals the pieces: ${fr(a, b)} each. Lee gives out whole ones first, then cuts the rest: ${mixed(a, b)} each. Who gives more?`,
     board: `\\frac{${a}}{${b}} \\ \\text{or}\\ ${q}\\tfrac{${rem}}{${b}}\\,?`, input: 'choice', choices: opts.map(o => o.t),
-    solution: [`Kai's ${a} pieces of ${fr(1, b)}: every ${b} of them make one whole, so ${q} wholes and ${rem} pieces.`, `That is exactly Lee's ${mixed(a, b)}. Two ways, ${S('the same share')}.`],
+    solution: [`Kai's ${a} pieces of ${fr(1, b)}: every ${b} of them make one whole, so ${q} whole${q === 1 ? '' : 's'} and ${pieces(rem)}.`, ...endOnChoice([`That is exactly Lee's ${mixed(a, b)}. Two ways, the same share.`], opts.find(o => o.ok)!.t)],
     answer: { kind: 'choice', i: opts.findIndex(o => o.ok) },
     check: r => {
       const o = r.kind === 'choice' ? opts[r.i] : undefined;
@@ -379,7 +382,7 @@ const cutOrKeep: Gen = (R, n) => {
     id: `cutOrKeep-${n}`, family: 'cutOrKeep',
     prompt: `${A(`${a} ${k.things}`)} are shared equally by ${B(`${b} ${k.who}`)}. They can't be cut. How many does each get, and how many are left over?`,
     board: `${a} = ${b} \\times \\,?\\, + \\,?`, input: 'pair', pairLead: 'each gets', pairOp: 'left over',
-    solution: [`${b} × ${q} = ${b * q}: each gets ${S(String(q))}.`, `${a} − ${b * q} = ${rem} ${k.things} are left over; they stay whole. Check: ${b} × ${q} + ${rem} = ${a}.`],
+    solution: [`${b} × ${q} = ${b * q}: each gets ${S(String(q))}.`, `${a} − ${b * q} = ${S(String(rem))} ${rem === 1 ? `${k.things.replace(/s$/, '')} is` : `${k.things} are`} left over; they stay whole. Check: ${b} × ${q} + ${rem} = ${a}.`],
     answer: { kind: 'pair', x: q, y: rem },
     check: r => {
       if (r.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };

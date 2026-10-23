@@ -20,6 +20,7 @@ import { type BoardRow, boardRow, drawRow, type Run } from '../../src/lesson/top
 import { computeStudy, guaranteed } from '../../src/lesson/topics/judging-samples/sampling';
 import { type BoardLine, FAMILY_NAMES, GENERATORS, type JudgeItem, runsOf } from '../../src/lesson/topics/judging-samples/items';
 import { PLAN } from '../../src/lesson/topics/judging-samples/plan';
+import { explain } from '../../src/lesson/topics/judging-samples/explain';
 
 const SLUG = 'judging-samples';
 const MAPF = frame(60, 70, 1110, 940);
@@ -436,7 +437,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as JudgeItem),
   });

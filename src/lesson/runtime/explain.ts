@@ -5,10 +5,13 @@
 // Pure: no DOM.
 import { type Explained, type Item, type Response, plain } from './item';
 
+/** every thousands comma in a number (7,400,000 → 7400000); a single pass with (\d),(\d{3}) only removes every other one */
+const THOUSANDS = /(?<=\d),(?=\d{3}(?!\d))/g;
+
 /** the value a marked answer starts with: −3, 2.5, 1,450, $4.50, 45%, 54°, 3/4, 2 1/2 (fractions in <span class="fr">),
  *  and any words after it ("3 weeks", "64π sq cm", "11/2π cm"); `frac` keeps a written fraction as [whole, n, d] */
 export function leadValue(html: string): { v: number; frac?: [number, number, number] } | null {
-  const t = plain(html).replace(/&#8202;/g, ' ').replace(/[−–]/g, '-').replace(/(\d),(\d{3})(?!\d)/g, '$1$2').trim();
+  const t = plain(html).replace(/&#8202;/g, ' ').replace(/[−–]/g, '-').replace(THOUSANDS, '').trim();
   const m = t.match(/^(-?)\s*\$?\s*(\d+(?:\.\d+)?|\.\d+)(?:\s+(\d+)\/(\d+)|\/(\d+))?(?![\d.\/])/);
   if (!m) return /^-?π/.test(t) ? { v: t.startsWith('-') ? -1 : 1 } : null;   // "π cm": one π
   const sg = m[1] ? -1 : 1, a = Number(m[2]);
@@ -24,7 +27,7 @@ export function marked(steps: readonly string[]): string[] {
 }
 /** the last number in a step's plain text (a trailing ✓ or full stop is fine) */
 export function lastNumber(html: string): number | null {
-  const t = plain(html).replace(/[−–]/g, '-').replace(/(\d),(\d{3})(?!\d)/g, '$1$2');
+  const t = plain(html).replace(/[−–]/g, '-').replace(THOUSANDS, '');
   const all = [...t.matchAll(/(-?)\$?(\d+(?:\.\d+)?)/g)];
   const m = all[all.length - 1];
   return m ? (m[1] ? -1 : 1) * Number(m[2]) : null;

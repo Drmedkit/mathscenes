@@ -12,6 +12,13 @@ import { Construction } from '../src/lesson/topics/draw-triangles/Construction';
 import { frame } from '../src/blocks/block';
 import { circleMeet, countTriangles, existsSSS, lenText, solveASA, solveSAS, solveSSS, thirdAngle, thirdSideRange } from '../src/lesson/topics/draw-triangles/triangleMaths';
 
+// ---- quality layer (docs/lessons/QUALITY_LAYER.md): worked steps, check-in adapter, regressions ----
+import { rng as qlRng, plain as qlPlain, type Item as QlItem } from '../src/lesson/runtime/item';
+import { GENS as qlGens } from '../src/lesson/topics/draw-triangles/items';
+import { PLAN as qlPlan } from '../src/lesson/topics/draw-triangles/plan';
+import { explain as qlExplain } from '../src/lesson/topics/draw-triangles/explain';
+import { PLACEMENT as qlPlacement } from '../src/lesson/topics/draw-triangles/placement';
+
 const ROOT = 'C:/Users/stelt/Claude code foler/math-curriculum-essentials';
 const TOPIC = `${ROOT}/topics/secondary.draw-triangles-from-given-conditions.json`;
 const MC = `${ROOT}/misconceptions.json`;
@@ -54,7 +61,7 @@ describe('item families', () => {
           if (mcIds) for (const v of verdicts) if (v.mc) expect(mcIds.has(v.mc), v.mc).toBe(true);
         }
         // the triangle the prompt names and the letters of its givens agree
-        const tri = /triangle ([A-Z]{3})/.exec(it.prompt)?.[1];
+        const tri = /triangle ([A-Z]{3})\b/.exec(it.prompt)?.[1];
         if (tri) for (const m of it.prompt.matchAll(/<b class="[ab]">(?:∠([A-Z])|([A-Z]{2})) =/g)) for (const ch of (m[1] ?? m[2])!) expect(tri, it.prompt).toContain(ch);
         if (it.picture) buildPic(it.picture);
         if (it.solvePic) buildPic(it.solvePic);
@@ -158,5 +165,43 @@ describe('the lesson pictures lay out', () => {
     Construction(constructDrawing({ kind: 'sss', unit: 'in', AB: 6, AC: 3.5, BC: 4, names: ['A', 'B', 'C'], cands: ['P', 'Q', 'R'] }), f);
     Construction(constructDrawing({ kind: 'sss', unit: 'in', AB: 7, AC: 3, BC: 4, names: ['A', 'B', 'C'] }), f);
     buildPic({ kind: 'sticks', unit: 'in', lens: [3, 4, 7] });
+  });
+});
+
+describe('quality layer', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('the steps card ends on an answer the lesson accepts, in every pair (200 seeds)', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 37 + 5), s, p.id);
+      const ex = qlExplain(it0);
+      expect(ex, `${p.id}/${f}: ${it0.prompt}`).not.toBeNull();
+      expect(it0.check(ex!.result).ok, `${p.id}/${f}: ${JSON.stringify(ex!.result)} for ${it0.prompt}`).toBe(true);
+    }
+  });
+  it('the check-in picks are pairs of the plan and their answers pass', () => {
+    for (const pk of qlPlacement.picks) {
+      expect(qlPlan.find(p => p.id === pk.subgoal)?.families as string[] | undefined).toContain(pk.family);
+      for (let s = 1; s <= 50; s++) { const it0 = gens[pk.family]!(qlRng(s), s, pk.subgoal); expect(it0.check(it0.answer).ok).toBe(true); }
+    }
+  });
+  it('ruler lengths written with ½ ¼ ¾ are read as fractions (3½ in is 3 1/2, not 3)', () => {
+    for (const [f, sg] of [['segLen', 'draw-given-length'], ['endMark', 'draw-given-length'], ['compassOpen', 'compass-transfer']] as const)
+      for (let s = 1; s <= 200; s++) { const it0 = gens[f]!(qlRng(s), s, sg); expect(it0.check(qlExplain(it0)!.result).ok, it0.solution.join(' ')).toBe(true); }
+  });
+});
+
+describe('quality layer: oracle findings (phase 2)', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('three different sketches, a free name for the copied point, protractor dots not named like vertices, an obtuse', () => {
+    for (let s = 1; s <= 300; s++) {
+      const sk = gens.sketch!(qlRng(s), s, 'condition-set') as QlItem & { picture?: { ts: unknown[] } };
+      const ts = sk.picture!.ts.map(t => JSON.stringify(t));
+      expect(new Set(ts).size, sk.prompt).toBe(3);
+      const cc = gens.compassCopy!(qlRng(s), s, 'compass-transfer') as QlItem & { picture?: { names: string[]; newName?: string } };
+      expect(cc.picture!.names).not.toContain(cc.picture!.newName ?? 'D');
+      const pr = gens.protractor!(qlRng(s), s, 'draw-triangle-sas') as QlItem & { picture?: { names: string[]; dots: { name: string }[] } };
+      for (const d of pr.picture!.dots) expect(pr.picture!.names).not.toContain(d.name);
+      expect(qlPlain(gens.sumCheck!(qlRng(s), s, 'angle-sum-investigate').prompt)).not.toMatch(/\ba obtuse/);
+    }
   });
 });

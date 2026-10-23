@@ -10,6 +10,13 @@ import { LINES } from '../src/lesson/topics/proportional-relationships/script';
 import { RateGraph, computeGraph } from '../src/lesson/topics/proportional-relationships/RateGraph';
 import { fmt, money, niceAxis, quotient, qSame, tableTest, times, successiveFactorsEqual } from '../src/lesson/topics/proportional-relationships/rateMaths';
 
+// ---- quality layer (docs/lessons/QUALITY_LAYER.md): worked steps, check-in adapter, regressions ----
+import { rng as qlRng, plain as qlPlain, type Item as QlItem } from '../src/lesson/runtime/item';
+import { GENS as qlGens } from '../src/lesson/topics/proportional-relationships/items';
+import { PLAN as qlPlan } from '../src/lesson/topics/proportional-relationships/plan';
+import { explain as qlExplain } from '../src/lesson/topics/proportional-relationships/explain';
+import { PLACEMENT as qlPlacement } from '../src/lesson/topics/proportional-relationships/placement';
+
 const TOPIC = 'C:/Users/stelt/Claude code foler/math-curriculum-essentials/topics/secondary-t5-16-proportional-relationships.json';
 const MISC = 'C:/Users/stelt/Claude code foler/math-curriculum-essentials/misconceptions.json';
 const SEEDS = 300;
@@ -154,6 +161,47 @@ describe('voice', () => {
       expect(l.text, id).toBe(LINES[id]!.say);
       expect(l.text.length, id).toBeGreaterThan(3);
       expect(l.text, id).not.toMatch(/\d\s*\/\s*\d|[<>×÷$]|\d/);
+    }
+  });
+});
+
+describe('quality layer', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('the steps card ends on an answer the lesson accepts, in every pair (200 seeds)', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 37 + 5), s, p.id);
+      const ex = qlExplain(it0);
+      expect(ex, `${p.id}/${f}: ${it0.prompt}`).not.toBeNull();
+      expect(it0.check(ex!.result).ok, `${p.id}/${f}: ${JSON.stringify(ex!.result)} for ${it0.prompt}`).toBe(true);
+    }
+  });
+  it('the check-in picks are pairs of the plan and their answers pass', () => {
+    for (const pk of qlPlacement.picks) {
+      expect(qlPlan.find(p => p.id === pk.subgoal)?.families as string[] | undefined).toContain(pk.family);
+      for (let s = 1; s <= 50; s++) { const it0 = gens[pk.family]!(qlRng(s), s, pk.subgoal); expect(it0.check(it0.answer).ok).toBe(true); }
+    }
+  });
+  it('no "1 …s" in questions, choices or steps', () => {
+    for (const p of qlPlan) for (const f of p.families) for (let s = 1; s <= 200; s++) {
+      const it0 = gens[f]!(qlRng(s * 7 + 3), s, p.id);
+      const text = qlPlain([it0.prompt, ...(it0.choices ?? []), ...it0.solution].join(' | '));
+      expect(text, `${p.id}/${f}`).not.toMatch(/(?<!, |[\d.\/])1 cups\b/);
+    }
+  });
+  it('the table test fits the steps card: at most 5 steps however many rows', () => {
+    for (let s = 1; s <= 200; s++) expect(qlExplain(gens.tableTest!(qlRng(s), s, 'table-test'))!.steps.length).toBeLessThanOrEqual(5);
+  });
+});
+
+describe('quality layer: oracle findings (phase 2)', () => {
+  const gens = qlGens as unknown as Record<string, (R: () => number, n: number, sg?: string) => QlItem>;
+  it('the growing pattern is never a, 2a, 3a (that one is proportional); only money tables are price lists', () => {
+    for (let s = 1; s <= 400; s++) {
+      const p = qlPlain(gens.changingRate!(qlRng(s), s, 'changing-rate-counterexample').prompt);
+      const m = /figure 1 has (\d+) squares, figure 2 has (\d+)/.exec(p);
+      if (m) expect(Number(m[2]), p).not.toBe(2 * Number(m[1]));
+      const t = qlPlain(gens.tableTest!(qlRng(s), s, 'table-test').prompt);
+      expect(t).not.toMatch(/price list for (a printer|a hose|a car|a recipe)/);
     }
   });
 });

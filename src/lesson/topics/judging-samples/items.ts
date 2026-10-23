@@ -12,6 +12,7 @@ import { type Claim, computeStudy, countTable, guaranteed, possible, type Rec, t
 import type { SampleMapParams, SampleMapStep } from './SampleMap';
 import type { RecordTableParams, RecordTableStep } from './RecordTable';
 import type { Run } from './board';
+import { endOnChoice } from '../../runtime/explain';
 export type { Response, Verdict };
 
 export type FamilyId = 'namePop' | 'popOrSample' | 'matchKind' | 'whoGave' | 'missingWhy' | 'missingWay' | 'leftOut' | 'biasWay' | 'scope' | 'complete' | 'revise' | 'audit';
@@ -52,6 +53,8 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const fill = (s: string, v: Record<string, number | string>) => s.replace(/\{(\w+)\}/g, (_, k: string) => String(v[k] ?? `{${k}}`));
 const fmt = (n: number) => n.toLocaleString('en-US');
 
+/** people are asked; school days and apples are checked */
+const askOf = (c: Ctx) => (c.mark === 'person' ? 'asked' : 'checked');
 // ---------- a choice item ----------
 interface Opt { t: string; ok: boolean; mc?: string; say: string }
 interface Base { id: string; family: FamilyId; prompt: string; board: string; solution: string[]; pic: MapPic | TablePic; rows: BoardLine[]; solveRows: BoardLine[] }
@@ -61,7 +64,7 @@ function choose(R: () => number, b: Base, opts: Opt[]): JudgeItem {
   if (texts.size !== o.length) throw new Error(`${b.family}: two choices read the same (${o.map(x => x.t).join(' | ')})`);
   if (o.filter(x => x.ok).length !== 1) throw new Error(`${b.family}: needs exactly one right choice`);
   return {
-    ...b, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: o.findIndex(x => x.ok) },
+    ...b, solution: endOnChoice(b.solution, o.find(x => x.ok)!.t), input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: o.findIndex(x => x.ok) },
     check: r => {
       const x = r.kind === 'choice' ? o[r.i] : undefined;
       if (!x) return { ok: false, say: 'Pick one.' };
@@ -122,7 +125,7 @@ const popOrSample = (R: () => number, n: number): JudgeItem => {
   const c = pick(R, CONTEXTS), useOther = R() < 0.3;
   const rule = pick(R, c.rules), o = pick(R, c.others);
   const k = useOther ? nOf(R, o, c.N) : nOf(R, rule, c.N);
-  const how = useOther ? `asked ${k} ${o.group}` : fill(rule.how, { n: k });
+  const how = useOther ? `${askOf(c)} ${k} ${o.group}` : fill(rule.how, { n: k });
   const which = pick(R, ['pop', 'sample', 'sample', 'asker'] as const);
   const phrase = which === 'pop' ? c.popOf : which === 'sample' ? `the ${k} ${useOther ? o.group : rule.group}` : c.askerGroup;
   const right = which === 'pop' ? 0 : which === 'sample' ? 1 : 2;
@@ -148,7 +151,7 @@ const matchKind = (R: () => number, n: number): JudgeItem => {
   const c = pick(R, CONTEXTS), kind = pick(R, ['census', 'part', 'part', 'different'] as const);
   const rule = pick(R, c.rules), o = pick(R, c.others);
   const k = kind === 'census' ? c.N : kind === 'part' ? nOf(R, rule, c.N) : nOf(R, o, c.N);
-  const how = kind === 'census' ? c.census : kind === 'part' ? fill(rule.how, { n: k }) : `asked ${k} ${o.group}`;
+  const how = kind === 'census' ? c.census : kind === 'part' ? fill(rule.how, { n: k }) : `${askOf(c)} ${k} ${o.group}`;
   const st = computeStudy({ N: c.N, n: k, match: kind });
   const big = kind === 'part' && k >= 40;
   const opts: Opt[] = [
@@ -175,7 +178,7 @@ const whoGave = (R: () => number, n: number): JudgeItem => {
   const c = pick(R, CONTEXTS), useOther = R() < 0.4;
   const rule = pick(R, c.rules), o = pick(R, c.others);
   const k = useOther ? nOf(R, o, c.N) : nOf(R, rule, c.N);
-  const how = useOther ? `asked ${k} ${o.group}` : fill(rule.how, { n: k });
+  const how = useOther ? `${askOf(c)} ${k} ${o.group}` : fill(rule.how, { n: k });
   const group = useOther ? o.group : rule.group;
   const qFirst = R() < 0.5 || !how.startsWith('asked');
   const prompt = qFirst ? `${c.asker} wants to know: “${c.q}” They ${how}. Who actually gave the data?`
@@ -300,7 +303,7 @@ const scope = (R: () => number, n: number): JudgeItem => {
   const y = int(R, Math.floor(k / 2) + 1, Math.max(Math.floor(k / 2) + 1, k - 1));
   const st = computeStudy({ N: c.N, n: k, match: kind === 'undescribed' ? 'part' : kind, yes: y });
   if (!guaranteed(st, { kind: 'most' })) throw new Error('scope: the observed claim must say "most" truthfully');
-  const how = kind === 'census' ? c.census : kind === 'different' ? `asked ${k} ${o.group}` : kind === 'part' ? fill(rule.how, { n: k }) : `studied ${k} of the ${fmt(c.N)}; the report does not say how they were chosen`;
+  const how = kind === 'census' ? c.census : kind === 'different' ? `${askOf(c)} ${k} ${o.group}` : kind === 'part' ? fill(rule.how, { n: k }) : `studied ${k} of the ${fmt(c.N)}; the report does not say how they were chosen`;
   const who = kind === 'different' ? `the ${k} ${o.group}` : kind === 'part' ? `the ${k} ${rule.group}` : `the ${k} studied`;
   const over: Opt = { t: `Most of ${c.popOf} ${c.yes}`, ok: false, mc: 'mc.statistics.generalizes-beyond-sampled-group', say: `The data only cover ${B(who)}. Saying it for all ${fmt(c.N)} goes beyond the data.` };
   let opts: Opt[];

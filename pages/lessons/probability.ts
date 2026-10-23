@@ -23,6 +23,7 @@ import { type Frac, type Group, WORDS, batches, running, simulate } from '../../
 import { FAMILY_NAMES, GENS, type Pic, type ProbItem } from '../../src/lesson/topics/probability/items';
 import { PLAN } from '../../src/lesson/topics/probability/plan';
 import { SCRIPT } from '../../src/lesson/topics/probability/script';
+import { explain } from '../../src/lesson/topics/probability/explain';
 
 const SLUG = 'probability';
 let ctx!: LessonCtx;
@@ -439,7 +440,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as ProbItem),
   });
