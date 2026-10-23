@@ -24,3 +24,12 @@ Small things seen in review that did not block shipping. None is a wrong answer 
 ## Checks now in the tools
 - `node tools/walk-practice.mjs <slug>` measures panel overflow in practice AND in parts 1-4 (after clicking an
   answer); `--parts-only` for a quick check. All 63 topics measured at 0 (dilations-and-similarity: 3 px).
+
+## From the quality layer (2026-10-23)
+- rotations: the digit-to-word rule in `script.ts` had literal backspace bytes instead of `\b`, so 6 lines were voiced
+  with digits (t.b-one, t.b-count, t.cb-right, t.cb-center, t.cb-flip, t.cb-none). Fixed, lines.json updated; re-voice
+  them with `python tools/lesson-voice.py rotations` when the credits are back (2026-11-03).
+- REMOVE-ME ``, so 6 lines were voiced
+  with digits (t.b-one, t.b-count, t.cb-right, t.cb-center, t.cb-flip, t.cb-none). Fixed, lines.json updated; re-voice
+  them with `python tools/lesson-voice.py rotations` when the credits are back (2026-11-03).
+- The steps card can push the practice panel over its height (up to 255 px in rotations, ~100 px in the pilot).

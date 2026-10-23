@@ -263,3 +263,41 @@ describe('voice', () => {
     }
   });
 });
+
+describe('quality layer (docs/lessons/QUALITY_LAYER.md)', () => {
+  it('regression: compare shows percents a student can read ("about 5.6%"), never 5.5556%', () => {
+    for (let s = 1; s <= 400; s++) {
+      const it = GENERATORS.compare(rng(s), s, 'absolute-vs-relative');
+      for (const t of [...it.solution, ...[0, 1, 2].map(i => it.check({ kind: 'choice', i }).say)]) expect(t).not.toMatch(/\d\.\d{2,}%/);
+    }
+  });
+  it('no-change items get two steps; the two-box items mark both boxes', () => {
+    for (let s = 1; s <= 300; s++) {
+      const it = GENERATORS.pctChange(rng(s), s, 'compute-percent-change');
+      expect(it.solution.length, it.prompt).toBeGreaterThanOrEqual(2);
+    }
+    const up = GENERATORS.twoStepUp(rng(2), 1, 'apply-increase');
+    expect([...up.solution.at(-1)!.matchAll(/<b class="s">/g)].length).toBe(2);
+  });
+});
+describe('quality layer: oracle sweep fixes', () => {
+  it('exactOrNot only asks about percents that never end (37.5% = 18/48 is exact, not rounded)', () => {
+    for (let s = 1; s <= 600; s++) {
+      const it = GENERATORS.exactOrNot(rng(s), s, 'round-results');
+      const m = it.board.match(/\\frac\{(\d+)\}\{(\d+)\}/)!;
+      let d = Number(m[2]) / gcdN(Number(m[1]), Number(m[2]));
+      while (d % 2 === 0) d /= 2; while (d % 5 === 0) d /= 5;
+      expect(d, it.prompt).toBeGreaterThan(1);
+    }
+  });
+  it('round: no half-cent ties ($26 at 7.25% = $27.885); pctError: "960 jelly beans", not "960 beans jelly beans"', () => {
+    for (let s = 1; s <= 600; s++) {
+      const it = GENERATORS.round(rng(s), s, 'round-results');
+      const m = it.board.match(/^([\d.]+) \\times ([\d.]+)$/);
+      if (!/\\frac/.test(it.board)) expect(m, it.board).not.toBeNull();
+      if (m) { const t = Math.round(Number(m[1]) * Number(m[2]) * 1e6) / 1e6; expect(Math.abs(t * 100 - Math.floor(t * 100) - 0.5) > 1e-6, it.prompt).toBe(true); }
+      expect(GENERATORS.pctError(rng(s), s, 'percent-error').prompt).not.toMatch(/beans(<\/b>)? jelly/);
+    }
+  });
+});
+function gcdN(a: number, b: number): number { while (b) [a, b] = [b, a % b]; return a; }

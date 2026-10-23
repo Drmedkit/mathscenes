@@ -4,6 +4,7 @@
 // that sub-goal's number ranges from the topic JSON ('cases'). Pure: no DOM, no canvas; a seeded rng.
 // PROBES records, per item, typical wrong responses and the id they must get (tests).
 import { type Item, type Response, type Verdict, A, B, S, int, pick, shuffle } from '../../runtime/item';
+import { ans, endOnChoice } from '../../runtime/explain';
 import { type TGFocus, type TGParams, type TGStep, computeTG, niceGrid, signed } from './TableGraph';
 
 export type FamilyId = 'rowChange' | 'couldBeLinear' | 'perUnit' | 'startValue' | 'wordsToTable' | 'tableToWords' | 'plotPoint' | 'graphMeaning'
@@ -49,6 +50,8 @@ export interface Ctx {
   /** what the output is, in a question ("the cost") */ what: string;
 }
 const $ = (v: number) => `$${v}`;
+/** "a" or "an" before a dollar amount read aloud: an $8, an $11, an $18, an $80; a $5 */
+export const aAn = (v: number) => (/^8/.test(String(v)) || v === 11 || v === 18 ? 'an' : 'a');
 export const CTX: Ctx[] = [
   { id: 'rental', xh: ['hours', ''], yh: ['cost', '($)'], xName: 'hours', yName: 'cost ($)', one: 'hour', many: 'hours', unit: '', money: true, dirs: ['up'], discrete: false, what: 'the cost',
     rule: (s, c) => `A kayak rental costs ${A($(s))} to start, plus ${B($(c))} for each hour.` },
@@ -57,7 +60,7 @@ export const CTX: Ctx[] = [
   { id: 'spending', xh: ['week', ''], yh: ['left', '($)'], xName: 'weeks', yName: 'money left ($)', one: 'week', many: 'weeks', unit: '', money: true, dirs: ['down'], discrete: false, what: 'the money left',
     rule: (s, c) => `Leo has ${A($(s))} and spends ${B($(-c))} each week.` },
   { id: 'tank', xh: ['min', ''], yh: ['water', '(gal)'], xName: 'minutes', yName: 'water (gal)', one: 'minute', many: 'minutes', unit: 'gallons', dirs: ['up', 'down'], discrete: false, what: 'the water in the tank',
-    rule: (s, c) => (c >= 0 ? `A tank holds ${A(`${s} gallons`)} and fills ${B(`${c} gallons`)} each minute.` : `A tank holds ${A(`${s} gallons`)} and drains ${B(`${-c} gallons`)} each minute.`) },
+    rule: (s, c) => (c >= 0 ? `A tank holds ${A(`${s} ${one1(s, 'gallons')}`)} and fills ${B(`${c} ${one1(c, 'gallons')}`)} each minute.` : `A tank holds ${A(`${s} ${one1(s, 'gallons')}`)} and drains ${B(`${-c} ${one1(-c, 'gallons')}`)} each minute.`) },
   { id: 'candle', xh: ['hours', ''], yh: ['height', '(in.)'], xName: 'hours', yName: 'height (in.)', one: 'hour', many: 'hours', unit: 'in.', dirs: ['down'], discrete: false, what: 'the height of the candle',
     rule: (s, c) => `A candle ${A(`${s} in.`)} tall burns down ${B(`${-c} in.`)} each hour.` },
   { id: 'plant', xh: ['week', ''], yh: ['height', '(in.)'], xName: 'weeks', yName: 'height (in.)', one: 'week', many: 'weeks', unit: 'in.', dirs: ['up'], discrete: false, what: 'the height of the plant',
@@ -65,18 +68,20 @@ export const CTX: Ctx[] = [
   { id: 'tiles', xh: ['step', ''], yh: ['tiles', ''], xName: 'step', yName: 'tiles', one: 'step', many: 'steps', unit: 'tiles', dirs: ['up'], discrete: true, what: 'the number of tiles',
     rule: (s, c) => `A tile pattern starts with ${A(`${s} tiles`)} at step 0 and adds ${B(`${c} tiles`)} each step.` },
   { id: 'hike', xh: ['hours', ''], yh: ['miles', ''], xName: 'hours', yName: 'distance (mi)', one: 'hour', many: 'hours', unit: 'miles', dirs: ['up'], discrete: false, what: 'the distance from the trailhead',
-    rule: (s, c) => `A hiker starts ${A(`${s} miles`)} from the trailhead and walks ${B(`${c} miles`)} farther each hour.` },
+    rule: (s, c) => `A hiker starts ${A(`${s} ${one1(s, 'miles')}`)} from the trailhead and walks ${B(`${c} ${one1(c, 'miles')}`)} farther each hour.` },
   { id: 'battery', xh: ['hours', ''], yh: ['battery', '(%)'], xName: 'hours', yName: 'battery (%)', one: 'hour', many: 'hours', unit: '%', pct: true, dirs: ['down'], discrete: false, what: 'the battery level',
     rule: (s, c) => `A phone battery is at ${A(`${s}%`)} and drops ${B(`${-c}%`)} each hour.` },
   { id: 'vans', xh: ['vans', ''], yh: ['kids', ''], xName: 'vans', yName: 'kids at camp', one: 'van', many: 'vans', unit: 'kids', dirs: ['up'], discrete: true, what: 'the number of kids at camp',
     rule: (s, c) => `${A(`${s} kids`)} are already at camp, and each van brings ${B(`${c} more kids`)}.` },
   { id: 'packs', xh: ['packs', ''], yh: ['cost', '($)'], xName: 'packs', yName: 'cost ($)', one: 'pack', many: 'packs', unit: '', money: true, dirs: ['up'], discrete: true, what: 'the cost',
-    rule: (s, c) => `Pens cost ${B($(c))} a pack, plus a ${A($(s))} shipping fee for the order.` },
+    rule: (s, c) => `Pens cost ${B($(c))} a pack, plus ${aAn(s)} ${A($(s))} shipping fee for the order.` },
 ];
 const ctxBy = (id: string) => CTX.find(c => c.id === id)!;
 const ups = CTX.filter(c => c.dirs.includes('up')), downs = CTX.filter(c => c.dirs.includes('down'));
 /** an output with its unit: $5, 20 gallons, 40%, 6 in. */
-const amt = (c: Ctx, v: number) => (c.money ? `$${v}` : c.pct ? `${v}%` : `${v} ${c.unit}`);
+const amt = (c: Ctx, v: number) => (c.money ? `$${v}` : c.pct ? `${v}%` : `${v} ${one1(v, c.unit)}`);
+/** a unit word after 1: 1 gallon, 1 tile, 1 kid ("in." stays) */
+function one1(v: number, unit: string): string { return v === 1 ? unit.replace(/s$/, '') : unit; }
 
 // ---------- table helpers ----------
 const range = (x0: number, step: number, n: number) => Array.from({ length: n }, (_, i) => x0 + i * step);
@@ -133,7 +138,12 @@ function choices(R: () => number, opts: Opt[]): { choices: string[]; check: (r: 
     wrong: o.map((x, i) => ({ i, mc: x.mc ?? '' })).filter(x => x.mc),
   };
 }
-function withProbes<T extends LinItem>(it: T, wrong: { i: number; mc: string }[]): T { for (const w of wrong) probe(it, { kind: 'choice', i: w.i }, w.mc); return it; }
+/** every choice item passes here: the probes, and the worked solution ends on the right choice (QUALITY_LAYER.md) */
+function withProbes<T extends LinItem>(it: T, wrong: { i: number; mc: string }[]): T {
+  for (const w of wrong) probe(it, { kind: 'choice', i: w.i }, w.mc);
+  if (it.input === 'choice' && it.answer.kind === 'choice') it.solution = endOnChoice(it.solution, it.choices![it.answer.i]!);
+  return it;
+}
 const numOf = (r: Response): number | null => (r.kind === 'num' && Number.isFinite(r.v) ? r.v : null);
 
 // ---------- linear table makers ----------
@@ -164,7 +174,7 @@ const rowChange = (R: () => number, n: number, sg?: string): LinItem => {
     pic: { tg: tgOf(c, t.xs, t.ys), at: ['table'], solve: ['changes', 'axes', 'points', 'stairs', 'line'] },
     hero: `\\text{every row: }\\ ${tx(t.c)}`,
     solution: [`Subtract each output from the NEXT output: ${t.ys[1]} − ${t.ys[0]} = ${dif(t.c)}, ${t.ys[2]} − ${t.ys[1]} = ${dif(t.c)}, and so on.`,
-      `Every row changes by ${S(signed(t.c))}: ${mag} ${down ? 'less' : 'more'} each row.`],
+      `Every row changes by ${signed(t.c)}: ${S(String(mag))} ${down ? 'less' : 'more'} each row.`],
     answer: { kind: 'num', v: mag },
     check: r => {
       const v = numOf(r);
@@ -276,7 +286,7 @@ const perUnit = (R: () => number, n: number): LinItem => {
       board: `\\text{per 1 ${c.one}} = \\,?`, input: 'pair', pairLead: 'Per row', pairOp: `per 1 ${c.one}`,
       pic: { tg: tgOf(c, xs, ys, { xGrid: step }), at: ['table', 'axes', 'points'], solve: ['changes', 'stairs', 'units', 'line'] },
       hero: `${per} \\div ${step} = ${u}`,
-      solution: [`Per row: ${ys[1]} − ${ys[0]} = ${dif(ys[1]! - ys[0]!)}, the same every row.`, `One row is ${step} ${c.many}, so per 1 ${c.one}: ${per} ÷ ${step} = ${S(String(u))} ${word}.`],
+      solution: [`Per row: ${ys[1]} − ${ys[0]} = ${dif(ys[1]! - ys[0]!)}, the same every row: ${S(String(per))} ${word}.`, `One row is ${step} ${c.many}, so per 1 ${c.one}: ${per} ÷ ${step} = ${S(String(u))} ${word}.`],
       answer: { kind: 'pair', x: per, y: u },
       check: r => {
         if (r.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
@@ -314,7 +324,7 @@ const startValue = (R: () => number, n: number): LinItem => {
       pic: { tg: tgOf(c, xs, ys), at: ['table', 'axes', 'points'], solve: ['changes'],
         then: { tg: tgOf(c, xs0, ys0), at: ['table', 'axes', 'points'], solve: ['changes', 'stairs', 'line', 'start'] } },
       hero: ok0 ? `\\text{start} = ${s}` : `${y0} ${ch > 0 ? '-' : '+'} ${x0 === 1 ? mag : `${x0} \\times ${mag}`} = ${s}`,
-      solution: ok0 ? [`The row for 0 ${c.many} is in the table: the start is ${S(String(s))}.`]
+      solution: ok0 ? [`The start is the output at input 0: look for the row for 0 ${c.many}.`, `That row is in the table: the start is ${S(String(s))}.`]
         : [`The change is ${signed(ch)} each ${c.one}. Going BACK one ${c.one} undoes it: ${ch > 0 ? 'subtract' : 'add'} ${mag}.`,
           `${x0 === 1 ? `${y0} ${ch > 0 ? '−' : '+'} ${mag}` : `${y0} ${ch > 0 ? '−' : '+'} ${mag} ${ch > 0 ? '−' : '+'} ${mag}`} = ${S(String(s))}: that is the output at 0 ${c.many}.`],
       answer: { kind: 'num', v: s },
@@ -424,7 +434,7 @@ const plotPoint = (R: () => number, n: number): LinItem => {
       board: `(\\,?\\,,\\ ?\\,)`, input: 'pair', pairLead: '(', pairOp: ',',
       pic: { tg: tgOf(c, xs, ys, { yGrid: scale, yMax }), at: ['table', 'axes', 'points'], solve: ['points', 'stairs', 'line'], focus: { hidePoint: hide }, solved: { row: hide, rowCol: 'pick' } },
       hero: `(${hx},\\ ${hy})`,
-      solution: [`The missing row is ${hx} ${hx === 1 ? c.one : c.many} → ${amt(c, hy)}.`, `Input first (across), output second (up): ${S(`(${hx}, ${hy})`)}.`, `It lands on the same straight line as the others.`],
+      solution: [`The missing row is ${hx} ${hx === 1 ? c.one : c.many} → ${amt(c, hy)}.`, `Input first (across), output second (up): (${S(String(hx))}, ${S(String(hy))}).`, `It lands on the same straight line as the others.`],
       answer: { kind: 'pair', x: hx, y: hy },
       check: r => {
         if (r.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
@@ -488,7 +498,7 @@ const graphChange = (R: () => number, n: number): LinItem => {
       board: `\\text{per 1 ${c.one}} = \\,?`, input: 'num', unit: `${c.money ? 'dollars' : c.pct ? 'percent' : c.unit} ${word} per ${c.one}`,
       pic: { tg: tgOf(c, xs, ys, { show: 'graph', yGrid: yScale, yMax, xGrid: 1, xMax: xs[rows - 1]! }), at: ['axes', 'points', 'line'], solve: xStep > 1 ? ['stairs', 'units'] : ['stairs'] },
       hero: xStep > 1 ? `${perStep} \\div ${xStep} = ${rate}` : `${tx(down ? -rate : rate)}\\ \\text{per ${c.one}}`,
-      solution: [`From one point to the next the input goes ${xStep} ${xStep === 1 ? c.one : c.many} and the output ${down ? 'drops' : 'rises'} ${perStep}${yScale > 1 ? ` (${perStep / yScale} squares of ${yScale})` : ''}.`,
+      solution: [`From one point to the next the input goes ${xStep} ${xStep === 1 ? c.one : c.many} and the output ${down ? 'drops' : 'rises'} ${perStep}${yScale > 1 ? ` (${perStep / yScale} ${one1(perStep / yScale, 'squares')} of ${yScale})` : ''}.`,
         xStep > 1 ? `Per 1 ${c.one}: ${perStep} ÷ ${xStep} = ${S(String(rate))} ${word}.` : `So ${S(String(rate))} ${word} per ${c.one}.`],
       answer: { kind: 'num', v: rate },
       check: r => {
@@ -576,11 +586,11 @@ const compareLines = (R: () => number, n: number): LinItem => {
     const ch_ = choices(R, opts);
     const it = withProbes<LinItem>({
       id: `compareLines-${n}`, family: 'compareLines',
-      prompt: `The graph shows ${c.what} for ${B2(n1)} and ${W2(n2)}. At ${xs[2]} ${c.many}, ${higher ? `${higher}'s line is higher` : 'the lines are level'}. Whose ${c.yName.replace(/ \(.*\)/, '')} changes faster each ${c.one}?`,
+      prompt: `The graph shows ${c.what} for ${B2(n1)} and ${W2(n2)}. At ${xs[2]} ${c.many}, ${higher ? `${higher}'s line is higher` : 'the lines are level'}. Whose ${c.id === 'savings' ? 'savings' : c.id === 'plant' ? 'height' : c.id === 'hike' ? 'distance' : c.yName.replace(/ \(.*\)/, '')} change${c.id === 'savings' ? '' : 's'} faster each ${c.one}?`,
       board: `\\text{faster?}`, input: 'choice', choices: ch_.choices,
       pic: { tg: { ...tgOf(c, xs, y1, { show: 'graph', ys2: y2, names: [n1, n2] }) }, at: ['axes', 'points', 'line', 'points2', 'line2'], solve: ['stairs'] },
       hero: `\\text{${n1}: } ${tx(d1)} | \\text{${n2}: } ${tx(d2)}`,
-      solution: [`Faster means a bigger change per ${c.one}, not a higher line.`, `${n1}: ${signed(d1)} each ${c.one}; ${n2}: ${signed(d2)} each ${c.one}.`, faster ? `${S(faster)}'s changes faster: the steeper line.` : `${S('The same')}: parallel lines.`],
+      solution: [`Faster means a bigger change per ${c.one}, not a higher line.`, `${n1}: ${signed(d1)} each ${c.one}; ${n2}: ${signed(d2)} each ${c.one}.`, faster ? `The steeper line changes faster: ${ans(`${faster}'s`)}.` : `Parallel lines: ${ans(tS)}.`],
       answer: ch_.answer, check: ch_.check,
     }, ch_.wrong);
     if (kind !== 'parallel' && !ch_.wrong.length) continue;
@@ -629,7 +639,7 @@ const lastChange = (R: () => number, n: number, sg?: string): LinItem => {
     board: `${txList([...shown, NaN])}`, input: 'num', unit: 'more',
     pic: { tg: tgOf(c, xs, ys), at: ['table'], solve: ['changes', 'axes', 'points', 'segments', 'ruler'], solved: { hot: [computeTG({ xs, ys }).firstBreak], hotCol: 'wrong', missK: 1 } },
     hero: `${txList(ds)}`,
-    solution: [`${ys[k + 1]} − ${ys[k]} = ${S(signed(ans))}.`, `The changes are ${signedList(ds)}: ${shape === 'grow' ? 'they grow' : shape === 'shrink' ? 'they shrink' : 'they jump around'}, so the table is not linear.`],
+    solution: [`${ys[k + 1]} − ${ys[k]} = ${ans < 0 ? S(signed(ans)) : `+${S(String(ans))}`}.`, `The changes are ${signedList(ds)}: ${shape === 'grow' ? 'they grow' : shape === 'shrink' ? 'they shrink' : 'they jump around'}, so the table is not linear.`],
     answer: { kind: 'num', v: ans },
     check: r => {
       const v = numOf(r);
@@ -659,6 +669,8 @@ const onALine = (R: () => number, n: number): LinItem => {
     else if (kind === 'level') { const s = int(R, 0, 10); ys = [s, s + 8, s + 12, s + 14, s + 15]; }
     else { const t = linTable(R, { c: [2, 9], s: [1, 25], n: [5, 5], x0: [0] }); xs = t.xs; ys = t.ys; }
     if (!ys.every(y => y >= 0 && y <= 100)) continue;
+    // a plant, a hike, savings only go up: no table that drops (36, 29, 44, 71)
+    if (!c.dirs.includes('down') && ys.some((y, i) => i > 0 && y < ys[i - 1]!)) continue;
     const m = computeTG({ xs, ys }), ds = diffsOf(ys);
     if ((kind === 'line') !== m.constant) continue;
     const why = `The changes are ${signedList(ds)}.`;
@@ -772,7 +784,8 @@ const contextLinear = (R: () => number, n: number): LinItem => {
   else if (kind === 'plant') { text = `A sunflower is ${A(`${int(R, 2, 10)} in.`)} tall and grows ${B(`${r} in.`)} each week.`; const s = Number(/(\d+) in\./.exec(text)![1]); xs = range(0, 1, 5); ys = xs.map(x => s + r * x); lin = true; one = 'week'; ctx = ctxBy('plant'); }
   else if (kind === 'taxi') { const s = int(R, 2, 5), m = int(R, 2, 4); text = `A taxi ride costs ${A($(s))} to get in, plus ${B($(m))} per mile.`; xs = range(0, 1, 5); ys = xs.map(x => s + m * x); lin = true; one = 'mile'; ctx = { ...ctxBy('rental'), xh: ['miles', ''], xName: 'miles', one: 'mile', many: 'miles', what: 'the fare' }; }
   else if (kind === 'double') { const s = pick(R, [1, 2, 3]); text = `${name}'s savings start at ${A($(s))} and double every week.`; xs = range(0, 1, 5); ys = xs.map(x => s * 2 ** x); lin = false; one = 'week'; ctx = ctxBy('savings'); }
-  else { const s = int(R, 1, 6); text = `${name} saves ${A($(s))} in week 1, and each week saves $1 more than the week before.`; xs = range(1, 1, 5); let t = 0; ys = xs.map((_, i) => (t += s + i)); lin = false; one = 'week'; ctx = ctxBy('savings'); }
+  // the weekly amount alone would be linear: the question is about the total
+  else { const s = int(R, 1, 6); text = `${name} saves ${A($(s))} in week 1, ${$(s + 1)} in week 2, ${$(s + 2)} in week 3, and so on. Look at the TOTAL saved after each week.`; xs = range(1, 1, 5); let t = 0; ys = xs.map((_, i) => (t += s + i)); lin = false; one = 'week'; ctx = ctxBy('savings'); }
   const ds = diffsOf(ys);
   const opts: Opt[] = [
     { t: `Linear: the same change every ${one}`, ok: lin, mc: lin ? undefined : 'mc.linear-functions.illusion-of-linearity', say: lin ? `Yes: every ${one} adds the same amount (${signed(ds[0]!)}). Linear.` : `It grows, but not by the same amount: the changes are ${signedList(ds)}. Not linear.` },
@@ -881,7 +894,16 @@ const farPredict = (R: () => number, n: number): LinItem => {
   }
 };
 
-export const GENS: Record<FamilyId, (R: () => number, n: number, sg?: string) => LinItem> = {
+const RAW: Record<FamilyId, (R: () => number, n: number, sg?: string) => LinItem> = {
   rowChange, couldBeLinear, perUnit, startValue, wordsToTable, tableToWords, plotPoint, graphMeaning, graphChange, graphToWords,
   compareLines, connectOrNot, lastChange, onALine, unequalGaps, gapRate, contextLinear, bestReason, couldOrMust, farPredict,
 };
+/** "5 in." at the end of a sentence: one full stop, not "5 in.." */
+const tidy = (h: string) => h.replace(/\b(in|ft|mi|gal)\.\./g, '$1.');
+const tidied = (g: (R: () => number, n: number, sg?: string) => LinItem) => (R: () => number, n: number, sg?: string): LinItem => {
+  const it = g(R, n, sg);
+  it.prompt = tidy(it.prompt); it.solution = it.solution.map(tidy);
+  if (it.choices) it.choices = it.choices.map(tidy);
+  return it;
+};
+export const GENS = Object.fromEntries(Object.entries(RAW).map(([k, g]) => [k, tidied(g)])) as typeof RAW;

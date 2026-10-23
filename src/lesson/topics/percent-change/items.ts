@@ -4,6 +4,7 @@
 // the context, the order of the story and the wording. A generator gets the SUB-GOAL it practises (plan.ts).
 // Pure: no DOM, no canvas; a seeded rng makes sessions repeatable.
 import { type Item, type Response, type Verdict, A, B, S, fr, gcd, int, mixed, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import { type Unit, apply, change, exactTo, fmtMoney, fmtNum, fmtPct, fmtQ, multiplier, near, r9, roundTo, texMoney, texNum, texPct } from './changeMaths';
 /** an amount on the board: money keeps its $, counts and measures are bare numbers (the unit is in the words) */
 const texQ = (u: Unit, x: number): string => (u.money ? texMoney(x) : texNum(x));
@@ -284,7 +285,7 @@ const changeWord: Gen = (R, n) => {
     board: `${texQ(c.unit, a)} \\to ${texQ(c.unit, b)}`,
     ...choose(R, opts),
     tape: eq ? undefined : { amounts: [a, b], names: [...c.names], unit: c.unit },
-    solution: eq ? [`Before and after are both ${q(a)}: no change.`]
+    solution: eq ? [`The change is after − before: ${q(a)} − ${q(a)} = 0.`, `Before and after are both ${q(a)}: no change.`]
       : [`Before: ${A(q(a))} (${c.when[0]}). After: <b>${q(b)}</b>.`, `Larger minus smaller: ${fmtNum(Math.max(a, b))} − ${fmtNum(Math.min(a, b))} = ${B(fmtNum(size))}, and it went ${d}: ${an(d)} of ${q(size)}.`],
   };
 };
@@ -339,17 +340,19 @@ const compare: Gen = (R, n) => {
   interface Side { name: string; a: number; c: number }
   const P1: Side = { name: n1, a: swap ? a2 : a1, c: swap ? c2 : c1 }, P2: Side = { name: n2, a: swap ? a1 : a2, c: swap ? c1 : c2 };
   const pc = (x: { a: number; c: number }) => r9((x.c / x.a) * 100);
+  /** a percent as the student reads it: exact to the tenth, else "about 5.6%" (not 5.5556%) */
+  const pcShow = (x: { a: number; c: number }) => (near(pc(x) * 10, Math.round(pc(x) * 10)) ? fmtPct(pc(x)) : `about ${fmtPct(Math.round(pc(x) * 10) / 10)}`);
   const q = (x: number) => fmtQ(unit, x);
   const b = (x: { a: number; c: number }) => (d === 'up' ? x.a + x.c : x.a - x.c);
   const same = near(pc(P1), pc(P2));
   const win = same ? null : pc(P1) > pc(P2) ? P1 : P2, lose = win === P1 ? P2 : P1;
   const bigAbs = P1.c > P2.c ? P1 : P2.c > P1.c ? P2 : null;
-  const line = (x: typeof P1) => `${x.name}: ${q(x.a)} to ${q(b(x))}, a change of ${q(x.c)} out of ${q(x.a)}, ${fmtPct(pc(x))}.`;
+  const line = (x: typeof P1) => `${x.name}: ${q(x.a)} to ${q(b(x))}, a change of ${q(x.c)} out of ${q(x.a)}, ${pcShow(x)}.`;
   const opts: Opt[] = [P1, P2].map(x => {
-    if (x === win) return { t: x.name, ok: true, say: `Yes. ${x.name}: ${fmtNum(x.c)} ÷ ${fmtNum(x.a)} = ${fmtPct(pc(x))}; ${lose.name}: ${fmtPct(pc(lose))}.` };
-    return { t: x.name, mc: x === bigAbs || same ? MC.absRel : undefined, say: same ? `The changes are different, but so are the bases: both are ${fmtPct(pc(x))}.` : `${x === bigAbs ? `${x.name} changed by more ${unit.money ? 'dollars' : unit.word}, but compared with its base it is less. ` : ''}${x.name}: ${fmtPct(pc(x))}; ${win!.name}: ${fmtPct(pc(win!))}.` };
+    if (x === win) return { t: x.name, ok: true, say: `Yes. ${x.name}: ${fmtNum(x.c)} ÷ ${fmtNum(x.a)} = ${pcShow(x)}; ${lose.name}: ${pcShow(lose)}.` };
+    return { t: x.name, mc: x === bigAbs || same ? MC.absRel : undefined, say: same ? `The changes are different, but so are the bases: both are ${pcShow(x)}.` : `${x === bigAbs ? `${x.name} changed by more ${unit.money ? 'dollars' : unit.word}, but compared with its base it is less. ` : ''}${x.name}: ${pcShow(x)}; ${win!.name}: ${pcShow(win!)}.` };
   });
-  opts.push(same ? { t: 'the same percent', ok: true, say: `Yes: both are ${fmtPct(pc(P1))}, even though the changes are different.` }
+  opts.push(same ? { t: 'the same percent', ok: true, say: `Yes: both are ${pcShow(P1)}, even though the changes are different.` }
     : { t: 'the same percent', mc: kind === 'sameAbs' ? MC.absRel : undefined, say: `${kind === 'sameAbs' ? 'The changes are equal, but the bases are not. ' : ''}${line(P1)} ${line(P2)}` });
   return {
     id: `compare-${n}`, family: 'compare', subgoal: 'absolute-vs-relative',
@@ -385,7 +388,7 @@ const pctChange: Gen = (R, n) => {
     check: numCheck(p, d === 'none' ? 'Yes: no change, 0%.' : `Yes: ${pctWords(p, d)}.`, d === 'none' ? [] : pctWrongs(a, b, p, c),
       d === 'none' ? 'The two amounts are equal: no change, 0%.' : `Change ÷ base: ${fmtNum(change(a, b).size)} ÷ ${fmtNum(a)} = ${fmtNum(p / 100)} = ${fmtPct(p)}.`),
     tape: { amounts: [a, b], names: [...c.names], unit: c.unit },
-    solution: d === 'none' ? ['Before and after are equal: no change, 0%.']
+    solution: d === 'none' ? [`The change is ${fmtNum(b)} − ${fmtNum(a)} = 0.`, `Before and after are equal: no change, ${S('0%')}.`]
       : [`Change: ${fmtNum(Math.max(a, b))} − ${fmtNum(Math.min(a, b))} = ${B(fmtNum(change(a, b).size))} (${word(d)}).`,
         `Divide by the base, the amount before: ${fmtNum(change(a, b).size)} ÷ ${A(fmtNum(a))} = ${fmtNum(p / 100)}.`,
         `As a percent: ${fmtNum(p / 100)} × 100 = ${S(fmtPct(p))}, ${pctWords(p, d)}.`],
@@ -450,7 +453,7 @@ function applyItem(R: () => number, n: number, d: 'up' | 'down'): ChangeItem {
       return { ok: false, say: `${fmtPct(p)} of ${q(a)} = ${fmtNum(p / 100)} × ${fmtNum(a)} = ${q(ch)}; then ${fmtNum(a)} ${sign} ${fmtNum(ch)} = ${q(b)}.` };
     },
     tape: { amounts: [a, b], names: [...k.names], unit: k.unit, hide: [false, true], hideChange: true, cuts: [cutsFor(p)] },
-    solution: [`${fmtPct(p)} of ${A(q(a))}: ${fmtNum(p / 100)} × ${fmtNum(a)} = ${B(q(ch))}.`, `${d === 'up' ? 'Add it' : 'Take it away'}: ${fmtNum(a)} ${sign} ${fmtNum(ch)} = ${S(q(b))}.`],
+    solution: [`${fmtPct(p)} of ${A(q(a))}: ${fmtNum(p / 100)} × ${fmtNum(a)} = ${B(q(ch))}.`, `${d === 'up' ? 'Add it' : 'Take it away'}: ${fmtNum(a)} ${sign} ${S(fmtNum(ch))} = ${S(q(b))}.`],
   };
 }
 const twoStepUp: Gen = (R, n) => applyItem(R, n, 'up');
@@ -745,7 +748,7 @@ const roundGen: Gen = (R, n) => {
   }
   const p = pick(R, [6.5, 7.25, 8.25, 9.5, 4.75]);
   let a = 0, tot = 0;
-  for (let t = 0; t < 100; t++) { a = r9(int(R, 1000, 9999) / 100); tot = r9(a * (1 + p / 100)); if (!exactTo(tot, 2)) break; }
+  for (let t = 0; t < 100; t++) { a = r9(int(R, 1000, 9999) / 100); tot = r9(a * (1 + p / 100)); if (!exactTo(r9(tot * 2), 2)) break; }   // not exact to the cent, and no half-cent tie ($27.885)
   const ans = roundTo(tot, 2);
   return {
     id: `round-${n}`, family: 'round', subgoal: 'round-results',
@@ -763,7 +766,9 @@ const exactOrNot: Gen = (R, n) => {
   const den = pick(R, [3, 6, 7, 9, 12]);
   const a = den * pick(R, [2, 3, 4, 5, 10]);
   let size = int(R, 1, Math.floor(a * 0.6));
-  while ((size * 100) % a === 0) size++;
+  // the exact percent must not end (37.5% = 18/48 is exact, not rounded): size/a in lowest terms needs a factor besides 2 and 5
+  const ends = (x: number) => { let d = a / gcd(x, a); while (d % 2 === 0) d /= 2; while (d % 5 === 0) d /= 5; return d === 1; };
+  while ((size * 100) % a === 0 || ends(size)) size++;
   const exact = (size * 100) / a, rd = roundTo(exact, 1);
   const g = gcd(size * 100, a), num = (size * 100) / g, dd = a / g;
   const who = pick(R, ['Ana', 'Ben', 'Zoe', 'Eli']);
@@ -980,7 +985,7 @@ const sameBase: Gen = (R, n) => {
 
 // ---------- 19 percent error ----------
 const ERR = [
-  { s: (e: string, w: string) => `${w} guesses there are ${e} jelly beans in a jar. The jar holds`, unit: 'beans', lo: 200, hi: 1200, step: 10, names: ['actual', 'guess'] as [string, string] },
+  { s: (e: string, w: string) => `${w} guesses there are ${e.replace(/ beans(<\/b>)?$/, '$1')} jelly beans in a jar. The jar holds`, unit: 'beans', lo: 200, hi: 1200, step: 10, names: ['actual', 'guess'] as [string, string] },
   { s: (e: string, w: string) => `${w} estimates the crowd at a game as ${e}. The real count is`, unit: 'people', lo: 2000, hi: 9000, step: 100, names: ['actual', 'estimate'] as [string, string] },
   { s: (e: string, w: string) => `${w} measures a board as ${e}. Its actual length is`, unit: 'in.', lo: 20, hi: 96, step: 4, names: ['actual', 'measured'] as [string, string] },
   { s: (e: string, w: string) => `${w} times a lap as ${e}. The official time is`, unit: 'seconds', lo: 40, hi: 120, step: 4, names: ['official', 'timed'] as [string, string] },
@@ -1051,6 +1056,8 @@ const tidied = (g: Gen): Gen => (R, n, sg) => {
   const it = g(R, n, sg);
   it.prompt = tidy(it.prompt); it.solution = it.solution.map(tidy);
   if (it.choices) it.choices = it.choices.map(tidy);
+  // a choice item's worked solution ends on the right choice (docs/lessons/QUALITY_LAYER.md)
+  if (it.choices && it.answer.kind === 'choice') it.solution = endOnChoice(it.solution, it.choices[it.answer.i]!);
   const check = it.check;
   it.check = r => { const v = check(r); return { ...v, say: tidy(v.say) }; };
   return it;

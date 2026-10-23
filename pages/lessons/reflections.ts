@@ -19,6 +19,7 @@ import { type LessonCtx, runLesson, SURE } from '../../src/lesson/runtime/shell'
 import { startPractice } from '../../src/lesson/runtime/practice';
 import { Mirror, type MirrorBlock, type MirrorFocus } from '../../src/lesson/topics/reflections/Mirror';
 import { FAMILY_NAMES, GENERATORS, type RefItem } from '../../src/lesson/topics/reflections/items';
+import { explain } from '../../src/lesson/topics/reflections/explain';
 import { PLAN } from '../../src/lesson/topics/reflections/plan';
 import { SCRIPT } from '../../src/lesson/topics/reflections/script';
 import { aLine, dLine, type MirrorPic, type Pt } from '../../src/lesson/topics/reflections/mirrorMaths';
@@ -447,7 +448,7 @@ function partPractice(): void {
   }
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as RefItem),
   });

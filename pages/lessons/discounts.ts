@@ -27,6 +27,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import type { Item } from '../../src/lesson/runtime/item';
 import { PriceBar, type PriceBarBlock, type PriceBarFocus, type PriceBarParams, type PriceBarStep } from '../../src/lesson/topics/discounts/PriceBar';
 import { type DiscPicture, FAMILY_NAMES, GENS } from '../../src/lesson/topics/discounts/items';
+import { explain } from '../../src/lesson/topics/discounts/explain';
 import { PLAN } from '../../src/lesson/topics/discounts/plan';
 import { SCRIPT } from '../../src/lesson/topics/discounts/script';
 
@@ -445,7 +446,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed), show: showItem,
   });
 }

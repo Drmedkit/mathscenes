@@ -134,3 +134,34 @@ describe('scale-basics: misconceptions are classified', () => {
   });
   void ({} as Item);
 });
+
+describe('quality layer: oracle sweep fixes', () => {
+  const sgOf = (f: string) => PLAN.find(p => (p.families as string[]).includes(f))!.id;
+  const make = (f: string, s: number) => GENERATORS[f as keyof typeof GENERATORS](rng(s), s, sgOf(f));
+  const plain = (h: string) => h.replace(/<[^>]+>/g, '');
+  const CM: Record<string, [number, number]> = { kitchen: [120, 1200], bedroom: [120, 900], hallway: [80, 2500], 'living room': [250, 1500], bathroom: [120, 600], garage: [200, 2000], classroom: [400, 2000], porch: [100, 2000] };
+  it('legendMeaning never uses a 1 : 1-unit legend (1 cm = 1 m made "each meter is drawn 1 cm" true too)', () => {
+    for (let s = 1; s <= 400; s++) expect(plain(make('legendMeaning', s).prompt), String(s)).not.toMatch(/represents 1 m\b|= 1 m\b|represents 1 ft\b|= 1 ft\b/);
+  });
+  it('whatIsN: "how much longer" never equals the factor (2 in → 4 in at 1 : 2)', () => {
+    for (let s = 1; s <= 600; s++) {
+      const t = plain(make('whatIsN', s).prompt), m = t.match(/1 : ([\d,]+)\. A part that is (\d+) \w+ long on it is ([\d,]+)/)!;
+      const [N, d, D] = [m[1], m[2], m[3]].map(x => Number(x!.replace(/,/g, '')));
+      expect(D! - d!, t).not.toBe(N);
+    }
+  });
+  it('room walls are real walls (legendWrite, useFactor, critique), and "an apartment"', () => {
+    const toCm: Record<string, number> = { cm: 1, m: 100, ft: 30.48, in: 2.54 };
+    for (let s = 1; s <= 600; s++) {
+      const lw = plain(make('legendWrite', s).prompt).match(/the ([a-z ]+) wall is .* The real wall is ([\d.]+) (m|ft) long/)!;
+      const cm = Number(lw[2]) * toCm[lw[3]!]!;
+      expect(cm >= CM[lw[1]!]![0] && cm <= CM[lw[1]!]![1], lw[0]).toBe(true);
+      const uf = make('useFactor', s), N = Number(plain(uf.prompt).match(/1 : ([\d,]+)/)![1]!.replace(/,/g, ''));
+      for (const [, room, x] of plain(uf.prompt).matchAll(/the ([a-z ]+) wall is ([\d.]+) cm/g)) {
+        const c = Number(x) * N; expect(c >= CM[room!]![0] && c <= CM[room!]![1], uf.prompt).toBe(true);
+      }
+      for (const f of ['readScale', 'legendMeaning', 'useFactor', 'critique', 'enlarge']) expect(plain(make(f, s).prompt)).not.toMatch(/\ba [aeiou]/);
+      expect(plain(make('critique', s).prompt)).not.toMatch(/\b1 times/);
+    }
+  });
+});

@@ -119,3 +119,22 @@ describe('enlarge-on-grids: voice', () => {
     }
   });
 });
+
+describe('quality layer (docs/lessons/QUALITY_LAYER.md)', () => {
+  it('regression (oracle sweep): the item data carries no answer tags (a figure\'s "of", a label\'s "alt"), the drawing still has them', () => {
+    let seenAlt = 0, seenOf = 0;
+    for (const [f, g] of Object.entries(GENERATORS)) for (let s = 1; s <= 40; s++) {
+      const it = g(rng(s), s, PLAN.find(p => (p.families as string[]).includes(f))!.id) as GridItem;
+      const json = JSON.stringify(it);
+      expect(json, f).not.toMatch(/"alt"|"of":|"altCol"/);
+      for (const fig of it.pict?.pic.figs ?? []) {
+        if ((fig as { of?: unknown }).of) seenOf++;
+        for (const l of fig.labels ?? []) if (l && typeof l === 'object' && l.alt) seenAlt++;
+      }
+    }
+    expect(seenOf).toBeGreaterThan(0); expect(seenAlt).toBeGreaterThan(0);
+  });
+  it('"1 square long", not "1 squares long"', () => {
+    for (let s = 1; s <= 300; s++) expect(GENERATORS.timesAsLong(rng(s), s, 'factor-one-length').prompt).not.toMatch(/>1<\/b> squares/);
+  });
+});

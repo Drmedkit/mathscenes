@@ -23,6 +23,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import { strike } from '../../src/core/draw';
 import { RatioRows, type RRBlock, type RRFocus, type RRParams, type TableSpec } from '../../src/lesson/topics/ratio-tables-and-proportions/RatioRows';
 import { FAMILY_NAMES, GENS, type RTItem, type RRPic } from '../../src/lesson/topics/ratio-tables-and-proportions/items';
+import { explain } from '../../src/lesson/topics/ratio-tables-and-proportions/explain';
 import { PLAN } from '../../src/lesson/topics/ratio-tables-and-proportions/plan';
 import { SCRIPT } from '../../src/lesson/topics/ratio-tables-and-proportions/script';
 
@@ -442,7 +443,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as RTItem),
   });

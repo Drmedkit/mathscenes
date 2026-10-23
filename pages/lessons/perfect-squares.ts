@@ -24,6 +24,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import { TileSquare, type TileBlock, type TileFocus } from '../../src/lesson/topics/perfect-squares/TileSquare';
 import { RootLine } from '../../src/lesson/topics/perfect-squares/RootLine';
 import { FAMILY_NAMES, GENS, MC, rad, type SqItem } from '../../src/lesson/topics/perfect-squares/items';
+import { explain } from '../../src/lesson/topics/perfect-squares/explain';
 import { PLAN } from '../../src/lesson/topics/perfect-squares/plan';
 import { LINES } from '../../src/lesson/topics/perfect-squares/script';
 
@@ -421,7 +422,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as SqItem),
   });

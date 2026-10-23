@@ -175,3 +175,42 @@ describe('ratio-problems: boards and voice', () => {
     for (const id of used) expect(LINES[id], id).toBeDefined();
   });
 });
+
+describe('quality layer: oracle sweep fixes', () => {
+  const sgOf = (f: string) => PLAN.find(p => (p.families as string[]).includes(f))!.id;
+  const make = (f: string, s: number) => GENERATORS[f as keyof typeof GENERATORS](rng(s), s, sgOf(f));
+  const txt = (h: string) => h.replace(/<span class="fr"><span>(\d+)<\/span><span>(\d+)<\/span><\/span>/g, '$1/$2').replace(/<[^>]+>/g, '').replace(/&#8202;/g, ' ');
+  const num = (t: string) => { const m = t.match(/^(\d+(?:\.\d+)?)(?: (\d+)\/(\d+)|\/(\d+))?/)!; return m[2] ? Number(m[1]) + Number(m[2]) / Number(m[3]) : m[4] ? Number(m[1]) / Number(m[4]) : Number(m[1]); };
+  it('every story is a real one: cherries $1-$15 a pound, a car 10-60 mpg, a hike 1-5 mph, flour : milk within 1 : 3 and 3 : 1, a cyclist at most 30 mph', () => {
+    for (const f of Object.keys(GENERATORS)) for (let s = 1; s <= 120; s++) {
+      const t = txt(make(f, s).prompt);
+      let m = t.match(/^([\d./ ]+) pounds? of cherries cost \$(\d+(?:\.\d+)?)/);
+      if (m) { const r = Number(m[2]) / num(m[1]!.trim()); expect(r >= 1 && r <= 15, t).toBe(true); }
+      m = t.match(/A car goes ([\d./ ]+) miles? on ([\d./ ]+) gallons?/);
+      if (m) { const r = num(m[1]!) / num(m[2]!); expect(r >= 10 && r <= 60, t).toBe(true); }
+      m = t.match(/uses ([\d./ ]+) cups? of flour for every ([\d./ ]+) cups? of milk/);
+      if (m) { const r = num(m[1]!) / num(m[2]!); expect(r >= 1 / 3 && r <= 3, t).toBe(true); }
+      m = t.match(/cyclist rides (\d+) miles per hour/);
+      if (m) expect(Number(m[1]), t).toBeLessThanOrEqual(30);
+      m = t.match(/^(\d+) pounds of grapes cost \$(\d+)/);
+      if (m) { const r = Number(m[2]) / Number(m[1]); expect(r > 1 && r <= 15, t).toBe(true); }
+    }
+  });
+  it('betweenWithin asking for the rate: the reversed rate is not a second right answer', () => {
+    for (let s = 1; s <= 400; s++) {
+      const it = make('betweenWithin', s);
+      if (!/the rate/.test(it.prompt)) continue;
+      // the reversed division never shows up as a second true rate (pounds per dollar next to dollars per pound)
+      expect(it.choices!.join(" | "), it.prompt).not.toMatch(/pounds per dollar|hours per mile|gallons per mile|feet per pound/);
+    }
+  });
+  it('roundCheck never says "rounds to $x, not $x"; no half-cent ties; audit text; chooseMethod; sizeCheck estimate', () => {
+    for (let s = 1; s <= 400; s++) {
+      for (const c of make('roundCheck', s).choices!) { const m = c.match(/rounds to (\$[\d.]+), not (\$[\d.]+)/); if (m) expect(m[1]).not.toBe(m[2]); }
+      for (const f of ['roundCheck', 'roundEnd', 'decTable']) for (const l of make(f, s).solution) expect(txt(l), f).not.toMatch(/= \d+\.\d\d5(?![\d…])/);
+      expect(make('audit', s).choices!.join(' ')).not.toMatch(/Rounded too early: Rounded too early/);
+      const cm = make('chooseMethod', s), i = (cm.answer as { i: number }).i;
+      if (i >= 2) { const [a, b] = [...txt(cm.prompt).matchAll(/\d+/g)].map(x => Number(x[0])); expect(terminates(rat(b!, a!)), cm.prompt).toBe(false); }
+    }
+  });
+});

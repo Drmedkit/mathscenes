@@ -19,6 +19,7 @@ import { fr } from '../../src/lesson/runtime/item';
 import { ChangeTape, type ChangeTapeBlock, type ChangeTapeFocus, type ChangeTapeParams } from '../../src/lesson/topics/percent-change/ChangeTape';
 import { FAMILY_NAMES, GENERATORS, MC, type ChangeItem, type TapePic } from '../../src/lesson/topics/percent-change/items';
 import { roundTo, texNum } from '../../src/lesson/topics/percent-change/changeMaths';
+import { explain } from '../../src/lesson/topics/percent-change/explain';
 import { PLAN } from '../../src/lesson/topics/percent-change/plan';
 
 const SLUG = 'percent-change';
@@ -458,7 +459,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as ChangeItem),
   });

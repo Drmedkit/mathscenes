@@ -22,6 +22,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import { ScalePair, PAIR_STEPS, type PairBlock, type PairFocus } from '../../src/lesson/topics/scale-basics/ScalePair';
 import { HALLWAY, LAPTOP, PF, SKATE } from '../../src/lesson/topics/scale-basics/lessonPics';
 import { FAMILY_NAMES, GENERATORS, MC, type SBItem } from '../../src/lesson/topics/scale-basics/items';
+import { explain } from '../../src/lesson/topics/scale-basics/explain';
 import { PLAN } from '../../src/lesson/topics/scale-basics/plan';
 import { SCRIPT } from '../../src/lesson/topics/scale-basics/script';
 
@@ -377,7 +378,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as SBItem),
   });

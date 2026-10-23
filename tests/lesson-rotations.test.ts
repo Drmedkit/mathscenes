@@ -159,3 +159,20 @@ describe('voice', () => {
     }
   });
 });
+
+describe('quality layer (docs/lessons/QUALITY_LAYER.md)', () => {
+  it('regression (oracle sweep): target never asks a half turn of a tile that a flip through the pin also lays on the outline', () => {
+    const key = (ps: readonly (readonly [number, number])[]) => ps.map(p => `${Math.round(p[0] * 1e6)},${Math.round(p[1] * 1e6)}`).sort().join(' ');
+    let half = 0;
+    for (let s = 1; s <= 800; s++) {
+      const it = GENS.target(rng(s), s, 'select-justify-turn');
+      if (!/A half turn about \w: every corner/.test(it.choices![(it.answer as { i: number }).i]!)) continue;
+      half++;
+      const pic = it.picture as unknown as { pin: [number, number]; start: { pts: [number, number][] }; target: [number, number][] };
+      const [a, b] = pic.pin, want = key(pic.target);
+      const flips = [(p: [number, number]) => [p[0], 2 * b - p[1]], (p: [number, number]) => [2 * a - p[0], p[1]], (p: [number, number]) => [a + p[1] - b, b + p[0] - a], (p: [number, number]) => [a - (p[1] - b), b - (p[0] - a)]] as ((p: [number, number]) => [number, number])[];
+      for (const f of flips) expect(key(pic.start.pts.map(f)), it.prompt).not.toBe(want);
+    }
+    expect(half).toBeGreaterThan(20);
+  });
+});

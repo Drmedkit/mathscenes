@@ -8,6 +8,7 @@ import { qEq, qNum, rat, toQ, type Q } from '../../../core/math';
 import { frame } from '../../../blocks/block';
 import { type Gen, type Item, type Response, type Verdict, A, B, S, fr, int, pick, shuffle } from '../../runtime/item';
 import { type Lab, type Pic, type PicFig, type V, ell, extent, fitsIn, home, move, rect, scale, stretch, tee } from '../scale-factor/scaleMaths';
+import { ans as mark, endOnChoice } from '../../runtime/explain';
 import { type Move, house, hWord, moveHtml, moveTex, moveWords, rowOf, slanted, stairs, tri, vWord, walkOf, walkPic } from './walkMaths';
 
 export type FamilyId = 'whichScaled' | 'photoFit' | 'matchPart' | 'timesAsLong' | 'countLen' | 'missingDim' | 'oneFactor'
@@ -112,7 +113,7 @@ function choiceItem(b: Base, R: () => number, cs: Choice[], keepOrder = false): 
   const order = keepOrder ? cs : shuffle(R, [...cs]);
   const right = order.findIndex(c => c.ok);
   const it: GridItem = {
-    ...b, input: 'choice', choices: order.map(c => c.t), answer: { kind: 'choice', i: right },
+    ...b, input: 'choice', choices: order.map(c => c.t), answer: { kind: 'choice', i: right }, solution: endOnChoice(b.solution, order[right]!.t),
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !order[r.i]) return { ok: false, say: 'Pick one answer.' };
       const c = order[r.i]!;
@@ -352,7 +353,7 @@ const timesAsLong: Gen = (R, n) => fit(() => {
   ] };
   return numItem({
     id: `timesAsLong-${n}`, family: 'timesAsLong',
-    prompt: `The ${A('original')} ${across ? 'bottom' : 'side'} is ${A(a)} squares long, the ${B('copy')}'s matching ${across ? 'bottom' : 'side'} is ${B(c)}. The copy's is how many times as long?`,
+    prompt: `The ${A('original')} ${across ? 'bottom' : 'side'} is ${A(a)} ${a === 1 ? 'square' : 'squares'} long, the ${B('copy')}'s matching ${across ? 'bottom' : 'side'} is ${B(c)}. The copy's is how many times as long?`,
     board: `${c} = \\ ? \\times ${a}`, unit: 'times as long',
     solution: [`${a} × ${k} = ${c}`, `So the copy's side is ${k} times as long. That number is the scale factor.`],
     pict: { pic, solve: { tex: `${c} = ${k} \\times ${a}` } },
@@ -378,7 +379,7 @@ const countLen: Gen = (R, n) => fit(() => {
     id: `countLen-${n}`, family: 'countLen',
     prompt: `The ${B('copy')} is ${k} times as big as the ${A(`${w} by ${h}`)} rectangle. Count on the grid to check: how long is its lavender side?`,
     board: `\\text{${sideIdx === 0 ? 'bottom' : 'right side'}} = \\ ?`, unit: 'units',
-    solution: [`Count the spaces between the grid lines along the side: ${len}.`, `That is ${orig} × ${k}: the copy is ${k} times as long.`],
+    solution: [`Count the spaces between the grid lines along the side: ${mark(len)}.`, `That is ${orig} × ${k}: the copy is ${k} times as long.`],
     pict: { pic, solve: { show: [`f1a${sideIdx}`], tex: `${orig} \\times ${k} = ${len}` } },
   }, len, `Yes, ${len} units: ${k} times the original's ${orig}.`, [
     { v: len + 1, mc: MC.points, say: `That counts the grid points. A length counts the SPACES between them: there is one space fewer than points.` },
@@ -450,7 +451,7 @@ const addOrTimes: Gen = (R, n) => fit(() => {
     id: `addOrTimes-${n}`, family: 'addOrTimes',
     prompt: `${who} adds ${d} to every side of a ${A(`${w} by ${h}`)} rectangle and gets ${W} by ${Hp}. The width is now ${k} times as long. For a ${S('scaled copy')}, how tall would it have to be?`,
     board: `${w} \\to ${W}: \\times ${k}`, unit: 'units',
-    solution: [`${w} → ${W} is × ${k}.`, `A scaled copy multiplies the height by ${k} too: ${h} × ${k} = ${H}, not ${Hp}.`],
+    solution: [`${w} → ${W} is × ${k}.`, `A scaled copy multiplies the height by ${k} too: ${h} × ${k} = ${mark(H)}, not ${Hp}.`],
     pict: { pic, hide: ['f2', 'f2L'], solve: { show: ['f2', 'f2L'], tex: `${h} \\times ${k} = ${H} \\neq ${Hp}` } },
   }, H, `Yes: ${h} × ${k} = ${H}. ${who}'s ${Hp} is too ${Hp < H ? 'short' : 'tall'}: adding ${d} stretched the shape.`, [
     { v: Hp, mc: MC.additive, say: `That is ${who}'s height, ${h} + ${d}. But the width was multiplied by ${k}, so the height must be multiplied by ${k} too.` },
@@ -525,7 +526,7 @@ const halfReverse: Gen = (R, n) => fit(() => {
     id: `halfReverse-${n}`, family: 'halfReverse',
     prompt: `${who} enlarged a drawing with scale factor ${S('2')}. The ${B('copy')} is ${B(`${W} by ${H}`)}. How ${askW ? 'wide' : 'tall'} was the ${A('original')}?`,
     board: `? \\times 2 = ${L}`, unit: 'units',
-    solution: [`The copy is 2 times as long as the original.`, `So the original is half as long as the copy: half of ${L} is ${ans}. From the copy back to the original the factor is ${fr(1, 2)}.`],
+    solution: [`The copy is 2 times as long as the original.`, `So the original is half as long as the copy: half of ${L} is ${mark(ans)}. From the copy back to the original the factor is ${fr(1, 2)}.`],
     pict: { pic, solve: { show: [askW ? 'f1a0' : 'f1a1'], tex: `${L} \\times \\tfrac{1}{2} = ${ans}` } },
   }, ans, `Yes: ${ans} × 2 = ${L}. The original is half as long as the copy.`, [
     { v: 2 * L, mc: MC.reversed, say: `The copy is the BIG one. Going back to the original, the lengths get half as long, not 2 times as long.` },
@@ -570,7 +571,7 @@ const rectCorner: Gen = (R, n) => fit(() => {
     id: `rectCorner-${n}`, family: 'rectCorner',
     prompt: `Draw a copy of the ${A(`${w} by ${h}`)} rectangle ${k} times as big, from the dot. Its far corner (top right) is how far from the dot?`,
     board: `${w} \\text{ by } ${h}, \\quad \\times ${k}`,
-    solution: [`Across: ${w} × ${k} = ${W}.`, `Up: ${h} × ${k} = ${H}.`, `The far corner is right ${W}, up ${H} from the dot.`],
+    solution: [`Across: ${w} × ${k} = ${W}.`, `Up: ${h} × ${k} = ${H}.`, `The far corner is right ${mark(W)}, up ${mark(H)} from the dot.`],
     pict: p,
   }, [W, H], 'right', 'squares, up', 'squares', `Yes: right ${W}, up ${H}.`, wrongs, `Multiply the width and the height by ${k}.`);
 });
@@ -657,7 +658,7 @@ const slantMove: Gen = (R, n) => fit(() => {
     id: `slantMove-${n}`, family: 'slantMove',
     prompt: `The ${B('copy')} is ${k} times as big. The original's lavender side goes ${A(moveWords(m))}. How does the copy's slanted side go?`,
     board: `${moveTex(m)} \\;\\times ${k}`,
-    solution: [`Split the slanted side into its two steps: ${moveWords(m)}.`, `Multiply both: ${hWord(m.dx)} ${a} × ${k} = ${k * a}, ${vWord(m.dy)} ${b} × ${k} = ${k * b}.`],
+    solution: [`Split the slanted side into its two steps: ${moveWords(m)}.`, `Multiply both: ${hWord(m.dx)} ${a} × ${k} = ${mark(k * a)}, ${vWord(m.dy)} ${b} × ${k} = ${mark(k * b)}.`],
     pict: p,
   }, [k * a, k * b], hWord(m.dx), `squares, ${vWord(m.dy)}`, 'squares', `Yes: ${hWord(m.dx)} ${k * a}, ${vWord(m.dy)} ${k * b}.`, wrongs, `Multiply each step of the slanted side by ${k}.`);
 });
@@ -706,7 +707,7 @@ const halfWalk: Gen = (R, n) => fit(() => {
       id: `halfWalk-${n}`, family: 'halfWalk',
       prompt: `Draw a copy with scale factor ${S(fr(1, 2))}, walked from the dot. The original's lavender side goes ${A(moveWords(m))}. How does the copy's side go?`,
       board: `${moveTex(m)} \\;\\times \\tfrac{1}{2}`,
-      solution: [`Factor ${fr(1, 2)}: every step is half as long.`, `Half of ${a} is ${a / 2}, half of ${b} is ${b / 2}: ${hWord(m.dx)} ${a / 2}, ${vWord(m.dy)} ${b / 2}.`],
+      solution: [`Factor ${fr(1, 2)}: every step is half as long.`, `Half of ${a} is ${a / 2}, half of ${b} is ${b / 2}: ${hWord(m.dx)} ${mark(a / 2)}, ${vWord(m.dy)} ${mark(b / 2)}.`],
       pict: p,
     }, [a / 2, b / 2], hWord(m.dx), `squares, ${vWord(m.dy)}`, 'squares', `Yes: half of each step.`, [
       { v: [2 * a, 2 * b], mc: MC.reversed, say: `Factor ${fr(1, 2)} makes the copy SMALLER: half of each step, not double.` },
@@ -773,7 +774,7 @@ const factorPair: Gen = (R, n) => fit(() => {
     id: `factorPair-${n}`, family: 'factorPair',
     prompt: `Find both factors from the ${A('original')} to the ${B('copy')}: across (the widths) and up (the heights).`,
     board: `${P.w} \\to ${P.W}, \\quad ${P.h} \\to ${P.H}`,
-    solution: [`Across: ${P.W} ÷ ${P.w} = ${ans[0]}.`, `Up: ${P.H} ÷ ${P.h} = ${ans[1]}.`, ans[0] === ans[1] ? 'The same factor both ways: a scaled copy.' : 'Two different factors: a stretched copy.'],
+    solution: [`Across: ${P.W} ÷ ${P.w} = ${mark(ans[0]!)}.`, `Up: ${P.H} ÷ ${P.h} = ${mark(ans[1]!)}.`, ans[0] === ans[1] ? 'The same factor both ways: a scaled copy.' : 'Two different factors: a stretched copy.'],
     pict: { pic, solve: { tex: `\\times ${ans[0]}, \\ \\times ${ans[1]}` } },
   }, ans, 'across ×', ', up ×', '', ans[0] === ans[1] ? `Yes: × ${ans[0]} both ways, a scaled copy.` : `Yes: × ${ans[0]} across, × ${ans[1]} up. Different, so it is stretched.`, [
     { v: [P.W - P.w, P.H - P.h], mc: MC.difference, say: `Those are how much longer the sides got. A factor asks "how many times as long": divide, ${P.W} ÷ ${P.w}.` },
@@ -915,7 +916,7 @@ const repair: Gen = (R, n) => fit(() => {
     id: `repair-${n}`, family: 'repair',
     prompt: `${who} resizes a ${A(`${ic.w} by ${ic.h}`)} ${thing} to ${W} wide and types ${prop} for the height. It looks off. What should the height be?`,
     board: `${ic.w} \\to ${W}, \\quad ${ic.h} \\to\\ ?`, unit: 'units',
-    solution: [`${ic.w} → ${W} is × ${kH(k)}.`, `The height gets the same factor: ${ic.h} × ${kH(k)} = ${H}. ${who} ${prop > ic.h ? 'added' : 'took away'} ${Math.abs(W - ic.w)} instead.`],
+    solution: [`${ic.w} → ${W} is × ${kH(k)}.`, `The height gets the same factor: ${ic.h} × ${kH(k)} = ${mark(H)}. ${who} ${prop > ic.h ? 'added' : 'took away'} ${Math.abs(W - ic.w)} instead.`],
     pict: { pic, hide: ['f2', 'f2L'], solve: { show: ['f2', 'f2L'], tex: `${ic.h} \\times ${kT(k)} = ${H}` } },
   }, H, `Yes: ${ic.h} × ${kH(k)} = ${H}. Now nothing in the ${thing} is stretched.`, [
     { v: prop, mc: MC.additive, say: `That is ${who}'s height: the same amount ${prop > ic.h ? 'added' : 'taken off'}. The width was multiplied by ${kH(k)}, so multiply the height by ${kH(k)}.` },
@@ -949,8 +950,21 @@ const resizeJudge: Gen = (R, n) => fit(() => {
   }, R, cs);
 });
 
-export const GENERATORS: Record<FamilyId, Gen> = {
+const RAW: Record<FamilyId, Gen> = {
   whichScaled, photoFit, matchPart, timesAsLong, countLen, missingDim, oneFactor, addOrTimes, addCheck, halfOf, halfReverse,
   rectWalk, rectCorner, walkNext, walkList, slantMove, slantHow, halfWalk, twoFactors, factorPair, notch, notchFix,
   angleSame, rectAngles, repair, resizeJudge,
 };
+/** the answer-side tags of a picture stay on it for the drawing (a figure's `of` is the honesty check "this is a ×k
+ *  copy of figure 0", a label's `alt` is the value a "?" turns into after a miss), but they are not part of the
+ *  question: they become non-enumerable, so the item's data (JSON, the oracle's view, a copy of it) does not carry them */
+const tuck = (o: object, k: string) => { if (k in o) Object.defineProperty(o, k, { enumerable: false }); };
+function hideAnswerTags<T extends Item>(it: T): T {
+  const p = (it as Item & { pict?: ItemPic }).pict;
+  for (const f of p?.pic.figs ?? []) {
+    tuck(f, 'of');
+    for (const l of f.labels ?? []) if (l && typeof l === 'object') { tuck(l, 'alt'); tuck(l, 'altCol'); }
+  }
+  return it;
+}
+export const GENERATORS = Object.fromEntries(Object.entries(RAW).map(([k, g]) => [k, ((R, n, sg) => hideAnswerTags(g(R, n, sg))) as Gen])) as Record<FamilyId, Gen>;

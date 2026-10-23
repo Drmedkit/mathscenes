@@ -2,8 +2,9 @@
 // problems), generated from templates, checked exactly, and every wrong answer the classifier recognises carries its
 // misconception id (math-curriculum-essentials/misconceptions.json). A generator gets the SUB-GOAL it practises
 // (plan.ts) and uses that sub-goal's number ranges from the topic JSON. Pure: no DOM, no canvas.
-import { type Item, type Response, type Verdict, A, B, fr, int, pick, shuffle, gcd } from '../../runtime/item';
+import { type Item, type Response, type Verdict, A, B, fr, int, pick, plain, shuffle, gcd } from '../../runtime/item';
 import { type DLSpec, DL_FRAME, dlFits } from './DoubleLine';
+import { endOnChoice } from '../../runtime/explain';
 import { type Q, Qv, fmt, fmtMixed, fracAns, longDiv, missing, money, near, qDiv, qEq, qLess, qMul, qNum, qOf, qSub, rat, rateOf, roundQ, terminates, places, texQ, truncQ, valueOf, qAdd } from './ratioMaths';
 
 export type FamilyId = 'scaleUp' | 'sameRatio' | 'scaleDown' | 'fracOk' | 'findFactor' | 'predict' | 'betweenWithin' | 'unitRate'
@@ -88,6 +89,9 @@ const texF = (v: Q) => { if (v.q === 1) return String(v.p); const w = Math.floor
 const nice = (v: Q) => (terminates(v) && places(v) <= 3 ? fmt(v) : fq(v));
 const dec = (v: Q) => fmt(v);
 
+/** an exact .x5 tie for rounding to dp places (27.885 to the cent): floats may round it either way, so never asked */
+const tie = (x: Q, dp: number) => terminates(x) && places(x) === dp + 1 && Math.round(Math.abs(qNum(x)) * 10 ** (dp + 1)) % 10 === 5;
+
 // ---------- contexts (US units; every quantity can be split) ----------
 export interface Ctx {
   id: string;
@@ -103,25 +107,46 @@ export interface Ctx {
   unit: [string, string];
   tex: [(v: string) => string, (v: string) => string];
 }
+// ---------- the world of a story: every given pair a real one (the oracle sweep found $0.33 cherries, a 9 mpg car,
+// a pancake recipe with flour : milk = 2 : 12). Each story's given() notes its pair; GENERATORS draws again (from the
+// same seeded stream, so still deterministic) until the pair is a real one.
+let SEEN: { id: string; a: number; b: number }[] = [];
+/** a quantity's value from its text: "$4.50", "12 pounds", "2 1/2 cups of flour", "3/4 mile" */
+function valueOfText(h: string): number {
+  const m = plain(h).replace(/,/g, '').match(/^\$?(\d+(?:\.\d+)?)(?:\s+(\d+)\/(\d+)|\/(\d+))?/);
+  if (!m) return NaN;
+  return m[2] ? Number(m[1]) + Number(m[2]) / Number(m[3]) : m[4] ? Number(m[1]) / Number(m[4]) : Number(m[1]);
+}
+function saw(id: string, a: string, b: string): void { SEEN.push({ id, a: valueOfText(a), b: valueOfText(b) }); }
+/** a real pair: cherries $1-$15 a pound, a hike 1-5 mph, a car 10-60 mpg, pancakes flour : milk between 1 : 3 and 3 : 1 */
+export function realPair(id: string, a: number, b: number): boolean {
+  const r = b / a;
+  if (!Number.isFinite(r)) return true;
+  if (id === 'cherries') return r >= 1 && r <= 15;
+  if (id === 'hike') return r >= 1 && r <= 5;
+  if (id === 'car') return r >= 10 && r <= 60;
+  if (id === 'pancakes') return a / b >= 1 / 3 && a / b <= 3;
+  return true;
+}
 export const CTX: Record<string, Ctx> = {
   cherries: {
     id: 'cherries', rails: ['pounds', 'dollars'], money: [false, true], u: [['pound', 'pounds'], ['', '']],
-    given: (a, b) => `${A(a)} of cherries cost ${B(b)}.`, askBot: a => `How much do ${A(a)} cost?`, askTop: b => `How many pounds of cherries do ${B(b)} buy?`,
+    given: (a, b) => (saw('cherries', a, b), `${A(a)} of cherries cost ${B(b)}.`), askBot: a => `How much do ${A(a)} cost?`, askTop: b => `How many pounds of cherries do ${B(b)} buy?`,
     per: ['dollars per pound', 'pounds per dollar'], unit: ['pounds', 'dollars'], tex: [v => `${v}\\text{ lb}`, v => `\\$${v}`],
   },
   hike: {
     id: 'hike', rails: ['hours', 'miles'], money: [false, false], u: [['hour', 'hours'], ['mile', 'miles']],
-    given: (a, b) => `Maya hikes ${B(b)} in ${A(a)} at a steady pace.`, askBot: a => `How far does she hike in ${A(a)}?`, askTop: b => `How long does she take to hike ${B(b)}?`,
+    given: (a, b) => (saw('hike', a, b), `Maya hikes ${B(b)} in ${A(a)} at a steady pace.`), askBot: a => `How far does she hike in ${A(a)}?`, askTop: b => `How long does she take to hike ${B(b)}?`,
     per: ['miles per hour', 'hours per mile'], unit: ['hours', 'miles'], tex: [v => `${v}\\text{ h}`, v => `${v}\\text{ mi}`],
   },
   car: {
     id: 'car', rails: ['gallons', 'miles'], money: [false, false], u: [['gallon', 'gallons'], ['mile', 'miles']],
-    given: (a, b) => `A car goes ${B(b)} on ${A(a)} of gas.`, askBot: a => `How far does it go on ${A(a)}?`, askTop: b => `How much gas does it need for ${B(b)}?`,
+    given: (a, b) => (saw('car', a, b), `A car goes ${B(b)} on ${A(a)} of gas.`), askBot: a => `How far does it go on ${A(a)}?`, askTop: b => `How much gas does it need for ${B(b)}?`,
     per: ['miles per gallon', 'gallons per mile'], unit: ['gallons', 'miles'], tex: [v => `${v}\\text{ gal}`, v => `${v}\\text{ mi}`],
   },
   pancakes: {
     id: 'pancakes', rails: ['flour', 'milk'], money: [false, false], u: [['cup of flour', 'cups of flour'], ['cup of milk', 'cups of milk']],
-    given: (a, b) => `A pancake recipe uses ${A(a)} for every ${B(b)}.`, askBot: a => `How much milk goes with ${A(a)}?`, askTop: b => `How much flour goes with ${B(b)}?`,
+    given: (a, b) => (saw('pancakes', a, b), `A pancake recipe uses ${A(a)} for every ${B(b)}.`), askBot: a => `How much milk goes with ${A(a)}?`, askTop: b => `How much flour goes with ${B(b)}?`,
     per: ['cups of milk per cup of flour', 'cups of flour per cup of milk'], unit: ['cups', 'cups'], tex: [v => `${v}\\text{ flour}`, v => `${v}\\text{ milk}`],
   },
   chain: {
@@ -215,7 +240,7 @@ const scaleUp: Gen = (R, n, sg) => {
   return {
     id: `scaleUp-${n}`, family: 'scaleUp', prompt: P.text, board: P.board, input: 'num', unit: P.unit, answer: { kind: 'num', v: qNum(P.ans) },
     picture: pic(c, a, b, missBot ? t : null, missBot ? null : t, { pieces: { cut: q, count: p }, arcs: [{ from: 'given', to: 'target', label: xLabel(m) }] }),
-    solution: [`The multiplier: new ÷ old = ${hv(t)} ÷ ${hv(P.k0)} = ${fq(m)} (= ${fmt(m)}).`, `In whole steps: ÷ ${q}, then × ${p}, on <b>both</b> quantities.`, `${hv(P.u0)} × ${fq(m)} = <b>${hv(P.ans)}</b>.`],
+    solution: [`The multiplier: new ÷ old = ${hv(t)} ÷ ${hv(P.k0)} = ${fq(m)} (= ${fmt(m)}).`, `In whole steps: ÷ ${q}, then × ${p}, on <b>both</b> quantities.`, `${hv(P.u0)} × ${fq(m)} = <b class="s">${hv(P.ans)}</b>.`],
     check: checkMissing({ k0: P.k0, k1: t, u0: P.u0, ans: P.ans, right: `Yes: both quantities × ${fq(m)}, so ${qt(c, P.side, P.ans)}.` }),
   };
 };
@@ -265,7 +290,7 @@ const scaleDown: Gen = (R, n) => {
     id: `scaleDown-${n}`, family: 'scaleDown', prompt: `${P.text} <span class="dim">(A fraction, a mixed number or a decimal is fine.)</span>`, board: P.board,
     input: 'frac', unit: c.money[1] ? 'dollars' : P.unit, answer: fracAns(tb),
     picture: pic(c, a, bq, ta, null, { pieces: { cut: q, count: p }, arcs: [{ from: 'given', to: 'target', label: xLabel(m) }], fillText: c.money[1] ? undefined : fmtMixed(tb) }),
-    solution: [`The multiplier: ${hv(ta)} ÷ ${hv(a)} = ${fq(m)}, less than 1, so the answer is smaller than ${hv(bq)}.`, `${hv(bq)} × ${fq(m)} = ${fq(rat(b * p, q))} = <b>${hv(tb)}</b>.`, `A fraction of a cup or a pound is a real amount: no need to round.`],
+    solution: [`The multiplier: ${hv(ta)} ÷ ${hv(a)} = ${fq(m)}, less than 1, so the answer is smaller than ${hv(bq)}.`, `${hv(bq)} × ${fq(m)} = ${fq(rat(b * p, q))} = <b class="s">${hv(tb)}</b>.`, `A fraction of a cup or a pound is a real amount: no need to round.`],
     check: r => {
       const v = base(r);
       if (v.ok || v.mc) return v;
@@ -318,7 +343,7 @@ const findFactor: Gen = (R, n) => {
     id: `findFactor-${n}`, family: 'findFactor',
     prompt: `In a ratio table, ${side ? B(qt(c, side, rat(o))) : A(qt(c, side, rat(o)))} in one row becomes ${side ? B(qt(c, side, rat(w))) : A(qt(c, side, rat(w)))} in another. What do you multiply ${o} by to get ${w}? <span class="dim">(A fraction or a decimal.)</span>`,
     board: `${o} \\xrightarrow{\\;\\times\\; ?\\;} ${w}`, input: 'frac', answer: fracAns(m),
-    solution: [`The multiplier is new ÷ old: ${w} ÷ ${o} = ${fr(w, o)}.`, `${fr(w, o)} = <b>${fq(m)}</b>${terminates(m) ? ` = ${fmt(m)}` : ''}.`, `Check: ${o} × ${fq(m)} = ${w}.`],
+    solution: [`The multiplier is new ÷ old: ${w} ÷ ${o} = ${fr(w, o)}.`, `${fr(w, o)} = <b class="s">${fq(m)}</b>${terminates(m) ? ` = ${fmt(m)}` : ''}.`, `Check: ${o} × ${fq(m)} = ${w}.`],
     check: r => {
       const x = valueOf(r as never);
       if (!x) return { ok: false, say: 'Type a fraction or a decimal.' };
@@ -370,11 +395,14 @@ const betweenWithin: Gen = (R, n) => {
   }
   const A0 = rat(a), B0 = qOf(b), A1 = qMul(A0, m), B1 = qMul(B0, m), inv = qDiv(rat(1), r);
   const askRate = R() < 0.5;
+  if (askRate && c.money[1] && qEq(inv, r)) return betweenWithin(R, n);
   const rateTxt = c.money[1] ? `${money(r)} per ${c.u[0][0]}` : `${fmt(r)} ${c.per[0]}`;
   const opts = [
     { t: `${xLabel(m, false)} (no unit)`, kind: 'mult' },
     { t: rateTxt, kind: 'rate' },
-    { t: `${nice(inv)} ${c.per[1]}`, kind: 'rev' },
+    // asking for "the rate", the reverse rate (pounds per dollar) is a true rate too: then the reversed division gets the
+    // first unit, which is wrong ("4/13 dollars per pound" for $3.25 per pound)
+    { t: `${nice(inv)} ${c.per[askRate ? 0 : 1]}`, kind: 'rev' },
     { t: `${qLess(B1, B0) ? '−' : '+'}${c.money[1] ? money(qLess(B1, B0) ? qSub(B0, B1) : qSub(B1, B0)) : fmt(qLess(B1, B0) ? qSub(B0, B1) : qSub(B1, B0)) + ' ' + c.u[1][1]}`, kind: 'diff' },
   ];
   const ch = shuffle(R, opts);
@@ -389,7 +417,7 @@ const betweenWithin: Gen = (R, n) => {
       const o = ch[x.i]!;
       if (x.i === right) return { ok: true, say: askRate ? `Yes: within a pair, ${hv(B0)} ÷ ${hv(A0)} = ${fmt(r)}, with a unit.` : `Yes: ${hv(A1)} ÷ ${hv(A0)} = ${fmt(m)}, and it has no unit.` };
       if (o.kind === 'mult' || o.kind === 'rate') return { ok: false, mc: MC.betweenWithin, say: askRate ? `${fmt(m)} is the multiplier BETWEEN the pairs. The rate is WITHIN one pair: ${hv(B0)} ÷ ${hv(A0)}.` : `That is the rate within one pair. The multiplier goes from one pair to the other: ${hv(A1)} ÷ ${hv(A0)}.` };
-      if (o.kind === 'rev') return { ok: false, mc: MC.reversed, say: `That is ${c.per[1]}: the division turned around.` };
+      if (o.kind === 'rev') return { ok: false, mc: MC.reversed, say: askRate ? `${nice(inv)} is ${hv(A0)} ÷ ${hv(B0)}: the division turned around. ${c.per[0]}: ${hv(B0)} ÷ ${hv(A0)} = ${fmt(r)}.` : `That is ${c.per[1]}: the division turned around.` };
       return { ok: false, mc: MC.difference, say: 'That is a difference. Ratios and rates come from dividing, not subtracting.' };
     },
   };
@@ -407,7 +435,7 @@ const unitRate: Gen = (R, n, sg) => {
   return {
     id: `unitRate-${n}`, family: sg === 'choose-method' ? 'mixed' : 'unitRate', prompt: P.text, board: P.board, input: 'num', unit: P.unit, answer: { kind: 'num', v: qNum(ans) },
     picture: pic(c, A0, B0, T, null, { unit: true, pieces: ta <= 14 && a <= 14 ? { cut: a, count: ta } : null, within: [{ at: 'unit', label: `×${fmt(r)}` }], fillText: c.money[1] ? money(ans) : undefined }),
-    solution: [`The rate for one: ${qt(c, 1, B0)} ÷ ${a} = ${rateTxt}.`, `${ta} × ${fmt(r)} = <b>${c.money[1] ? money(ans) : fmt(ans)}</b>.`, `Check the size: ${ta} is ${ta > a ? 'more' : 'less'} than ${a}, so the answer is ${ta > a ? 'more' : 'less'} than ${qt(c, 1, B0)}.`],
+    solution: [`The rate for one: ${qt(c, 1, B0)} ÷ ${a} = ${rateTxt}.`, `${ta} × ${fmt(r)} = <b class="s">${c.money[1] ? money(ans) : fmt(ans)}</b>.`, `Check the size: ${ta} is ${ta > a ? 'more' : 'less'} than ${a}, so the answer is ${ta > a ? 'more' : 'less'} than ${qt(c, 1, B0)}.`],
     check: checkMissing({ k0: A0, k1: T, u0: B0, ans, right: `Yes: ${rateTxt}, times ${ta}.` }),
   };
 };
@@ -475,7 +503,7 @@ const exactFrac: Gen = (R, n, sg) => {
     id: `exactFrac-${n}`, family: sg === 'choose-method' ? 'mixed' : 'exactFrac', prompt: `${P.text} Give the <b>exact</b> answer (a fraction or a mixed number).`, board: P.board,
     input: 'frac', unit: P.unit, answer: fracAns(ans),
     picture: pic(c, A0, B0, T, null, { pieces: a <= 14 && ta <= 14 ? { cut: a, count: ta } : null, arcs: [{ from: 'given', to: 'target', label: xLabel(rat(ta, a)) }], fillText: fmtMixed(ans) }),
-    solution: [`No friendly route: ${a} and ${ta} share no factor, and ${b} ÷ ${a} repeats.`, `Keep the multiplier as a fraction: ${ta} ÷ ${a} = ${fr(ta, a)}.`, `${b} × ${fr(ta, a)} = ${fr(b * ta, a)} = <b>${hv(ans)}</b>.`],
+    solution: [`No friendly route: ${a} and ${ta} share no factor, and ${b} ÷ ${a} repeats.`, `Keep the multiplier as a fraction: ${ta} ÷ ${a} = ${fr(ta, a)}.`, `${b} × ${fr(ta, a)} = ${fr(b * ta, a)} = <b class="s">${hv(ans)}</b>.`],
     check: r => {
       const x = valueOf(r as never);
       if (x && !qEq(x, ans) && near(x, ans, 0.051)) return { ok: false, say: `Close, but that is rounded. The question wants the exact amount: ${fr(b * ta, a)}.` };
@@ -496,7 +524,7 @@ const longDivF: Gen = (R, n) => {
     id: `longDiv-${n}`, family: 'longDiv',
     prompt: `To round ${fr(p, q)} to the nearest ${cents ? 'hundredth (a cent)' : 'tenth'}, you need one more digit. Use long division: write ${p} ÷ ${q} to the <b>${cents ? 'thousandths' : 'hundredths'}</b> place, without rounding.`,
     board: `${p} \\div ${q}`, input: 'num', answer: { kind: 'num', v: ans },
-    solution: [`${p} ÷ ${q} = ${w} with ${rem} left over.`, `Bring down zeros: ${rem}0 ÷ ${q}, and so on, until there are ${dp} digits after the point.`, `${p} ÷ ${q} = <b>${ansS}</b>${terminates(v) && places(v) <= dp ? '' : '…'}`],
+    solution: [`${p} ÷ ${q} = ${w} with ${rem} left over.`, `Bring down zeros: ${rem}0 ÷ ${q}, and so on, until there are ${dp} digits after the point.`, `${p} ÷ ${q} = <b class="s">${ansS}</b>${terminates(v) && places(v) <= dp ? '' : '…'}`],
     check: r => {
       if (r.kind !== 'num' || !Number.isFinite(r.v)) return { ok: false, say: 'Type a decimal.' };
       if (Math.abs(r.v - ans) < 1e-9) return { ok: true, say: `Yes: ${ansS}${terminates(v) && places(v) <= dp ? '' : '…'}` };
@@ -516,7 +544,7 @@ const roundEnd: Gen = (R, n) => {
     const a = int(R, 3, 12), ta = int(R, 2, 15), b = moneyCase ? int(R, 8, 40) : int(R, 2, 15);
     if (ta === a || gcd(a, ta) !== 1 || (moneyCase && b % a === 0)) continue;
     const exact = rat(b * ta, a), want = roundQ(exact, dp), early = qMul(roundQ(rat(b, a), dp), rat(ta));
-    if (terminates(exact) && places(exact) <= dp) continue;
+    if ((terminates(exact) && places(exact) <= dp) || tie(exact, dp)) continue;
     if (qEq(early, want)) continue;
     const A0 = rat(a), B0 = rat(b), T = rat(ta);
     const P = mvParts({ c, a: A0, b: B0, t: T, missBot: true });
@@ -525,7 +553,7 @@ const roundEnd: Gen = (R, n) => {
       id: `roundEnd-${n}`, family: 'roundEnd', prompt: `${P.text} Round ${where}.`, board: `${P.board} \\quad \\text{(nearest ${moneyCase ? 'cent' : 'tenth'})}`,
       input: 'num', unit: P.unit, answer: { kind: 'num', v: qNum(want) },
       picture: pic(c, A0, B0, T, null, { arcs: [{ from: 'given', to: 'target', label: xLabel(rat(ta, a)) }], fillText: moneyCase ? money(want) : `≈ ${fmt(want)}` }),
-      solution: [`Exact first: ${b} × ${fr(ta, a)} = ${fr(b * ta, a)}.`, `Long division to one digit past the ${moneyCase ? 'cents' : 'tenths'}: ${longDiv(exact, dp + 1)}…`, `Round once: <b>${moneyCase ? money(want) : fmt(want)}</b>. (Rounding ${fr(b, a)} first would give ${fmt(early)}.)`],
+      solution: [`Exact first: ${b} × ${fr(ta, a)} = ${fr(b * ta, a)}.`, `Long division to one digit past the ${moneyCase ? 'cents' : 'tenths'}: ${longDiv(exact, dp + 1)}…`, `Round once: <b class="s">${moneyCase ? money(want) : fmt(want)}</b>. (Rounding ${fr(b, a)} first would give ${fmt(early)}.)`],
       check: checkMissing({ k0: A0, k1: T, u0: B0, ans: exact, roundTo: dp, right: `Yes: exact first, then one rounding: ${moneyCase ? money(want) : fmt(want)}.` }),
     };
   }
@@ -540,14 +568,14 @@ const decTable: Gen = (R, n, sg) => {
     if (t10 === a10 || a10 % 10 === 0 || t10 % 10 === 0) continue;
     const A0 = rat(a10, 10), T = rat(t10, 10), exact = missing(A0, b, T);
     const dp = 2, want = roundQ(exact, dp);
-    if (qEq(want, b) || qEq(exact, qMul(b, T))) continue;
+    if (qEq(want, b) || qEq(exact, qMul(b, T)) || tie(exact, dp)) continue;
     const P = mvParts({ c, a: A0, b, t: T, missBot: true });
     const rounds = !(terminates(exact) && places(exact) <= 2);
     return {
       id: `decTable-${n}`, family: sg === 'choose-method' ? 'mixed' : 'decTable', prompt: `${P.text}${rounds ? ` Round to the nearest ${c.money[1] ? 'cent' : 'hundredth'}.` : ''}`, board: P.board,
       input: 'num', unit: P.unit, answer: { kind: 'num', v: qNum(want) },
       picture: pic(c, A0, b, T, null, { pieces: { cut: a10, count: t10 }, arcs: [{ from: 'given', to: 'target', label: xLabel(rat(t10, a10)) }], fillText: c.money[1] ? money(want) : (rounds ? '≈ ' : '') + fmt(want) }),
-      solution: [`The multiplier: ${fmt(T)} ÷ ${fmt(A0)} = ${fr(t10, a10)} (pieces of 0.1: ${a10} of them, then ${t10}).`, `${fmt(b)} × ${fr(t10, a10)} = ${rounds ? longDiv(exact, 3) + '…' : fmt(exact)}.`, `${rounds ? `Round once: <b>${c.money[1] ? money(want) : fmt(want)}</b>.` : `<b>${c.money[1] ? money(want) : fmt(want)}</b>.`}`],
+      solution: [`The multiplier: ${fmt(T)} ÷ ${fmt(A0)} = ${fr(t10, a10)} (pieces of 0.1: ${a10} of them, then ${t10}).`, `${fmt(b)} × ${fr(t10, a10)} = ${rounds ? longDiv(exact, 3) + '…' : fmt(exact)}.`, `${rounds ? `Round once: <b class="s">${c.money[1] ? money(want) : fmt(want)}</b>.` : `<b>${c.money[1] ? money(want) : fmt(want)}</b>.`}`],
       check: checkMissing({ k0: A0, k1: T, u0: b, ans: exact, roundTo: 2 }),
     };
   }
@@ -571,7 +599,7 @@ const complexRate: Gen = (R, n) => {
   return {
     id: `complexRate-${n}`, family: 'complexRate', prompt: `${S.prompt} <span class="dim">(Any equivalent form.)</span>`,
     board: `${texF(d)} \\div ${texF(t)}`, input: 'frac', unit: S.unit, answer: fracAns(ans),
-    solution: [`“Per one” of the ${S.nm[1]}: divide the ${S.nm[0]} by the ${S.nm[1]}.`, `${fq(d)} ÷ ${fq(t)} = ${fq(d)} × ${fq(qDiv(rat(1), t))} = <b>${hv(ans)}</b> ${S.per}.`],
+    solution: [`“Per one” of the ${S.nm[1]}: divide the ${S.nm[0]} by the ${S.nm[1]}.`, `${fq(d)} ÷ ${fq(t)} = ${fq(d)} × ${fq(qDiv(rat(1), t))} = <b class="s">${hv(ans)}</b> ${S.per}.`],
     check: r => {
       const x = valueOf(r as never);
       if (!x) return { ok: false, say: 'Type a fraction, a mixed number or a decimal.' };
@@ -630,7 +658,7 @@ const useK: Gen = (R, n) => {
     id: `useK-${n}`, family: 'useK',
     prompt: `${c.id === 'cherries' ? 'Cherries' : 'A chain'}: ${Y} = ${fmt(k)}${X}, where ${X} is the ${xs} and ${Y} is ${ys}. ${findX ? `Find ${X} when ${Y} = ${fmt(y)}.` : `Find ${Y} when ${X} = ${fmt(x)}.`}`,
     board: `y = ${fmt(k)}x,\\quad ${findX ? `y = ${fmt(y)}` : `x = ${fmt(x)}`}`, input: 'num', unit: findX ? xs : (c.money[1] ? 'dollars' : c.u[1][1]), answer: { kind: 'num', v: qNum(ans) },
-    solution: findX ? [`${fmt(y)} = ${fmt(k)}${X}.`, `Undo × ${fmt(k)}: ${X} = ${fmt(y)} ÷ ${fmt(k)} = <b>${fmt(x)}</b>.`] : [`${Y} = ${fmt(k)} × ${fmt(x)} = <b>${fmt(y)}</b>.`],
+    solution: findX ? [`${fmt(y)} = ${fmt(k)}${X}.`, `Undo × ${fmt(k)}: ${X} = ${fmt(y)} ÷ ${fmt(k)} = <b class="s">${fmt(x)}</b>.`] : [`Put ${X} = ${fmt(x)} into ${Y} = ${fmt(k)}${X}.`, `${Y} = ${fmt(k)} × ${fmt(x)} = <b class="s">${fmt(y)}</b>.`],
     check: r => {
       if (r.kind !== 'num' || !Number.isFinite(r.v)) return { ok: false, say: 'Type a number.' };
       const v = qOf(r.v);
@@ -696,8 +724,9 @@ const chooseMethod: Gen = (R, n) => {
     const rTerm = terminates(rat(b, a)) && places(rat(b, a)) <= 2, g = gcd(a, ta), mult = ta % a === 0;
     return kind === 0 ? mult && !rTerm && ta <= 4 * a
       : kind === 1 ? rTerm && g === 1 && !mult && a % ta !== 0 && a > 2
-        : kind === 2 ? !rTerm && !mult && a % ta !== 0 && g > 1 && g < Math.min(a, ta)
-          : !rTerm && g === 1 && !mult && a % ta !== 0 && a > 2;
+        // a rate that ends (2.875) is a fine rate for one: the building block and the exact fraction need a repeating one
+        : kind === 2 ? !terminates(rat(b, a)) && !mult && a % ta !== 0 && g > 1 && g < Math.min(a, ta)
+          : !terminates(rat(b, a)) && g === 1 && !mult && a % ta !== 0 && a > 2;
   };
   let [a, b, ta] = ([[3, 7, 12], [4, 10, 7], [6, 14, 15], [7, 5, 12]] as const)[kind as 0 | 1 | 2 | 3] as readonly number[] as [number, number, number];
   for (let k = 0; k < 400; k++) {
@@ -778,19 +807,19 @@ const mixedUnits: Gen = (R, n) => {
     ans = qMul(price, rat(oz, 16)); wrong = qMul(price, rat(oz));
     prompt = `Cheese costs ${money(price)} per pound. Lee buys ${A(oz + ' ounces')}. (16 ounces = 1 pound.) What does Lee pay?`; unit = 'dollars';
     board = `${money(price).replace('$', '\\$')}\\text{ per lb},\\ ${oz}\\text{ oz}`;
-    sol = [`Match the units first: ${oz} ounces = ${fr(oz, 16)} pound = ${fmt(rat(oz, 16))} lb.`, `${money(price)} × ${fmt(rat(oz, 16))} = <b>${money(ans)}</b>.`];
+    sol = [`Match the units first: ${oz} ounces = ${fr(oz, 16)} pound = ${fmt(rat(oz, 16))} lb.`, `${money(price)} × ${fmt(rat(oz, 16))} = <b class="s">${money(ans)}</b>.`];
   } else if (kind === 'min') {
-    const mph = 6 * int(R, 1, 10), min = pick(R, [10, 15, 20, 30, 40, 45, 50]);
+    const mph = 6 * int(R, 1, 4), min = pick(R, [10, 15, 20, 30, 40, 45, 50]);
     ans = qMul(rat(mph), rat(min, 60)); wrong = rat(mph * min);
     prompt = `A cyclist rides ${mph} miles per hour. How far does she ride in ${A(min + ' minutes')}? (60 minutes = 1 hour.)`; unit = 'miles';
     board = `${mph}\\text{ mi per h},\\ ${min}\\text{ min}`;
-    sol = [`Match the units first: ${min} minutes = ${fr(min, 60)} hour.`, `${mph} × ${fr(min, 60)} = <b>${fmt(ans)}</b> miles.`];
+    sol = [`Match the units first: ${min} minutes = ${fr(min, 60)} hour.`, `${mph} × ${fr(min, 60)} = <b class="s">${fmt(ans)}</b> miles.`];
   } else {
     const pf = rat(int(R, 2, 9) * 12, 100), inch = pick(R, [3, 6, 9, 18, 30]);
     ans = qMul(pf, rat(inch, 12)); wrong = qMul(pf, rat(inch));
     prompt = `Rope costs ${money(pf)} per foot. What do ${A(inch + ' inches')} cost? (12 inches = 1 foot.)`; unit = 'dollars';
     board = `${money(pf).replace('$', '\\$')}\\text{ per ft},\\ ${inch}\\text{ in}`;
-    sol = [`Match the units first: ${inch} inches = ${fr(inch, 12)} foot.`, `${money(pf)} × ${fr(inch, 12)} = <b>${money(ans)}</b>.`];
+    sol = [`Match the units first: ${inch} inches = ${fr(inch, 12)} foot.`, `${money(pf)} × ${fr(inch, 12)} = <b class="s">${money(ans)}</b>.`];
   }
   return {
     id: `mixedUnits-${n}`, family: 'mixedUnits', prompt, board, input: 'num', unit, answer: { kind: 'num', v: qNum(ans) }, solution: sol,
@@ -851,8 +880,9 @@ const roundCheck: Gen = (R, n) => {
     const b = dec ? rat(int(R, 30, 160) * 5, 100) : rat(int(R, 8, 40));
     if (qEq(a, ta)) continue;
     const E = missing(a, b, ta);
-    if (terminates(E) && places(E) <= 2) continue;
-    const Rr = roundQ(E, 2), early = qMul(roundQ(qDiv(b, a), 2), ta), tr = truncQ(E, 2), tenth = roundQ(E, 1);
+    if ((terminates(E) && places(E) <= 2) || tie(E, 2)) continue;
+    // Kim reports to the nearest cent, so an early-rounding claim is itself rounded to the cent ($0.891 is not "$0.89")
+    const Rr = roundQ(E, 2), early = roundQ(qMul(roundQ(qDiv(b, a), 2), ta), 2), tr = truncQ(E, 2), tenth = roundQ(E, 1);
     const kind = pick(R, ['right', 'right', 'early', 'trunc', 'tenth'] as const);
     const claim = kind === 'right' ? Rr : kind === 'early' ? early : kind === 'trunc' ? tr : tenth;
     if (kind !== 'right' && qEq(claim, Rr)) continue;
@@ -894,6 +924,8 @@ const sizeCheck: Gen = (R, n) => {
     const m = qNum(ta) / qNum(a);
     if (m > 0.7 && m < 1.45) continue;
     const r = c.id === 'car' ? rat(int(R, 22, 38)) : rat(int(R, 6, 40) * 25, 100);
+    // the estimate rounds the new amount to a whole number: only when that is close (0.5 gal is not "about 1")
+    if (Math.abs(Math.round(qNum(ta)) - qNum(ta)) > 0.2 * qNum(ta)) continue;
     const b = qMul(a, r), E = qMul(ta, r);
     if (places(b) > 2 || places(E) > 2) continue;
     const kind = pick(R, ['right', 'x10', 'd10', 'inv'] as const);
@@ -948,6 +980,7 @@ const audit: Gen = (R, n) => {
     for (let k = 0; k < 100; k++) {
       a = int(R, 3, 9); ta = int(R, 2, 14); b = int(R, 6, 40);
       if (ta === a) continue;
+      if (b <= a || b > 15 * a) continue;   // grapes at $1 to $15 a pound (at $1 a pound the additive way is right too)
       const E = rat(b * ta, a), rr = rat(b, a);
       const friendly = terminates(E) && places(E) <= 2 && terminates(rr) && places(rr) <= 2;
       if (['right', 'reversed', 'additive', 'decimal'].includes(kind) && !friendly) continue;
@@ -962,7 +995,7 @@ const audit: Gen = (R, n) => {
     if (kind === 'reversed') { const v = qMul(rat(a, b), rat(ta)); work = `${intro} “${a} ÷ ${b} = ${fmt(rat(a, b))} dollars per pound, × ${ta} = ${money(roundQ(v, 2))}.”`; fix = `${a} ÷ ${b} is pounds per dollar. ${money(r)} per pound × ${ta} = ${money(E)}.`; why = 'The unit is wrong'; claimTxt = money(roundQ(v, 2)); claimV = qNum(roundQ(v, 2)); }
     if (kind === 'additive') { work = `${intro} “${ta} is ${Math.abs(ta - a)} ${ta > a ? 'more' : 'less'} than ${a}, so $${b} ${ta > a ? '+' : '−'} $${Math.abs(ta - a)} = $${b + ta - a}.”`; fix = `$${b + ta - a} ÷ ${ta} ≠ $${b} ÷ ${a}: the ratio is broken. It is ${money(E)}.`; why = 'The ratio is broken'; claimTxt = `$${b + ta - a}`; claimV = b + ta - a; }
     if (kind === 'decimal') { const v = qMul(E, rat(10)); work = `${intro} “$${b} ÷ ${a} = ${money(r)}, × ${ta} = ${money(v)}.”`; fix = `${ta} pounds at about $${Math.round(qNum(r))} a pound is about $${Math.round(qNum(r)) * ta}, not ${money(v)}. It is ${money(E)}.`; why = 'The size is off'; claimTxt = money(v); claimV = qNum(v); }
-    if (kind === 'early') { const v = qMul(roundQ(r, 2), rat(ta)); work = `${intro} “$${b} ÷ ${a} ≈ ${money(roundQ(r, 2))}, × ${ta} = ${money(v)}.”`; fix = `Rounded too early. Exact: ${fr(b * ta, a)} = ${longDiv(E, 3)}…, so ${money(roundQ(E, 2))}.`; why = 'Rounded too early'; claimTxt = money(v); claimV = qNum(v); }
+    if (kind === 'early') { const v = qMul(roundQ(r, 2), rat(ta)); work = `${intro} “$${b} ÷ ${a} ≈ ${money(roundQ(r, 2))}, × ${ta} = ${money(v)}.”`; fix = `Exact: ${fr(b * ta, a)} = ${longDiv(E, 3)}…, so ${money(roundQ(E, 2))}.`; why = 'Rounded too early'; claimTxt = money(v); claimV = qNum(v); }
     if (kind === 'rounded') { work = `${intro} “$${b} × ${ta} ÷ ${a} = ${fr(b * ta, a)} = ${longDiv(E, 3)}…, so ${money(roundQ(E, 2))}.”`; ok = true; claimTxt = money(roundQ(E, 2)); claimV = qNum(roundQ(E, 2)); }
     lo = Math.min(a, b, ta); hi = Math.max(a, b, ta);
     if (ok) why = `Units match (dollars per pound), the ratio checks, and the size is right`;
@@ -988,8 +1021,19 @@ const audit: Gen = (R, n) => {
   };
 };
 
-export const GENERATORS: Record<FamilyId, Gen> = {
+const RAW: Record<FamilyId, Gen> = {
   scaleUp, sameRatio, scaleDown, fracOk, findFactor, predict, betweenWithin, unitRate, blockRow, pickBlock, exactFrac,
   longDiv: longDivF, roundEnd, decTable, complexRate, writeK, useK, isProp, chooseMethod, mixed, unitCheck, mixedUnits,
   ratioCheck, roundCheck, sizeCheck, audit,
 };
+/** a choice item's worked solution ends on the right choice (docs/lessons/QUALITY_LAYER.md); the item is mutated, not
+ *  copied (PROBES are keyed by the item) */
+const ending = (g: Gen): Gen => (R, n, sg) => {
+  SEEN = [];
+  let it = g(R, n, sg);
+  for (let t = 0; t < 60 && !SEEN.every(x => realPair(x.id, x.a, x.b)); t++) { SEEN = []; it = g(R, n, sg); }
+  SEEN = [];
+  if (it.choices && it.answer.kind === 'choice') it.solution = endOnChoice(it.solution, it.choices[it.answer.i]!);
+  return it;
+};
+export const GENERATORS = Object.fromEntries(Object.entries(RAW).map(([k, g]) => [k, ending(g)])) as Record<FamilyId, Gen>;

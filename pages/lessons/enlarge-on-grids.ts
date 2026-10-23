@@ -26,6 +26,7 @@ import { WalkGrid, type WalkGridBlock } from '../../src/lesson/topics/enlarge-on
 import { HOUSE, LESSON_FRAME, SAIL, SQUARES } from '../../src/lesson/topics/enlarge-on-grids/lessonPics';
 import { moveTex } from '../../src/lesson/topics/enlarge-on-grids/walkMaths';
 import { FAMILY_NAMES, GENERATORS, MC, PF, type GridItem } from '../../src/lesson/topics/enlarge-on-grids/items';
+import { explain } from '../../src/lesson/topics/enlarge-on-grids/explain';
 import { PLAN } from '../../src/lesson/topics/enlarge-on-grids/plan';
 import { SCRIPT } from '../../src/lesson/topics/enlarge-on-grids/script';
 
@@ -428,7 +429,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as GridItem),
   });

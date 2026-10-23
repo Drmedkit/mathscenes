@@ -6,7 +6,7 @@ const p = (s: string) => `<b class="p">${s}</b>`;
 const a = (s: string) => `<b class="a">${s}</b>`, b = (s: string) => `<b class="b">${s}</b>`, s = (x: string) => `<b class="s">${x}</b>`;
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
 /** a line whose spoken text is its panel text read aloud: tags out, digits as words, "A → B → C" as "A, B, C" */
-const same = (t: string) => ({ html: t, say: t.replace(/<[^>]+>/g, '').replace(/ → /g, ', ').replace(/′/g, ' prime').replace(/(\d)/g, (_, d: string) => WORDS[Number(d)]!) });
+const same = (t: string) => ({ html: t, say: t.replace(/<[^>]+>/g, '').replace(/ → /g, ', ').replace(/′/g, ' prime').replace(/\b(\d)\b/g, (_, d: string) => WORDS[Number(d)]!) });
 
 export const LINES: Record<string, { html: string; say: string }> = {
   // 1. The question

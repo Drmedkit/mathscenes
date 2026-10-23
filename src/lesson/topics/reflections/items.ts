@@ -5,6 +5,7 @@
 // sub-goal's cases (vertical / horizontal / 45° / oblique lines, distances, figures that touch or cross the line).
 // Pure: no DOM, no canvas. PROBES records typical wrong responses per item and the id they must get (tests).
 import { type Item, type Response, type Verdict, A, B, S, int, pick, shuffle } from '../../runtime/item';
+import { ans as mark, endOnChoice } from '../../runtime/explain';
 import {
   type CandLine, type MLine, type MirrorPic, type Poly, type Pt, type Solve, aLine, add, centroid, dLine, dist, foot, hLine,
   halfTurn, lineFrame, offset, oLine, onLine, orientation, picFits, reflect, reflectAll, samePt, shift, stepToward, stepsTo, vLine,
@@ -180,7 +181,7 @@ function choiceItem(b: Base, opts: Opt[]): RefItem {
   b.pic.solveTex = b.solveTex ?? b.pic.solveTex;
   return {
     id: `${b.family}-${b.n}`, family: b.family, prompt: b.prompt, board: b.board, input: 'choice', choices: opts.map(o => o.t), pic: b.pic,
-    solution: b.solution, answer: { kind: 'choice', i: right }, check: r => verdictOf(opts, r),
+    solution: endOnChoice(b.solution, opts[right]!.t), answer: { kind: 'choice', i: right }, check: r => verdictOf(opts, r),
   };
 }
 /** numbered spots on the picture; `extra` are text answers after the spots */
@@ -390,8 +391,8 @@ const fixed: Gen = (R, n) => retry(() => {
   const it = numItem({
     family: 'fixed', n, pic, board: `${name} \\to ${name}'`, solveTex: moving ? [`${name}M = ${d}`, `${name}${name}' = ${ans}`] : [`${name}M = 0`, `${name}' = ${name}`],
     prompt: `${A('Triangle ABC')} is reflected in ${M}. How many squares does vertex ${A(name)} move?`,
-    solution: moving ? [`${name} is ${sq(d)} from m.`, `${S(nm(name + "'"))} is ${sq(d)} beyond m, so ${name} moves ${d} + ${d} = ${ans} squares.`]
-      : [`${name} is on m: it is 0 squares from the line.`, `0 squares beyond the line is still on the line, so ${S(nm(name + "'"))} = ${name}.`, 'Points on the line of reflection stay where they are.'],
+    solution: moving ? [`${name} is ${sq(d)} from m.`, `${nm(name + "'")} is ${sq(d)} beyond m, so ${name} moves ${d} + ${d} = ${mark(`${ans} squares`)}.`]
+      : [`${name} is on m: it is 0 squares from the line.`, `0 squares beyond the line is still on the line, so ${S(nm(name + "'"))} = ${name}.`, `Points on the line of reflection stay where they are: ${name} moves ${mark('0 squares')}.`],
   }, ans, 'squares', v => {
     if (v === ans) return { ok: true, say: moving ? `Yes: ${d} squares to m and ${d} beyond, ${ans} in all.` : `Yes: ${name} is on m, so it stays where it is.` };
     if (!moving) return { ok: false, mc: MC.jumps, say: `${name} is ON m: its distance to the line is 0, so its image is 0 squares beyond, at ${name} itself. Points on the line stay put.` };
@@ -477,7 +478,7 @@ const stepsNum: Gen = (R, n, sg) => retry(() => {
       family: 'stepsNum', n, pic, board: half ? 'PM = \\ ?\\ \\text{small steps}' : 'PM = \\ ?\\ \\text{steps}', solveTex: cnt.tex,
       prompt: half ? `Line m crosses the squares through their middles. Count SMALL steps from ${A('P')} to ${M}, at a right angle to m (a small step goes from a grid corner to the middle of a square, or from the middle to the next corner).`
         : `Count whole diagonal steps (grid corner to grid corner) from ${A('P')} to ${M}, at a right angle to m.`,
-      solution: cnt.html,
+      solution: [...cnt.html, `So P is ${mark(plural(ans, half ? 'small step' : 'step', half ? 'small steps' : 'steps'))} from the line.`],
     }, ans, half ? 'small steps' : 'steps', v => {
       if (v === ans) return { ok: true, say: `Yes: ${plural(ans, half ? 'small step' : 'step', half ? 'small steps' : 'steps')} to the line.` };
       if (half && v === ans - 1) return { ok: false, mc: MC.crossing, say: 'You stopped at the last grid corner. m crosses in the MIDDLE of a square: count that last small step too.' };
@@ -497,7 +498,8 @@ const stepsNum: Gen = (R, n, sg) => retry(() => {
   const it = numItem({
     family: 'stepsNum', n, pic, board: apart ? "PP' = \\ ?" : 'PM = \\ ?', solveTex: [`PM = ${d}`, `MP' = ${d}`, `PP' = ${2 * d}`],
     prompt: apart ? `${A('P')} is reflected in ${M}. How many squares apart are ${A('P')} and ${S('P′')}?` : `How many squares is ${A('P')} from ${M}? Count from the line, at a right angle to it.`,
-    solution: [`P is ${sq(d)} from m.`, `P′ is ${sq(d)} beyond m, so P and P′ are ${d} + ${d} = ${2 * d} squares apart.`],
+    solution: apart ? [`P is ${sq(d)} from m.`, `P′ is ${sq(d)} beyond m, so P and P′ are ${d} + ${d} = ${mark(`${2 * d} squares`)} apart.`]
+      : [`Count from P to the line, at a right angle to m, one square at a time.`, `P is ${mark(sq(d))} from m.`],
   }, ans, 'squares', v => {
     if (v === ans) return { ok: true, say: apart ? `Yes: ${d} to m and ${d} beyond.` : `Yes: ${sq(d)}.` };
     if (apart && v === d) return { ok: false, mc: MC.fromP, say: `${d} only gets you from P to the line. P′ is another ${d} beyond it: ${ans}.` };
@@ -792,13 +794,17 @@ const verify: Gen = (R, n) => retry(() => {
     if (i === 0) { o.mc = kase === 'shift' ? MC.oneCond : kase === 'unequal' ? MC.oppSides : kase === 'fixed' ? MC.jumps : undefined; o.say = kase === 'shift' ? 'Equal distance is not enough: PQ must also cross m at a right angle. Here Q is moved along m.' : kase === 'unequal' ? 'Being on the other side is not enough: Q must be just as far from m as P.' : kase === 'fixed' ? 'P is on m: it is 0 from the line, so it stays put. Q is not P.' : 'Check both sides of m: Q has not crossed it.'; }
     else { o.mc = MC.reason; o.say = kase === 'ok' ? 'Check it: that condition holds here. Every condition holds, so Q is the image.' : 'That condition holds here. Check each one: right angle, equal distance, other side.'; }
   });
+  // one true "No" only: a Q on P's side one step nearer m is ALSO "not as far from m as P" (and so is any Q off m when
+  // P is on m), so there that choice becomes a false one ("farther"), or goes
+  if (kase === 'same') opts[2] = { t: 'No: Q is farther from m than P', ok: false, mc: MC.reason, say: 'Q is nearer to m than P, not farther. And Q is on the same side of m as P: that is why it is not the image.' };
+  const shown = kase === 'fixed' ? opts.filter((_, i) => i !== 2) : opts;
   const pic0: MirrorPic = { cols, rows, grid: true, line: L, pins: [{ at: P, label: 'P', role: 'first' }, { at: Q, label: 'Q', role: 'pick' }], segs: kase === 'fixed' ? [] : [{ a: P, b: Q, role: 'dim', dash: true }], solve: { pts: [{ from: P, label: kase === 'fixed' || kase === 'ok' ? undefined : "P'" }], hops: hopsOf(L, P) } };
   const pic = vary(R, pic0, true);
   return fits(choiceItem({
     family: 'verify', n, pic, board: "Q = P'\\ ?",
     prompt: `Is ${Pp('Q')} the image of ${A('P')} in ${M}? Check every condition.`,
     solution: ['Q is the image of P only if ALL of these hold:', 'PQ crosses m at a right angle; Q is just as far from m as P, on the other side. (A point on m is its own image.)', okI === 0 ? 'All hold here.' : `Here it fails: ${opts[okI]!.t.replace(/^No: /, '')}.`],
-  }, opts));
+  }, shown));
 });
 
 // 17: audit every vertex of a proposed image

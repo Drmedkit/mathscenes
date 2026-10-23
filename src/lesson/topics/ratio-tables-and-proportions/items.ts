@@ -5,6 +5,7 @@
 // PROBES records, per item, typical wrong responses and the id they must get (tests).
 import { type Item, type Response, type Verdict, A, B, S, fr, fracValue, gcd, int, pick, same, shuffle } from '../../runtime/item';
 import { type RRFocus, type RRParams, type TableSpec, computeTable, fmtQ } from './RatioRows';
+import { endOnChoice } from '../../runtime/explain';
 
 export type FamilyId = 'pairUp' | 'timesAsMany' | 'whatStays' | 'ratioOrDiff' | 'situation' | 'doubleIt' | 'pairTable' | 'labelTable'
   | 'buildUp' | 'unitRow' | 'rateUnit' | 'midRow' | 'canWeFind' | 'addRows' | 'feeRows' | 'subRows' | 'route' | 'compare'
@@ -68,12 +69,14 @@ export interface PCtx {
   money?: boolean;
 }
 const cost = ['cost', '($)'] as const;
+/** the verb after an amount: "1 notebook costs", "3 notebooks cost" */
+const v1 = (n: number, one: string, many: string) => (n === 1 ? one : many);
 export const CTX: PCtx[] = [
   { id: 'notebooks', A: ['notebooks', ''], B: cost, an: n => pl(n, 'notebook', 'notebooks'), bn: money, money: true,
-    sent: (x, y) => `${A(pl(x, 'notebook', 'notebooks'))} cost ${B(money(y))}.`, ask: x => `What do ${pl(x, 'notebook', 'notebooks')} cost?`,
+    sent: (x, y) => `${A(pl(x, 'notebook', 'notebooks'))} ${v1(x, 'costs', 'cost')} ${B(money(y))}.`, ask: x => `What ${v1(x, 'does', 'do')} ${pl(x, 'notebook', 'notebooks')} cost?`,
     per: 'dollars per notebook', rev: 'notebooks per dollar', unit: 'dollars', An: 'the notebooks', Bn: 'the cost', rates: [2, 3, 4, 5, 6, 7, 8, 9] },
   { id: 'tickets', A: ['tickets', ''], B: cost, an: n => pl(n, 'bus ticket', 'bus tickets'), bn: money, money: true,
-    sent: (x, y) => `${A(pl(x, 'bus ticket', 'bus tickets'))} cost ${B(money(y))}.`, ask: x => `What do ${pl(x, 'bus ticket', 'bus tickets')} cost?`,
+    sent: (x, y) => `${A(pl(x, 'bus ticket', 'bus tickets'))} ${v1(x, 'costs', 'cost')} ${B(money(y))}.`, ask: x => `What ${v1(x, 'does', 'do')} ${pl(x, 'bus ticket', 'bus tickets')} cost?`,
     per: 'dollars per ticket', rev: 'tickets per dollar', unit: 'dollars', An: 'the tickets', Bn: 'the cost', rates: [2, 3, 4, 5, 6] },
   { id: 'hike', A: ['hours', ''], B: ['miles', ''], an: n => pl(n, 'hour', 'hours'), bn: v => pl(v, 'mile', 'miles'),
     sent: (x, y) => `At a steady pace, a hiker covers ${B(pl(y, 'mile', 'miles'))} in ${A(pl(x, 'hour', 'hours'))}.`, ask: x => `How far does the hiker go in ${pl(x, 'hour', 'hours')}?`,
@@ -85,22 +88,22 @@ export const CTX: PCtx[] = [
     sent: (x, y) => `${A(pl(x, 'yard', 'yards'))} of rope ${x === 1 ? 'is' : 'are'} ${B(pl(y, 'foot', 'feet'))} long.`, ask: x => `How many feet are in ${pl(x, 'yard', 'yards')}?`,
     per: 'feet per yard', rev: 'yards per foot', unit: 'feet', An: 'the yards', Bn: 'the feet', rates: [3] },
   { id: 'gallons', A: ['gallons', ''], B: ['quarts', ''], an: n => pl(n, 'gallon', 'gallons'), bn: v => pl(v, 'quart', 'quarts'),
-    sent: (x, y) => `${B(pl(y, 'quart', 'quarts'))} of milk fill ${A(pl(x, 'gallon jug', 'gallon jugs'))}.`, ask: x => `How many quarts are in ${pl(x, 'gallon', 'gallons')}?`,
+    sent: (x, y) => `${B(pl(y, 'quart', 'quarts'))} of milk ${v1(y, 'fills', 'fill')} ${A(pl(x, 'gallon jug', 'gallon jugs'))}.`, ask: x => `How many quarts are in ${pl(x, 'gallon', 'gallons')}?`,
     per: 'quarts per gallon', rev: 'gallons per quart', unit: 'quarts', An: 'the gallons', Bn: 'the quarts', rates: [4] },
   { id: 'pints', A: ['quarts', ''], B: ['pints', ''], an: n => pl(n, 'quart', 'quarts'), bn: v => pl(v, 'pint', 'pints'),
     sent: (x, y) => `${A(pl(x, 'quart', 'quarts'))} of juice ${x === 1 ? 'is' : 'are'} ${B(pl(y, 'pint', 'pints'))}.`, ask: x => `How many pints are in ${pl(x, 'quart', 'quarts')}?`,
     per: 'pints per quart', rev: 'quarts per pint', unit: 'pints', An: 'the quarts', Bn: 'the pints', rates: [2] },
   { id: 'apples', A: ['bags', ''], B: ['apples', ''], an: n => pl(n, 'bag', 'bags'), bn: v => pl(v, 'apple', 'apples'),
-    sent: (x, y) => `${A(pl(x, 'bag', 'bags'))} hold ${B(pl(y, 'apple', 'apples'))}, the same number in every bag.`, ask: x => `How many apples are in ${pl(x, 'bag', 'bags')}?`,
+    sent: (x, y) => `${A(pl(x, 'bag', 'bags'))} ${v1(x, 'holds', 'hold')} ${B(pl(y, 'apple', 'apples'))}, the same number in every bag.`, ask: x => `How many apples are in ${pl(x, 'bag', 'bags')}?`,
     per: 'apples per bag', rev: 'bags per apple', unit: 'apples', An: 'the bags', Bn: 'the apples', rates: [4, 5, 6, 7, 8, 9] },
   { id: 'paint', A: ['cans', ''], B: ['area', '(sq ft)'], an: n => pl(n, 'can of paint', 'cans of paint'), bn: v => `${v} square feet`,
-    sent: (x, y) => `${A(pl(x, 'can of paint', 'cans of paint'))} cover ${B(`${y} square feet`)} of wall.`, ask: x => `How much wall do ${pl(x, 'can', 'cans')} cover?`,
+    sent: (x, y) => `${A(pl(x, 'can of paint', 'cans of paint'))} ${v1(x, 'covers', 'cover')} ${B(`${y} square feet`)} of wall.`, ask: x => `How much wall ${v1(x, 'does', 'do')} ${pl(x, 'can', 'cans')} cover?`,
     per: 'square feet per can', rev: 'cans per square foot', unit: 'square feet', An: 'the cans', Bn: 'the area', rates: [5, 6, 7, 8, 9] },
   { id: 'grapes', A: ['pounds', ''], B: cost, an: n => pl(n, 'pound of grapes', 'pounds of grapes'), bn: money, money: true,
-    sent: (x, y) => `${A(pl(x, 'pound of grapes', 'pounds of grapes'))} cost ${B(money(y))}.`, ask: x => `What do ${pl(x, 'pound', 'pounds')} of grapes cost?`,
+    sent: (x, y) => `${A(pl(x, 'pound of grapes', 'pounds of grapes'))} ${v1(x, 'costs', 'cost')} ${B(money(y))}.`, ask: x => `What ${v1(x, 'does', 'do')} ${pl(x, 'pound', 'pounds')} of grapes cost?`,
     per: 'dollars per pound', rev: 'pounds per dollar', unit: 'dollars', An: 'the pounds', Bn: 'the cost', rates: [2, 3, 4, 5, 6] },
   { id: 'muffins', A: ['batches', ''], B: ['eggs', ''], an: n => pl(n, 'batch of muffins', 'batches of muffins'), bn: v => pl(v, 'egg', 'eggs'),
-    sent: (x, y) => `${A(pl(x, 'batch of muffins', 'batches of muffins'))} use ${B(pl(y, 'egg', 'eggs'))}.`, ask: x => `How many eggs do ${pl(x, 'batch', 'batches')} use?`,
+    sent: (x, y) => `${A(pl(x, 'batch of muffins', 'batches of muffins'))} ${v1(x, 'uses', 'use')} ${B(pl(y, 'egg', 'eggs'))}.`, ask: x => `How many eggs ${v1(x, 'does', 'do')} ${pl(x, 'batch', 'batches')} use?`,
     per: 'eggs per batch', rev: 'batches per egg', unit: 'eggs', An: 'the batches', Bn: 'the eggs', rates: [2, 3, 4] },
 ];
 const ctxWith = (R: () => number, ok: (c: PCtx) => boolean = () => true) => pick(R, CTX.filter(ok));
@@ -152,7 +155,7 @@ interface ChoiceSpec { family: FamilyId; id: string; prompt: string; board: stri
 function choiceItem(R: () => number, o: ChoiceSpec): RTItem {
   const opts = shuffle(R, [...o.opts]);
   const it: RTItem = {
-    id: o.id, family: o.family, prompt: o.prompt, board: o.board, input: 'choice', choices: opts.map(x => x.t), solution: o.solution, pic: o.pic, hero: o.hero,
+    id: o.id, family: o.family, prompt: o.prompt, board: o.board, input: 'choice', choices: opts.map(x => x.t), solution: endOnChoice(o.solution, opts.find(x => x.ok)!.t), pic: o.pic, hero: o.hero,
     answer: { kind: 'choice', i: opts.findIndex(x => x.ok) },
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !opts[r.i]) return { ok: false, say: 'Pick one of the answers.' };
@@ -466,7 +469,7 @@ const NAMES = ['Ana', 'Ben', 'Cy', 'Dee', 'Eli', 'Fay', 'Gus', 'Ivy'];
 const LOGS = [
   { A: ['miles', ''] as const, B: ['minutes', ''] as const, line: (nm: string, a: number, b: number) => `${nm} ran ${a} miles in ${b} minutes.`, aR: [2, 6] as const, bR: [14, 60] as const, unit: 'minutes', title: 'A running log' },
   { A: ['laps', ''] as const, B: ['minutes', ''] as const, line: (nm: string, a: number, b: number) => `${nm} swam ${a} laps in ${b} minutes.`, aR: [3, 9] as const, bR: [6, 30] as const, unit: 'minutes', title: 'A swim log' },
-  { A: ['hours', '(study)'] as const, B: ['score', ''] as const, line: (nm: string, a: number, b: number) => `${nm} studied ${a} hours and scored ${b}.`, aR: [1, 8] as const, bR: [60, 99] as const, unit: 'points', title: 'Quiz scores' },
+  { A: ['hours', '(study)'] as const, B: ['score', ''] as const, line: (nm: string, a: number, b: number) => `${nm} studied ${a} ${a === 1 ? 'hour' : 'hours'} and scored ${b}.`, aR: [1, 8] as const, bR: [60, 99] as const, unit: 'points', title: 'Quiz scores' },
 ];
 const pairTable = (R: () => number, n: number): RTItem => {
   const L = pick(R, LOGS);
@@ -489,7 +492,7 @@ const pairTable = (R: () => number, n: number): RTItem => {
       ok: `Yes: ${names[r]}'s pair stays together: ${as[r]} with ${bs[r]}.`,
       wrong: [[sortedB[r]!, MC.sortsPairs, `That sorts the ${L.B[0]} on their own. Each row is one person: ${names[r]}, ${as[r]} with ${bs[r]}.`]],
       other: `Find ${as[r]} ${L.A[0]} in the sentences: whose is it? Take that person's ${L.B[0]}.`,
-      solution: [`${as[r]} ${L.A[0]} belongs to ${names[r]}.`, `${names[r]}'s other number: ${S(String(bs[r]))}. A pair is never split.`],
+      solution: [`${as[r]} ${as[r] === 1 ? L.A[0].replace(/s$/, '') : L.A[0]} belongs to ${names[r]}.`, `${names[r]}'s other number: ${S(String(bs[r]))}. A pair is never split.`],
       pic: pic1({ heads: [L.A, L.B], rows: [...rows], hide: [[r, 1]] }, ['table'], ['fill'], { t: [{ lit: [r] }] }),
     });
   }
@@ -852,7 +855,8 @@ function testRows(R: () => number, kind: TK): { rows: [number, number][]; K: str
 }
 const testTable = (R: () => number, n: number): RTItem => {
   const kind = pick(R, ['whole', 'frac', 'start', 'off', 'off', 'const'] as const);
-  const c = ctxWith(R, x => !x.money);
+  // a unit conversion (1 gallon = 4 quarts, 1 yard = 3 feet) is a fixed fact: its table cannot have another rate
+  const c = ctxWith(R, x => !x.money && !['yards', 'gallons', 'pints'].includes(x.id));
   const { rows, K, offRow } = testRows(R, kind);
   const nm = { A: c.A, B: c.B };
   const qq = (i: number) => kText(rows[i]![1], rows[i]![0]);

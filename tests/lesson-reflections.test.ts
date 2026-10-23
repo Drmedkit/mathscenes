@@ -146,3 +146,20 @@ describe('voice', () => {
     }
   });
 });
+
+describe('quality layer (docs/lessons/QUALITY_LAYER.md)', () => {
+  it('regression (oracle sweep): verify has one true "No" (a Q on P\'s side, or P on m, was also "not as far from m as P")', () => {
+    for (let s = 1; s <= 600; s++) {
+      const it = GENS.verify!(rng(s), s, 'verify-point-pair');
+      const right = it.choices![(it.answer as { i: number }).i]!;
+      if (/same side|P is on m/.test(right)) expect(it.choices, it.choices!.join(' | ')).not.toContain('No: Q is not as far from m as P');
+    }
+  });
+  it('the counting items end on the number asked (apart, or from P to m)', () => {
+    for (let s = 1; s <= 200; s++) {
+      const it = GENS.stepsNum!(rng(s), s, 'grid-point-reflect');
+      const m = it.solution.at(-1)!.match(/<b class="s">(\d+)/)!;
+      expect(Number(m[1]), it.prompt).toBe((it.answer as { v: number }).v);
+    }
+  });
+});

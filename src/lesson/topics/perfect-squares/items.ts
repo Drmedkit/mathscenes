@@ -4,6 +4,7 @@
 // A generator gets the SUB-GOAL it practises (plan.ts) and uses that sub-goal's number ranges from the topic JSON.
 // Pure: no DOM, no canvas. The pictures are data (TileSquare / RootLine params) the page knows how to draw.
 import { type Gen as RtGen, type Item, type Response, type Verdict, A, B, S, int, pick, rng, shuffle } from '../../runtime/item';
+import { ans, endOnChoice } from '../../runtime/explain';
 import { type TileParams, type TileStep, isqrt, isSquare } from './TileSquare';
 import type { LineStep } from './RootLine';
 export { rng, isqrt, isSquare };
@@ -94,7 +95,7 @@ function choice(R: () => number, base: Omit<SqItem, 'input' | 'choices' | 'answe
   const o = shuffle(R, opts.slice());
   const right = o.findIndex(x => x.ok);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right }, solution: endOnChoice(base.solution, o[right]!.t),
     check: r => {
       if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const x = o[r.i]!;
@@ -131,10 +132,10 @@ const squareOf: Gen = (R, n, sg) => {
   const sq = k * k;
   const pictured = !big && R() < 0.55;
   const prompt = big ? pick(R, [`Find ${B(`${k}²`)} by multiplying.`, `What is ${B(`${k} × ${k}`)}?`, `A square has sides of ${S(`${k} units`)}. What is its area, in square units?`])
-    : pictured ? `This square has sides of ${S(`${k} units`)}. How many unit squares cover it?`
+    : pictured ? `This square has sides of ${S(`${k} unit${k === 1 ? '' : 's'}`)}. How many unit squares cover it?`
       : pick(R, [`What is ${B(`${k}²`)}?`, `Evaluate ${B(`${k}²`)}.`, `${B(`${k}²`)} means ${k} × ${k}. How much is it?`]);
-  const sol = big ? [`${k}² = ${k} × ${k}.`, `${k} × 10 = ${k * 10} and ${k} × ${k - 10} = ${k * (k - 10)}.`, `${k * 10} + ${k * (k - 10)} = ${A(sq)}, so ${k}² = ${sq} and ${rad(sq)} = ${k}.`]
-    : [`${k}² means ${k} × ${k}: ${k} rows of ${k}.`, `${k} × ${k} = ${A(sq)}.`];
+  const sol = big ? [`${k}² = ${k} × ${k}.`, `${k} × 10 = ${k * 10} and ${k} × ${k - 10} = ${k * (k - 10)}.`, `${k * 10} + ${k * (k - 10)} = ${ans(sq)}, so ${k}² = ${sq} and ${rad(sq)} = ${k}.`]
+    : [`${k}² means ${k} × ${k}: ${k} row${k === 1 ? '' : 's'} of ${k}.`, `${k} × ${k} = ${ans(sq)}.`];
   return {
     id: `squareOf-${n}`, family: 'squareOf', prompt, board: `${k}^2 = \\,?`, input: 'num', unit: pictured ? 'unit squares' : '',
     pic: tilesPic(sq, { side: `${k}`, area: `${sq} unit squares`, rows: `${k} rows` }, pictured ? ['tiles', 'side'] : ['tiles', 'side'], ['rows', 'area']),
@@ -144,7 +145,7 @@ const squareOf: Gen = (R, n, sg) => {
       const v = needNum(r);
       if (v === null) return { ok: false, say: 'Type a whole number.' };
       if (v === sq) return { ok: true, say: `Yes: ${k} × ${k} = ${sq}.` };
-      if (v === 2 * k) return { ok: false, mc: MC.baseTimesExp, say: `${k}² is ${k} × ${k}, not ${k} × 2. ${k} rows of ${k} make ${sq}.` };
+      if (v === 2 * k) return { ok: false, mc: MC.baseTimesExp, say: `${k}² is ${k} × ${k}, not ${k} × 2. ${k} row${k === 1 ? '' : 's'} of ${k} make${k === 1 ? 's' : ''} ${sq}.` };
       return { ok: false, say: `${k} × ${k} = ${sq}.` };
     },
   };
@@ -402,7 +403,7 @@ const between: Gen = (R, n) => {
     input: 'pair', pairLead: '', pairOp: `< ${N} <`,
     pic: tilesPic(N, { area: `${N} tiles`, side: `${k}` }, ['tiles', 'area'], ['extra', 'ghost'], { ghost: k + 1 }),
     solveTex: [`${k} \\times ${k} = ${lo}`, `${k + 1} \\times ${k + 1} = ${hi}`, `${lo} < ${N} < ${hi}`],
-    solution: [`${k} × ${k} = ${A(lo)}: a full ${k} by ${k} square, and ${N - lo} tiles left over.`, `${k + 1} × ${k + 1} = ${A(hi)}: the next square needs more tiles than ${N}.`, `So ${lo} < ${N} < ${hi}.`],
+    solution: [`${k} × ${k} = ${A(lo)}: a full ${k} by ${k} square, and ${N - lo} tile${N - lo === 1 ? '' : 's'} left over.`, `${k + 1} × ${k + 1} = ${A(hi)}: the next square needs more tiles than ${N}.`, `So ${ans(lo)} &lt; ${N} &lt; ${ans(hi)}.`],
     answer: { kind: 'pair', x: lo, y: hi },
     check: r => {
       if (r.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
@@ -424,7 +425,7 @@ const boundRoot: Gen = (R, n) => {
     input: 'pair', pairLead: '', pairOp: `< √${N} <`,
     pic: { kind: 'line', n: N, show: ['axis'], solve: ['squares', 'bracket'] },
     solveTex: [`${lo} < ${N} < ${hi}`, `${k} < \\sqrt{${N}} < ${k + 1}`],
-    solution: [`The squares around ${N}: ${k} × ${k} = ${A(lo)} and ${k + 1} × ${k + 1} = ${A(hi)}.`, `${lo} < ${N} < ${hi}, so the side lies between ${k} and ${k + 1}.`, `${k} < ${rad(N)} < ${k + 1}.`],
+    solution: [`The squares around ${N}: ${k} × ${k} = ${A(lo)} and ${k + 1} × ${k + 1} = ${A(hi)}.`, `${lo} < ${N} < ${hi}, so the side lies between ${k} and ${k + 1}.`, `${ans(k)} &lt; ${rad(N)} &lt; ${ans(k + 1)}.`],
     answer: { kind: 'pair', x: k, y: k + 1 },
     check: r => {
       if (r.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
@@ -446,7 +447,8 @@ const nearer: Gen = (R, n) => {
     { t: `${near}: ${N} − ${lo} = ${dLo} and ${hi} − ${N} = ${dHi}`, ok: true, say: `Yes: ${N} is closer to ${near === k ? lo : hi} = ${near} × ${near}, so ${rad(N)} is nearer ${near}.` },
     near === k
       ? { t: `${k + 1}: ${N} is more than ${k}.5`, ok: false, mc: MC.midpoint, say: `${N} is compared with the wrong thing. Compare ${N} with the squares: ${N} − ${lo} = ${dLo}, ${hi} − ${N} = ${dHi}. It is closer to ${lo}, so nearer ${k}.` }
-      : { t: `${k + 1}, because ${N} is more than ${k}.5`, ok: false, mc: MC.midpoint, say: `${k + 1} is right, but not for that reason: every number between ${lo} and ${hi} is more than ${k}.5. Compare with the squares: ${N} − ${lo} = ${dLo}, ${hi} − ${N} = ${dHi}.` },
+      // (a distractor must name the wrong number: "k + 1, because N is more than k.5" named the right one too)
+      : { t: `${k}: the gap ${N} − ${lo} = ${dLo} is the bigger one`, ok: false, mc: MC.midpoint, say: `Nearer means the SMALLER gap: ${hi} − ${N} = ${dHi} is smaller than ${dLo}, so ${rad(N)} is nearer ${k + 1}.` },
     { t: `${rad(N)} = ${near} exactly`, ok: false, mc: MC.roundedExact, say: `Nearer is not equal: ${near} × ${near} = ${near * near}, not ${N}. ${rad(N)} is only near ${near}.` },
   ];
   const t = Math.floor(N / 10);

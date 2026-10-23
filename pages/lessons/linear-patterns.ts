@@ -19,6 +19,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import { underline } from '../../src/lesson/annotate';
 import { TableGraph, type TGBlock, type TGFocus, type TGParams } from '../../src/lesson/topics/linear-patterns/TableGraph';
 import { FAMILY_NAMES, GENS, type LinItem, type LinPic } from '../../src/lesson/topics/linear-patterns/items';
+import { explain } from '../../src/lesson/topics/linear-patterns/explain';
 import { PLAN } from '../../src/lesson/topics/linear-patterns/plan';
 import { SCRIPT } from '../../src/lesson/topics/linear-patterns/script';
 
@@ -436,7 +437,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as LinItem),
   });

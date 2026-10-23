@@ -23,6 +23,7 @@ import { type LessonCtx, runLesson, SURE } from '../../src/lesson/runtime/shell'
 import { startPractice } from '../../src/lesson/runtime/practice';
 import { DoubleLine, DL_FRAME, type DLBlock, type DLFocus, type DLRing, type DLSpec } from '../../src/lesson/topics/ratio-problems/DoubleLine';
 import { FAMILY_NAMES, GENERATORS, MC, type RPItem } from '../../src/lesson/topics/ratio-problems/items';
+import { explain } from '../../src/lesson/topics/ratio-problems/explain';
 import { PLAN } from '../../src/lesson/topics/ratio-problems/plan';
 import { SCRIPT } from '../../src/lesson/topics/ratio-problems/script';
 import { CHERRY, HIKE, PEARS } from '../../src/lesson/topics/ratio-problems/specs';
@@ -382,7 +383,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as RPItem),
   });

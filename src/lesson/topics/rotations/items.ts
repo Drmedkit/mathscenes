@@ -4,6 +4,7 @@
 // Pure: no DOM, no canvas. Pictures are plain data (turnMaths.ts) the page draws. PROBES records, per item, typical
 // wrong responses and the misconception id they must get (tests).
 import { type Gen, type Item, type Response, type Verdict, A, B, int, pick, shuffle } from '../../runtime/item';
+import { ans as mark, endOnChoice } from '../../runtime/explain';
 import {
   type Fig, type FlipLine, type GridPic, type Mark, type Motion, type ShapeName, type SpinPic, type TiltPic, type TurnPic, type V,
   apply, d2, dirLabel, DIR_WORDS, fitWin, middle, moveFig, onFigure, orient, picFits, picPoints, rotQ, sameSet, shape,
@@ -83,7 +84,7 @@ function choiceItem(R: () => number, base: Omit<TurnItem, 'input' | 'choices' | 
   const o = keep ? uniq : shuffle(R, uniq.slice());
   const right = o.findIndex(x => x.ok);
   if (right < 0 || o.filter(x => x.ok).length !== 1) throw new Error(`${base.id}: needs exactly one right option`);
-  const it: TurnItem = { ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right }, check: choiceCheck(right, o.map(x => ({ say: x.say, mc: x.mc }))) };
+  const it: TurnItem = { ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right }, solution: endOnChoice(base.solution, o[right]!.t), check: choiceCheck(right, o.map(x => ({ say: x.say, mc: x.mc }))) };
   PROBES.set(it, o.flatMap((x, i) => (x.mc && !x.ok ? [{ r: { kind: 'choice', i } as Response, mc: x.mc }] : [])));
   return it;
 }
@@ -500,7 +501,7 @@ const steps: Gen = (R, n) => fitted(() => {
     const picture = gridPic({ pin, pinLabel: 'P', point: { p: d, label: 'A' }, steps: { d, when: 'solve' }, solve: { motion: { kind: 'none' }, point: d } });
     const it: TurnItem = { id: `steps-read-${n}`, family: 'steps', board: '', input: 'pair', pairLead: lead, pairOp: op,
       prompt: `How many steps ${B(lead)}, then how many steps ${B(op)}, from ${pinWord()} to the point ${A('A')}? Count the spaces between dots.`, picture,
-      solution: [`Go ${lead} along the row first: ${h} spaces.`, `Then ${op}: ${v} spaces. Don’t count the dot you start on.`], answer: { kind: 'pair', x: h, y: v },
+      solution: [`Go ${lead} along the row first: ${mark(`${h} ${h === 1 ? 'space' : 'spaces'}`)}.`, `Then ${op}: ${mark(`${v} ${v === 1 ? 'space' : 'spaces'}`)}. Don’t count the dot you start on.`], answer: { kind: 'pair', x: h, y: v },
       check: r => {
         if (r.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
         if (r.x === h && r.y === v) return { ok: true, say: `Yes: ${h} ${lead}, ${v} ${op}.` };
@@ -775,6 +776,14 @@ const target: Gen = (R, n) => fitted(() => {
   const W = SHAPE_WORDS[name];
   const picture = gridPic({ pin: A0, start: fig, target: tgt.pts, solve: { motion: turnM(A0, q), to: tgt } });
   const others = fig.marks.filter(m => m.label !== X).map(m => m.label).join(' and ');
+  // a symmetric tile (an L with equal arms) flipped across a line through X can cover the half-turn outline too: then
+  // "a flip" is a second right answer, so draw another tile
+  if (q === 2) {
+    const key = (ps: readonly V[]) => ps.map(p => `${Math.round(p[0] * 1e6)},${Math.round(p[1] * 1e6)}`).sort().join(' ');
+    const [a, b] = A0, want = key(tgt.pts);
+    const flips: ((p: V) => V)[] = [p => [p[0], 2 * b - p[1]], p => [2 * a - p[0], p[1]], p => [a + p[1] - b, b + p[0] - a], p => [a - (p[1] - b), b - (p[0] - a)]];
+    if (flips.some(f => key(fig.pts.map(f)) === want)) return null;
+  }
   const opts: Opt[] = Math.abs(q) === 1 ? [
     { t: `${cap(turnWords(q))} about ${X}: every corner lands on the outline`, ok: true, say: `Yes: with ${X} pinned, that turn puts every corner on the outline.` },
     { t: `${cap(turnWords(-q))} about ${X}: corner ${X} lands on the outline`, mc: MC.onePoint, say: `${X} stays on the outline for ANY turn about ${X}. Check ${others}: that way they land on the wrong side.` },

@@ -3,6 +3,7 @@
 // exactly, and every classic wrong answer tagged with its misconception id (math-curriculum-essentials/misconceptions.json).
 // Pure: no DOM, no canvas. A seeded rng makes sessions repeatable. Pictures are ScalePair params (ScalePair.ts).
 import { type Item, type Response, type Verdict, fracValue, int, pick, shuffle } from '../../runtime/item';
+import { endOnChoice } from '../../runtime/explain';
 import type { PairParams, PairStep } from './ScalePair';
 import { factor, fmt, legendRatio, sameUnit, tfmt } from './scaleBasicsMaths';
 
@@ -150,7 +151,7 @@ function choiceItem(R: () => number, base: Omit<SBItem, 'input' | 'choices' | 'a
   if (ts.size !== O.length) throw new Error(`choices not unique: ${O.map(o => o.t).join(' | ')}`);
   if (O.filter(o => o.ok).length !== 1) throw new Error('exactly one choice must be right');
   return {
-    ...base, input: 'choice', choices: O.map(o => o.t), answer: { kind: 'choice', i: O.findIndex(o => o.ok) },
+    ...base, input: 'choice', choices: O.map(o => o.t), answer: { kind: 'choice', i: O.findIndex(o => o.ok) }, solution: endOnChoice(base.solution, O.find(o => o.ok)!.t),
     check: (r: Response): Verdict => {
       const o = r.kind === 'choice' ? O[r.i] : undefined;
       if (!o) return { ok: false, say: 'Pick one.' };
@@ -367,7 +368,7 @@ const readScale: Gen = (R, n) => {
   if (inch) opts.push({ t: `Nothing: 1 : ${fmt(N)} only works in centimeters.`, ok: false, mc: MC.cmOnly, say: `A ratio scale works in any one unit: 1 in stands for ${fmt(N)} in, 1 cm for ${fmt(N)} cm.` });
   return choiceItem(R, {
     id: `readScale-${n}`, family: 'readScale',
-    prompt: `A ${what} of a ${c} has the scale ${A('1')} : ${B(fmt(N))} (drawing : actual). The ${what} is measured in ${inch ? 'inches' : 'centimeters'}. What does the scale say?`,
+    prompt: `A ${what} of ${an(c)} has the scale ${A('1')} : ${B(fmt(N))} (drawing : actual). The ${what} is measured in ${inch ? 'inches' : 'centimeters'}. What does the scale say?`,
     board: `\\text{scale } \\cssId{d}{1} : \\cssId{a}{${tfmt(N)}}`,
     solution: [`1 : ${fmt(N)} is drawing : actual, both in one unit.`, `${S(`1 ${u} on the drawing represents ${fmt(N)} ${u}`)} of the actual ${c}.`],
   }, opts);
@@ -413,7 +414,7 @@ const writeScale: Gen = (R, n) => {
     board: `${dT(p.d, p.dU)} : ${aT(p.a, p.aU)}`,
     input: 'pair', pairLead: 'scale', pairOp: ':', answer: { kind: 'pair', x: 1, y: N },
     work: p.d === 1 && !mixed ? `\\cssId{s}{1 : ${tfmt(N)}}` : `${tfmt(p.d)} : ${tfmt(s.a)} = \\cssId{s}{1 : ${tfmt(N)}}`,
-    solution: [mixed ? `One unit: ${L(p.a, p.aU)} = ${L(s.a, s.unit)}, so ${p.d} : ${fmt(s.a)}.` : `Drawing first: ${p.d} : ${fmt(s.a)}.`, `Divide both by ${p.d}: ${S(`1 : ${fmt(N)}`)}.`],
+    solution: [mixed ? `One unit: ${L(p.a, p.aU)} = ${L(s.a, s.unit)}, so ${p.d} : ${fmt(s.a)}.` : `Drawing first: ${p.d} : ${fmt(s.a)}.`, `Divide both by ${p.d}: ${S('1')} : ${S(fmt(N))}.`],
     check,
   };
 };
@@ -424,10 +425,11 @@ const LEGENDS: readonly { r: number; aU: 'ft' | 'm'; dU: 'in' | 'cm' }[] = [
   { r: 4, aU: 'ft', dU: 'in' }, { r: 3, aU: 'ft', dU: 'in' }, { r: 5, aU: 'm', dU: 'cm' },
 ];
 const legendMeaning: Gen = (R, n) => {
-  const g = pick(R, LEGENDS), eq = R() < 0.5, c = pick(R, PLACES), dW = g.dU === 'in' ? 'inch' : 'centimeter', aW = g.aU === 'ft' ? (g.r === 1 ? 'foot' : 'feet') : (g.r === 1 ? 'meter' : 'meters');
+  // r > 1: at 1 cm = 1 m, "each meter is drawn 1 centimeter long" would be true as well
+  const g = pick(R, LEGENDS.filter(x => x.r > 1)), eq = R() < 0.5, c = pick(R, PLACES), dW = g.dU === 'in' ? 'inch' : 'centimeter', aW = g.aU === 'ft' ? (g.r === 1 ? 'foot' : 'feet') : (g.r === 1 ? 'meter' : 'meters');
   return choiceItem(R, {
     id: `legendMeaning-${n}`, family: 'legendMeaning',
-    prompt: `The plan of a ${c} has the legend ${A(`1 ${g.dU}`)} ${eq ? '=' : 'represents'} ${B(`${g.r} ${g.aU}`)}. What does it mean?`,
+    prompt: `The plan of ${an(c)} has the legend ${A(`1 ${g.dU}`)} ${eq ? '=' : 'represents'} ${B(`${g.r} ${g.aU}`)}. What does it mean?`,
     board: `\\cssId{d}{1${T(g.dU)}} ${eq ? '=' : '\\text{ represents }'} \\cssId{a}{${g.r}${T(g.aU)}}`,
     solution: [`A legend is a rate: actual length per unit of drawing.`, `${S(`Each ${dW} on the plan stands for ${g.r} ${aW}`)} of the real ${c}.${eq ? ' The “=” means “represents”: the lengths are not equal.' : ''}`],
   }, [
@@ -436,8 +438,21 @@ const legendMeaning: Gen = (R, n) => {
     { t: `Each ${g.aU === 'ft' ? 'foot' : 'meter'} of the real ${c} is drawn ${g.r} ${dW}${g.r === 1 ? '' : dW === 'inch' ? 'es' : 's'} long.`, ok: false, mc: MC.reverse, say: `That turns the legend around. The plan's ${dW} comes first: one ${dW} of plan stands for ${g.r} ${aW}.` },
   ]);
 };
+type Room = (typeof ROOMS)[number];
+/** a real wall of each room, in cm (no 30 m bedroom wall, no 1.6 m garage, no 6 ft classroom wall) */
+const WALL_CM: Record<Room, [number, number]> = {
+  kitchen: [200, 700], bedroom: [250, 600], hallway: [100, 1500], 'living room': [300, 900], bathroom: [150, 450], garage: [300, 900], classroom: [600, 1500], porch: [150, 900],
+};
+/** a room whose real wall can be `cm` long (not `not`), or null */
+function roomFor(R: () => number, cm: number, not?: Room): Room | null {
+  const ok = ROOMS.filter(x => x !== not && cm >= WALL_CM[x][0] && cm <= WALL_CM[x][1]);
+  return ok.length ? pick(R, ok) : null;
+}
+const CM_PER: Record<string, number> = { m: 100, ft: 30.48, in: 2.54, cm: 1 };
 const legendWrite: Gen = (R, n) => {
-  const g = pick(R, LEGENDS), d = int(R, 2, 6), D = d * g.r, c = pick(R, ROOMS);
+  let g = pick(R, LEGENDS), d = int(R, 2, 6), D = d * g.r, room = roomFor(R, D * CM_PER[g.aU]!);
+  while (!room) { g = pick(R, LEGENDS); d = int(R, 2, 6); D = d * g.r; room = roomFor(R, D * CM_PER[g.aU]!); }
+  const c = room;
   return {
     id: `legendWrite-${n}`, family: 'legendWrite',
     prompt: `On a floor plan, the ${c} wall is ${A(L(d, g.dU))} long. The real wall is ${B(L(D, g.aU))} long. Finish the legend: 1 ${g.dU} represents how many ${g.aU}?`,
@@ -463,11 +478,11 @@ const legendToRatio: Gen = (R, n) => {
   const g = pick(R, L2R), N = legendRatio(g.r, g.dU, g.aU), per = N / g.r, c = pick(R, PLACES);
   return {
     id: `legendToRatio-${n}`, family: 'legendToRatio',
-    prompt: `The legend on a plan of a ${c} says ${A(`1 ${g.dU}`)} represents ${B(`${g.r} ${g.aU}`)}. Write it as a same-unit scale: 1 : ? (1 ${g.aU} = ${UREL[g.aU]})`,
+    prompt: `The legend on a plan of ${an(c)} says ${A(`1 ${g.dU}`)} represents ${B(`${g.r} ${g.aU}`)}. Write it as a same-unit scale: 1 : ? (1 ${g.aU} = ${UREL[g.aU]})`,
     board: `\\cssId{d}{1${T(g.dU)}} \\to \\cssId{a}{${g.r}${T(g.aU)}}`,
     input: 'num', unit: '', answer: { kind: 'num', v: N },
     work: `${g.r}${T(g.aU)} = ${g.r} \\times ${per}${T(g.dU)} = \\cssId{s}{${tfmt(N)}${T(g.dU)}}`,
-    solution: [`Write the actual part in ${g.dU}: ${g.r} ${g.aU} = ${g.r} × ${per} = ${fmt(N)} ${g.dU}.`, `1 ${g.dU} : ${fmt(N)} ${g.dU}, so the scale is ${S(`1 : ${fmt(N)}`)}.`],
+    solution: [`Write the actual part in ${g.dU}: ${g.r} ${g.aU} = ${g.r} × ${per} = ${fmt(N)} ${g.dU}.`, `1 ${g.dU} : ${fmt(N)} ${g.dU}, so the scale is 1 : ${S(fmt(N))}.`],
     check: valCheck(N, `Yes: ${g.r} ${g.aU} = ${fmt(N)} ${g.dU}, so 1 : ${fmt(N)}.`, [
       { v: g.r, mc: MC.notConverted, say: `1 : ${g.r} would mean 1 ${g.dU} stands for ${g.r} ${g.dU}. But it stands for ${g.r} ${g.aU} = ${fmt(N)} ${g.dU}.` },
       { v: per, say: `${per} ${g.dU} is ONE ${g.aU === 'ft' ? 'foot' : g.aU === 'yd' ? 'yard' : 'meter'}. The legend has ${g.r}: ${g.r} × ${per}.` },
@@ -478,7 +493,7 @@ const ratioToLegend: Gen = (R, n) => {
   const g = pick(R, L2R.filter(x => x.aU !== 'yd' || x.r === 1)), N = legendRatio(g.r, g.dU, g.aU), per = N / g.r, c = pick(R, PLACES);
   return {
     id: `ratioToLegend-${n}`, family: 'ratioToLegend',
-    prompt: `A plan of a ${c} has the scale ${A('1')} : ${B(fmt(N))}, measured in ${g.dU === 'in' ? 'inches' : 'centimeters'}. Finish the legend: 1 ${g.dU} represents how many ${g.aU}? (1 ${g.aU} = ${UREL[g.aU]})`,
+    prompt: `A plan of ${an(c)} has the scale ${A('1')} : ${B(fmt(N))}, measured in ${g.dU === 'in' ? 'inches' : 'centimeters'}. Finish the legend: 1 ${g.dU} represents how many ${g.aU}? (1 ${g.aU} = ${UREL[g.aU]})`,
     board: `1 : ${tfmt(N)} \\;\\to\\; \\cssId{d}{1${T(g.dU)}} \\text{ rep. } \\ ?${T(g.aU)}`,
     input: 'num', unit: g.aU, answer: { kind: 'num', v: g.r },
     work: `${tfmt(N)}${T(g.dU)} = ${tfmt(N)} \\div ${per} = \\cssId{s}{${g.r}${T(g.aU)}}`,
@@ -492,7 +507,10 @@ const ratioToLegend: Gen = (R, n) => {
 // ===== 9 factor-vs-length =====
 const whatIsN: Gen = (R, n) => {
   let N: number = 2, inch = false, u = 'cm', d = 2, c: Ctx | null = null;
-  while (!c) { N = pick(R, [2, 10, 100] as const); inch = R() < 0.5; u = inch ? 'in' : 'cm'; d = int(R, 2, 9); c = ctxSize(R, cmOf(d * N, u)); }
+  while (!c) {
+    N = pick(R, [2, 10, 100] as const); inch = R() < 0.5; u = inch ? 'in' : 'cm'; d = int(R, 2, 9); c = ctxSize(R, cmOf(d * N, u));
+    if (d * N - d === N) c = null;   // 2 in → 4 in at 1 : 2: "how much longer" would be 2 as well
+  }
   return choiceItem(R, {
     id: `whatIsN-${n}`, family: 'whatIsN',
     prompt: `The ${c.draw} is made at 1 : ${fmt(N)}. A part that is ${A(L(d, u))} long on it is ${B(L(d * N, u))} long on the actual ${c.real}. What is the ${fmt(N)}?`,
@@ -505,11 +523,14 @@ const whatIsN: Gen = (R, n) => {
   ]);
 };
 const useFactor: Gen = (R, n) => retry(() => {
-  const N = pick(R, [2, 10, 100] as const), a = int(R, 2, 9), b = int(R, 2, 9), c = pick(R, PLACES), r1 = pick(R, ROOMS), r2 = pick(R, ROOMS);
-  if (a === b || r1 === r2 || b === N || a * N === b * N) return null;
+  // a plan of a building: 1 : 20 to 1 : 100, and each wall a real wall of its room
+  const N = pick(R, [20, 50, 100] as const), a = int(R, 2, 9), b = int(R, 2, 9), c = pick(R, PLACES);
+  if (a === b || b === N || a * N === b * N) return null;
+  const r1 = roomFor(R, a * N), r2 = r1 && roomFor(R, b * N, r1);
+  if (!r1 || !r2) return null;
   return {
     id: `useFactor-${n}`, family: 'useFactor',
-    prompt: `A plan of a ${c} is drawn at 1 : ${fmt(N)}. On the plan, the ${r1} wall is ${A(L(a, 'cm'))} and the ${r2} wall is ${A(L(b, 'cm'))}. How long is the actual ${r2} wall?`,
+    prompt: `A plan of ${an(c)} is drawn at 1 : ${fmt(N)}. On the plan, the ${r1} wall is ${A(L(a, 'cm'))} and the ${r2} wall is ${A(L(b, 'cm'))}. How long is the actual ${r2} wall?`,
     board: `\\cssId{d}{1} : \\cssId{a}{${tfmt(N)}} \\quad ${dT(b, 'cm')} \\to \\ ?`,
     input: 'num', unit: 'cm', answer: { kind: 'num', v: b * N },
     work: `${b} \\times ${tfmt(N)} = \\cssId{s}{${tfmt(b * N)}${T('cm')}}`,
@@ -529,7 +550,7 @@ const unitSwap: Gen = (R, n) => {
     const N = pick(R, [12, 24, 36, 48] as const);
     return choiceItem(R, {
       id: `unitSwap-${n}`, family: 'unitSwap',
-      prompt: `A plan of a ${c} is drawn at 1 : ${N}, measured in inches. ${nm} measures it in feet instead. What is the scale now?`,
+      prompt: `A plan of ${an(c)} is drawn at 1 : ${N}, measured in inches. ${nm} measures it in feet instead. What is the scale now?`,
       board: `1 : ${N} \\quad \\text{in} \\to \\text{ft}`,
       solution: [`1 : ${N} says every actual length is ${N} times its drawing length.`, `That does not depend on the unit: it is ${S(`still 1 : ${N}`)} in feet, centimeters or anything else.`],
     }, [
@@ -542,7 +563,7 @@ const unitSwap: Gen = (R, n) => {
   const wrongN = v === 0 ? Math.round(N / 2.54) : N * 10;
   return choiceItem(R, {
     id: `unitSwap-${n}`, family: 'unitSwap',
-    prompt: `A plan of a ${c} is drawn at 1 : ${N}, measured in centimeters. ${nm} measures it in ${other} instead. What is the scale now?`,
+    prompt: `A plan of ${an(c)} is drawn at 1 : ${N}, measured in centimeters. ${nm} measures it in ${other} instead. What is the scale now?`,
     board: `1 : ${N} \\quad \\text{cm} \\to \\text{${v === 0 ? 'in' : 'mm'}}`,
     solution: [`1 : ${N} says every actual length is ${N} times its drawing length.`, `Measured in any one unit, that stays true: ${S(`still 1 : ${N}`)}.`],
   }, [
@@ -562,7 +583,7 @@ const direction: Gen = (R, n) => {
     board: `\\text{drawing} \\xrightarrow{\\times\\, ?} \\text{actual}`,
     input: 'num', unit: 'times as long', answer: { kind: 'num', v: N },
     work: `\\text{drawing} \\xrightarrow{\\times ${tfmt(N)}} \\text{actual}`,
-    solution: [`1 : ${fmt(N)}: 1 on the drawing, ${fmt(N)} in reality.`, `From drawing to actual: ${S(`× ${fmt(N)}`)}.`],
+    solution: [`1 : ${fmt(N)}: 1 on the drawing, ${fmt(N)} in reality.`, `From drawing to actual: × ${S(fmt(N))}.`],
     check: valCheck(N, `Yes: from drawing to actual, × ${fmt(N)}.`, [{ v: 1 / N, mc: MC.reverse, say: `1/${fmt(N)} is the other direction: the drawing is 1/${fmt(N)} as long. The ACTUAL object is ${fmt(N)} times as long.` }], `The actual ${c.real} is the long one: ${fmt(N)} on the actual side for 1 on the drawing.`),
   };
   if (v === 1) return {
@@ -592,7 +613,7 @@ const enlarge: Gen = (R, n) => {
   const v = int(R, 0, 2), N = pick(R, [2, 5, 10, 20] as const), th = pick(R, SMALL_THINGS);
   if (v === 0) return choiceItem(R, {
     id: `enlarge-${n}`, family: 'enlarge',
-    prompt: `A drawing of a ${th} has the scale ${A(fmt(N))} : ${B('1')} (drawing : actual). Which is true?`,
+    prompt: `A drawing of ${an(th)} has the scale ${A(fmt(N))} : ${B('1')} (drawing : actual). Which is true?`,
     board: `\\cssId{d}{${N}} : \\cssId{a}{1}`,
     solution: [`${N} : 1 is drawing : actual: the drawing gets the ${N}.`, `${S(`Each drawing length is ${N} times as long as the actual length`)}: an enlargement.`],
   }, [
@@ -612,7 +633,7 @@ const enlarge: Gen = (R, n) => {
   ]);
   return choiceItem(R, {
     id: `enlarge-${n}`, family: 'enlarge',
-    prompt: `A drawing of a ${th} has the scale 1 : 1. What kind of drawing is it?`,
+    prompt: `A drawing of ${an(th)} has the scale 1 : 1. What kind of drawing is it?`,
     board: `\\cssId{d}{1} : \\cssId{a}{1}`,
     solution: [`1 : 1 means 1 on the drawing for 1 in reality.`, `${S('The same size')}: the boundary between a reduction (1 : n) and an enlargement (n : 1).`],
   }, [
@@ -648,7 +669,7 @@ const rateFactor: Gen = (R, n) => {
   const g = pick(R, RATES), N = legendRatio(g.r, g.dU, g.aU), c = pick(R, PLACES);
   return {
     id: `rateFactor-${n}`, family: 'rateFactor',
-    prompt: `A plan of a ${c} says ${A(`1 ${g.dU}`)} represents ${B(`${g.r} ${g.aU}`)}. Every actual length is how many times as long as its length on the plan? (1 ${g.aU} = ${UREL[g.aU]})`,
+    prompt: `A plan of ${an(c)} says ${A(`1 ${g.dU}`)} represents ${B(`${g.r} ${g.aU}`)}. Every actual length is how many times as long as its length on the plan? (1 ${g.aU} = ${UREL[g.aU]})`,
     board: `\\cssId{d}{1${T(g.dU)}} \\to \\cssId{a}{${g.r}${T(g.aU)}}`,
     input: 'num', unit: 'times as long', answer: { kind: 'num', v: N },
     work: `\\cssId{a}{${g.r}${T(g.aU)}} = \\cssId{a}{${tfmt(N)}${T(g.dU)}}, ${tfmt(N)} \\div 1 = \\cssId{s}{${tfmt(N)}}`,
@@ -662,24 +683,25 @@ const rateOrFactor: Gen = (R, n) => {
   const g = pick(R, RATES), N = legendRatio(g.r, g.dU, g.aU), c = pick(R, PLACES);
   return choiceItem(R, {
     id: `rateOrFactor-${n}`, family: 'rateOrFactor',
-    prompt: `A plan of a ${c} says “1 ${g.dU} represents ${g.r} ${g.aU}” (that is the scale 1 : ${fmt(N)}). What does the ${g.r} tell you?`,
+    prompt: `A plan of ${an(c)} says “1 ${g.dU} represents ${g.r} ${g.aU}” (that is the scale 1 : ${fmt(N)}). What does the ${g.r} tell you?`,
     board: `\\cssId{d}{1${T(g.dU)}} \\to \\cssId{a}{${g.r}${T(g.aU)}} \\quad 1 : ${tfmt(N)}`,
     solution: [`${g.r} counts ${g.aU} of the real ${c} per ${g.dU} of plan: ${S('a rate')}.`, `The “times as long” factor is ${fmt(N)}, because ${g.r} ${g.aU} = ${fmt(N)} ${g.dU}.`],
   }, [
     { t: `${g.r} ${g.aU} of the real ${c} for each ${g.dU} of plan`, ok: true, say: `Yes: a rate, with two units. The factor is ${fmt(N)}.` },
-    { t: `Real lengths are ${g.r} times as long as on the plan`, ok: false, mc: MC.notConverted, say: `${g.r} has two units, ${g.aU} per ${g.dU}. In one unit the factor is ${fmt(N)}.` },
+    { t: g.r === 1 ? 'Real lengths are the same as on the plan' : `Real lengths are ${g.r} times as long as on the plan`, ok: false, mc: MC.notConverted, say: `${g.r} has two units, ${g.aU} per ${g.dU}. In one unit the factor is ${fmt(N)}.` },
     { t: `The real ${c} is ${g.r} ${g.aU} long`, ok: false, mc: MC.nAsLength, say: `The legend is about EVERY length: each ${g.dU} of plan stands for ${g.r} ${g.aU}. It is not the ${c}'s length.` },
   ]);
 };
 
 // ===== 15 critique-scale-claims =====
 const critique: Gen = (R, n) => {
-  const v = int(R, 0, 3), nm = pick(R, NAMES), c = pick(R, PLACES), r1 = pick(R, ROOMS);
+  const v = int(R, 0, 3), nm = pick(R, NAMES), c = pick(R, PLACES);
   if (v === 0) {
-    const N = pick(R, [50, 100, 200] as const), d = int(R, 3, 9);
+    let N = pick(R, [50, 100, 200] as const), d = int(R, 3, 9), r1 = roomFor(R, d * N);
+    while (!r1) { N = pick(R, [50, 100, 200] as const); d = int(R, 3, 9); r1 = roomFor(R, d * N); }
     return choiceItem(R, {
       id: `critique-${n}`, family: 'critique',
-      prompt: `A plan of a ${c} is drawn at 1 : ${N}. The ${r1} is ${d} cm long on the plan (${d} × ${N} = ${fmt(d * N)}). ${nm} says: “The scale is 1 : ${N}, so the ${r1} is ${N} cm long.” Which reply is right?`,
+      prompt: `A plan of ${an(c)} is drawn at 1 : ${N}. The ${r1} is ${d} cm long on the plan (${d} × ${N} = ${fmt(d * N)}). ${nm} says: “The scale is 1 : ${N}, so the ${r1} is ${N} cm long.” Which reply is right?`,
       board: `\\text{${nm}: } \\cssId{w}{${N}\\text{ cm}}`,
       solution: [`${N} is the factor, not a length.`, `The ${r1} is ${d} × ${N} = ${S(L(d * N, 'cm'))} long.`],
     }, [
@@ -689,10 +711,10 @@ const critique: Gen = (R, n) => {
     ]);
   }
   if (v === 1) {
-    const g = pick(R, RATES.filter(x => x.dU === 'in')), N = legendRatio(g.r, g.dU, g.aU);
+    const g = pick(R, RATES.filter(x => x.dU === 'in' && x.r > 1)), N = legendRatio(g.r, g.dU, g.aU);   // not "1 times as long"
     return choiceItem(R, {
       id: `critique-${n}`, family: 'critique',
-      prompt: `A plan of a ${c} says “1 in represents ${g.r} ${g.aU}” (${g.r} ${g.aU} = ${N} in). ${nm} says: “So real lengths are ${g.r} times as long as on the plan.” Which reply is right?`,
+      prompt: `A plan of ${an(c)} says “1 in represents ${g.r} ${g.aU}” (${g.r} ${g.aU} = ${N} in). ${nm} says: “So real lengths are ${g.r} times as long as on the plan.” Which reply is right?`,
       board: `\\text{${nm}: } \\cssId{w}{\\times ${g.r}}`,
       solution: [`${g.r} is ${g.aU} per inch: a rate.`, `In one unit, 1 in stands for ${N} in: real lengths are ${S(`${N} times`)} as long.`],
     }, [
@@ -702,7 +724,8 @@ const critique: Gen = (R, n) => {
     ]);
   }
   if (v === 2) {
-    const N = pick(R, [20, 50, 100] as const), a = int(R, 3, 9), b = int(R, 2, a - 1), r2 = pick(R, ROOMS.filter(x => x !== r1));
+    let N = pick(R, [20, 50, 100] as const), a = int(R, 3, 9), b = int(R, 2, a - 1), r1 = roomFor(R, a * N), r2 = r1 && roomFor(R, b * N, r1);
+    while (!r1 || !r2) { N = pick(R, [20, 50, 100] as const); a = int(R, 3, 9); b = int(R, 2, a - 1); r1 = roomFor(R, a * N); r2 = r1 && roomFor(R, b * N, r1); }
     return choiceItem(R, {
       id: `critique-${n}`, family: 'critique',
       prompt: `On a 1 : ${N} plan, the ${r1} is ${a} cm long and the ${r2} is ${b} cm long (${a * N} cm and ${b * N} cm in reality). ${nm} says: “The lengths are different, so the plan uses two different scales.” Which reply is right?`,
@@ -717,7 +740,7 @@ const critique: Gen = (R, n) => {
   const N = pick(R, [50, 100, 200] as const), wrongN = Math.round(N / 2.54);
   return choiceItem(R, {
     id: `critique-${n}`, family: 'critique',
-    prompt: `A plan of a ${c} is drawn at 1 : ${N} in centimeters. ${nm} measures it in inches and says: “In inches, the scale is 1 : ${wrongN}.” Which reply is right?`,
+    prompt: `A plan of ${an(c)} is drawn at 1 : ${N} in centimeters. ${nm} measures it in inches and says: “In inches, the scale is 1 : ${wrongN}.” Which reply is right?`,
     board: `\\text{${nm}: } \\cssId{w}{1 : ${wrongN}}`,
     solution: [`1 : ${N} means actual lengths are ${N} times as long.`, `Measured in inches, they are still ${N} times as long: ${S(`still 1 : ${N}`)}.`],
   }, [

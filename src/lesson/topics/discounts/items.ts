@@ -4,7 +4,8 @@
 // All money is exact (discountMaths.ts: integer ticks of $0.0001). Pure: no DOM, no canvas.
 // Colours in prompts follow the model: original price = amber (A), discount = teal (B), sale price = lime (S). Items
 // that ASK which amount plays which role print the amounts plain, so the colour does not give the answer away.
-import { type Gen, type Item, type Response, type Verdict, A, B, S, int, pick, shuffle } from '../../runtime/item';
+import { type Gen, type Item, type Response, type Verdict, A, B, int, pick, shuffle } from '../../runtime/item';
+import { ans, endOnChoice } from '../../runtime/explain';
 import type { PriceBarParams, PriceBarStep } from './PriceBar';
 import { type Sale, CENT, TICK, digits, dollarSale, mult, percentSale, roundCent, saleRoundingDiscountFirst, toTicks, truncCent, usd, usdTex } from './discountMaths';
 
@@ -41,6 +42,7 @@ const THINGS: readonly Thing[] = [
   { tag: 'Sunglasses', a: 'a pair of sunglasses', the: 'the sunglasses', plural: true },
 ];
 const NAMES = ['Maya', 'Leo', 'Ava', 'Sam', 'Nora', 'Eli', 'Zoe', 'Omar', 'Lily', 'Jack', 'Rosa', 'Ben', 'Priya', 'Diego', 'Kenji', 'Amara'];
+/** verbs for "the X" (plural for the headphones); "a pair of X" / "a set of X" take "costs" and "is" */
 const costs = (t: Thing) => (t.plural ? 'cost' : 'costs');
 const is = (t: Thing) => (t.plural ? 'are' : 'is');
 const cap = (s: string) => s[0]!.toUpperCase() + s.slice(1);
@@ -109,7 +111,7 @@ function choiceItem(R: () => number, o: Omit<DiscItem, 'input' | 'answer' | 'che
   const { opts, ...rest } = o;
   const sh = shuffle(R, opts.slice());
   return {
-    ...rest, input: 'choice', choices: sh.map(c => c.t), answer: { kind: 'choice', i: sh.findIndex(c => c.ok) },
+    ...rest, input: 'choice', choices: sh.map(c => c.t), answer: { kind: 'choice', i: sh.findIndex(c => c.ok) }, solution: endOnChoice(rest.solution, sh.find(c => c.ok)!.t),
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !sh[r.i]) return { ok: false, say: 'Pick one answer.' };
       const c = sh[r.i]!;
@@ -117,6 +119,9 @@ function choiceItem(R: () => number, o: Omit<DiscItem, 'input' | 'answer' | 'che
     },
   };
 }
+/** the sale-price colour (class s); "sale" keeps it from reading as the marked answer of the worked steps
+ *  (runtime/explain.ts marks the answer with ans(): class "s" alone) */
+const S = (s: string | number) => `<b class="s sale">${s}</b>`;
 const hasCents = (cents: number) => cents % 100 !== 0;
 /** a whole-dollar price in cents */
 const dollars = (R: () => number, lo: number, hi: number) => int(R, lo, hi) * 100;
@@ -181,7 +186,7 @@ const partWhole: Gen = (R, n) => {
   const right = pick(R, [`${$(D)} + ${$(Sp)} = ${$(O)}`, `${$(O)} = ${$(D)} + ${$(Sp)}`, `${$(Sp)} + ${$(D)} = ${$(O)}`]);
   return choiceItem(R, {
     id: `partWhole-${n}`, family: 'partWhole',
-    prompt: `${cap(C.a)} ${costs(C)} ${A($(O))}. It is ${B(`${$(D)} off`)}, so you pay ${S($(Sp))}. Which equation describes this sale? ${NOCALC}`,
+    prompt: `${cap(C.a)} costs ${A($(O))}. It is ${B(`${$(D)} off`)}, so you pay ${S($(Sp))}. Which equation describes this sale? ${NOCALC}`,
     board: `\\$${O} = \\$\\,? + \\$\\,?`,
     picture: { bar: { price: O * 100, off: D * 100 }, pre: [], post: ['bar', 'whole', 'cut', 'disc', 'sale'], pulse: ['orig'], work: [`\\$${O} = \\$${D} + \\$${Sp}`] },
     solution: [`The discount and the sale price are the two parts of the original price.`, `${B($(D))} + ${S($(Sp))} = ${A($(O))}.`],
@@ -390,7 +395,7 @@ const salePrice: Gen = (R, n) => {
   const bench = [10, 20, 25, 50].includes(p);
   return moneyItem({
     id: `salePrice-${n}`, family: 'salePrice',
-    prompt: `${cap(C.a)} ${costs(C)} ${A(usd(P * CENT))} and ${is(C)} on sale at ${B(`${p}% off`)}. What is the sale price (before tax)? ${bench ? NOCALC : CALC}`,
+    prompt: `${cap(C.a)} costs ${A(usd(P * CENT))} and is on sale at ${B(`${p}% off`)}. What is the sale price (before tax)? ${bench ? NOCALC : CALC}`,
     board: `${usdTex(P * CENT)} - ${pctT(p)}\\ \\text{of}\\ ${usdTex(P * CENT)} = \\$\\,?`,
     picture: { bar: { price: P, pct: p, item: C.tag, cents, ticks: cellsFor(p), hide: { disc: true, sale: true }, words: true }, solved: { price: P, pct: p, item: C.tag, cents, ticks: cellsFor(p) }, pre: ['tag', 'bar', 'whole', 'ticks', 'cut', 'disc', 'sale'], post: ['tagSale'], pulse: ['disc', 'sale'], work: [...route.tex.slice(-1), `${usdTex(P * CENT, cents)} - ${usdTex(s.discT, cents)} = ${usdTex(s.saleT, cents)}`] },
     solution: [...route.html, `Sale price: ${A(usd(P * CENT, cents))} − ${B(usd(s.discT, cents))} = ${S(usd(s.saleT, cents))}.`],
@@ -407,7 +412,7 @@ const saveAndPay: Gen = (R, n) => {
     prompt: `${cap(C.the)}: ${A(usd(P * CENT))}, ${B(`${p}% off`)}. Fill in both: the amount saved and the sale price (before tax). ${[10, 20, 25, 50].includes(p) ? NOCALC : CALC}`,
     board: `${usdTex(P * CENT)} = \\$\\,? + \\$\\,?`,
     picture: { bar: { price: P, pct: p, item: C.tag, cents, ticks: cellsFor(p), hide: { disc: true, sale: true } }, solved: { price: P, pct: p, item: C.tag, cents, ticks: cellsFor(p) }, pre: ['tag', 'bar', 'whole', 'ticks', 'cut', 'disc', 'sale'], post: ['tagSale'], pulse: ['disc', 'sale'], work: [...route.tex.slice(-1), `${usdTex(P * CENT, cents)} - ${usdTex(s.discT, cents)} = ${usdTex(s.saleT, cents)}`] },
-    solution: [...route.html, `Sale price: ${A(usd(P * CENT, cents))} − ${B(usd(s.discT, cents))} = ${S(usd(s.saleT, cents))}.`],
+    solution: [...route.html, `Sale price: ${A(usd(P * CENT, cents))} − ${ans(usd(s.discT, cents))} = ${ans(usd(s.saleT, cents))}.`],
     answer: { kind: 'pair', x: D, y: Sv },
     check(r: Response): Verdict {
       if (r.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
@@ -567,7 +572,7 @@ const oneStep: Gen = (R, n) => {
   if (cents) wrongs.push({ t: s.saleT, mc: 'mc.estimation.more-digits-more-accurate', say: `Round the final price to the cent: ${usd(s.saleT)} is about ${usd(s.saleRT)}.` });
   return moneyItem({
     id: `oneStep-${n}`, family: 'oneStep',
-    prompt: `${cap(C.a)} ${costs(C)} ${A(usd(P, cents))} and ${is(C)} ${B(`${p}% off`)}. Find the sale price with ONE multiplication: use the percent you pay. ${cents ? `${POLICY} ${CALC}` : [25, 10, 20, 50].includes(p) ? NOCALC : CALC}`,
+    prompt: `${cap(C.a)} costs ${A(usd(P, cents))} and is ${B(`${p}% off`)}. Find the sale price with ONE multiplication: use the percent you pay. ${cents ? `${POLICY} ${CALC}` : [25, 10, 20, 50].includes(p) ? NOCALC : CALC}`,
     board: `\\square \\times ${usdTex(P, cents)} = \\text{sale price}`,
     picture: { bar: { price: s.price, pct: p, item: C.tag, cents, hide: { sale: true, paid: true, disc: true } }, solved: { price: s.price, pct: p, item: C.tag, cents }, pre: ['tag', 'bar', 'whole', 'cut', 'disc', 'sale', 'paid'], post: ['tagSale'], pulse: ['sale'], work: [`100\\% - ${pctT(p)} = ${pctT(q)}`, `${m(q)} \\times ${usdTex(P, cents)} = ${usdTex(s.saleT, cents)}`, ...(s.saleT !== s.saleRT ? [`\\approx ${usdTex(s.saleRT)}`] : [])] },
     solution: [`${p}% off means you pay 100% − ${p}% = ${q}% of the original.`, `${m(q)} × ${A(usd(P, cents))} = ${S(usd(s.saleT, cents))}${s.saleT !== s.saleRT ? `, so ${S(usd(s.saleRT))}` : ''}.`],
@@ -640,12 +645,13 @@ const checkClaim: Gen = (R, n) => {
   const p = s.pct!, P = s.origT, K = s.saleRT, cents = hasCents(s.price) || hasCents(s.discT / CENT);
   const errs: Record<Exclude<ClaimKind, 'right'>, number> = {
     discAsPrice: roundCent(s.discT),
-    pctAsDollars: Math.max(0, P - p * TICK),
+    pctAsDollars: P - p * TICK,   // $p off a price of $p or less would be a free (or negative) price: not a slip anyone reports
     pointFive: Math.max(0, P - P / 2),
     roundFirst: saleRoundingDiscountFirst(s),
     wrongBase: roundCent(Math.round((s.discT * (100 - p)) / 100)),
   };
   let k2: ClaimKind = kind;
+  if (k2 === 'pctAsDollars' && errs.pctAsDollars <= 0) k2 = 'discAsPrice';
   if (k2 !== 'right' && errs[k2] === K) k2 = 'right';
   const claim = k2 === 'right' ? K : errs[k2];
   const why: Record<ClaimKind, string> = {
@@ -656,7 +662,7 @@ const checkClaim: Gen = (R, n) => {
     roundFirst: `That rounds the discount first; the rule rounds only the final price.`,
     wrongBase: `That takes ${100 - p}% of the discount, not of the original price.`,
   };
-  const others = [...new Set([errs.roundFirst, errs.discAsPrice, errs.pctAsDollars, errs.wrongBase, P + s.discT, P])].filter(v => v !== K && v !== claim);
+  const others = [...new Set([errs.roundFirst, errs.discAsPrice, errs.pctAsDollars, errs.wrongBase, P + s.discT, P])].filter(v => v > 0 && v !== K && v !== claim);
   const [F, G] = others as [number, number];
   const mcOf = (v: number): string | undefined => v === errs.roundFirst && k2 === 'right' ? 'mc.estimation.rounding-gap-treated-as-error'
     : v === errs.discAsPrice ? 'mc.percent.change-reported-as-final-amount' : v === errs.pctAsDollars ? 'mc.percent.adds-or-subtracts-percent-numeral'

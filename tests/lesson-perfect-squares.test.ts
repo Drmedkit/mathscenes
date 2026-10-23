@@ -164,3 +164,19 @@ describe('voice', () => {
     }
   });
 });
+
+describe('quality layer (docs/lessons/QUALITY_LAYER.md)', () => {
+  it('regression (oracle sweep): nearer has exactly one choice that names the nearer whole number', () => {
+    for (let s = 1; s <= 600; s++) {
+      const it = GENERATORS.nearer(rng(s), s, 'nearer-integer');
+      const right = it.choices![(it.answer as { i: number }).i]!, n = right.match(/^\d+/)![0];
+      expect(it.choices!.filter(c => c.startsWith(n) && !/\d/.test(c[n.length] ?? '')), it.prompt).toHaveLength(1);
+    }
+  });
+  it('"1 row of 1", "sides of 1 unit", "1 tile left over"', () => {
+    for (let s = 1; s <= 300; s++) for (const [f, sg] of [['squareOf', 'perfect-square-as-area'], ['between', 'consecutive-squares-around-n']] as const) {
+      const it = GENERATORS[f](rng(s), s, sg);
+      expect([it.prompt, ...it.solution].join(' ')).not.toMatch(/\b1 (rows|units|tiles)\b/);
+    }
+  });
+});

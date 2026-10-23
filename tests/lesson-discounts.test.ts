@@ -173,3 +173,27 @@ describe('voice', () => {
     }
   });
 });
+
+describe('quality layer (docs/lessons/QUALITY_LAYER.md)', () => {
+  it('regression: checkClaim never claims or offers a sale price of $0.00 or less ("$80 off" a $73 item)', () => {
+    for (let s = 1; s <= 2000; s++) {
+      const it = GENS.checkClaim!(rng(s), s, 'check-and-correct');
+      expect(it.prompt, it.prompt).not.toMatch(/\$0(\.00)?(?![.\d])|−\$/);
+      for (const c of it.choices ?? []) expect(c, it.prompt).not.toMatch(/\$0(\.00)?(?![.\d])|−\$/);
+    }
+  });
+  it('the sale-price colour is not read as the answer; saveAndPay marks both boxes', () => {
+    const it = GENS.missing!(rng(4), 1, 'find-missing-amount');
+    expect(it.solution.join(' ')).not.toMatch(/<b class="s">/);
+    const sp = GENS.saveAndPay!(rng(5), 1, 'subtract-discount');
+    expect([...sp.solution.at(-1)!.matchAll(/<b class="s">/g)].length).toBe(2);
+  });
+});
+describe('quality layer: grammar', () => {
+  it('regression: "A pair of sneakers costs $x and is ...", never "A pair of ... cost ... and are"', () => {
+    for (let s = 1; s <= 600; s++) for (const [f, sg] of [['salePrice', 'subtract-discount'], ['oneStep', 'one-step-remaining'], ['partWhole', 'name-sale-amounts']] as const) {
+      const it = GENS[f]!(rng(s), s, sg);
+      expect(it.prompt, it.prompt).not.toMatch(/^A (pair|set) of \w+ cost\b|^A (pair|set) of .* and are\b/);
+    }
+  });
+});

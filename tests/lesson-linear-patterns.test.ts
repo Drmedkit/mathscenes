@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 import { rng, type Item } from '../src/lesson/runtime/item';
-import { GENS, PROBES, FAMILY_NAMES, CTX, tgFits, type FamilyId, type LinItem } from '../src/lesson/topics/linear-patterns/items';
+import { GENS, PROBES, FAMILY_NAMES, CTX, aAn, tgFits, type FamilyId, type LinItem } from '../src/lesson/topics/linear-patterns/items';
 import { PLAN } from '../src/lesson/topics/linear-patterns/plan';
 import { LINES } from '../src/lesson/topics/linear-patterns/script';
 import { computeTG, signed } from '../src/lesson/topics/linear-patterns/TableGraph';
@@ -140,5 +140,35 @@ describe('voice', () => {
     const src = fs.readFileSync('pages/lessons/linear-patterns.ts', 'utf8');
     const used = [...src.matchAll(/(?:para|fb|sayOnly)\(\s*(?:[a-z!?.\s]*,\s*)?'([a-z]\.[a-z0-9-]+)'/g)].map(m => m[1]!);
     for (const id of used) expect(LINES[id], id).toBeTruthy();
+  });
+});
+
+describe('quality layer (docs/lessons/QUALITY_LAYER.md)', () => {
+  it('regression: "an $8 / an $11 / an $18 shipping fee", never "a $18"', () => {
+    for (let s = 1; s <= 400; s++) for (const sg of ['words-to-table', 'classify-from-context']) {
+      const it = GENS.wordsToTable(rng(s), s, sg);
+      expect(it.prompt, it.prompt).not.toMatch(/\ba <b class="a">\$(8|11|18)\b/);
+    }
+    expect(aAn(18)).toBe('an'); expect(aAn(8)).toBe('an'); expect(aAn(80)).toBe('an'); expect(aAn(11)).toBe('an'); expect(aAn(12)).toBe('a');
+  });
+  it('the change rows end on the number the student types (the size of the change), and pairs mark both boxes', () => {
+    const down = GENS.rowChange(rng(3), 1, 'constant-decrease-and-zero');
+    expect(down.solution.at(-1)).toMatch(new RegExp(`<b class="s">${(down.answer as { v: number }).v}</b> less`));
+    const pu = GENS.perUnit(rng(5), 1, 'equal-steps-larger-than-one');
+    expect([...pu.solution.join(' ').matchAll(/<b class="s">/g)].length).toBe(2);
+  });
+  it('regression (oracle sweep): plants/hikes/savings never drop in onALine; contextLinear asks about the TOTAL; "5 in." not "5 in.."; "Whose savings"; "1 gallon"', () => {
+    for (let s = 1; s <= 400; s++) {
+      const o = GENS.onALine(rng(s), s, 'curve-vs-line') as LinItem & { pic: { tg: { ys: number[]; yName: string } } };
+      if (!/water/.test(o.pic.tg.yName)) expect(o.pic.tg.ys.every((y, i, a) => i === 0 || y >= a[i - 1]!), o.prompt).toBe(true);
+      const c = GENS.contextLinear(rng(s), s, 'classify-from-context');
+      expect(c.prompt).not.toMatch(/each week saves \$\d+ more than the week before/);
+      for (const f of ['wordsToTable', 'plotPoint', 'compareLines', 'couldOrMust', 'graphToWords'] as FamilyId[]) {
+        const sg = PLAN.find(p => p.families.includes(f))!.id;
+        const it = GENS[f](rng(s), s, sg);
+        const text = [it.prompt, ...it.solution, ...(it.choices ?? [])].join(' ');
+        expect(text).not.toMatch(/in\.\.|Whose saved|\b1 (gallons|miles|tiles|kids|squares)\b/);
+      }
+    }
   });
 });

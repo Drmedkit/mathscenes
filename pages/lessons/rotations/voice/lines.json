@@ -51,10 +51,10 @@
   "text": "That is a quarter turn clockwise. Counterclockwise goes against the clock."
  },
  "t.b-one": {
-  "text": "That turns only the 2 right and leaves the 3 up as it was. Both steps turn: 3 up turns into 3 left."
+  "text": "That turns only the two right and leaves the three up as it was. Both steps turn: three up turns into three left."
  },
  "t.b-count": {
-  "text": "One step short: count the jumps between dots, not the dot you start on. 3 up turns into 3 left."
+  "text": "One step short: count the jumps between dots, not the dot you start on. three up turns into three left."
  },
  "t.c-auto": {
   "text": "C goes the same way: five right, one up turns into one left, five up."
@@ -72,16 +72,16 @@
   "text": "Every corner has to land right. Check B and C too, not just A."
  },
  "t.cb-right": {
-  "text": "You were right: picture 2. Now you can show why, corner by corner."
+  "text": "You were right: picture two. Now you can show why, corner by corner."
  },
  "t.cb-center": {
-  "text": "Picture 1 turned about its own corner, not about the pin P. Every point must keep its distance from P: picture 2."
+  "text": "Picture one turned about its own corner, not about the pin P. Every point must keep its distance from P: picture two."
  },
  "t.cb-flip": {
-  "text": "Picture 3 is flipped down, a mirror image: A, B, C goes the other way round. The quarter turn is picture 2."
+  "text": "Picture three is flipped down, a mirror image: A, B, C goes the other way round. The quarter turn is picture two."
  },
  "t.cb-none": {
-  "text": "The quarter turn about P is picture 2."
+  "text": "The quarter turn about P is picture two."
  },
  "p.intro": {
   "text": "Riley drew the L and a lavender L below line m, and says: it is upside down, so it is a half turn of the L."

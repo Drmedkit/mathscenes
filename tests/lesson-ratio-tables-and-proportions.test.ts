@@ -190,3 +190,18 @@ describe('voice', () => {
     }
   });
 });
+
+describe('quality layer: oracle sweep fixes', () => {
+  const sgOf = (f: FamilyId) => PLAN.find(p => (p.families as string[]).includes(f))!.id;
+  const plainT = (h: string) => h.replace(/<[^>]+>/g, '');
+  it('testTable never makes a table of a fixed unit conversion (4 gal = 6 qt, 1 yd = 2 ft)', () => {
+    for (let s = 1; s <= 600; s++) expect(plainT(GENS.testTable(rng(s), s, 'test-every-pair').prompt)).not.toMatch(/gallon|quart|pint|yard/);
+  });
+  it('one item, one verb: "1 bag holds", "What does 1 notebook cost?", "1 hour"', () => {
+    for (let s = 1; s <= 300; s++) for (const f of ['timesAsMany', 'whatStays', 'subRows', 'pairTable', 'unitRow'] as FamilyId[]) {
+      const it = GENS[f](rng(s), s, sgOf(f));
+      const t = [it.prompt, ...it.solution].map(plainT).join(' ');
+      expect(t, t).not.toMatch(/(?<!does )\b1 (bag|batch of muffins|notebook|bus ticket|pound of grapes|can of paint) (hold|use|cost|cover)\b|\bdo 1 \w|\b1 hours\b/);
+    }
+  });
+});
