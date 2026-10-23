@@ -92,6 +92,16 @@ export function valueOf(r: Response): number | null {
   return null;
 }
 
+/** a stored fraction answer: 5.5 -> 11/2, 1.2 -> 6/5, 7 -> 7 (whole box), never a decimal in the whole box */
+function fracOf(v: number): Response {
+  if (Number.isInteger(v)) return { kind: 'frac', w: v, n: 0, d: 1 };
+  for (const d of [2, 4, 5, 8, 10, 20, 25, 50, 100]) {
+    const n = Math.round(v * d);
+    if (Math.abs(n / d - v) < 1e-9) { let a = n, b = d; while (b) [a, b] = [b, a % b]; return { kind: 'frac', w: 0, n: n / a, d: d / a }; }
+  }
+  return { kind: 'frac', w: v, n: 0, d: 1 };
+}
+
 // ---------- item builders ----------
 type Base = Omit<CircleItem, 'input' | 'answer' | 'check' | 'choices'>;
 interface Wrong { v: number; mc?: string; say: string }
@@ -105,7 +115,7 @@ function numeric(base: Base, o: { ans: number; tol?: number; frac?: [number, num
     wrongs.push(w);
   }
   const input = o.input ?? 'num';
-  const answer: Response = input === 'frac' ? (o.frac ? { kind: 'frac', w: 0, n: o.frac[0], d: o.frac[1] } : { kind: 'frac', w: o.ans, n: 0, d: 1 }) : { kind: 'num', v: o.ans };
+  const answer: Response = input === 'frac' ? (o.frac ? { kind: 'frac', w: 0, n: o.frac[0], d: o.frac[1] } : fracOf(o.ans)) : { kind: 'num', v: o.ans };
   const it: CircleItem = {
     ...base, input, answer,
     check(r: Response): Verdict {
@@ -153,25 +163,37 @@ interface Ctx {
   /** short words for claims, and the questions as a kid would ask them */
   aroundW: string; coverW: string; aroundQ: string; coverQ: string;
   diam: (d: string) => string; rad: (r: string) => string;
+  /** the diameters a real one has, in u (a pizza is 4-30 in, a tabletop 1.5-12 ft) */
+  dr: readonly [number, number];
 }
-const CTX: readonly Ctx[] = [
+export const CTX: readonly Ctx[] = [
   { id: 'pizza', look: 'pizza', u: 'in', around: 'the crust around the edge', cover: 'the cheese that covers the top', aroundW: 'crust', coverW: 'cheese',
-    aroundQ: 'How long is the crust around the edge?', coverQ: 'How much area does the cheese cover?', diam: d => `a ${d}-inch pizza`, rad: r => `a pizza with a radius of ${r} in` },
+    aroundQ: 'How long is the crust around the edge?', coverQ: 'How much area does the cheese cover?', diam: d => `a ${d}-inch pizza`, rad: r => `a pizza with a radius of ${r} in`, dr: [4, 30] },
   { id: 'garden', look: 'garden', u: 'ft', around: 'edging around the flower bed', cover: 'mulch to cover the flower bed', aroundW: 'edging', coverW: 'mulch',
-    aroundQ: 'How many feet of edging go around the flower bed?', coverQ: 'How much area must the mulch cover?', diam: d => `a round flower bed ${d} ft across`, rad: r => `a round flower bed with a radius of ${r} ft` },
+    aroundQ: 'How many feet of edging go around the flower bed?', coverQ: 'How much area must the mulch cover?', diam: d => `a round flower bed ${d} ft across`, rad: r => `a round flower bed with a radius of ${r} ft`, dr: [3, 40] },
   { id: 'pool', look: 'pool', u: 'ft', around: 'a rope around the edge of the pool', cover: 'a cover for the whole pool', aroundW: 'rope', coverW: 'cover',
-    aroundQ: 'How long is a rope that goes once around the edge of the pool?', coverQ: 'How much area must a cover for the whole pool have?', diam: d => `a round pool ${d} ft across`, rad: r => `a round pool with a radius of ${r} ft` },
+    aroundQ: 'How long is a rope that goes once around the edge of the pool?', coverQ: 'How much area must a cover for the whole pool have?', diam: d => `a round pool ${d} ft across`, rad: r => `a round pool with a radius of ${r} ft`, dr: [4, 50] },
   { id: 'table', look: 'table', u: 'ft', around: 'trim around the edge of the tabletop', cover: 'a cloth that covers the tabletop exactly', aroundW: 'trim', coverW: 'cloth',
-    aroundQ: 'How long is the trim around the edge of the tabletop?', coverQ: 'How much cloth covers the tabletop exactly?', diam: d => `a round tabletop ${d} ft across`, rad: r => `a round tabletop with a radius of ${r} ft` },
+    aroundQ: 'How long is the trim around the edge of the tabletop?', coverQ: 'How much cloth covers the tabletop exactly?', diam: d => `a round tabletop ${d} ft across`, rad: r => `a round tabletop with a radius of ${r} ft`, dr: [1.5, 12] },
   { id: 'rug', look: 'rug', u: 'ft', around: 'binding sewn around the edge of the rug', cover: 'the fabric of the rug', aroundW: 'binding', coverW: 'fabric',
-    aroundQ: 'How long is the binding sewn around the edge of the rug?', coverQ: 'How much floor does the rug cover?', diam: d => `a round rug ${d} ft across`, rad: r => `a round rug with a radius of ${r} ft` },
+    aroundQ: 'How long is the binding sewn around the edge of the rug?', coverQ: 'How much floor does the rug cover?', diam: d => `a round rug ${d} ft across`, rad: r => `a round rug with a radius of ${r} ft`, dr: [2, 20] },
   { id: 'lid', look: 'lid', u: 'cm', around: 'a rubber seal around the lid', cover: 'a sticker that covers the top of the lid', aroundW: 'seal', coverW: 'sticker',
-    aroundQ: 'How long is a rubber seal that goes once around the lid?', coverQ: 'How much area does a sticker need to cover the whole top?', diam: d => `a jar lid ${d} cm across`, rad: r => `a jar lid with a radius of ${r} cm` },
+    aroundQ: 'How long is a rubber seal that goes once around the lid?', coverQ: 'How much area does a sticker need to cover the whole top?', diam: d => `a jar lid ${d} cm across`, rad: r => `a jar lid with a radius of ${r} cm`, dr: [3, 20] },
   { id: 'field', look: 'garden', u: 'm', around: 'one lap around the edge of the field', cover: 'new turf for the whole field', aroundW: 'lap', coverW: 'turf',
-    aroundQ: 'How long is one lap around the edge of the field?', coverQ: 'How much turf covers the whole field?', diam: d => `a circular field ${d} m across`, rad: r => `a circular field with a radius of ${r} m` },
+    aroundQ: 'How long is one lap around the edge of the field?', coverQ: 'How much turf covers the whole field?', diam: d => `a circular field ${d} m across`, rad: r => `a circular field with a radius of ${r} m`, dr: [10, 400] },
   { id: 'sprinkler', look: 'garden', u: 'ft', around: 'the edge of the watered circle', cover: 'the lawn the sprinkler waters', aroundW: 'edge', coverW: 'lawn',
-    aroundQ: 'How long is the edge of the watered circle?', coverQ: 'How much lawn does the sprinkler water?', diam: d => `a sprinkler that waters a circle ${d} ft across`, rad: r => `a sprinkler that reaches ${r} ft in every direction` },
+    aroundQ: 'How long is the edge of the watered circle?', coverQ: 'How much lawn does the sprinkler water?', diam: d => `a sprinkler that waters a circle ${d} ft across`, rad: r => `a sprinkler that reaches ${r} ft in every direction`, dr: [4, 120] },
+  { id: 'coin', look: 'lid', u: 'in', around: 'the rim around the edge of the coin', cover: 'one face of the coin', aroundW: 'rim', coverW: 'face',
+    aroundQ: 'How long is the rim around the edge of the coin?', coverQ: 'How much area does one face of the coin have?', diam: d => `a coin ${d} in across`, rad: r => `a coin with a radius of ${r} in`, dr: [0.6, 2] },
 ];
+/** the diameter d (in the context's unit) is a real size for it */
+const realSize = (c: { dr: readonly [number, number] }, d: number) => d >= c.dr[0] - 1e-9 && d <= c.dr[1] + 1e-9;
+/** a context from the pool where every diameter is a real size: the numbers come first, the object fits them */
+function ctxFor(R: () => number, pool: readonly Ctx[], ...ds: number[]): Ctx {
+  const ok = pool.filter(c => ds.every(d => realSize(c, d)));
+  if (!ok.length) throw new Error(`circles: no context is ${ds.join(' and ')} across`);
+  return pick(R, ok);
+}
 /** "a 12-inch pizza" -> "A 12-inch pizza." */
 const Cap = (s: string) => `${s[0]!.toUpperCase()}${s.slice(1)}.`;
 const Up = (s: string) => `${s[0]!.toUpperCase()}${s.slice(1)}`;
@@ -348,7 +370,7 @@ const convertRD: Gen = (R, n) => {
   else if (phase === 'p1b') { toD = R() < 0.5; given = toD ? int(R, 11, 15) : 2 * int(R, 11, 15); }
   else { toD = false; given = R() < 0.6 ? 2 * int(R, 1, 14) + 1 : pick(R, [2.4, 4.6, 6.4, 8.2, 3.8, 5.2, 7.6, 9.4, 1.6, 4.8]); }
   const ans = toD ? 2 * given : given / 2;
-  const ctx = toD ? pick(R, CTX.filter(c => ['sprinkler', 'garden', 'pool', 'rug', 'field'].includes(c.id))) : pick(R, CTX);
+  const ctx = ctxFor(R, toD ? CTX.filter(c => ['sprinkler', 'garden', 'pool', 'rug', 'field'].includes(c.id)) : CTX, toD ? ans : given);
   const u = ctx.u;
   const what = toD ? ctx.rad(dec(given)) : ctx.diam(dec(given));
   const half = !Number.isInteger(ans);
@@ -376,9 +398,10 @@ const convertRD: Gen = (R, n) => {
 // ===================================================================================================================
 // 4 circumference-meaning: around or across
 // ===================================================================================================================
-const OBJ = [
-  { t: 'a jar lid', look: 'lid' as Look, u: 'cm' }, { t: 'a round cake', look: 'pizza' as Look, u: 'in' }, { t: 'a tree trunk', look: 'table' as Look, u: 'in' },
-  { t: 'a round tabletop', look: 'table' as Look, u: 'ft' }, { t: 'a drum', look: 'lid' as Look, u: 'in' }, { t: 'a round rug', look: 'rug' as Look, u: 'ft' },
+/** dr: the diameters a real one has, in u */
+export const OBJ: readonly { t: string; look: Look; u: string; dr: readonly [number, number] }[] = [
+  { t: 'a jar lid', look: 'lid', u: 'cm', dr: [3, 20] }, { t: 'a round cake', look: 'pizza', u: 'in', dr: [6, 14] }, { t: 'a tree trunk', look: 'table', u: 'in', dr: [6, 48] },
+  { t: 'a round tabletop', look: 'table', u: 'ft', dr: [2, 8] }, { t: 'a drum', look: 'lid', u: 'in', dr: [6, 30] }, { t: 'a round rug', look: 'rug', u: 'ft', dr: [3, 12] },
 ];
 const MEASURE_OPTS = (right: 'C' | 'd' | 'A', what: string): Opt[] => [
   { t: 'its circumference', ok: right === 'C', mc: right === 'A' ? MC.sameAttr : right === 'd' ? MC.aroundAcross : undefined, say: right === 'C' ? `Yes: ${what} is the distance around, the circumference.` : `The circumference is the distance AROUND. ${what} is ${right === 'd' ? 'straight across' : 'the space inside'}.` },
@@ -398,7 +421,7 @@ const aroundAcross: Gen = (R, n) => {
     }, MEASURE_OPTS('C', 'the string around the edge'));
   }
   if (v === 'estimate') {
-    const d = int(R, 3, 12);
+    const d = int(R, Math.max(3, Math.ceil(o.dr[0])), Math.min(12, Math.floor(o.dr[1])));
     const opts: Opt[] = [
       { t: `a bit more than ${3 * d} ${o.u}`, ok: true, say: `Yes: the way around is a bit more than 3 times the way across (π ≈ 3.14), so a bit more than ${3 * d} ${o.u}.` },
       { t: `${d} ${o.u}`, mc: MC.aroundAcross, say: `${d} ${o.u} is straight across. Around the curved edge is much longer: a bit more than 3 times as long.` },
@@ -428,8 +451,10 @@ const aroundAcross: Gen = (R, n) => {
 // 5 area-meaning (and 13): length or area, and its unit
 // ===================================================================================================================
 const lengthOrArea: Gen = (R, n) => {
-  const ctx = pick(R, CTX), around = R() < 0.5, u = ctx.u;
   const v = pick(R, ['measure', 'measure', 'unit'] as const);
+  // the numbers first, then an object that really is that big
+  const dM = 2 * int(R, 2, 9), r = int(R, 3, 9);
+  const ctx = ctxFor(R, CTX, v === 'measure' ? dM : 2 * r), around = R() < 0.5, u = ctx.u;
   const job = around ? ctx.around : ctx.cover;
   const pict = { pic: discPic(ctx.look, []), solve: { show: [around ? 'C' : 'A'], tex: around ? T(`around: C, in ${u}`) : T(`inside: A, in sq ${u}`) } };
   const sol = [around ? `${job[0]!.toUpperCase()}${job.slice(1)} goes around the edge: a length, the circumference, in ${u}.` : `${job[0]!.toUpperCase()}${job.slice(1)} covers the inside: the area, in square ${u}.`];
@@ -441,11 +466,10 @@ const lengthOrArea: Gen = (R, n) => {
       { t: `the area, in ${u}`, mc: around ? MC.sameAttr : MC.unitDim, say: around ? `This one goes around the edge: the circumference, in ${u}.` : `Right measure, wrong unit: an area is in square ${u}.` },
     ];
     return choice(R, {
-      id: `lengthOrArea-${n}`, family: 'lengthOrArea', prompt: `${Cap(ctx.diam(String(2 * int(R, 2, 9))))} The question is: “${around ? ctx.aroundQ : ctx.coverQ}” Which measure answers it?`,
+      id: `lengthOrArea-${n}`, family: 'lengthOrArea', prompt: `${Cap(ctx.diam(String(dM)))} The question is: “${around ? ctx.aroundQ : ctx.coverQ}” Which measure answers it?`,
       board: around ? T('around, or inside?') : T('inside, or around?'), solution: sol, pict,
     }, opts);
   }
-  const r = int(R, 3, 9);
   const val = around ? dec(roundTo(2 * PI * r, 1)) : dec(roundTo(PI * r * r, 1));
   const opts: Opt[] = [
     { t: u, ok: around, mc: around ? undefined : MC.unitDim, say: around ? `Yes: a length is in ${u}.` : `This is an area, so it is in square ${u}.` },
@@ -507,11 +531,15 @@ const gridBound: Gen = (R, n) => {
 const piRatio: Gen = (R, n) => {
   const v = pick(R, ['compute', 'compute', 'bigger', 'whatIs', 'line'] as const);
   if (v === 'compute') {
-    const d = int(R, 6, 40), u = pick(R, ['cm', 'in']);
-    const C = roundTo(PI * d * (1 + (int(R, -6, 6) / 1000)), 1);
+    // a can or a plate the size a real one is
+    const obj = pick(R, ['can', 'can', 'plate'] as const), u = pick(R, ['cm', 'in']);
+    const d = obj === 'can' ? (u === 'in' ? int(R, 2, 6) : int(R, 5, 15)) : (u === 'in' ? int(R, 6, 12) : int(R, 15, 30));
+    // a measured C whose C ÷ d is not a tie at the hundredths (12.5 ÷ 4 = 3.125 rounds either way)
+    let C = 0;
+    do C = roundTo(PI * d * (1 + (int(R, -6, 6) / 1000)), 1); while (Math.abs(((C * 1000) / d) % 10 - 5) < 1e-6);
     const ans = roundTo(C / d, 2);
     return numeric({
-      id: `piRatio-${n}`, family: 'piRatio', prompt: `A class measures a can: diameter ${d} ${u}, circumference ${dec(C)} ${u} (string and ruler). What is C ÷ d? Round to the nearest hundredth. ${CALC}`,
+      id: `piRatio-${n}`, family: 'piRatio', prompt: `A class measures ${obj === 'can' ? 'a can' : 'a plate'}: diameter ${d} ${u}, circumference ${dec(C)} ${u} (string and ruler). What is C ÷ d? Round to the nearest hundredth. ${CALC}`,
       board: `\\tfrac{C}{d} = \\tfrac{${dec(C)}}{${d}}`,
       solution: [`C ÷ d = ${dec(C)} ÷ ${d} ≈ <b class="s">${dec(ans)}</b>.`, 'Close to π ≈ 3.14: measuring with a string is never perfect. And it has no unit: cm ÷ cm.'],
       pict: { pic: { kind: 'unroll', look: 'lid', dTag: `d = ${unitTex(String(d), u)}` }, solve: { show: ['roll', 'dm'], tex: `${dec(C)} \\div ${d} \\approx ${dec(ans)}` } },
@@ -522,12 +550,16 @@ const piRatio: Gen = (R, n) => {
     });
   }
   if (v === 'bigger') {
-    const d1 = int(R, 2, 9), d2 = d1 * int(R, 3, 6), u = pick(R, ['cm', 'in']);
+    // a real coin (1-2 in, 2.5-5 cm) and a real plate (6-12 in, 15-30 cm)
+    const u = pick(R, ['cm', 'in']), [pLo, pHi] = u === 'in' ? [6, 12] : [15, 30];
+    const pairs: [number, number][] = [];
+    for (const c of u === 'in' ? [1, 1.5, 2] : [2.5, 3, 4, 5]) for (let k = 3; k <= 6; k++) if (c * k >= pLo && c * k <= pHi) pairs.push([c, c * k]);
+    const [d1, d2] = pick(R, pairs);
     return choice(R, {
-      id: `piRatio-${n}`, family: 'piRatio', prompt: `A coin is ${d1} ${u} across and a plate is ${d2} ${u} across. For the coin, C ÷ d is about 3.14. For the plate, C ÷ d is…`,
+      id: `piRatio-${n}`, family: 'piRatio', prompt: `A coin is ${dec(d1)} ${u} across and a plate is ${dec(d2)} ${u} across. For the coin, C ÷ d is about 3.14. For the plate, C ÷ d is…`,
       board: `\\tfrac{C}{d} = \\ ?`,
       solution: ['Every circle is a scaled copy of every other: across and around grow by the same factor.', 'So C ÷ d is the same for every circle, π ≈ 3.14, with no unit.'],
-      pict: { pic: { kind: 'pair', look: 'lid', r1: d1, r2: d2, tags: [unitTex(String(d1), u), unitTex(String(d2), u)], seg: 'diameter' }, solve: { show: ['C'], tex: `\\tfrac{C}{d} = \\pi \\approx 3.14` } },
+      pict: { pic: { kind: 'pair', look: 'lid', r1: d1, r2: d2, tags: [unitTex(dec(d1), u), unitTex(dec(d2), u)], seg: 'diameter' }, solve: { show: ['C'], tex: `\\tfrac{C}{d} = \\pi \\approx 3.14` } },
     }, [
       { t: 'about 3.14 too: the same for every circle', ok: true, say: 'Yes: bigger across means bigger around by the same factor. C ÷ d is π for every circle.' },
       { t: `about ${dec(roundTo(3.14 * d2 / d1, 1))}: a bigger circle has a bigger π`, mc: MC.piGrows, say: 'The plate is bigger around AND bigger across, by the same factor. C ÷ d stays π.' },
@@ -561,9 +593,9 @@ const piRatio: Gen = (R, n) => {
 // 8 c-from-d, 9 c-from-r
 // ===================================================================================================================
 const cFromD: Gen = (R, n) => {
-  const ctx = pick(R, CTX.filter(c => c.id !== 'sprinkler'));
   const kind = pick(R, ['whole', 'whole', 'whole', 'dec', 'frac'] as const);
   const d = kind === 'whole' ? int(R, 1, 30) : kind === 'dec' ? pick(R, [2.5, 4.5, 7.5, 1.5, 3.2, 6.4, 0.8, 10.5]) : pick(R, [3, 5, 7, 9, 11]) / 2;
+  const ctx = ctxFor(R, CTX.filter(c => c.id !== 'sprinkler'), d);
   const dTxt = kind === 'frac' ? `${d * 2}/2` : dec(d);
   const dHtml = kind === 'frac' ? fr(d * 2, 2) : dec(d);
   const u = ctx.u;
@@ -583,9 +615,9 @@ const cFromD: Gen = (R, n) => {
   });
 };
 const cFromR: Gen = (R, n) => {
-  const ctx = pick(R, CTX), u = ctx.u;
   const calc = R() < 0.3;
   const r = calc ? pick(R, [3.75, 2.35, 6.45, 4.15, 7.25, 5.65, 1.85, 8.35]) : R() < 0.65 ? int(R, 1, 20) : pick(R, [4.5, 1.25, 2.5, 3.5, 6.5, 2.25, 0.75, 1.5]);
+  const ctx = ctxFor(R, CTX, 2 * r), u = ctx.u;
   const { pic } = givenAsked(R, ctx.look, { kind: 'radius', tag: unitTex(dec(r), u) }, null);
   const base = {
     id: `cFromR-${n}`, family: 'cFromR' as const, board: 'C = 2\\pi r',
@@ -618,10 +650,10 @@ const cFromR: Gen = (R, n) => {
 // 10 a-from-r, 11 a-from-d
 // ===================================================================================================================
 const aFromR: Gen = (R, n) => {
-  const ctx = pick(R, CTX), u = ctx.u;
   const kind = pick(R, ['whole', 'whole', 'whole', 'frac', 'calc'] as const);
   if (kind === 'calc') {
     const r = pick(R, [2.5, 3.5, 1.5, 4.5, 2.4, 3.2, 5.5, 1.2]);
+    const ctx = ctxFor(R, CTX, 2 * r), u = ctx.u;
     const ans = roundTo(PI * r * r, 1);
     const { pic } = givenAsked(R, ctx.look, { kind: 'radius', tag: unitTex(dec(r), u) }, null);
     const lo = Math.floor(r) ** 2, hi = Math.ceil(r) ** 2;
@@ -639,7 +671,8 @@ const aFromR: Gen = (R, n) => {
   }
   if (kind === 'frac') {
     const p = pick(R, [1, 3, 5, 7, 9]), r = p / 2;
-    const { pic } = givenAsked(R, ctx.look, { kind: 'radius', tag: unitTex(`\\tfrac{${p}}{2}`, u) }, null);
+    const u = pick(R, ['in', 'ft', 'cm', 'm']);   // a plain circle: no object to fit
+    const { pic } = givenAsked(R, 'plain', { kind: 'radius', tag: unitTex(`\\tfrac{${p}}{2}`, u) }, null);
     return numeric({
       id: `aFromR-${n}`, family: 'aFromR', prompt: `A circle has a radius of ${fr(p, 2)} ${u}. What is its exact area, in terms of π? ${NOCALC}`, unit: `π ${sq(u)}`,
       board: 'A = \\pi r^2',
@@ -653,6 +686,7 @@ const aFromR: Gen = (R, n) => {
   }
   let r = int(R, 1, 12);
   if (r === 2) r = 7;
+  const ctx = ctxFor(R, CTX, 2 * r), u = ctx.u;
   const { pic } = givenAsked(R, ctx.look, { kind: 'radius', tag: unitTex(String(r), u) }, null);
   return numeric({
     id: `aFromR-${n}`, family: 'aFromR', prompt: `${Cap(ctx.rad(String(r)))} ${ctx.coverQ} Give the exact area in terms of π. ${NOCALC}`, unit: `π ${sq(u)}`,
@@ -666,10 +700,11 @@ const aFromR: Gen = (R, n) => {
   });
 };
 const aFromD: Gen = (R, n) => {
-  const ctx = pick(R, CTX.filter(c => c.id !== 'sprinkler')), u = ctx.u;
+  const AD = CTX.filter(c => c.id !== 'sprinkler');
   const kind = pick(R, ['even', 'even', 'odd', 'calc'] as const);
   if (kind === 'calc') {
     const d = pick(R, [4.2, 5.6, 7.4, 3.8, 6.2, 9.4, 2.6]), r = d / 2, ans = roundTo(PI * r * r, 1);
+    const ctx = ctxFor(R, AD, d), u = ctx.u;
     const { pic } = givenAsked(R, ctx.look, { kind: 'diameter', tag: unitTex(dec(d), u) }, { kind: 'radius', ans: `r = ${unitTex(dec(r), u)}` }, {}, true);
     return numeric({
       id: `aFromD-${n}`, family: 'aFromD', prompt: `${Cap(ctx.diam(dec(d)))} ${ctx.coverQ} Use the π key and round to the nearest tenth. ${CALC}`, unit: sq(u),
@@ -683,6 +718,7 @@ const aFromD: Gen = (R, n) => {
     });
   }
   const d = kind === 'even' ? 2 * int(R, 1, 12) : 2 * int(R, 1, 7) + 1, r = d / 2;
+  const ctx = ctxFor(R, AD, d), u = ctx.u;
   const rT = kind === 'even' ? String(r) : `\\tfrac{${d}}{2}`;
   const { pic } = givenAsked(R, ctx.look, { kind: 'diameter', tag: unitTex(String(d), u) }, { kind: 'radius', ans: `r = ${unitTex(rT, u)}` }, {}, true);
   return numeric({
@@ -772,9 +808,9 @@ const approx: Gen = (R, n) => {
 // 13 choose-c-or-a
 // ===================================================================================================================
 const chooseMeasure: Gen = (R, n) => {
-  const ctx = pick(R, CTX), u = ctx.u, around = R() < 0.5;
-  const byD = R() < 0.4 && ctx.id !== 'sprinkler';
   const r = int(R, 3, 10), d = 2 * r;
+  const ctx = ctxFor(R, CTX, d), u = ctx.u, around = R() < 0.5;
+  const byD = R() < 0.4 && ctx.id !== 'sprinkler';
   const exact = R() < 0.45;
   const given = byD ? ctx.diam(String(d)) : ctx.rad(String(r));
   const { pic } = givenAsked(R, ctx.look, { kind: byD ? 'diameter' : 'radius', tag: unitTex(String(byD ? d : r), u) }, null);
@@ -1042,9 +1078,10 @@ const propCheck: Gen = (R, n) => {
 // 20 context-compare, 21 area-factor-to-length
 // ===================================================================================================================
 const claimJudge: Gen = (R, n) => {
-  const ctx = pick(R, CTX.filter(c => ['pizza', 'garden', 'rug', 'pool', 'table'].includes(c.id)));
-  const name = pick(R, NAMES), k = pick(R, [2, 3, 2, 0.5]), u = ctx.u;
+  const name = pick(R, NAMES), k = pick(R, [2, 3, 2, 0.5]);
   const r1 = k === 0.5 ? 2 * int(R, 2, 5) : int(R, 2, 5), r2 = r1 * k;
+  // both objects must be a real size
+  const ctx = ctxFor(R, CTX.filter(c => ['pizza', 'garden', 'rug', 'pool', 'table'].includes(c.id)), 2 * r1, 2 * r2), u = ctx.u;
   const kTxt = k === 0.5 ? fr(1, 2) : String(k), k2 = k === 0.5 ? fr(1, 4) : String(k * k);
   const aroundW = ctx.aroundW, coverW = ctx.coverW;
   if (ctx.id === 'pizza' && R() < 0.5 && k !== 0.5) {
@@ -1081,7 +1118,7 @@ const areaBack: Gen = (R, n) => {
   const k = [Math.sqrt(f.a), Math.sqrt(f.b)] as const, fa = f.b === 1 ? String(f.a) : fr(f.a, f.b), fk = k[1] === 1 ? String(k[0]) : fr(k[0], k[1]);
   const obj = ctx.id === 'pizza' ? 'pizza' : ctx.id === 'garden' ? 'flower bed' : ctx.id === 'rug' ? 'rug' : ctx.id === 'pool' ? 'pool' : ctx.id === 'lid' ? 'lid' : 'tabletop';
   return numeric({
-    id: `areaBack-${n}`, family: 'areaBack', prompt: `A round ${obj} has ${fa} times the area of a smaller one${f.a < f.b ? ' (it is the smaller one)' : ''}. How many times the radius does it have? ${NOCALC}`, unit: '',
+    id: `areaBack-${n}`, family: 'areaBack', prompt: `A round ${obj} has ${fa} times the area of a ${f.a < f.b ? 'bigger' : 'smaller'} one. How many times the radius does it have? ${NOCALC}`, unit: '',
     board: `A \\times ${f.b === 1 ? f.a : `\\tfrac{${f.a}}{${f.b}}`} \\ \\Rightarrow\\ r \\times\\ ?`,
     solution: ['If the radius is × k, the area is × k × k.', `Which k times itself makes ${fa}? ${fk} × ${fk} = ${fa}, so the radius is × <b class="s">${fk}</b>.`],
   }, {

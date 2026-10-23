@@ -5,8 +5,8 @@
 // a pi r by r rectangle); the voiced script equals voice/lines.json.
 import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
-import { rng, type Item } from '../src/lesson/runtime/item';
-import { FAMILY_NAMES, GENS, PF, PROBES, type CircleItem, valueOf } from '../src/lesson/topics/circles/items';
+import { fracValue, rng, type Item } from '../src/lesson/runtime/item';
+import { CTX, FAMILY_NAMES, GENS, OBJ, PF, PROBES, type CircleItem, valueOf } from '../src/lesson/topics/circles/items';
 import { PLAN } from '../src/lesson/topics/circles/plan';
 import { PI, circle, layoutPic, piecePts, segEnds, texW, throughCenter, wedgeStrip, type Pic } from '../src/lesson/topics/circles/circleMaths';
 import { LESSON_PICS, LF } from '../src/lesson/topics/circles/lessonPics';
@@ -91,6 +91,71 @@ describe('item families', () => {
     const missing = [...new Set(t.subgoals.flatMap(s => s.misconceptions))].filter(m => !seen.has(m));
     // last-practiced-rule is a habit seen across items (interleaving), not one wrong answer
     expect(missing.filter(m => m !== 'mc.angles.last-practiced-rule')).toEqual([]);
+  });
+});
+
+describe('the world: objects are a real size', () => {
+  /** the prompt as plain text, fractions as a/b */
+  const plain = (h: string) => h.replace(/<span class="fr"><span>(\d+)<\/span><span>(\d+)<\/span><\/span>/g, '$1/$2').replace(/<[^>]+>/g, '');
+  const num = (t: string) => (t.includes('/') ? Number(t.split('/')[0]) / Number(t.split('/')[1]) : Number(t));
+  const esc = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const NUM = '([0-9][0-9./]*)';
+  /** every size a prompt states, as [object, diameter, the object's range] */
+  function sizes(prompt: string): [string, number, readonly [number, number]][] {
+    const t = plain(prompt), out: [string, number, readonly [number, number]][] = [];
+    for (const c of CTX) {
+      for (const [re, f] of [[c.diam('§'), 1], [c.rad('§'), 2]] as const) {
+        const rx = new RegExp(`\\b${esc(re).replace('§', NUM)}`, 'gi');
+        for (const m of t.matchAll(rx)) out.push([c.id, num(m[1]!) * f, c.dr]);
+      }
+    }
+    for (const o of OBJ) for (const m of t.matchAll(new RegExp(`${esc(o.t.slice(1))} is ${NUM} ${o.u} across`, 'gi'))) out.push([o.t, num(m[1]!), o.dr]);
+    const can = t.match(/measures a (can|plate): diameter ([0-9.]+) (in|cm)/);
+    if (can) out.push([`${can[1]} ${can[3]}`, Number(can[2]), can[1] === 'can' ? (can[3] === 'in' ? [1.5, 8] : [4, 20]) : (can[3] === 'in' ? [5, 16] : [10, 40])]);
+    const cp = t.match(/A coin is ([0-9.]+) (in|cm) across and a plate is ([0-9.]+) (?:in|cm) across/);
+    if (cp) out.push(['coin', Number(cp[1]), cp[2] === 'in' ? [0.5, 2] : [1, 5]], ['plate', Number(cp[3]), cp[2] === 'in' ? [5, 16] : [10, 40]]);
+    const two = t.match(/has two (.+?): radius ([0-9.]+) (?:in|ft|cm|m) and ([0-9.]+)/);
+    if (two) {
+      const c = CTX.find(x => x.diam('1').includes(two[1]!.replace(/s$/, '').replace(/ies$/, 'y')))!;
+      expect(c, two[1]).toBeTruthy();
+      out.push([c.id, 2 * Number(two[2]), c.dr], [c.id, 2 * Number(two[3]), c.dr]);
+    }
+    return out;
+  }
+  it('the probe reads the sizes (a 38 ft tabletop would be caught)', () => {
+    expect(sizes('A round tabletop with a radius of 19 ft. How long is the trim?')).toEqual([['table', 38, [1.5, 12]]]);
+    expect(sizes(`A ${'<span class="fr"><span>3</span><span>2</span></span>'}-inch pizza.`)).toEqual([['pizza', 1.5, [4, 30]]]);
+    expect(sizes('Lena has two round rugs: radius 5 ft and 15 ft.')).toEqual([['rug', 10, [2, 20]], ['rug', 30, [2, 20]]]);
+    expect(sizes('A coin is 4 in across and a plate is 12 in across.')[0]).toEqual(['coin', 4, [0.5, 2]]);
+  });
+  for (const f of ['convertRD', 'aroundAcross', 'lengthOrArea', 'piRatio', 'cFromD', 'cFromR', 'aFromR', 'aFromD', 'chooseMeasure', 'claimJudge'] as const) {
+    it(`${f}: every object it names is a real size (1000 seeds)`, () => {
+      let seen = 0;
+      for (const [ff, sg] of pairs.filter(([x]) => x === f)) for (let s = 1; s <= 1000; s++) {
+        const it = make(ff, sg, s);
+        for (const [obj, d, [lo, hi]] of sizes(it.prompt)) {
+          seen++;
+          expect(d >= lo - 1e-9 && d <= hi + 1e-9, `${obj} ${d} across (${lo}-${hi}): ${plain(it.prompt)}`).toBe(true);
+        }
+      }
+      expect(seen, `${f}: the probe read no sizes`).toBeGreaterThan(100);
+    });
+  }
+  it('areaBack: a factor below 1 compares with a BIGGER one, above 1 with a smaller one', () => {
+    let small = 0;
+    for (const [f, sg] of pairs.filter(([x]) => x === 'areaBack')) for (let s = 1; s <= 400; s++) {
+      const it = make(f, sg, s), k = valueOf(it.answer)!;
+      expect(it.prompt).not.toMatch(/it is the smaller one/);
+      expect(it.prompt, it.prompt).toMatch(k < 1 ? /the area of a bigger one/ : /the area of a smaller one/);
+      if (k < 1) small++;
+    }
+    expect(small).toBeGreaterThan(0);
+  });
+  it('fraction answers are stored as a whole number or a fraction, never a decimal in the whole box', () => {
+    for (const [f, sg] of pairs) for (let s = 1; s <= 200; s++) {
+      const it = make(f, sg, s);
+      if (it.answer.kind === 'frac') expect(fracValue(it.answer), `${f}: ${JSON.stringify(it.answer)}`).not.toBeNull();
+    }
   });
 });
 
