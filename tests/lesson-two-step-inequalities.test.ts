@@ -150,3 +150,45 @@ describe('voice', () => {
     }
   });
 });
+
+describe('quality-layer fixes (practice sweep, 2026-10-23)', () => {
+  const gen = (f: string, sg: string, s: number) => (GENERATORS as Record<string, (R: () => number, n: number, sg?: string) => Item>)[f]!(rng(s * 43 + 1), s, sg);
+  it('the steps card names the right number-line graph by its label, never pastes a graph into a step', async () => {
+    const { explain } = await import('../src/lesson/topics/two-step-inequalities/explain');
+    for (let s = 1; s <= 200; s++) {
+      const it = gen('pickSet', 'ineq-solution-set', s), ex = explain(it);
+      expect(ex, it.prompt).not.toBeNull();
+      expect(it.check(ex!.result).ok, it.prompt).toBe(true);
+      expect(ex!.steps.join(' '), it.prompt).not.toMatch(/<svg/);
+    }
+  });
+  it('2-5 steps for audit, chooseModel and proofStep, ending on an answer the lesson accepts', async () => {
+    const { explain } = await import('../src/lesson/topics/two-step-inequalities/explain');
+    for (const [f, sg] of [['audit', 'audit-solution-set'], ['chooseModel', 'choose-equation-or-inequality'], ['proofStep', 'justify-reversal-general']] as const) {
+      for (let s = 1; s <= 200; s++) {
+        const it = gen(f, sg, s), ex = explain(it);
+        expect(ex, `${f}: ${it.prompt}`).not.toBeNull();
+        expect(ex!.steps.length).toBeGreaterThanOrEqual(2);
+        expect(ex!.steps.length).toBeLessThanOrEqual(5);
+        expect(it.check(ex!.result).ok, `${f}: ${it.prompt}`).toBe(true);
+      }
+    }
+  });
+});
+
+describe('worlds (practice sweep, 2026-10-23)', () => {
+  const gen = (f: string, sg: string, s: number) => (GENERATORS as Record<string, (R: () => number, n: number, sg?: string) => Item>)[f]!(rng(s * 47 + 5), s, sg);
+  it('firstMove asks to undo the last step first, and never offers "divide both sides first" (that is a legal first move too)', () => {
+    for (const sg of ['solve-ineq-positive', 'solve-ineq-negative']) for (let s = 1; s <= 300; s++) {
+      const it = gen('firstMove', sg, s);
+      expect(it.prompt).toMatch(/Undo the last step/);
+      const wrong = it.choices!.filter((_, i) => !it.check({ kind: 'choice', i }).ok).join(' | ');
+      expect(wrong, wrong).not.toMatch(/(Divide|Multiply) both sides by [^;]*first/);
+    }
+  });
+  it('a temperature below zero is written with a real minus sign (−5 °F, not -5 °F)', () => {
+    for (let s = 1; s <= 400; s++) for (const f of ['writeIneq', 'contextSolve']) {
+      expect(gen(f, 'inequality-context', s).prompt.replace(/<[^>]+>/g, '')).not.toMatch(/-\d[\d.]* °F/);
+    }
+  });
+});

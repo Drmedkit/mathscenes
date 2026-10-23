@@ -14,6 +14,7 @@ import {
   parseDec, repDigits, repToFrac, repTex, roundTo, sqrt, fromTyped, decEq, approx, isRational, longDivision,
 } from './realMaths';
 import { type Num, Dc, Fr, I, Mx, PATTERNS, PIn, Pat, Pc, Rp, Sq, SqD, SqF, hNum, ov, rad, repDotsHtml, repHtml, MINUS } from './nums';
+import { ans as mark, endOnChoice } from '../../runtime/explain';
 export { rng };
 export type { Response, Verdict };
 
@@ -128,7 +129,7 @@ function choice(R: () => number, base: Omit<IrItem, 'input' | 'choices' | 'answe
   const o = keepOrder ? opts.slice() : shuffle(R, opts.slice());
   const right = o.findIndex(x => x.ok);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right }, solution: endOnChoice(base.solution, o[right]!.t),
     check: r => {
       if (r.kind !== 'choice' || !o[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const x = o[r.i]!;
@@ -187,7 +188,7 @@ const asQuotient: Gen = (R, n) => {
     id: `asQuotient-${n}`, family: 'asQuotient',
     prompt: pick(R, [`Write ${A(q.n.html)} as a quotient of two integers.`, `${A(q.n.html)} is rational. Show it: write it as integer ÷ integer.`, `Fill in two integers so that the fraction equals ${A(q.n.html)}.`]),
     board: `${q.n.tex} = \\dfrac{\\,?\\,}{\\,?\\,}`, input: 'pair', pairLead: `${q.n.html} =`, pairOp: '/', solveTex: [`${q.n.tex} = \\dfrac{${q.ex[0]}}{${q.ex[1]}}`],
-    solution: [q.say, 'Integer on top, nonzero integer below: that is what “rational” means.'],
+    solution: [q.say, `So ${q.n.html} = ${mark(hNum(q.ex[0]))}/${mark(hNum(q.ex[1]))}: integer on top, nonzero integer below. That is what “rational” means.`],
     answer: { kind: 'pair', x: q.ex[0], y: q.ex[1] },
     check: r => {
       if (r.kind !== 'pair' || !Number.isFinite(r.x) || !Number.isFinite(r.y)) return { ok: false, say: 'Type two integers.' };
@@ -252,7 +253,7 @@ const remainders: Gen = (R, n) => {
       id: `remainders-${n}`, family: 'remainders',
       prompt: `In long division by ${B(q)}, every remainder is a whole number smaller than ${q}. If the division never ends, how many different nonzero remainders can there be, at most?`,
       board: `\\text{remainder} \\in \\{1, 2, {\\ldots}, ${q - 1}\\}`, input: 'num', unit: 'remainders', solveTex: [`${q - 1} \\text{ possible remainders}`, '\\text{one must come back}'],
-      solution: [`A nonzero remainder can only be 1, 2, …, ${q - 1}: that is ${q - 1} values.`, `So within ${q} steps a remainder comes back, and from there the same digits repeat.`],
+      solution: [`A nonzero remainder can only be 1, 2, …, ${q - 1}: that is ${mark(q - 1)} values.`, `So within ${q} steps a remainder comes back, and from there the same digits repeat.`],
       answer: { kind: 'num', v: q - 1 },
       check: r => {
         const x = needNum(r);
@@ -327,7 +328,7 @@ const addressOf: Gen = (R, n) => {
     board: `\\square < ${name} < \\square`, input: 'pair', pairLead: '', pairOp: `&lt; ${fr(p, q)} &lt;`,
     pic: zoomPic({ x, name, levels: 3 }, show, solve),
     solveTex: [`${dt(lo, L)} < ${name} < ${dt(lo + 1n, L)}`],
-    solution: [`${fr(p, q)} = ${digits(x, L + 2)}…: its first ${L === 1 ? 'digit' : 'two digits'} after the point ${L === 1 ? 'is' : 'are'} ${digits(x, L).split('.')[1]}.`, `So it sits in the ${PLACE[L]} from ${dh(lo, L)} to ${dh(lo + 1n, L)}: ${dh(lo, L)} < ${fr(p, q)} < ${dh(lo + 1n, L)}.`],
+    solution: [`${fr(p, q)} = ${digits(x, L + 2)}…: its first ${L === 1 ? 'digit' : 'two digits'} after the point ${L === 1 ? 'is' : 'are'} ${digits(x, L).split('.')[1]}.`, `So it sits in the ${PLACE[L]} from ${dh(lo, L)} to ${dh(lo + 1n, L)}: ${mark(dh(lo, L))} &lt; ${fr(p, q)} &lt; ${mark(dh(lo + 1n, L))}.`],
     answer: { kind: 'pair', x: Number(dt(lo, L)), y: Number(dt(lo + 1n, L)) },
     check: r => {
       if (r.kind !== 'pair') return { ok: false, say: 'Type two decimals.' };
@@ -689,7 +690,7 @@ const rootFraction: Gen = (R, n) => {
   return {
     id: `rootFraction-${n}`, family: 'rootFraction', prompt: dec ? `Write ${A(h)} as a fraction.` : `Find ${A(h)}. (Any equal fraction counts.)`,
     board: `${t} = \\,?`, input: 'frac', solveTex: [dec ? `${shown} = \\tfrac{${a0}}{100}` : `\\tfrac{${a0}}{${b0}} = \\tfrac{${a}}{${b}}`, `\\left(\\tfrac{${p}}{${q}}\\right)^2 = \\tfrac{${a}}{${b}}`, `${t} = \\tfrac{${p}}{${q}}`],
-    solution: [dec ? `${shown} = ${fr(a0, 100)}${g > 1 ? ` = ${fr(a, b)}` : ''}.` : g > 1 ? `Reduce first: ${fr(a0, b0)} = ${fr(a, b)}.` : `${fr(a, b)} is in lowest terms.`, `${a} = ${p}² and ${b} = ${q}², so ${h} = ${fr(p, q)}. Check: ${fr(p, q)} × ${fr(p, q)} = ${fr(a, b)}.`],
+    solution: [dec ? `${shown} = ${fr(a0, 100)}${g > 1 ? ` = ${fr(a, b)}` : ''}.` : g > 1 ? `Reduce first: ${fr(a0, b0)} = ${fr(a, b)}.` : `${fr(a, b)} is in lowest terms.`, `${a} = ${p}² and ${b} = ${q}², so ${h} = ${mark(fr(p, q))}. Check: ${fr(p, q)} × ${fr(p, q)} = ${fr(a, b)}.`],
     answer: { kind: 'frac', w: 0, n: p, d: q },
     check: r => {
       if (r.kind !== 'frac' || r.d <= 0 || !Number.isInteger(r.n) || !Number.isInteger(r.d)) return { ok: false, say: 'Type a fraction.' };
@@ -714,7 +715,9 @@ function repPool(R: () => number, sg: string | undefined): Rep {
       return { int: R() < 0.3 ? int(R, 1, 3) : 0, pre, rep };
     }
     const pre = String(int(R, 0, 9)), rep = String(int(R, 1, 9)) + String(int(R, 0, 9));
-    return { int: 0, pre, rep: rep[0] === rep[1] ? rep[0] + String((Number(rep[1]) + 3) % 10) : rep };
+    const rep2 = rep[0] === rep[1] ? rep[0] + String((Number(rep[1]) + 3) % 10) : rep;
+    // pre = the block's last digit would make it a pure repeat: 0.3 63 63… = 0.36 36…
+    return { int: 0, pre: pre === rep2[1] ? String((Number(pre) + 1) % 10) : pre, rep: rep2 };
   }
   const v = int(R, 0, 9);
   if (v === 0) return { int: 0, pre: '', rep: '9' };
@@ -736,7 +739,7 @@ const toFraction: Gen = (R, n, sg) => {
     pic: { kind: 'tape', p: tp, show: ['bottom'], solve: ['top', 'align', 'subtract', 'cancel'] }, bareFirst: true,
     solveTex: [`${mn(m1)}x = ${rowTex(m1)}`, `${mn(m2)}x = ${rowTex(m2)}`, `${diff}x = ${D}`, `x = \\tfrac{${D}}{${diff}}${gcd(D, diff) > 1 ? ` = \\tfrac{${p}}{${q}}` : ''}`],
     solution: [`Let x = ${repDotsHtml(r, 6)}; then ${mn(m1)}x = ${hNum(rowTex(m1).replace('{\\ldots}', '…'))}${tp.s2 ? ` and ${mn(m2)}x = ${rowTex(m2).replace('{\\ldots}', '…')}` : ''}.`,
-      `The tails line up, so subtracting cancels them: ${diff}x = ${D}.`, `x = ${fr(D, diff)}${gcd(D, diff) > 1 ? ` = ${fr(p, q)}` : ''}.`],
+      `The tails line up, so subtracting cancels them: ${diff}x = ${D}.`, `x = ${gcd(D, diff) > 1 ? `${fr(D, diff)} = ${mark(fr(p, q))}` : mark(fr(D, diff))}.`],
     answer: { kind: 'frac', w: 0, n: p, d: q },
     check: rr => {
       if (rr.kind !== 'frac' || rr.d <= 0) return { ok: false, say: 'Type a fraction.' };
@@ -805,7 +808,7 @@ const bracket: Gen = (R, n) => {
     board: `\\square < ${name} < \\square`, input: 'pair', pairLead: '', pairOp: `&lt; ${nh} &lt;`,
     pic: zoomPic({ x, name, levels: 1, squares: true }, ['axis'], ['band0', 'sq0', 'name', 'dot']),
     solveTex: [`${k}^2 = ${k * k} < ${N} < ${(k + 1) ** 2} = ${k + 1}^2`, `${hNum(lo).replace(MINUS, '-')} < ${name} < ${hNum(hi).replace(MINUS, '-')}`],
-    solution: [`${k}² = ${k * k} and ${k + 1}² = ${(k + 1) ** 2}, and ${k * k} < ${N} < ${(k + 1) ** 2}.`, `So ${k} < ${rad(N)} < ${k + 1}.`, ...(neg ? [`The opposite flips the order: ${hNum(-(k + 1))} < ${nh} < ${hNum(-k)}.`] : [])],
+    solution: [`${k}² = ${k * k} and ${k + 1}² = ${(k + 1) ** 2}, and ${k * k} &lt; ${N} &lt; ${(k + 1) ** 2}.`, neg ? `So ${k} &lt; ${rad(N)} &lt; ${k + 1}.` : `So ${mark(k)} &lt; ${rad(N)} &lt; ${mark(k + 1)}.`, ...(neg ? [`The opposite flips the order: ${mark(hNum(-(k + 1)))} &lt; ${nh} &lt; ${mark(hNum(-k))}.`] : [])],
     answer: { kind: 'pair', x: lo, y: hi },
     check: r => {
       if (r.kind !== 'pair' || !Number.isFinite(r.x) || !Number.isFinite(r.y)) return { ok: false, say: 'Type two numbers.' };
@@ -832,7 +835,7 @@ const refine: Gen = (R, n) => {
     board: `\\square < ${name} < \\square`, input: 'pair', pairLead: '', pairOp: `&lt; ${rad(N)} &lt;`,
     pic: zoomPic({ x, name, levels: L + 1, squares: true }, zoomSteps(L + 1, true, L), [`zoom${L}` as ZoomStep, `band${L}` as ZoomStep, `sq${L}` as ZoomStep, 'dot']),
     solveTex: [`${dt(lo, L)}^2 = ${sqStr(lo, L)} < ${N} < ${sqStr(hi, L)} = ${dt(hi, L)}^2`, `${dt(lo, L)} < ${name} < ${dt(hi, L)}`],
-    solution: [`${dh(lo, L)}² = ${sqStr(lo, L)} is less than ${N}; ${dh(hi, L)}² = ${sqStr(hi, L)} is more.`, `So ${dh(lo, L)} < ${rad(N)} < ${dh(hi, L)}. Only the square decides, not which trial is closest.`],
+    solution: [`${dh(lo, L)}² = ${sqStr(lo, L)} is less than ${N}; ${dh(hi, L)}² = ${sqStr(hi, L)} is more.`, `So ${mark(dh(lo, L))} &lt; ${rad(N)} &lt; ${mark(dh(hi, L))}. Only the square decides, not which trial is closest.`],
     answer: { kind: 'pair', x: Number(dt(lo, L)), y: Number(dt(hi, L)) },
     check: r => {
       if (r.kind !== 'pair') return { ok: false, say: 'Type two decimals.' };
@@ -871,7 +874,7 @@ const roundRoot: Gen = (R, n) => {
   const v = int(R, 0, 2);
   if (v === 0) {
     // a root to the nearest whole number, by the midpoint square
-    const N = nonSquare(R, 3, 224), k = isqrt(N), x = sqrt(N), up = roundTo(x, 0), mid = `${k}.5`, midSq = decStr(BigInt(2 * k + 1) ** 2n, 2, true);
+    const N = nonSquare(R, 3, 224), k = isqrt(N), x = sqrt(N), up = roundTo(x, 0), mid = `${k}.5`, midSq = decStr(BigInt(2 * k + 1) ** 2n * 25n, 2, true);   // (k + 0.5)² = (2k + 1)² / 4
     return {
       id: `roundRoot-${n}`, family: 'roundRoot', prompt: `${k} < ${rad(N)} < ${k + 1}. Round ${A(rad(N))} to ${ROUNDW(0)}. (Hint: ${mid}² = ${midSq}.)`,
       board: `\\sqrt{${N}} \\approx \\,?`, input: 'num',
@@ -1160,7 +1163,7 @@ const maxError: Gen = (R, n) => {
     board: `${dt(lo, L)} < ${c.t} < ${dt(lo + 1n, L)}`, input: 'num',
     pic: zoomPic({ x: c.x, name: c.t, levels: 1, from: L }, ['axis', 'name', 'band0'], ['dot']),
     solveTex: [`${dt(lo + 1n, L)} - ${dt(lo, L)} = ${width}`, `\\text{error} < ${width}`],
-    solution: [`${c.h} is somewhere in the interval from ${dh(lo, L)} to ${dh(lo + 1n, L)}, and ${use} is its left end.`, `So the error is less than the width: ${dh(lo + 1n, L)} − ${dh(lo, L)} = ${width}.${pad ? ` The extra zeros in ${use} add no accuracy.` : ''}`],
+    solution: [`${c.h} is somewhere in the interval from ${dh(lo, L)} to ${dh(lo + 1n, L)}, and ${use} is its left end.`, `So the error is less than the width: ${dh(lo + 1n, L)} − ${dh(lo, L)} = ${mark(width)}.${pad ? ` The extra zeros in ${use} add no accuracy.` : ''}`],
     answer: { kind: 'num', v: Number(width) },
     check: r => {
       const a = needNum(r); const t = a === null ? null : fromTyped(a, 8);
@@ -1226,7 +1229,7 @@ const boundExpr: Gen = (R, n) => {
   return {
     id: `boundExpr-${n}`, family: 'boundExpr', prompt: `${e.given}. Carry the bounds through: between which two numbers is ${A(e.h)}?`,
     board: `\\square < ${e.t} < \\square`, input: 'pair', pairLead: '', pairOp: `&lt; ${e.h} &lt;`,
-    solveTex: [`${loS} < ${e.t} < ${hiS}`], solution: [...e.steps, 'Multiplying by a positive number, adding, and squaring positive numbers keep the order, so the bounds carry through.'],
+    solveTex: [`${loS} < ${e.t} < ${hiS}`], solution: [...e.steps, `So ${mark(loS)} &lt; ${e.h} &lt; ${mark(hiS)}.`, 'Multiplying by a positive number, adding, and squaring positive numbers keep the order, so the bounds carry through.'],
     answer: { kind: 'pair', x: Number(loS), y: Number(hiS) },
     check: r => {
       if (r.kind !== 'pair') return { ok: false, say: 'Type two decimals.' };
@@ -1242,7 +1245,10 @@ const boundRound: Gen = (R, n) => {
   for (let t = 0; t < 40; t++) {
     const e = boundCase(R);
     const L = e.h.includes('π') && !e.h.includes('²') ? 0 : 1;
-    const rl = roundD(e.lo, L), rh = roundD(e.hi, L), loS = decStr(e.lo[0], e.lo[1]), hiS = decStr(e.hi[0], e.hi[1]);
+    // strict bounds: round a hair inside each end (31.40 < 10π < 31.50 all rounds to 31)
+    const onMid = (d: [bigint, number]) => roundD([d[0] * 10n + 1n, d[1] + 1], L) !== roundD([d[0] * 10n - 1n, d[1] + 1], L);
+    if (onMid(e.lo) || onMid(e.hi)) continue;   // an end exactly on a rounding midpoint (3.650, 31.50) is too fine a point for this item
+    const rl = roundD([e.lo[0] * 10n + 1n, e.lo[1] + 1], L), rh = roundD([e.hi[0] * 10n - 1n, e.hi[1] + 1], L), loS = decStr(e.lo[0], e.lo[1]), hiS = decStr(e.hi[0], e.hi[1]);
     const settled = rl === rh;
     if (!settled && R() < 0.5) continue;
     const ans = decStr(rl, L);
@@ -1278,7 +1284,7 @@ const boundRound: Gen = (R, n) => {
 const notEqual: Gen = (R, n) => {
   const v = int(R, 0, 1);
   if (v === 0) {
-    const [a, b] = pick(R, [[2, 3], [2, 5], [3, 5], [2, 7]] as [number, number][]), la = floorScaled(sqrt(a), 3), lb = floorScaled(sqrt(b), 3), lc = floorScaled(sqrt(a + b), 3);
+    const [a, b] = pick(R, [[2, 3], [2, 5], [3, 5], [3, 7]] as [number, number][]), la = floorScaled(sqrt(a), 3), lb = floorScaled(sqrt(b), 3), lc = floorScaled(sqrt(a + b), 3);   // a + b never a square
     return choice(R, {
       id: `notEqual-${n}`, family: 'notEqual', prompt: `${dh(la, 3)} < ${rad(a)} < ${dh(la + 1n, 3)} and ${dh(lb, 3)} < ${rad(b)} < ${dh(lb + 1n, 3)}, and ${dh(lc, 3)} < ${rad(a + b)} < ${dh(lc + 1n, 3)}. Is ${A(`${rad(a)} + ${rad(b)}`)} equal to ${B(rad(a + b))}?`,
       board: `\\sqrt{${a}} + \\sqrt{${b}} \\overset{?}{=} \\sqrt{${a + b}}`, solveTex: [`${dt(la + lb, 3)} < \\sqrt{${a}} + \\sqrt{${b}} < ${dt(la + lb + 2n, 3)}`, `${dt(lc, 3)} < \\sqrt{${a + b}} < ${dt(lc + 1n, 3)}`],
@@ -1354,11 +1360,23 @@ const decide: Gen = (R, n) => {
   ]);
 };
 
-export const GENERATORS: Record<FamilyId, Gen> = {
+const RAW_GENERATORS: Record<FamilyId, Gen> = {
   asQuotient, notRational, remainders, barNotation, addressOf, prefixWhere, rOrI, displayRead, innermost: innermostFam, setStatement,
   whichRational, rootFraction, toFraction, whichShift, generalMethod, bracket, refine, interpolate, roundRoot, settles, locate,
   compare, order, estimate, exactOrNot, maxError, howClose, boundExpr, boundRound, notEqual, decide,
 };
 /** the runtime's Gen type (practice.ts takes a record of these) */
+/** "<" that does not open a tag, written as &lt; (the page shows the same; plain-text readers no longer cut the text) */
+const ltSafe = (h: string) => h.replace(/<(?![a-zA-Z\/!])/g, '&lt;');
+const safeText = (g: Gen): Gen => (R, n, sg) => {
+  const it = g(R, n, sg);
+  it.prompt = ltSafe(it.prompt);
+  it.solution = it.solution.map(ltSafe);
+  if (it.choices) it.choices = it.choices.map(ltSafe);
+  if (it.pairLead) it.pairLead = ltSafe(it.pairLead);
+  if (it.pairOp) it.pairOp = ltSafe(it.pairOp);
+  return it;
+};
+export const GENERATORS = Object.fromEntries(Object.entries(RAW_GENERATORS).map(([k, g]) => [k, safeText(g)])) as Record<FamilyId, Gen>;
 export const GENS: Readonly<Record<string, RtGen>> = GENERATORS;
 export { S, isRational };

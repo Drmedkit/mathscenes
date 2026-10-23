@@ -6,6 +6,7 @@
 import { type Item, type Response, type Verdict, A, B, S, int, pick, shuffle } from '../../runtime/item';
 import type { LinesParams, LineStep } from './ScaleLines';
 import { type Scale, type U, factorOf, normalized, fmt, fmtT, isMetric, mixH, mixS, mixT, near, per, r9, ratioN, scale, scaleT, toActual as actualOf } from './scaleCalc';
+import { ans as mark, endOnChoice } from '../../runtime/explain';
 
 export type FamilyId = 'table' | 'order' | 'unitless' | 'unitlessCalc' | 'predict' | 'reverse' | 'toActual' | 'toDrawing' | 'rulerRead' | 'fracForm'
   | 'normalize' | 'toUnitless' | 'convertIn' | 'convertOut' | 'findScale' | 'reasonable' | 'diagnoseRev' | 'diagnoseConv' | 'audit'
@@ -90,9 +91,46 @@ const WORD: Record<U, [string, string]> = { in: ['inch', 'inches'], ft: ['foot',
 /** a length as HTML: 2 1/2 in (customary halves / quarters as fractions) */
 const len = (v: number, u: U) => `${isMetric(u) ? fmt(v) : mixH(v)} ${u}`;
 const PLAN_THINGS = ['wall', 'hallway', 'kitchen', 'deck', 'porch', 'garage', 'patio', 'bedroom wall', 'driveway', 'fence'];
+/** parts of a house and yard on a plan (PLAN_THINGS and the longer ones) */
+const HOUSE = [...PLAN_THINGS, 'path', 'hedge', 'backyard', 'kitchen counter'];
 const MODEL_THINGS = ['fire truck', 'school bus', 'sailboat', 'race car', 'pickup truck', 'locomotive', 'jet', 'tractor'];
-const GARDEN = ['garden bed', 'soccer field', 'parking lot', 'running track', 'basketball court', 'playground', 'pool', 'skate park'];
+/** things a model can be made of, from a dog house to a ship */
+const MODELS = [...MODEL_THINGS, 'dog house', 'canoe', 'car', 'go-kart', 'motorcycle', 'shed', 'tree house', 'boat', 'barn', 'bridge', 'tower', 'ship', 'bus', 'train car'];
+const BIG = ['bridge', 'barn', 'ship', 'stage', 'tower', 'shed', 'tree house', 'boat', 'dock', 'park bench'];
+const GARDEN = ['garden bed', 'soccer field', 'parking lot', 'running track', 'basketball court', 'playground', 'pool', 'skate park', 'planter'];
+const FURNITURE = ['couch', 'table', 'bed', 'desk', 'bookshelf', 'rug', 'piano', 'shelf'];
 const BUGS = ['ant', 'ladybug', 'bee', 'beetle', 'flea', 'mosquito'];
+/** real lengths in meters: a story never makes a 60 cm school bus, a 54 ft piano or a 9 mm flea */
+const SIZE: Record<string, [number, number]> = {
+  flea: [0.001, 0.005], ant: [0.001, 0.03], mosquito: [0.002, 0.02], bee: [0.003, 0.04], ladybug: [0.002, 0.012], beetle: [0.001, 0.12],
+  'bedroom wall': [2, 9], kitchen: [2, 12], 'living room': [3, 15], classroom: [4, 20], basement: [3, 25], gym: [15, 50], warehouse: [10, 200],
+  garage: [3, 15], shed: [1.5, 10], deck: [1.5, 25], porch: [1.2, 25], patio: [1.5, 15], hallway: [1, 25], wall: [1, 40],
+  'side wall': [2, 40], 'front wall': [3, 40], driveway: [3, 60], fence: [1, 400], hedge: [0.5, 150], garden: [1, 150],
+  'garden bed': [0.5, 15], planter: [0.3, 3], path: [1, 300], dock: [2, 150], backyard: [5, 150], playground: [8, 250], pool: [2, 60],
+  'skate park': [8, 250], 'parking lot': [10, 400], 'soccer field': [40, 130], 'running track': [50, 500],
+  'basketball court': [12, 32], 'garage door': [2, 6], 'kitchen counter': [0.5, 7], counter: [0.5, 7], sofa: [1, 4],
+  couch: [1, 4], bathtub: [1.2, 2.2], bed: [1.4, 2.6], bookcase: [0.4, 4], bookshelf: [0.4, 4], desk: [0.6, 2.6], shelf: [0.3, 3],
+  table: [0.5, 4], rug: [0.5, 7], piano: [1, 3.2], 'park bench': [1, 3],
+  'fire truck': [5, 16], 'school bus': [6, 15], bus: [6, 19], tractor: [1.8, 9], 'pickup truck': [4.3, 7.5], 'race car': [3.5, 6.5],
+  jet: [8, 80], locomotive: [8, 35], sailboat: [3, 50], boat: [2, 100], ship: [20, 450], car: [3, 6.5], 'train car': [10, 30],
+  'dog house': [0.6, 1.5], canoe: [3, 6], 'go-kart': [1.5, 2.5], motorcycle: [1.8, 2.6],
+  bridge: [2, 3000], tower: [5, 900], barn: [6, 70], stage: [3, 40], 'tree house': [1.5, 8],
+};
+const M_OF: Record<U, number> = { in: 0.0254, ft: 0.3048, yd: 0.9144, mm: 0.001, cm: 0.01, m: 1 };
+/** a thing from the list whose real length range holds v u (picked after the numbers); the closest when none does */
+export function sized(R: () => number, list: readonly string[], v: number, u: U): string {
+  const m = v * M_OF[u], range = (t: string) => SIZE[t] ?? [0, Infinity];
+  const fits = list.filter(t => m >= range(t)[0] && m <= range(t)[1]);
+  if (fits.length) return pick(R, fits);
+  const off = (t: string) => Math.max(range(t)[0] / m, m / range(t)[1]);
+  return list.reduce((a, b) => (off(b) < off(a) ? b : a));
+}
+export const realSize = (t: string): [number, number] | undefined => SIZE[t];
+/** a thing whose real size range holds both lengths (a room's length and width) */
+function sizedBoth(R: () => number, list: readonly string[], a: number, b: number, u: U): string {
+  const ok = list.filter(t => SIZE[t] && [a, b].every(v => v * M_OF[u] >= SIZE[t]![0] && v * M_OF[u] <= SIZE[t]![1]));
+  return ok.length ? pick(R, ok) : sized(R, list, Math.max(a, b), u);
+}
 
 const r2 = (x: number) => Math.round(x * 1000) / 1000;
 /** TeX "= 0.25" when exact to 3 decimals, else "≈ 0.083" (how a student writes a long quotient) */
@@ -124,7 +162,7 @@ function choiceItem(R: () => number, o: { family: FamilyId; n: number; prompt: s
   if (right < 0 || opts.filter(x => x.ok).length !== 1) throw new Error(`${o.family}: needs exactly one right choice`);
   return {
     id: `${o.family}-${o.n}`, family: o.family, prompt: o.prompt, board: o.board, input: 'choice', choices: opts.map(x => x.t),
-    answer: { kind: 'choice', i: right }, solution: o.solution, work: o.work, picture: o.pic ? { lines: o.pic } : undefined,
+    answer: { kind: 'choice', i: right }, solution: endOnChoice(o.solution, opts[right]!.t), work: o.work, picture: o.pic ? { lines: o.pic } : undefined,
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !opts[r.i]) return { ok: false, say: 'Pick one.' };
       const x = opts[r.i]!;
@@ -164,7 +202,7 @@ const table: Gen = (R, n) => {
   const intro = words ? `On this plan, ${B(`${k} ${WORD[aU][1]}`)} are shown as ${A(`1 ${WORD[dU][0]}`)}.` : `A plan uses the scale ${A(`1 ${dU}`)} : ${B(`${k} ${aU}`)}.`;
   return numItem({
     family: 'table', n, unit: aU, ans: y,
-    prompt: `${intro} In its ratio table, 1 ${dU} goes with ${k} ${aU} and 2 ${dU} with ${2 * k} ${aU}. A ${pick(R, PLAN_THINGS)} is ${A(`${d} ${dU}`)} on the plan. How long is it actually?`,
+    prompt: `${intro} In its ratio table, 1 ${dU} goes with ${k} ${aU} and 2 ${dU} with ${2 * k} ${aU}. A ${sized(R, HOUSE, y, aU)} is ${A(`${d} ${dU}`)} on the plan. How long is it actually?`,
     board: `\\begin{array}{c|c} \\text{${dU}} & \\text{${aU}} \\\\ \\hline 1 & ${k} \\\\ 2 & ${2 * k} \\\\ ${d} & ? \\end{array}`,
     solution: [`Every ${dU} on the plan stands for ${k} ${aU}: the table multiplies by ${k} going across.`, `${d} × ${k} = ${y}, so the actual length is ${y} ${aU}.`],
     work: [`${d} \\times ${k} = ${y}\\text{ ${aU}}`],
@@ -221,8 +259,8 @@ const unitless: Gen = (R, n) => {
   });
 };
 const unitlessCalc: Gen = (R, n) => {
-  const N = pick(R, [5, 8, 10, 100]), u: U = R() < 0.6 ? 'cm' : 'in', d = int(R, 2, 9);
-  const s = scale(1, u, N, u), y = d * N, thing = pick(R, [...MODEL_THINGS, 'shed', 'bridge', 'tree house']);
+  const N = pick(R, [20, 25, 50, 100]), u: U = R() < 0.6 ? 'cm' : 'in', d = int(R, Math.max(2, Math.ceil((u === 'cm' ? 60 : 24) / N)), 9);   // real things from 60 cm up
+  const s = scale(1, u, N, u), y = d * N, thing = sized(R, MODELS, y, u);
   return numItem({
     family: 'unitlessCalc', n, unit: u, ans: y,
     prompt: `A model ${thing} is built at ${S(`1 : ${N}`)}. The model is ${A(`${d} ${u}`)} long. How long is the real ${thing}, in ${WORD[u][1]}?`,
@@ -271,14 +309,14 @@ const reverse: Gen = (R, n) => {
     const k = int(R, 2, 9), q = int(R, 2, 9), y = k * q, s = scale(1, 'in', k, 'ft');
     return numItem({
       family: 'reverse', n, unit: 'in', ans: q,
-      prompt: `At ${A('1 in')} : ${B(`${k} ft`)}, plan → actual is × ${k}. A ${pick(R, PLAN_THINGS)} is ${B(`${y} ft`)} long. How long is it on the plan?`,
+      prompt: `At ${A('1 in')} : ${B(`${k} ft`)}, plan → actual is × ${k}. A ${sized(R, HOUSE, y, 'ft')} is ${B(`${y} ft`)} long. How long is it on the plan?`,
       board: `\\text{plan} \\xrightarrow{\\times ${k}} \\text{actual}`,
       solution: [`Actual → plan undoes × ${k}: ÷ ${k}, the same factor.`, `${y} ÷ ${k} = ${q} in.`], work: [`${y} \\div ${k} = ${q}\\text{ in}`],
       wrongs: [{ v: y * k, mc: MC.wrongOp, say: `× ${k} goes from the plan to the actual length. Going back undoes it: ÷ ${k}.` }],
       miss: `Undo × ${k}: ${y} ÷ ${k} = ?`, pic: pic2(s, { row: 1, v: y }, { row: 0, v: q }),
     });
   }
-  const s = scale(5, 'mm', 1, 'mm'), bug = pick(R, BUGS), q = int(R, 2, 9);
+  const s = scale(5, 'mm', 1, 'mm'), q = int(R, 2, 9), bug = sized(R, BUGS, q, 'mm');
   if (t === 1) return numItem({
     family: 'reverse', n, unit: 'mm', ans: q,
     prompt: `A ${bug} is drawn at ${S('5 : 1')}. The drawing is ${A(`${5 * q} mm`)} long. How long is the real ${bug}?`,
@@ -304,7 +342,7 @@ const toActual: Gen = (R, n, sg) => {
       const k = pick(R, [2, 5, 10]), w = int(R, 1, 9), t = int(R, 1, 9), d = r9(w + t / 10), s = scale(1, 'cm', k, 'm'), y = actualOf(s, d);
       return numItem({
         family: 'toActual', n, unit: 'm', ans: y,
-        prompt: `A ${pick(R, GARDEN)} plan uses ${A('1 cm')} : ${B(`${k} m`)}. A side is ${A(`${fmt(d)} cm`)} on the plan. How long is it actually?`,
+        prompt: `A ${sized(R, GARDEN, y, 'm')} plan uses ${A('1 cm')} : ${B(`${k} m`)}. A side is ${A(`${fmt(d)} cm`)} on the plan. How long is it actually?`,
         board: `1\\text{ cm} : ${k}\\text{ m}, \\quad ${fmtT(d)}\\text{ cm} \\to\\ ?\\text{ m}`,
         solution: [`Each cm stands for ${k} m: × ${k}.`, `${fmt(d)} × ${k} = ${fmt(w * k)} + ${fmt(r9(t / 10 * k))} = ${fmt(y)} m.`], work: [`${fmtT(d)} \\times ${k} = ${fmtT(y)}\\text{ m}`],
         wrongs: [
@@ -317,7 +355,7 @@ const toActual: Gen = (R, n, sg) => {
     const k = pick(R, [4, 8, 12]), w = int(R, 1, 5), f = pick(R, [0.5, 0.25, 0.75]), d = w + f, s = scale(1, 'in', k, 'ft'), y = actualOf(s, d);
     return numItem({
       family: 'toActual', n, unit: 'ft', ans: y,
-      prompt: `A house plan uses ${A('1 in')} : ${B(`${k} ft`)}. The ${pick(R, PLAN_THINGS)} is ${A(len(d, 'in'))} on the plan. How long is it actually?`,
+      prompt: `A house plan uses ${A('1 in')} : ${B(`${k} ft`)}. The ${sized(R, HOUSE, y, 'ft')} is ${A(len(d, 'in'))} on the plan. How long is it actually?`,
       board: `1\\text{ in} : ${k}\\text{ ft}, \\quad ${mixT(d)}\\text{ in} \\to\\ ?\\text{ ft}`,
       solution: [`Each inch stands for ${k} ft: × ${k}.`, `${w} × ${k} = ${w * k}, and ${mixS(f)} × ${k} = ${fmt(f * k)}. Together ${fmt(y)} ft.`], work: [`${mixT(d)} \\times ${k} = ${w * k} + ${fmtT(f * k)} = ${fmtT(y)}\\text{ ft}`],
       wrongs: [
@@ -332,7 +370,7 @@ const toActual: Gen = (R, n, sg) => {
     const [dU, aU, k] = pick(R, [['in', 'ft', 8], ['in', 'ft', 12], ['cm', 'm', 5]] as [U, U, number][]), d = int(R, 2, 9), s = scale(1, dU, k, aU), y = d * k;
     return numItem({
       family: 'toActual', n, unit: aU, ans: y,
-      prompt: `At ${A(`1 ${dU}`)} : ${B(`${k} ${aU}`)}, a ${pick(R, PLAN_THINGS)} is ${A(`${d} ${dU}`)} on the plan. How long is it actually?`,
+      prompt: `At ${A(`1 ${dU}`)} : ${B(`${k} ${aU}`)}, a ${sized(R, HOUSE, y, aU)} is ${A(`${d} ${dU}`)} on the plan. How long is it actually?`,
       board: `1\\text{ ${dU}} : ${k}\\text{ ${aU}}, \\quad ${d}\\text{ ${dU}} \\to\\ ?\\text{ ${aU}}`,
       solution: [`Each ${dU} stands for ${k} ${aU}: × ${k}.`, `${d} × ${k} = ${y} ${aU}.`], work: [`${d} \\times ${k} = ${y}\\text{ ${aU}}`],
       wrongs: [{ v: r9(d / k), mc: MC.divides, say: `Plan → actual multiplies: the real thing is the big one.` }],
@@ -342,7 +380,7 @@ const toActual: Gen = (R, n, sg) => {
   if (t <= 7) {
     const N = pick(R, [24, 48, 50, 64, 100, 200]), u: U = N === 24 || N === 48 || N === 64 ? 'in' : 'cm';
     const d = N === 50 && R() < 0.4 ? int(R, 12, 18) : int(R, 2, 9), s = scale(1, u, N, u), y = d * N;
-    const thing = u === 'in' ? pick(R, MODEL_THINGS) : pick(R, ['hallway', 'classroom', 'stage', 'bridge', 'deck']);
+    const thing = u === 'in' ? sized(R, MODELS, y, u) : sized(R, ['hallway', 'classroom', 'stage', 'bridge', 'deck'], y, u);
     return numItem({
       family: 'toActual', n, unit: u, ans: y,
       prompt: `${u === 'in' ? 'A model' : 'A plan'} at ${S(`1 : ${N}`)} shows a ${thing} ${A(`${d} ${u}`)} long. How long is the real ${thing}, in ${WORD[u][1]}?`,
@@ -352,7 +390,7 @@ const toActual: Gen = (R, n, sg) => {
       miss: `${N} times as long: ${d} × ${N} = ?`, pic: pic2(s, { row: 0, v: d }, { row: 1, v: y }),
     });
   }
-  const k = pick(R, [5, 10]), q = k === 5 ? int(R, 2, 9) : int(R, 2, 45), dl = k * q, s = scale(k, 'mm', 1, 'mm'), bug = pick(R, BUGS);
+  const k = pick(R, [5, 10]), q = k === 5 ? int(R, 2, 9) : int(R, 2, 45), dl = k * q, s = scale(k, 'mm', 1, 'mm'), bug = sized(R, BUGS, q, 'mm');
   return numItem({
     family: 'toActual', n, unit: 'mm', ans: q,
     prompt: `A ${bug} is drawn at ${S(`${k} : 1`)}. The drawing is ${A(`${dl} mm`)} long. How long is the real ${bug}?`,
@@ -375,7 +413,7 @@ const toDrawing: Gen = (R, n) => {
     const whole = Math.floor(y / k), rem = r9(y - whole * k);
     return numItem({
       family: 'toDrawing', n, unit: dU, ans: q,
-      prompt: `At ${A(`1 ${dU}`)} : ${B(`${k} ${aU}`)}, how long is a ${B(`${fmt(y)} ${aU}`)} ${pick(R, PLAN_THINGS)} on the plan? Give a decimal.`,
+      prompt: `At ${A(`1 ${dU}`)} : ${B(`${k} ${aU}`)}, how long is a ${B(`${fmt(y)} ${aU}`)} ${sized(R, HOUSE, y, aU)} on the plan? Give a decimal.`,
       board: `1\\text{ ${dU}} : ${k}\\text{ ${aU}}, \\quad ${fmtT(y)}\\text{ ${aU}} \\to\\ ?\\text{ ${dU}}`,
       solution: [`Actual → plan undoes × ${k}: ÷ ${k}.`, `${fmt(y)} ÷ ${k} = ${fmt(q)} ${dU}.`], work: [`${fmtT(y)} \\div ${k} = ${fmtT(q)}\\text{ ${dU}}`],
       wrongs: [
@@ -390,7 +428,7 @@ const toDrawing: Gen = (R, n) => {
     const q = int(R, 2, 9), y = 12 * q, s = scale(1, 'in', 12, 'ft');
     return numItem({
       family: 'toDrawing', n, unit: 'in', ans: q,
-      prompt: `At ${A('1 in')} : ${B('12 ft')}, how long is a ${B(`${y} ft`)} ${pick(R, PLAN_THINGS)} on the plan?`,
+      prompt: `At ${A('1 in')} : ${B('12 ft')}, how long is a ${B(`${y} ft`)} ${sized(R, HOUSE, y, 'ft')} on the plan?`,
       board: `1\\text{ in} : 12\\text{ ft}, \\quad ${y}\\text{ ft} \\to\\ ?\\text{ in}`,
       solution: [`Actual → plan: ÷ 12.`, `${y} ÷ 12 = ${q} in.`], work: [`${y} \\div 12 = ${q}\\text{ in}`],
       wrongs: [{ v: y * 12, mc: MC.wrongOp, say: `Back to the plan undoes × 12: ÷ 12.` }],
@@ -401,16 +439,16 @@ const toDrawing: Gen = (R, n) => {
     const N = pick(R, [50, 100, 200]), q = r9(int(R, 2, 9) + (R() < 0.4 ? 0.5 : 0)), y = r9(q * N), s = scale(1, 'cm', N, 'cm');
     return numItem({
       family: 'toDrawing', n, unit: 'cm', ans: q,
-      prompt: `A plan is drawn at ${S(`1 : ${N}`)}. A ${pick(R, ['hallway', 'stage', 'deck', 'classroom', 'bridge'])} is ${B(`${fmt(y)} cm`)} long. How long is it on the plan?`,
+      prompt: `A plan is drawn at ${S(`1 : ${N}`)}. A ${sized(R, ['hallway', 'stage', 'deck', 'classroom', 'bridge'], y, 'cm')} is ${B(`${fmt(y)} cm`)} long. How long is it on the plan?`,
       board: `1 : ${N}, \\quad ${fmtT(y)}\\text{ cm} \\to\\ ?\\text{ cm}`,
       solution: [`Actual → plan: ÷ ${N}.`, `${fmt(y)} ÷ ${N} = ${fmt(q)} cm.`], work: [`${fmtT(y)} \\div ${N} = ${fmtT(q)}\\text{ cm}`],
       wrongs: [{ v: r9(y * N), mc: MC.wrongOp, say: `The plan is the small one. Actual → plan: ÷ ${N}.` }],
       miss: `${fmt(y)} ÷ ${N} = ?`, pic: pic2(s, { row: 1, v: y }, { row: 0, v: q }),
     });
   }
-  const bug = pick(R, BUGS), s = scale(5, 'mm', 1, 'mm');
+  const s = scale(5, 'mm', 1, 'mm');
   if (t === 8) {
-    const q = int(R, 2, 9);
+    const q = int(R, 2, 9), bug = sized(R, BUGS, q, 'mm');
     return numItem({
       family: 'toDrawing', n, unit: 'mm', ans: 5 * q,
       prompt: `A real ${bug} is ${B(`${q} mm`)} long. How long is its drawing at ${S('5 : 1')}?`,
@@ -420,7 +458,7 @@ const toDrawing: Gen = (R, n) => {
       miss: `${q} × 5 = ?`, pic: pic2(s, { row: 1, v: q }, { row: 0, v: 5 * q }),
     });
   }
-  const dl = pick(R, [6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19]), q = r9(dl / 5);
+  const dl = pick(R, [6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19]), q = r9(dl / 5), bug = sized(R, BUGS, q, 'mm');
   return numItem({
     family: 'toDrawing', n, unit: 'mm', ans: q,
     prompt: `A ${bug} is drawn at ${S('5 : 1')}. Its drawing is ${A(`${dl} mm`)} long. How long is the real ${bug}? Give a decimal.`,
@@ -434,7 +472,7 @@ const toDrawing: Gen = (R, n) => {
 // ---------- 7 decimal-to-ruler-mark ----------
 const rulerRead: Gen = (R, n) => {
   const k = pick(R, [2, 4, 6, 8, 10, 12]), Lw = int(R, 1, 4), half = R() < 0.75, L = Lw + (half ? 0.5 : 0), s = scale(1, 'in', k, 'ft'), y = L * k;
-  const thing = pick(R, ['couch', 'table', 'bed', 'desk', 'bookshelf', 'rug', 'piano']);
+  const thing = sized(R, [...FURNITURE, 'deck', 'patio', 'garage'], y, 'ft');
   const pc = pic2(s, { row: 0, v: L }, { row: 1, v: y }, { sub: 2, obj: thing });
   pc.p.n = Math.max(pc.p.n, 5);
   pc.show = ['card', 'obj', 'lines', 'ref', 'nums', 'ask'];
@@ -453,7 +491,7 @@ const rulerRead: Gen = (R, n) => {
 };
 const fracForm: Gen = (R, n) => {
   const k = pick(R, [4, 8, 12]), w = int(R, 0, 3), f = pick(R, [0.25, 0.75, 0.5]), x = w + f, y = r9(x * k);
-  const thing = pick(R, PLAN_THINGS), lead = w ? `${w} ` : '';
+  const thing = sized(R, [...HOUSE, ...FURNITURE], y, 'ft'), lead = w ? `${w} ` : '';
   const right = `${lead}${mixS(f)} in`;
   const tenth = Math.round(f * 10);
   const opts: Opt[] = [
@@ -477,9 +515,9 @@ const normalize: Gen = (R, n) => {
     return numItem({
       family: 'normalize', n, unit: 'ft', ans: ask ? k : d * k,
       prompt: ask ? `An architect's plan uses ${A(`${mixH(fd)} in`)} = ${B('1 ft')}. How many feet does ${A('1 in')} on the plan stand for?`
-        : `An architect's plan uses ${A(`${mixH(fd)} in`)} = ${B('1 ft')}. A ${pick(R, PLAN_THINGS)} is ${A(`${d} in`)} on the plan. How long is it actually?`,
+        : `An architect's plan uses ${A(`${mixH(fd)} in`)} = ${B('1 ft')}. A ${sized(R, HOUSE, d * k, 'ft')} is ${A(`${d} in`)} on the plan. How long is it actually?`,
       board: `${mixT(fd)}\\text{ in} : 1\\text{ ft}`,
-      solution: [`${mixS(fd)} in → 1 ft. Scale the table × ${k}: 1 in → ${k} ft.`, ...(ask ? [] : [`${d} × ${k} = ${d * k} ft.`])],
+      solution: [`${mixS(fd)} in → 1 ft. Scale the table × ${k}: 1 in → ${ask ? mark(`${k} ft`) : `${k} ft`}.`, ask ? `Check: ${k} × ${mixS(fd)} in = 1 in.` : `${d} × ${k} = ${mark(`${d * k} ft`)}.`],
       work: [`1\\text{ in} : ${k}\\text{ ft}`, ...(ask ? [] : [`${d} \\times ${k} = ${d * k}\\text{ ft}`])],
       wrongs: [{ v: ask ? 1 : d, mc: MC.nonunit, say: `${mixS(fd)} in, not 1 in, stands for 1 ft. A whole inch is ${k} of those: ${k} ft.` }, { v: ask ? fd : d * fd, mc: MC.wrongOp, say: `A whole inch is MORE than ${mixS(fd)} in, so it stands for more than 1 ft: × ${k}.` }],
       miss: `How many ${mixS(fd)} inches make 1 inch? That many feet.`,
@@ -547,7 +585,7 @@ const convertIn: Gen = (R, n) => {
     const pc: LinesPic = { p: { rows, n: nn, sub: m === 3 ? 3 : 4, tag: scaleT(s), ops: [`\\times ${k}`, `\\div ${k}`], conv: ['\\div 3', '\\times 3'], given: { row: 2, v: Y }, ask: { row: 0, v: q } }, show: ['card', 'lines', 'ref', 'alt', 'given', 'ask'], solve: ['conv', 'up', 'drop', 'answer'], quiet: 0 };
     return numItem({
       family: 'convertIn', n, unit: 'in', ans: q,
-      prompt: `A plan uses ${A('1 in')} : ${B(`${k} ft`)}. A real ${pick(R, ['fence', 'hedge', 'wall', 'counter', 'dock'])} is ${B(`${Y} yd`)} long. How long is it on the plan? Give a decimal.`,
+      prompt: `A plan uses ${A('1 in')} : ${B(`${k} ft`)}. A real ${sized(R, ['fence', 'hedge', 'wall', 'counter', 'dock'], Y, 'yd')} is ${B(`${Y} yd`)} long. How long is it on the plan? Give a decimal.`,
       board: `1\\text{ in} : ${k}\\text{ ft}, \\quad ${Y}\\text{ yd} \\to\\ ?\\text{ in}`,
       solution: [`Put the length in the scale's unit: ${Y} yd = ${Y} × 3 = ${ft} ft.`, `${ft} ÷ ${k} = ${fmt(q)} in.`], work: [`${Y}\\text{ yd} = ${ft}\\text{ ft}`, `${ft} \\div ${k} = ${fmtT(q)}\\text{ in}`],
       wrongs: [
@@ -567,7 +605,7 @@ const convertIn: Gen = (R, n) => {
   const pc: LinesPic = { p: { rows: L.rows, n: L.n, cap: 'model', tag: scaleT(s, false), ops: [`\\times ${N}`, `\\div ${N}`], conv: ['\\div 100', '\\times 100'], given: { row: 2, v: M }, ask: { row: 0, v: q } }, show: ['card', 'lines', 'ref', 'alt', 'given', 'ask'], solve: ['conv', 'up', 'drop', 'answer'], quiet: 0 };
   return numItem({
     family: 'convertIn', n, unit: 'cm', ans: q,
-    prompt: `A model is built at ${S(`1 : ${N}`)}. The real ${pick(R, ['bridge', 'barn', 'ship', 'stage', 'tower'])} is ${B(`${fmt(M)} m`)} long. How long is the model, in centimeters?`,
+    prompt: `A model is built at ${S(`1 : ${N}`)}. The real ${sized(R, BIG, M, 'm')} is ${B(`${fmt(M)} m`)} long. How long is the model, in centimeters?`,
     board: `1 : ${N}, \\quad ${fmtT(M)}\\text{ m} \\to\\ ?\\text{ cm}`,
     solution: [`One way: ${fmt(M)} m = ${fmt(cm)} cm, then ${fmt(cm)} ÷ ${N} = ${fmt(q)} cm.`, `Or: ${fmt(M)} ÷ ${N} = ${fmt(r9(M / N))} m = ${fmt(q)} cm. Both orders work.`],
     work: [`${fmtT(M)}\\text{ m} = ${fmtT(cm)}\\text{ cm}`, `${fmtT(cm)} \\div ${N} = ${fmtT(q)}\\text{ cm}`],
@@ -584,7 +622,7 @@ const convertIn: Gen = (R, n) => {
 const convertOut: Gen = (R, n) => {
   if (R() < 0.6) {
     const N = pick(R, [12, 24, 48]), d = N === 48 ? int(R, 1, 3) : N === 24 ? int(R, 2, 6) : int(R, 2, 12), inches = d * N, ft = inches / 12;
-    const s = scale(1, 'in', N, 'in'), thing = pick(R, MODEL_THINGS);
+    const s = scale(1, 'in', N, 'in'), thing = sized(R, MODELS, inches, 'in');
     const rows = [{ unit: 'in', step: 1 }, { unit: 'in', step: N }, { unit: 'ft', step: N / 12 }];
     const L = linesFor(rows as { unit: U; step: number }[], [d]);
     const pc: LinesPic = { p: { rows: L.rows, n: L.n, cap: 'model', tag: scaleT(s, false), ops: [`\\times ${N}`, `\\div ${N}`], conv: ['\\div 12', '\\times 12'], given: { row: 0, v: d }, ask: { row: 2, v: ft } }, show: ['card', 'lines', 'ref', 'alt', 'given', 'ask'], solve: ['down', 'conv', 'drop', 'answer'], quiet: 2 };
@@ -606,7 +644,7 @@ const convertOut: Gen = (R, n) => {
   const pc: LinesPic = { p: { rows: L.rows, n: L.n, cap: 'plan', tag: scaleT(s, false), ops: [`\\times ${N}`, `\\div ${N}`], conv: ['\\div 100', '\\times 100'], given: { row: 0, v: d }, ask: { row: 2, v: m } }, show: ['card', 'lines', 'ref', 'alt', 'given', 'ask'], solve: ['down', 'conv', 'drop', 'answer'], quiet: 2 };
   return numItem({
     family: 'convertOut', n, unit: 'm', ans: m,
-    prompt: `A plan is drawn at ${S(`1 : ${N}`)}. A ${pick(R, GARDEN)} is ${A(`${d} cm`)} on the plan. How long is it really, in meters?`,
+    prompt: `A plan is drawn at ${S(`1 : ${N}`)}. A ${sized(R, GARDEN, m, 'm')} is ${A(`${d} cm`)} on the plan. How long is it really, in meters?`,
     board: `1 : ${N}, \\quad ${d}\\text{ cm} \\to\\ ?\\text{ m}`,
     solution: [`${d} × ${N} = ${fmt(cm)} cm.`, `${fmt(cm)} cm ÷ 100 = ${fmt(m)} m.`], work: [`${d} \\times ${N} = ${fmtT(cm)}\\text{ cm}`, `${fmtT(cm)} \\div 100 = ${fmtT(m)}\\text{ m}`],
     wrongs: [{ v: cm, mc: MC.relabel, say: `${fmt(cm)} is in CENTIMETERS. In meters: ÷ 100.` }, { v: r9(cm / 10), say: `100 cm make a meter, not 10.` }],
@@ -619,8 +657,9 @@ const findScale: Gen = (R, n) => {
   const t = int(R, 0, 2);
   if (t === 0) {
     const k = pick(R, [2, 4, 6, 8, 10, 12]), d = int(R, 2, 6), y = d * k;
-    let e = int(R, 2, 7); if (e === d) e = d + 1;
-    const thing = pick(R, ['garage door', 'front wall', 'porch', 'kitchen counter', 'driveway']);
+    const eMin = Math.max(2, Math.ceil(8 / k));   // the side wall is a real wall, at least 8 ft
+    let e = int(R, eMin, Math.max(eMin + 1, 7)); if (e === d) e = d + 1;
+    const thing = sized(R, ['garage door', 'front wall', 'porch', 'kitchen counter', 'driveway'], y, 'ft');
     return numItem({
       family: 'findScale', n, unit: 'ft', ans: k,
       prompt: `On a house plan, the ${thing} is ${A(`${d} in`)} long and the side wall is ${A(`${e} in`)}. The real ${thing} is ${B(`${y} ft`)}. Complete the scale: 1 in : ? ft.`,
@@ -640,7 +679,7 @@ const findScale: Gen = (R, n) => {
     const k = r9(M / d);
     return numItem({
       family: 'findScale', n, unit: '', ans: N,
-      prompt: `A ${pick(R, GARDEN)} is ${B(`${fmt(M)} m`)} long. On the plan it is ${A(`${d} cm`)}. Write the scale with no units: 1 : ?`,
+      prompt: `A ${sized(R, GARDEN, M, 'm')} is ${B(`${fmt(M)} m`)} long. On the plan it is ${A(`${d} cm`)}. Write the scale with no units: 1 : ?`,
       board: `${d}\\text{ cm} : ${fmtT(M)}\\text{ m} = 1 : \\ ?`,
       solution: [`One unit first: ${fmt(M)} m = ${fmt(M * 100)} cm.`, `${fmt(M * 100)} ÷ ${d} = ${N}, so 1 : ${N}.`], work: [`${d}\\text{ cm} : ${fmtT(r9(M * 100))}\\text{ cm}`, `1 : ${N}`],
       wrongs: [{ v: k, mc: MC.notConverted, say: `That mixes cm and m. Write ${fmt(M)} m in centimeters first.` }, { v: r9(d / (M * 100)), mc: MC.reverse, say: `Drawing first: 1 : ${N}, the actual is the big one.` }],
@@ -648,7 +687,7 @@ const findScale: Gen = (R, n) => {
     });
   }
   const k = pick(R, [2, 4, 6, 8]), w = int(R, 1, 3), d = w + 0.5, y = r9(d * k);
-  const thing = pick(R, ['sofa', 'bed', 'bookcase', 'counter', 'bathtub']);
+  const thing = sized(R, ['sofa', 'bed', 'bookcase', 'counter', 'bathtub', 'rug', 'deck', 'patio'], y, 'ft');
   return numItem({
     family: 'findScale', n, unit: 'ft', ans: k,
     prompt: `A ${B(`${fmt(y)}-ft`)} ${thing} is drawn ${A(`${mixH(d)} in`)} long. Complete the scale: 1 in : ? ft.`,
@@ -701,16 +740,16 @@ const diagnoseRev: Gen = (R, n) => {
   let prompt = '', board = '', right = '', rightV = '', keep = '', ruleT = '';
   if (t === 0) {
     const k = pick(R, [4, 8, 12]), q = pick(R, [1.5, 2, 2.5, 3, 3.5, 4, 5]), y = r9(q * k);
-    prompt = `Ana's plan uses ${A('1 in')} : ${B(`${k} ft`)}. To draw a ${B(`${fmt(y)} ft`)} ${pick(R, PLAN_THINGS)}, she wrote this. What is wrong?`;
+    prompt = `Ana's plan uses ${A('1 in')} : ${B(`${k} ft`)}. To draw a ${B(`${fmt(y)} ft`)} ${sized(R, HOUSE, y, 'ft')}, she wrote this. What is wrong?`;
     board = `${fmtT(y)} \\times ${k} = ${fmtT(y * k)}\\text{ in}`;
     right = `${fmt(y)} ÷ ${k}`; rightV = `${fmt(q)} in`; keep = `Keep ${fmt(y)} × ${k}, but the unit is feet: ${fmt(y * k)} ft.`; ruleT = `Nothing: with a scale you always multiply by the scale number.`;
   } else if (t === 1) {
     const k = pick(R, [4, 8]), d = int(R, 2, 6), y = d * k;
-    prompt = `Ana's plan uses ${A('1 in')} : ${B(`${k} ft`)}. A ${pick(R, PLAN_THINGS)} is ${A(`${d} in`)} on the plan. She wrote this. What is wrong?`;
+    prompt = `Ana's plan uses ${A('1 in')} : ${B(`${k} ft`)}. A ${sized(R, HOUSE, y, 'ft')} is ${A(`${d} in`)} on the plan. She wrote this. What is wrong?`;
     board = `${d} \\div ${k} = ${fmtT(r9(d / k))}\\text{ ft}`;
     right = `${d} × ${k}`; rightV = `${y} ft`; keep = `Keep ${d} ÷ ${k}, but the unit is inches: ${fmt(r9(d / k))} in.`; ruleT = `Nothing: from the plan to the real thing you always divide.`;
   } else if (t === 2) {
-    const q = int(R, 2, 9), dl = 5 * q, bug = pick(R, BUGS);
+    const q = int(R, 2, 9), dl = 5 * q, bug = sized(R, BUGS, q, 'mm');
     prompt = `A ${bug} is drawn at ${S('5 : 1')}, ${A(`${dl} mm`)} long. Ana found the real ${bug} like this. What is wrong?`;
     board = `${dl} \\times 5 = ${dl * 5}\\text{ mm}`;
     right = `${dl} ÷ 5`; rightV = `${q} mm`; keep = `Keep ${dl} × 5, but write it in cm: ${fmt(r9(dl / 2))} cm.`; ruleT = `Nothing: with a scale you always multiply by the scale number.`;
@@ -734,11 +773,10 @@ const diagnoseRev: Gen = (R, n) => {
 // ---------- 15 diagnose-missing-conversion ----------
 const diagnoseConv: Gen = (R, n) => {
   const t = int(R, 0, 4);
-  const thing = pick(R, MODEL_THINGS);
   if (t === 0) {
     const N = pick(R, [50, 100, 200]), d = int(R, 2, 9), cm = d * N, m = r9(cm / 100);
     return choiceItem(R, {
-      family: 'diagnoseConv', n, prompt: `A plan at ${S(`1 : ${N}`)} shows a ${pick(R, GARDEN)} ${A(`${d} cm`)} long. Ben found its real length like this. Is it right?`,
+      family: 'diagnoseConv', n, prompt: `A plan at ${S(`1 : ${N}`)} shows a ${sized(R, GARDEN, m, 'm')} ${A(`${d} cm`)} long. Ben found its real length like this. Is it right?`,
       board: `${d} \\times ${N} = ${fmtT(cm)}\\text{ m}`,
       opts: [
         { t: `Wrong, 100 times too big: ${fmt(cm)} cm = ${fmt(m)} m.`, ok: true, say: `Right: 1 : ${N} keeps one unit, so ${fmt(cm)} is centimeters. ÷ 100 for meters.` },
@@ -749,7 +787,7 @@ const diagnoseConv: Gen = (R, n) => {
     });
   }
   if (t === 1) {
-    const N = pick(R, [24, 48]), d = N === 48 ? int(R, 1, 3) : int(R, 2, 6), inch = d * N, ft = inch / 12;
+    const N = pick(R, [24, 48]), d = N === 48 ? int(R, 1, 3) : int(R, 2, 6), inch = d * N, ft = inch / 12, thing = sized(R, MODELS, inch, 'in');
     return choiceItem(R, {
       family: 'diagnoseConv', n, prompt: `A model ${thing} at ${S(`1 : ${N}`)} is ${A(`${d} in`)} long. Ben found the real length like this. Is it right?`,
       board: `${d} \\times ${N} = ${inch}\\text{ ft}`,
@@ -783,7 +821,7 @@ const diagnoseConv: Gen = (R, n) => {
     for (let i = 0; i < 30; i++) { M = pick(R, [2, 3, 4, 5, 6, 8, 10, 12]); q = r9(M * 100 / N); if (q >= 1 && Number.isInteger(q * 2)) break; }
     const mm = r9(M / N);
     return choiceItem(R, {
-      family: 'diagnoseConv', n, prompt: `A model at ${S(`1 : ${N}`)}. The real ${pick(R, ['bridge', 'barn', 'ship', 'tower'])} is ${B(`${M} m`)}. Ben scaled first, then converted. Is it right?`,
+      family: 'diagnoseConv', n, prompt: `A model at ${S(`1 : ${N}`)}. The real ${sized(R, BIG, M, 'm')} is ${B(`${M} m`)}. Ben scaled first, then converted. Is it right?`,
       board: `${M} \\div ${N} = ${fmtT(mm)}\\text{ m} = ${fmtT(q)}\\text{ cm}`,
       opts: [
         { t: `Right: scaling first, then converting, works too.`, ok: true, say: `Right: with a scale in one unit, either order works. ${fmt(mm)} m = ${fmt(q)} cm.` },
@@ -795,7 +833,7 @@ const diagnoseConv: Gen = (R, n) => {
   }
   // converted twice
   // (feet a multiple of 3, so the extra ÷ 12 ends in a short decimal)
-  const [N, d] = pick(R, [[12, 3], [12, 6], [12, 9], [24, 3], [24, 6], [48, 3], [48, 6], [36, 2], [36, 4]] as [number, number][]), inch = d * N, ft = inch / 12;
+  const [N, d] = pick(R, [[12, 3], [12, 6], [12, 9], [24, 3], [24, 6], [48, 3], [48, 6], [36, 2], [36, 4]] as [number, number][]), inch = d * N, ft = inch / 12, thing = sized(R, MODELS, inch, 'in');
   return choiceItem(R, {
     family: 'diagnoseConv', n, prompt: `A model ${thing} at ${S(`1 : ${N}`)} is ${A(`${d} in`)} long. Ben found the real length in feet like this. Is it right?`,
     board: `\\begin{array}{l} ${d} \\times ${N} = ${inch}\\text{ in} = ${fmtT(ft)}\\text{ ft} \\\\ ${fmtT(ft)} \\div 12 = ${fmtT(r9(ft / 12))}\\text{ ft} \\end{array}`,
@@ -828,7 +866,7 @@ const audit: Gen = (R, n) => {
   }
   // a model in inches at 1 : N, answer wanted in feet: correct (either order), reversed, missing conversion, both
   const N = pick(R, [24, 48]), d = N === 48 ? int(R, 1, 3) : int(R, 2, 6), inch = d * N, ft = inch / 12, kind = int(R, 0, 3);
-  const thing = pick(R, MODEL_THINGS);
+  const thing = sized(R, MODELS, inch, 'in');
   const lines = kind === 0 ? (R() < 0.5 ? `${d} \\times ${N} = ${inch}\\text{ in} = ${ft}\\text{ ft}` : `\\begin{array}{l} ${N} \\div 12 = ${N / 12}\\text{, so } 1\\text{ in} : ${N / 12}\\text{ ft} \\\\ ${d} \\times ${N / 12} = ${ft}\\text{ ft} \\end{array}`)
     : kind === 1 ? `${d} \\div ${N} ${eqT(d / N)}\\text{ in} ${eqT(d / N / 12)}\\text{ ft}`
       : kind === 2 ? `${d} \\times ${N} = ${inch}\\text{ ft}`
@@ -868,8 +906,8 @@ const whichPair: Gen = (R, n) => {
 
 // 2: a unitless scale, which real length (one unit on both sides)
 const sameUnitPick: Gen = (R, n) => {
-  const N = pick(R, [10, 20, 50, 100]), d = int(R, 2, 9), u: U = R() < 0.6 ? 'cm' : 'in', big = u === 'cm' ? 'm' : 'ft', y = d * N;
-  const thing = pick(R, ['bridge', 'tree house', 'stage', 'boat', 'barn', 'tower']);
+  const N = pick(R, [20, 50, 100]), d = int(R, N === 20 ? 3 : 2, 9), u: U = R() < 0.6 ? 'cm' : 'in', big = u === 'cm' ? 'm' : 'ft', y = d * N;
+  const thing = sized(R, [...BIG, 'dog house', 'canoe'], y, u);
   return choiceItem(R, {
     family: 'sameUnitPick', n, prompt: `A model ${thing} is built at ${S(`1 : ${N}`)}. The model is ${A(`${d} ${u}`)} long. Which is the length of the real ${thing}?`,
     board: `1 : ${N}`,
@@ -902,16 +940,16 @@ const arrowBack: Gen = (R, n) => {
 
 // 4: a room on the plan: the real perimeter, or how much longer than wide
 const roomCalc: Gen = (R, n) => {
-  const k = pick(R, [4, 6, 8, 10, 12]), L = int(R, 3, 8), W = int(R, 2, L - 1), per = R() < 0.5;
-  const thing = pick(R, ['living room', 'garage', 'classroom', 'kitchen', 'basement', 'shed']);
+  const k = pick(R, [4, 6, 8, 10, 12]), Wmin = Math.max(2, Math.ceil(10 / k)), L = int(R, Math.max(3, Wmin + 1), 8), W = int(R, Wmin, L - 1), per = R() < 0.5;
+  const thing = sizedBoth(R, ['living room', 'garage', 'classroom', 'kitchen', 'basement', 'shed', 'gym', 'warehouse'], L * k, W * k, 'ft');   // a room at least 10 ft wide
   const ans = per ? 2 * (L + W) * k : (L - W) * k;
   return numItem({
     family: 'roomCalc', n, unit: 'ft', ans,
     prompt: per ? `A ${thing} is drawn ${A(`${L} in`)} by ${A(`${W} in`)} on a plan at ${A('1 in')} : ${B(`${k} ft`)}. How far is it all the way around the real ${thing}?`
       : `A ${thing} is drawn ${A(`${L} in`)} by ${A(`${W} in`)} on a plan at ${A('1 in')} : ${B(`${k} ft`)}. How much longer is the real ${thing} than it is wide?`,
     board: `${L}\\text{ in} \\times ${W}\\text{ in}, \\quad 1\\text{ in} : ${k}\\text{ ft}`,
-    solution: per ? [`Real sides: ${L} × ${k} = ${L * k} ft and ${W} × ${k} = ${W * k} ft.`, `Around: 2 × (${L * k} + ${W * k}) = ${ans} ft.`]
-      : [`Real sides: ${L * k} ft and ${W * k} ft.`, `${L * k} − ${W * k} = ${ans} ft (or ${L - W} in × ${k}).`],
+    solution: per ? [`Real sides: ${L} × ${k} = ${L * k} ft and ${W} × ${k} = ${W * k} ft.`, `Around: 2 × (${L * k} + ${W * k}) = ${mark(`${ans} ft`)}.`]
+      : [`Real sides: ${L * k} ft and ${W * k} ft.`, `${L * k} − ${W * k} = ${mark(`${ans} ft`)} (or ${L - W} in × ${k}).`],
     work: per ? [`2 \\times (${L * k} + ${W * k}) = ${ans}\\text{ ft}`] : [`${L * k} - ${W * k} = ${ans}\\text{ ft}`],
     wrongs: per ? [{ v: 2 * (L + W), mc: MC.drawingAsActual, say: `${2 * (L + W)} is the way around the PLAN, in inches. Each inch is ${k} ft.` }, { v: (L + W) * k, say: `That is two sides. The way around has four: two lengths and two widths.` }]
       : [{ v: L - W, mc: MC.drawingAsActual, say: `${L - W} in is the difference on the PLAN. In real feet: × ${k}.` }, { v: L * k, say: `${L * k} ft is the real length. How much longer is it than the real width, ${W * k} ft?` }],
@@ -922,7 +960,7 @@ const roomCalc: Gen = (R, n) => {
 // 5: which calculation multiplies every part of a mixed number
 const mixedPick: Gen = (R, n) => {
   const k = pick(R, [4, 8, 12]), w = int(R, 1, 6), f = pick(R, [0.25, 0.5, 0.75]), d = w + f;
-  const thing = pick(R, PLAN_THINGS);
+  const thing = sized(R, HOUSE, d * k, 'ft');
   return choiceItem(R, {
     family: 'mixedPick', n, prompt: `On a plan at ${A('1 in')} : ${B(`${k} ft`)}, a ${thing} is ${A(`${mixH(d)} in`)} long. Which calculation gives its real length?`,
     board: `${mixT(d)}\\text{ in} \\to\\ ?\\text{ ft}`,
@@ -938,7 +976,7 @@ const mixedPick: Gen = (R, n) => {
 // 6: compute a drawing length, then decide whether it fits on the paper
 const fitPaper: Gen = (R, n) => {
   const k = pick(R, [4, 8]), P = pick(R, [8.5, 11]), q = r9(P + pick(R, [-1.5, -1, -0.5, -0.25, 0.25, 0.5, 1])), y = r9(q * k), fits = q <= P;
-  const thing = pick(R, ['soccer field', 'parking lot', 'backyard', 'basketball court', 'garden', 'barn']);
+  const thing = sized(R, ['soccer field', 'parking lot', 'backyard', 'basketball court', 'garden', 'barn'], y, 'ft');
   return choiceItem(R, {
     family: 'fitPaper', n, prompt: `A ${thing} is ${B(`${fmt(y)} ft`)} long. Can it be drawn at ${A('1 in')} : ${B(`${k} ft`)} across a sheet of paper ${A(`${fmt(P)} in`)} wide?`,
     board: `${fmtT(y)}\\text{ ft} \\to\\ ?\\text{ in}`,
@@ -1007,7 +1045,7 @@ const convertFirst: Gen = (R, n) => {
   }
   const N = pick(R, [20, 50, 100, 200]), M = pick(R, [2, 3, 4, 5, 6, 8, 10, 12]);
   return choiceItem(R, {
-    family: 'convertFirst', n, prompt: `A model is built at ${S(`1 : ${N}`)} and measured in centimeters. The real ${pick(R, ['barn', 'bridge', 'ship', 'tower', 'stage'])} is ${B(`${M} m`)} long. Which first step works?`,
+    family: 'convertFirst', n, prompt: `A model is built at ${S(`1 : ${N}`)} and measured in centimeters. The real ${sized(R, BIG, M, 'm')} is ${B(`${M} m`)} long. Which first step works?`,
     board: `1 : ${N}, \\quad ${M}\\text{ m}`,
     opts: [
       { t: `${M} m = ${M * 100} cm`, ok: true, say: `Right: ${M} m = ${M * 100} cm, then ${M * 100} ÷ ${N} = ${fmt(r9(M * 100 / N))} cm.` },
@@ -1021,7 +1059,7 @@ const convertFirst: Gen = (R, n) => {
 // 11: the same length in a sensible unit
 const sensibleUnit: Gen = (R, n) => {
   if (R() < 0.6) {
-    const N = pick(R, [12, 24, 48]), d = N === 48 ? int(R, 1, 3) : N === 24 ? int(R, 2, 6) : int(R, 2, 12), I = d * N, thing = pick(R, MODEL_THINGS);
+    const N = pick(R, [12, 24, 48]), d = N === 48 ? int(R, 1, 3) : N === 24 ? int(R, 2, 6) : int(R, 2, 12), I = d * N, thing = sized(R, MODELS, I, 'in');
     return choiceItem(R, {
       family: 'sensibleUnit', n, prompt: `A ${A(`${d} in`)} model ${thing} at ${S(`1 : ${N}`)} gives a real length of ${B(`${I} in`)}. Which is the same length in feet?`,
       board: `${d} \\times ${N} = ${I}\\text{ in}`,
@@ -1066,7 +1104,7 @@ const pairPick: Gen = (R, n) => {
 // 13: which answer can be true (direction and unit sense)
 const plausible: Gen = (R, n) => {
   const N = pick(R, [20, 25, 50, 100]), M = int(R, 4, 20), r = r9(100 * M / N);
-  const thing = pick(R, ['bus', 'boat', 'barn', 'bridge', 'fire truck', 'train car']);
+  const thing = sized(R, ['bus', 'boat', 'barn', 'bridge', 'fire truck', 'train car'], M, 'm');
   return choiceItem(R, {
     family: 'plausible', n, prompt: `A model ${thing} is built at ${S(`1 : ${N}`)}. The real ${thing} is ${B(`${M} m`)} long. Which model length makes sense?`,
     board: `1 : ${N}, \\quad ${M}\\text{ m}`,
@@ -1088,7 +1126,7 @@ const fixRev: Gen = (R, n) => {
       family: 'fixRev', n, unit: 'in', ans: q,
       prompt: `Ana's plan uses ${A('1 in')} : ${B(`${k} ft`)}. For a ${B(`${fmt(y)} ft`)} wall she wrote ${fmt(y)} × ${k} = ${fmt(y * k)} in. Fix it: how long is the wall on the plan?`,
       board: `${fmtT(y)} \\times ${k} = ${fmtT(y * k)}\\text{ in}`,
-      solution: [`Feet → plan inches undoes × ${k}: ÷ ${k}.`, `${fmt(y)} ÷ ${k} = ${fmt(q)} in. Check: ${fmt(q)} × ${k} = ${fmt(y)} ft.`], work: [`${fmtT(y)} \\div ${k} = ${fmtT(q)}\\text{ in}`],
+      solution: [`Feet → plan inches undoes × ${k}: ÷ ${k}.`, `${fmt(y)} ÷ ${k} = ${mark(`${fmt(q)} in`)}. Check: ${fmt(q)} × ${k} = ${fmt(y)} ft.`], work: [`${fmtT(y)} \\div ${k} = ${fmtT(q)}\\text{ in}`],
       wrongs: [{ v: r9(y * k), mc: MC.arithOnly, say: `That keeps Ana's × ${k}. The operation is the slip: going back to the plan divides.` }],
       miss: `Divide: ${fmt(y)} ÷ ${k}.`, pic: pic2(s, { row: 1, v: y }, { row: 0, v: q }),
     });
@@ -1140,7 +1178,7 @@ const sizeError: Gen = (R, n) => {
 // 16: check a whole solution, then type the right answer
 const auditFix: Gen = (R, n) => {
   const N = pick(R, [24, 48]), d = N === 48 ? int(R, 1, 3) : int(R, 2, 6), inch = d * N, ft = inch / 12, kind = int(R, 0, 3);
-  const thing = pick(R, MODEL_THINGS);
+  const thing = sized(R, MODELS, inch, 'in');
   const shown = kind === 0 ? ft : kind === 1 ? r2(d / N / 12) : kind === 2 ? inch : r2(d / N);
   const lines = kind === 0 ? `${d} \\times ${N} = ${inch}\\text{ in} = ${ft}\\text{ ft}`
     : kind === 1 ? `${d} \\div ${N} ${eqT(d / N)}\\text{ in} ${eqT(d / N / 12)}\\text{ ft}`
@@ -1158,9 +1196,23 @@ const auditFix: Gen = (R, n) => {
   });
 };
 
-export const GENERATORS: Record<FamilyId, Gen> = {
+/** "a 8 ft rope" → "an 8 ft rope", "A $80 jacket" → "An $80 jacket", "a 18% tip" → "an 18% tip": the article as the number is spoken */
+const anFix = (h: string) => h
+  .replace(/(^|[.?!:]\s+|“)A ((?:<b[^>]*>)*\$?(?:8|1[18](?![\d])))/g, '$1An $2')
+  .replace(/(\s|\()a ((?:<b[^>]*>)*\$?(?:8|1[18](?![\d])))/g, '$1an $2')
+  .replace(/(^|[.?!:]\s+|“)A ((?:<b[^>]*>)*ant\b)/g, '$1An $2').replace(/(\s|\()a ((?:<b[^>]*>)*ant\b)/g, '$1an $2');
+/** every generator's text reads its articles right (prompt, choices, worked solution) */
+const withArticles = <G extends (R: () => number, n: number, sg?: string) => Item>(g: G): G => ((R: () => number, n: number, sg?: string) => {
+  const it = g(R, n, sg);
+  it.prompt = anFix(it.prompt);
+  it.solution = it.solution.map(anFix);
+  if (it.choices) it.choices = it.choices.map(anFix);
+  return it;
+}) as G;
+const RAW_GENERATORS: Record<FamilyId, Gen> = {
   table, order, unitless, unitlessCalc, predict, reverse, toActual, toDrawing, rulerRead, fracForm,
   normalize, toUnitless, convertIn, convertOut, findScale, reasonable, diagnoseRev, diagnoseConv, audit,
   whichPair, sameUnitPick, arrowBack, roomCalc, mixedPick, fitPaper, normTable, unitsBack, convertFirst,
   sensibleUnit, pairPick, plausible, fixRev, sizeError, auditFix,
 };
+export const GENERATORS = Object.fromEntries(Object.entries(RAW_GENERATORS).map(([k, g]) => [k, withArticles(g)])) as Record<FamilyId, Gen>;

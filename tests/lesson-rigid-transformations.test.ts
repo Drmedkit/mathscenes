@@ -271,3 +271,52 @@ describe('the model maths', () => {
     expect(rot([4, -3], [0, 0], 90)).toEqual([3, 4]);
   });
 });
+
+describe('quality-layer fixes (practice sweep, 2026-10-23)', () => {
+  const items = (fam: string, sg: string, n = 400) => Array.from({ length: n }, (_, s) => GENERATORS[fam as keyof typeof GENERATORS](rng(s * 31 + 7), s, sg));
+  it('a turn center never borrows the letter of a different corner (no "about P" with a vertex P elsewhere)', () => {
+    for (const [fam, sg] of [['turnGrid', 'rotate-tracing'], ['whole', 'whole-figure'], ['keepLen', 'verify-distance'], ['keepAngle', 'verify-angle'], ['nameR', 'recog-rotation']] as const) {
+      for (const it of items(fam, sg)) {
+        const t = it.prompt.replace(/<[^>]+>/g, '');
+        const about = t.match(/about (?:the origin )?([A-Z])\b/)?.[1];
+        const corners = t.match(/\b(?:triangle |segment |point )?([A-Z]{2,4})\b/)?.[1] ?? '';
+        const g = (it.picture as unknown as { grid?: { center?: { p: V; name?: string }; figs: { pts: V[]; names: (string | null)[] }[] } })?.grid;
+        if (!about || !g?.center || about === 'O') continue;
+        const k = g.figs[0]!.names.indexOf(about);
+        if (k >= 0) expect(eqV(g.figs[0]!.pts[k]!, g.center.p), `${it.id}: ${t} (${corners})`).toBe(true);
+      }
+    }
+  });
+  it('predict: a triangle\'s ∠B is the one its three sides make; a four-sided figure closes', () => {
+    for (const it of items('predict', 'predict-measures', 600)) {
+      const b = it.board;
+      const len = (s: string) => Number(b.match(new RegExp(`${s} = (\\d+)`))![1]);
+      const B = Number(b.match(/\\angle B = (\d+)/)![1]);
+      if (/CA = /.test(b)) {
+        const [ab, bc, ca] = [len('AB'), len('BC'), len('CA')];
+        expect(Math.abs((Math.acos((ab * ab + bc * bc - ca * ca) / (2 * ab * bc)) * 180) / Math.PI - B), it.id).toBeLessThanOrEqual(0.5);
+      } else {
+        const [ab, bc, cd, da] = [len('AB'), len('BC'), len('CD'), len('DA')];
+        const ac = Math.sqrt(ab * ab + bc * bc - 2 * ab * bc * Math.cos((B * Math.PI) / 180));
+        expect(ac > Math.abs(cd - da) && ac < cd + da, it.id).toBe(true);
+      }
+      expect(it.prompt).not.toMatch(/kite/);
+    }
+  });
+  it('slide length: the worked step multiplies by 1.414 and rounds to the stated tenth', () => {
+    for (const it of items('slide', 'translate-grid')) {
+      const m = it.solution.join(' ').match(/(\d+) × 1\.414 ≈ ([\d.]+)/);
+      if (m) expect(Math.round(Number(m[1]) * 1.414 * 10) / 10).toBe(Number(m[2]));
+    }
+  });
+  it('coordinate answers: the steps end on the marked point', async () => {
+    const { explain } = await import('../src/lesson/topics/rigid-transformations/explain');
+    for (const [fam, sg] of [['flipDiag', 'reflect-slanted-line'], ['ruleLine', 'coord-reflect-parallel'], ['ruleT', 'coord-translate']] as const) {
+      for (const it of items(fam, sg, 200)) {
+        const ex = explain(it);
+        expect(ex, it.id).not.toBeNull();
+        expect(it.check(ex!.result).ok, it.id).toBe(true);
+      }
+    }
+  });
+});

@@ -188,3 +188,49 @@ describe('voice', () => {
     }
   });
 });
+
+describe('quality-layer fixes (practice sweep, 2026-10-23)', () => {
+  const plainOf = (h: string) => h.replace(/<[^>]+>/g, '');
+  it('the tape: "1 section of 50%", never "1 sections"; the worked steps mark one section and the original', async () => {
+    const { explain } = await import('../src/lesson/topics/original-amount/explain');
+    for (let s = 1; s <= 400; s++) {
+      const it = make('tapeUnit', 'reverse-percent-change', s);
+      expect(plainOf(it.prompt), it.prompt).not.toMatch(/\b1 sections/);
+      const ex = explain(it)!;
+      expect(ex, it.prompt).not.toBeNull();
+      expect(it.check(ex.result).ok, it.prompt).toBe(true);
+    }
+  });
+  it('"an 18% tip", "an 8% markup": the article as the number is spoken', () => {
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 60; s++) {
+      const it = make(f, p.id, s);
+      expect(plainOf(it.prompt), it.prompt).not.toMatch(/\b[Aa] (8|1[18])(\.\d+)?%/);
+    }
+  });
+});
+
+describe('prices fit the thing (practice sweep, 2026-10-23)', () => {
+  it('the original price of a story is inside the real range of the thing it names (no $2 helmet, no $280 pizza delivery)', async () => {
+    const { THINGS, SERVICES } = await import('../src/lesson/topics/original-amount/items');
+    const all = [...THINGS, ...SERVICES].sort((a, b) => b.a.length - a.a.length);
+    let checked = 0;
+    for (const [f, sg] of [['reverse', 'reverse-percent-change'], ['tapeUnit', 'reverse-percent-change'], ['whichCalc', 'reverse-percent-change'], ['contextOrig', 'context-diagnose-change'], ['undoPct', 'explain-base-change'], ['addBack', 'explain-base-change']] as const) {
+      for (let s = 1; s <= 300; s++) {
+        const it = make(f, sg, s), t = it.prompt.replace(/<[^>]+>/g, '').toLowerCase();
+        const th = all.find(x => t.includes(x.a.toLowerCase()) || t.includes(x.the.toLowerCase()));
+        if (!th || it.answer.kind !== 'num') continue;
+        const O = it.answer.v;
+        if (f === 'undoPct' || f === 'addBack') continue;   // the answer is a percent or the end price there
+        expect(O >= th.lo && O <= th.hi, `${th.tag} at $${O}: ${t}`).toBe(true);
+        checked++;
+      }
+    }
+    expect(checked).toBeGreaterThan(300);
+  });
+  it('diagnose "the discount was r%": never 50%, where dividing by 1 − rate gives the same number', () => {
+    for (let s = 1; s <= 400; s++) {
+      const t = make('diagnose', 'context-diagnose-change', s).prompt.replace(/<[^>]+>/g, '');
+      if (/discount was/.test(t)) expect(t, t).not.toMatch(/discount was 50%/);
+    }
+  });
+});

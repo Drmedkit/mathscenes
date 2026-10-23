@@ -167,3 +167,27 @@ describe('voice', () => {
     for (const id of used) expect(LINES[id], id).toBeTruthy();
   });
 });
+
+describe('quality-layer fixes (practice sweep, 2026-10-23)', () => {
+  const gen = (f: FamilyId, sg: string, s: number) => GENS[f]!(rng(s * 41 + 9), s, sg) as CTItem;
+  it('"Does the rule move P?": exactly one choice names the right point (no x + d, y + d rule, where swapped coordinates land on it too)', () => {
+    for (let s = 1; s <= 600; s++) {
+      const it = gen('rigidOrNot', 'non-rigid-non-examples', s);
+      const right = it.choices!.filter((_, i) => it.check({ kind: 'choice', i }).ok);
+      expect(right.length).toBe(1);
+      const pts = it.choices!.map(c => c.replace(/<[^>]+>/g, '').match(/P′ = (\([^)]*\))/)?.[1]).filter(Boolean);
+      expect(new Set(pts).size, it.choices!.join(' | ')).toBe(pts.length);
+    }
+  });
+  it('the steps card: at most 5 steps, a point answer ends on the marked point, a length on its value', async () => {
+    const { explain } = await import('../src/lesson/topics/coordinate-transformations/explain');
+    for (const [f, sg] of [['straightImage', 'verify-straightness'], ['moveOne', 'translation-coordinate-effect'], ['sideLength', 'verify-segment-length'], ['angleImage', 'verify-angle-measure'], ['reflectLine', 'reflect-non-axis-line']] as const) {
+      for (let s = 1; s <= 150; s++) {
+        const it = gen(f, sg, s), ex = explain(it);
+        expect(ex, `${f}: ${it.prompt}`).not.toBeNull();
+        expect(ex!.steps.length, f).toBeLessThanOrEqual(5);
+        expect(it.check(ex!.result).ok, `${f}: ${it.prompt}`).toBe(true);
+      }
+    }
+  });
+});

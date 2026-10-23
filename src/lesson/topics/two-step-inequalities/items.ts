@@ -8,6 +8,7 @@ import {
   q, dq, qAdd, qDiv, qMul, qNum, qSame, qSign, qSub, satisfies, setHtml, solve, toggleEq, tq, txt,
 } from './ineqMaths';
 import { type Q, toQ } from '../../../core/math';
+import { endOnChoice } from '../../runtime/explain';
 
 export type FamilyId = 'pickSet' | 'testPoint' | 'shift' | 'solveShift' | 'scale' | 'mirror' | 'keepOrFlip' | 'negScale' | 'divNeg'
   | 'solve' | 'firstMove' | 'revWhen' | 'audit' | 'proofStep' | 'proofWhy' | 'writeIneq' | 'contextSolve' | 'wholeCount'
@@ -99,11 +100,13 @@ const SAYS = {
 interface Opt { html: string; ok?: boolean; mc?: string; say: string }
 interface Base { id: string; family: FamilyId; subgoal?: string; prompt: string; board: string; solution: string[]; picture?: Pic }
 /** a multiple-choice item: exactly one right option, the others carry their misconception */
+/** a number-line graph choice is named by its label in the steps ("open dot at 3, shaded left"), not by its picture */
+export const graphLabel = (html: string): string | null => (/^<svg/.test(html) ? html.match(/aria-label="([^"]*)"/)?.[1] ?? null : null);
 function choose(R: () => number, base: Base, opts: Opt[]): IqItem {
   const o = shuffle(R, opts.slice());
   const right = o.findIndex(x => x.ok);
   return {
-    ...base, input: 'choice', choices: o.map(x => x.html), answer: { kind: 'choice', i: right },
+    ...base, input: 'choice', choices: o.map(x => x.html), answer: { kind: 'choice', i: right }, solution: endOnChoice(base.solution, graphLabel(o[right]!.html) ?? o[right]!.html),
     picture: base.picture as IqItem['picture'],
     check(r: Response): Verdict {
       if (r.kind !== 'choice') return { ok: false, say: 'Pick one of the options.' };
@@ -390,7 +393,9 @@ const firstMove: Gen = (R, n, sg = 'solve-ineq-positive') => {
   const opts: Opt[] = I.kind === 'lin' ? [
     { html: `${undoQ}; the symbol stays`, ok: true, say: `Yes. The ${qSign(I.q) > 0 ? '+' : '&minus;'} ${H(Math.abs(qNum(I.q)), f)} was the last thing done to ${X(I.v)}, so it comes off first, and adding or subtracting never turns the symbol.` },
     { html: `${undoQ}; the symbol turns around`, mc: MC.revAdd, say: 'Adding or subtracting slides both sides the same way: the symbol stays.' },
-    { html: `${undoP}${neg ? ' and turn the symbol' : ''}, first`, mc: MC.wrongOrder, say: `The × ${par(qNum(I.p), f)} was done FIRST, so it is undone LAST. Undo the ${qSign(I.q) > 0 ? '+' : '&minus;'} ${H(Math.abs(qNum(I.q)), f)} first.` },
+    // the wrong order as students do it: only the x-term is divided, the constant is left as it was (dividing every
+    // term first would be legal, so that is not offered)
+    { html: `${undoP.replace('both sides', `only the ${X(I.v)}-term`)} first; the ${H(Math.abs(qNum(I.q)), f)} stays`, mc: MC.wrongOrder, say: `The × ${par(qNum(I.p), f)} was done FIRST, so it is undone LAST, and a move works on whole sides, not one term. Undo the ${qSign(I.q) > 0 ? '+' : '&minus;'} ${H(Math.abs(qNum(I.q)), f)} first.` },
   ] : [
     { html: `${undoP}${neg ? '; the symbol turns around' : '; the symbol stays'}`, ok: true, say: `Yes. The × ${par(qNum(I.p), f)} was done last (to the whole group), so it is undone first${neg ? ', and a negative factor turns the symbol' : ''}.` },
     { html: `${undoP}${neg ? '; the symbol stays' : '; the symbol turns around'}`, mc: neg ? MC.noRev : MC.posDiv, say: neg ? `Dividing both sides by a negative turns the symbol around.` : `Dividing by a positive keeps the order: the symbol stays.` },
@@ -399,7 +404,7 @@ const firstMove: Gen = (R, n, sg = 'solve-ineq-positive') => {
   void mw;
   return choose(R, {
     id: `firstMove-${n}`, family: 'firstMove', subgoal: sg, board: ineqTex(I),
-    prompt: `What is the first move to solve <b>${ineqHtml(I)}</b>?`,
+    prompt: `Undo the last step done to ${X(I.v)} first. What is the first move to solve <b>${ineqHtml(I)}</b>?`,
     solution: solveLines(I), picture: { kind: 'chain', I },
   }, opts);
 };
@@ -441,7 +446,7 @@ const audit: Gen = (R, n, sg = 'audit-solution-set') => {
   return choose(R, {
     id: `audit-${n}`, family: 'audit', subgoal: sg, board: ineqTex(I),
     prompt: `${who} solved <b>${ineqHtml(I)}</b> and wrote <b>${setHtml(v, pOp, S.b, f)}</b>. ${who} tested ${X(v)} = ${xs}: ${exprHtml(I)} = ${val} there, so the inequality is ${tIn ? 'true' : 'false'}, just as ${who}’s set says. “My answer checks out.” What do you say?`,
-    solution: [...solveLines(I), `Tests that settle it: the boundary ${hq(S.b, f)} and one value on each side.`],
+    solution: [...solveLines(I).slice(0, -1), `Tests that settle it: the boundary ${hq(S.b, f)} and one value on each side.`],
     picture: { kind: 'set', b: qNum(S.b), op: S.op, form: f, v, tests: [qNum(S.b) - 2 * qNum(step), qNum(S.b) + 2 * qNum(step)], proposed: { b: qNum(S.b), op: pOp } },
   }, opts);
 };
@@ -458,7 +463,7 @@ const proofStep: Gen = (R, n, sg = 'justify-reversal-general') => {
       id: `proofStep-${n}`, family: 'proofStep', subgoal: sg, input: 'num',
       prompt: `To prove the reversal, you add <b>(&minus;<i>a</i> &minus; <i>b</i>)</b> to both sides of <i>a</i> &lt; <i>b</i>. Try it with <i>a</i> = ${H(a)} and <i>b</i> = ${H(b)}: what is <b>${H(base)} + (&minus;${par(a)} &minus; ${par(b)})</b>?`,
       board: `${base} + (-${parT(a)} - ${parT(b)}) = \\,?`,
-      solution: [`&minus;${par(a)} &minus; ${par(b)} = ${H(-a - b)}.`, `${H(base)} + ${par(-a - b)} = <b class="s">${H(val)}</b>: that is &minus;${useA ? '<i>b</i>' : '<i>a</i>'}, the opposite of ${useA ? '<i>b</i>' : '<i>a</i>'}.`],
+      solution: [`&minus;${par(a)} &minus; ${par(b)} = ${H(-a - b)}.`, `${H(base)} + ${par(-a - b)} = <b class="s">${H(val).replace('&minus;', '−')}</b>: that is &minus;${useA ? '<i>b</i>' : '<i>a</i>'}, the opposite of ${useA ? '<i>b</i>' : '<i>a</i>'}.`],
       answer: { kind: 'num', v: val },
       check(r: Response): Verdict {
         if (r.kind !== 'num' || !Number.isFinite(r.v)) return { ok: false, say: 'Type a number.' };
@@ -530,7 +535,7 @@ function storyFor_(R: () => number): Story {
   if (k === 2) { const q0 = pick(R, [60, 85, 120, 45]), p = pick(R, [15, 12, 20, 25]), r = q0 + p * int(R, 5, 12) + pick(R, [0, 5, 7]); const op: Op = pick(R, ['>', '>=']); return { q: q0, p, r, op, v: 'w', unit: 'week', units: 'weeks', money: true, text: `Rosa has ${money(q0)} saved and adds ${money(p)} every week. She wants {B} ${money(r)} for a new bike.`, ask: 'After how many weeks?', domain: 'count' }; }
   if (k === 3) { const q0 = pick(R, [150, 160, 180, 200]), p = pick(R, [40, 45, 50, 60]), r = q0 + p * int(R, 20, 35) + pick(R, [0, 10, 25]); const op: Op = pick(R, ['<=', '<']); return { q: q0, p, r, op, v: 'b', unit: 'box', units: 'boxes', money: false, text: `An elevator can carry {B} ${r} lb. The operator weighs ${q0} lb, and each box weighs ${p} lb.`, ask: 'How many boxes can go up in one trip?', domain: 'count' }; }
   if (k === 4) { const q0 = pick(R, [10, 12, 15, 18]), p = pick(R, [4, 5, 6, 7.5]), r = q0 + p * int(R, 3, 8); const op: Op = pick(R, ['<=', '<']); return { q: q0, p, r, op, v: 'h', unit: 'hour', units: 'hours', money: true, text: `A bike rental costs ${money(q0)} plus ${money(p)} per hour (charged by the minute). You have {B} ${money(r)} to spend.`, ask: 'How long can you ride?', domain: 'nonneg' }; }
-  if (k === 5) { const q0 = pick(R, [-20, -15, -12, -8]), p = pick(R, [3, 4, 5, 6]), r = q0 + p * int(R, 4, 9); const op: Op = pick(R, ['>', '>=']); return { q: q0, p, r, op, v: 'h', unit: 'hour', units: 'hours', money: false, text: `At midnight it is ${H(q0)} °F, and the temperature rises ${p} °F every hour. The ice road closes once it is {B} ${r} °F.`, ask: 'After how many hours is the road closed?', domain: 'nonneg' }; }
+  if (k === 5) { const q0 = pick(R, [-20, -15, -12, -8]), p = pick(R, [3, 4, 5, 6]), r = q0 + p * int(R, 4, 9); const op: Op = pick(R, ['>', '>=']); return { q: q0, p, r, op, v: 'h', unit: 'hour', units: 'hours', money: false, text: `At midnight it is ${H(q0)} °F, and the temperature rises ${p} °F every hour. The ice road closes once it is {B} ${H(r)} °F.`, ask: 'After how many hours is the road closed?', domain: 'nonneg' }; }
   const q0 = pick(R, [32, 50, 41]), p = 1.8, cc = -int(R, 5, 25) * 5 / 5, r = round3(q0 === 32 ? 1.8 * cc + 32 : 1.8 * cc + 32); const op: Op = pick(R, ['<', '<=']);
   void q0;
   return { q: 32, p, r, op, v: 'C', unit: 'degree Celsius', units: '°C', money: false, text: `Fahrenheit is 1.8 times the Celsius temperature, plus 32. A freezer must stay {B} ${num(r)} °F.`, ask: 'Which Celsius temperatures work?', domain: 'all' };
@@ -636,7 +641,7 @@ const chooseModel: Gen = (R, n, sg = 'choose-equation-or-inequality') => {
       { html: `${e1} = ${H(tot, 'dec')}`, mc: MC.dropsStart, say: `The ${money(fee)} entry is part of the total.` },
       { html: `${e2} ≥ ${H(tot, 'dec')}`, say: '“Paid” is an exact amount: an equation.' },
     ];
-    return choose(R, { id: `chooseModel-${n}`, family: 'chooseModel', subgoal: sg, board: `${v} = \\text{rides}`, prompt: `A fair charges ${money(fee)} to get in plus ${money(rate)} per ride.${extra} Jo <b>paid ${R0}</b>. Which model fits (${x} = rides)?`, solution: [`Total: ${e2}. “Paid ${R0}” is exact: <b class="s">${e2} = ${H(tot, 'dec')}</b>.`] }, opts);
+    return choose(R, { id: `chooseModel-${n}`, family: 'chooseModel', subgoal: sg, board: `${v} = \\text{rides}`, prompt: `A fair charges ${money(fee)} to get in plus ${money(rate)} per ride.${extra} Jo <b>paid ${R0}</b>. Which model fits (${x} = rides)?`, solution: [`Total: ${e2}.`, `“Paid ${R0}” is exact, not a limit: <b class="s">${e2} = ${H(tot, 'dec')}</b>.`] }, opts);
   }
   if (kind === 'onestep') {
     const opts: Opt[] = [
@@ -645,7 +650,7 @@ const chooseModel: Gen = (R, n, sg = 'choose-equation-or-inequality') => {
       { html: `${e1} = ${H(tot, 'dec')}`, mc: MC.eqForBound, say: `“${PHRASE[op][0]}” is a limit: an inequality.` },
       { html: `${e1} ${OP_HTML[toggleEq(op)]} ${H(tot, 'dec')}`, mc: MC.phrase, say: `“${PHRASE[op][0]}” is ${OP_HTML[op]}.` },
     ];
-    return choose(R, { id: `chooseModel-${n}`, family: 'chooseModel', subgoal: sg, board: `${v} = \\text{rides}`, prompt: `At a free fair, rides cost ${money(rate)} each.${extra} Jo can spend <b>${phrase(R, op)} ${R0}</b>. Which model fits (${x} = rides)?`, solution: [`Cost: ${e1}. “${PHRASE[op][0]}” is ${OP_HTML[op]}: <b class="s">${e1} ${OP_HTML[op]} ${H(tot, 'dec')}</b>.`] }, opts);
+    return choose(R, { id: `chooseModel-${n}`, family: 'chooseModel', subgoal: sg, board: `${v} = \\text{rides}`, prompt: `At a free fair, rides cost ${money(rate)} each.${extra} Jo can spend <b>${phrase(R, op)} ${R0}</b>. Which model fits (${x} = rides)?`, solution: [`No fee here: the cost is just ${e1}.`, `“${PHRASE[op][0]}” is a limit, ${OP_HTML[op]}: <b class="s">${e1} ${OP_HTML[op]} ${H(tot, 'dec')}</b>.`] }, opts);
   }
   const opts: Opt[] = [
     { html: `${e2} ${OP_HTML[op]} ${H(tot, 'dec')}`, ok: true, say: `Yes: entry plus rides, and “${PHRASE[op][0]}” is ${OP_HTML[op]}.` },
@@ -653,7 +658,7 @@ const chooseModel: Gen = (R, n, sg = 'choose-equation-or-inequality') => {
     { html: `${e1} ${OP_HTML[op]} ${H(tot, 'dec')}`, mc: MC.dropsStart, say: `The ${money(fee)} entry is part of the total.` },
     { html: `${e2} ${OP_HTML[toggleEq(op)]} ${H(tot, 'dec')}`, mc: MC.phrase, say: `“${PHRASE[op][0]}” is ${OP_HTML[op]}.` },
   ];
-  return choose(R, { id: `chooseModel-${n}`, family: 'chooseModel', subgoal: sg, board: `${v} = \\text{rides}`, prompt: `A fair charges ${money(fee)} to get in plus ${money(rate)} per ride.${extra} Jo can spend <b>${phrase(R, op)} ${R0}</b>. Which model fits (${x} = rides)?`, solution: [`Total: ${e2}. “${PHRASE[op][0]}”: <b class="s">${e2} ${OP_HTML[op]} ${H(tot, 'dec')}</b>.`] }, opts);
+  return choose(R, { id: `chooseModel-${n}`, family: 'chooseModel', subgoal: sg, board: `${v} = \\text{rides}`, prompt: `A fair charges ${money(fee)} to get in plus ${money(rate)} per ride.${extra} Jo can spend <b>${phrase(R, op)} ${R0}</b>. Which model fits (${x} = rides)?`, solution: [`Total: entry plus rides, ${e2}.`, `“${PHRASE[op][0]}” is a limit, ${OP_HTML[op]}: <b class="s">${e2} ${OP_HTML[op]} ${H(tot, 'dec')}</b>.`] }, opts);
 };
 const storyForF: Gen = (R, n, sg = 'inequality-to-context') => {
   const form = pick(R, ['lin', 'linMinus', 'qFirst', 'grp'] as const), op = pick(R, OPS);
@@ -730,11 +735,24 @@ const solveShift: Gen = (R, n, sg = 'order-preserve-translation') => {
   }, opts);
 };
 
-export const GENERATORS: Record<FamilyId, Gen> = {
+/** "a 8 ft rope" → "an 8 ft rope", "A $80 jacket" → "An $80 jacket", "a 18% tip" → "an 18% tip": the article as the number is spoken */
+const anFix = (h: string) => h
+  .replace(/(^|[.?!:]\s+|“)A ((?:<b[^>]*>)*\$?(?:8|1[18](?![\d])))/g, '$1An $2')
+  .replace(/(\s|\()a ((?:<b[^>]*>)*\$?(?:8|1[18](?![\d])))/g, '$1an $2');
+/** every generator's text reads its articles right (prompt, choices, worked solution) */
+const withArticles = <G extends (R: () => number, n: number, sg?: string) => Item>(g: G): G => ((R: () => number, n: number, sg?: string) => {
+  const it = g(R, n, sg);
+  it.prompt = anFix(it.prompt);
+  it.solution = it.solution.map(anFix);
+  if (it.choices) it.choices = it.choices.map(anFix);
+  return it;
+}) as G;
+const RAW_GENERATORS: Record<FamilyId, Gen> = {
   pickSet, testPoint, shift, solveShift, scale, mirror, keepOrFlip, negScale, divNeg,
   solve: solveF, firstMove, revWhen, audit, proofStep, proofWhy,
   writeIneq, contextSolve, wholeCount, chooseModel, storyFor: storyForF, domainFor,
 };
+export const GENERATORS = Object.fromEntries(Object.entries(RAW_GENERATORS).map(([k, g]) => [k, withArticles(g)])) as Record<FamilyId, Gen>;
 /** for tests: the misconception a wrong solution set of a solve item gets */
 export function classifySet(I: Ineq, op: Op, b: Q): string | undefined {
   const S = solve(I);

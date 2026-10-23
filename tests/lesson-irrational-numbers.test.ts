@@ -233,3 +233,74 @@ describe('voice', () => {
     }
   });
 });
+
+describe('quality-layer fixes (practice sweep, 2026-10-23)', () => {
+  const plainOf = (h: string) => h.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<');
+  it('no raw "<" in the text: "2.44 < √6 < 2.45" survives as plain text (it used to read "2.44 2.45")', () => {
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 40; s++) {
+      const it = gen(f, s * 13 + 1, p.id);
+      for (const h of [it.prompt, ...it.solution, ...(it.choices ?? []), it.pairOp ?? '']) expect(h, `${f}: ${h}`).not.toMatch(/<(?![a-zA-Z\/!])/);
+    }
+    const it = gen('maxError', 7, 'error-from-bounds');
+    expect(plainOf(it.prompt)).toMatch(/\d < .+ < \d/);
+  });
+  it('the worked steps end on the answer for the pair, fraction and count families', async () => {
+    const { explain } = await import('../src/lesson/topics/irrational-numbers/explain');
+    for (const [f, sg] of [['asQuotient', 'define-rational'], ['addressOf', 'decimal-address'], ['bracket', 'bracket-root'], ['refine', 'refine-bounds'], ['boundExpr', 'bound-expressions'],
+      ['rootFraction', 'root-of-fraction'], ['toFraction', 'convert-repeating-delayed'], ['remainders', 'decimals-repeat'], ['maxError', 'error-from-bounds'], ['barNotation', 'decimals-repeat']] as const) {
+      for (let s = 1; s <= 80; s++) {
+        const it = gen(f, s * 7 + 3, sg), ex = explain(it);
+        expect(ex, `${f}: ${it.prompt}`).not.toBeNull();
+        expect(it.check(ex!.result).ok, `${f}: ${it.prompt} ${JSON.stringify(ex!.result)}`).toBe(true);
+      }
+    }
+  });
+});
+
+describe('worlds (practice sweep, 2026-10-23)', () => {
+  const plainOf = (h: string) => h.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<');
+  it('roundRoot: the hint squares the midpoint right ((k + 0.5)², not (2k + 1)² / 100)', () => {
+    for (let s = 1; s <= 400; s++) {
+      const m = plainOf(gen('roundRoot', s * 3 + 1, 'round-from-bounds').prompt).match(/Hint: (\d+)\.5² = (\d+(?:\.\d+)?)/);
+      if (m) expect(Number(m[2])).toBeCloseTo((Number(m[1]) + 0.5) ** 2, 9);
+    }
+  });
+  it('a delayed repeat is never a pure repeat in disguise (0.3 63 63… is 0.36 36…)', () => {
+    for (let s = 1; s <= 400; s++) for (const f of ['whichShift', 'toFraction']) {
+      const it = gen(f, s * 5 + 2, 'convert-repeating-delayed');
+      const m = it.board.match(/0\.(\d)\\overline\{(\d+)\}/);
+      if (m) expect(m[1], it.board).not.toBe(m[2]!.slice(-1));
+    }
+  });
+  it('boundRound: strict bounds that end on a midpoint settle (31.40 < 10π < 31.50 rounds to 31)', () => {
+    for (let s = 1; s <= 400; s++) {
+      const it = gen('boundRound', s * 7 + 3, 'bound-expressions'), t = plainOf(it.prompt);
+      const m = t.match(/so ([\d.]+) < (\d+)π < ([\d.]+)\. What is \d+π to the nearest whole number/);
+      if (!m) continue;
+      const right = plainOf(it.choices![(it.answer as { i: number }).i]!);
+      const lo = Math.round(Number(m[1]) + 1e-9), hi = Math.round(Number(m[3]) - 1e-9);
+      if (lo === hi) expect(right, t).toMatch(new RegExp(`^${lo}:`));
+    }
+  });
+  it('notEqual: every stated bound is true (no "3.000 < √9 < 3.001")', () => {
+    for (let s = 1; s <= 400; s++) {
+      const t = plainOf(gen('notEqual', s * 11 + 1, 'bound-expressions').prompt);
+      for (const m of t.matchAll(/(\d+(?:\.\d+)?) < √(\d+) < (\d+(?:\.\d+)?)/g)) {
+        const v = Math.sqrt(Number(m[2]));
+        expect(Number(m[1]) < v && v < Number(m[3]), m[0]).toBe(true);
+      }
+    }
+  });
+});
+
+describe('boundRound ends (practice sweep, 2026-10-23)', () => {
+  it('no bound sits exactly on a rounding midpoint (3.650 < √2 + √5, 10π < 31.50): the item stays clear-cut', () => {
+    for (let s = 1; s <= 400; s++) {
+      const t = gen('boundRound', s * 13 + 5, 'bound-expressions').prompt.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<');
+      const m = t.match(/so (\d+\.\d+) < .+ < (\d+\.\d+)\. What is .+ to the nearest (whole number|tenth)/);
+      if (!m) continue;
+      const step = m[3] === 'tenth' ? 0.1 : 1;
+      for (const v of [Number(m[1]), Number(m[2])]) expect(Math.abs(((v / step) % 1) - 0.5) > 1e-9, `${v} in ${t}`).toBe(true);
+    }
+  });
+});

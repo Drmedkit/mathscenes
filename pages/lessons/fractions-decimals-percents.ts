@@ -25,6 +25,7 @@ import type { Item } from '../../src/lesson/runtime/item';
 import { DivisionLadder, type LadderBlock, type LadderFocus, type LadderStep } from '../../src/lesson/topics/fractions-decimals-percents/DivisionLadder';
 import { Calculator, type CalcBlock } from '../../src/lesson/topics/fractions-decimals-percents/Calculator';
 import { FAMILY_NAMES, GENS, MC, type FdpPicture } from '../../src/lesson/topics/fractions-decimals-percents/items';
+import { explain } from '../../src/lesson/topics/fractions-decimals-percents/explain';
 import { PLAN } from '../../src/lesson/topics/fractions-decimals-percents/plan';
 import { LINES, SIXTH, SIXTH_ALL, TWELFTH } from '../../src/lesson/topics/fractions-decimals-percents/script';
 
@@ -430,7 +431,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed), show: showItem,
   });
 }

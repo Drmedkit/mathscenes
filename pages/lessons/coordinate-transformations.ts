@@ -21,6 +21,7 @@ import { type LessonCtx, runLesson, SURE } from '../../src/lesson/runtime/shell'
 import { startPractice } from '../../src/lesson/runtime/practice';
 import { CoordGrid, type CGBlock, type CGFocus, type CGParams } from '../../src/lesson/topics/coordinate-transformations/CoordGrid';
 import { FAMILY_NAMES, GENS, MC, type CTItem, type CTPic } from '../../src/lesson/topics/coordinate-transformations/items';
+import { explain } from '../../src/lesson/topics/coordinate-transformations/explain';
 import { PLAN } from '../../src/lesson/topics/coordinate-transformations/plan';
 import { SCRIPT } from '../../src/lesson/topics/coordinate-transformations/script';
 import { apply, type V } from '../../src/lesson/topics/coordinate-transformations/coordMaths';
@@ -420,7 +421,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as CTItem),
   });

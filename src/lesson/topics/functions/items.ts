@@ -12,6 +12,7 @@ import {
   hn, tn, setHtml, setTex, pairHtml, pairTex, evalRule, ruleTex, ruleHtml, ineqHtml, segDomain, segRange,
 } from './relation';
 import { fnPts, sidewaysPts, circleUnits } from './FnGraph';
+import { endOnChoice } from '../../runtime/explain';
 
 // ---------- pictures ----------
 export type Col = 'link' | 'wrong' | 'pick';
@@ -86,6 +87,7 @@ function choose(base: Omit<FItem, 'check' | 'answer' | 'input' | 'choices'>, R: 
   const os = keep ? uniq : shuffle(R, [...uniq]);
   const it: FItem = {
     ...base, input: 'choice', choices: os.map(o => o.html), answer: { kind: 'choice', i: os.findIndex(o => o.ok) },
+    solution: endOnChoice(base.solution, os.find(o => o.ok)!.html),
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !os[r.i]) return { ok: false, say: 'Pick one of the answers.' };
       const o = os[r.i]!;
@@ -303,13 +305,17 @@ const CONTEXTS: { q: string; ok: 0 | 1 | 2; why: string }[] = [
   { q: 'the number of tickets bought → the total cost', ok: 0, why: 'You can only buy a whole number of tickets.' },
   { q: 'the number of people in a car → the number of seat belts used', ok: 0, why: 'People come in whole numbers.' },
   { q: 'the number of songs downloaded → the storage used', ok: 0, why: 'Songs come in whole numbers.' },
-  { q: 'the number of laps run → the distance run', ok: 0, why: 'Laps here are counted in whole numbers.' },
+  { q: 'the number of buses booked → the total cost', ok: 0, why: 'You can only book a whole number of buses.' },
   { q: 'the length of a board in inches → its weight', ok: 1, why: 'A length can be 2.5 inches, but never negative.' },
   { q: 'the hours a candle has burned → its height', ok: 1, why: 'Time can be 1.5 hours, but not negative hours.' },
   { q: 'the weight of a package in pounds → the shipping cost', ok: 1, why: 'A weight can be 3.2 pounds, but not negative.' },
   { q: 'a number x → 3x − 2', ok: 2, why: 'With no story, any number can go into the rule.' },
   { q: 'a number x → x + 7', ok: 2, why: 'With no story, any number can go into the rule.' },
   { q: 'a number x → 2x', ok: 2, why: 'With no story, any number can go into the rule.' },
+  { q: 'the number of dogs walked → the money earned', ok: 0, why: 'Dogs come in whole numbers.' },
+  { q: 'the gallons of gas pumped → the price paid', ok: 1, why: 'You can pump 4.6 gallons, but not a negative amount.' },
+  { q: 'the minutes a tub has been filling → the water depth', ok: 1, why: 'Time can be 2.5 minutes, but not negative minutes.' },
+  { q: 'a number x → x − 5', ok: 2, why: 'With no story, any number can go into the rule.' },
 ];
 const contextInputs: Gen = (R, n) => {
   const c = pick(R, CONTEXTS);
@@ -378,7 +384,7 @@ const readPoint: Gen = (R, n) => {
   const it: FItem = {
     id: `readPoint-${n}`, family: 'readPoint', input: 'pair', pairLead: '(', pairOp: ',', prompt: `Write the <b class="pk">lavender</b> point as an ordered pair (input, output).${two ? ' Each grid line is 2 units.' : ''}`,
     board: '(x,\\ y) = \\,?', picture: pic, answer: { kind: 'pair', x, y },
-    solution: [`Go straight down or up from the point to the x axis: the input is ${A(hn(x))}.`, `Go across to the y axis: the output is ${B(hn(y))}.`, `The pair is ${S(`(${hn(x)}, ${hn(y)})`)}: input first.`],
+    solution: [`Go straight down or up from the point to the x axis: the input is ${A(hn(x))}.`, `Go across to the y axis: the output is ${B(hn(y))}.`, `The pair is (${S(hn(x))}, ${S(hn(y))}): input first.`],
     check(r) {
       if (r.kind !== 'pair' || !Number.isFinite(r.x) || !Number.isFinite(r.y)) return { ok: false, say: 'Type both numbers.' };
       if (r.x === x && r.y === y) return { ok: true, say: `Yes: (${hn(x)}, ${hn(y)}). The input ${hn(x)} goes with the output ${hn(y)}.` };
@@ -819,7 +825,7 @@ const pickWitness: Gen = (R, n) => {
     // a shared output (allowed) between two other inputs
     P[3] = [P[3]![0], P[2]![1]];
     const dup = P[4]!; P.push(dup);
-    const Q = shuffle(R, P);
+    const Q = shuffle(R, [...P]);   // a copy: the options below quote P[0], P[2], P[3] and P[4] as built
     const c = checkFunction(Q);
     if (c.fn || c.witness?.kind !== 'two' || c.witness.x !== wx) continue;
     const y1 = P[0]![1];
@@ -861,7 +867,7 @@ const witnessInput: Gen = (R, n) => {
       { v: sh.y as number, mc: MC.outUnique, say: `${sh.y} is an OUTPUT shared by two inputs, which is allowed. Look for an input with two outputs.` },
     ];
     return typedNum({ id: `witnessInput-${n}`, family: 'witnessInput', prompt: `This relation is not a function. Type the ${A('input')} that has two different outputs.`, board: '\\text{which input breaks it?}', picture: pic,
-      solution: [`Look for an input that appears twice with different outputs.`, `${A(hn(wx))} goes to ${hn(ys[1]!)} and ${hn(ys[4]!)}.`, `Shared outputs (like ${hn(sh.y)}) are allowed.`] }, wx, `Yes: ${hn(wx)} has the outputs ${hn(ys[1]!)} and ${hn(ys[4]!)}.`, wrongs, 'Find an input (x value) that appears with two different outputs.');
+      solution: [`Look for an input that appears twice with different outputs.`, `${S(hn(wx))} goes to ${hn(ys[1]!)} and ${hn(ys[4]!)}.`, `Shared outputs (like ${hn(sh.y)}) are allowed.`] }, wx, `Yes: ${hn(wx)} has the outputs ${hn(ys[1]!)} and ${hn(ys[4]!)}.`, wrongs, 'Find an input (x value) that appears with two different outputs.');
   }
 };
 
@@ -996,7 +1002,7 @@ const readStory: Gen = (R, n) => {
   }
   if (v === 'home') {
     pic.hi = { col: 'link', hline: 0 };
-    return choose({ id: `readStory-${n}`, family: 'readStory', prompt: `Ana walks from home to a park and back. When is she ${A('at home')}?`, board: '\text{distance from home}', picture: pic,
+    return choose({ id: `readStory-${n}`, family: 'readStory', prompt: `Ana walks from home to a park and back. When is she ${A('at home')}?`, board: '\\text{distance from home}', picture: pic,
       solution: ['At home, her distance from home is 0: the graph touches the time axis.', `That happens at ${S(`0 and ${p3[0]} minutes`)}.`, `The flat part (${I[1]!}) is the park: the distance stays the same there, but it is not 0.`] }, R, [
       { html: `At 0 minutes and at ${p3[0]} minutes`, ok: true, say: 'Yes. Distance from home is 0 only where the graph touches the time axis.' },
       { html: I[1]!, ok: false, mc: MC.flatZero, say: 'Flat means her distance stays the same, not that it is 0. She is resting at the park then.' },

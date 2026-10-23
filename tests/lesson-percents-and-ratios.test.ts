@@ -101,3 +101,54 @@ describe('percents-and-ratios: misconceptions are classified', () => {
     }, MC.addsPercents);
   });
 });
+
+describe('quality-layer fixes (practice sweep, 2026-10-23)', () => {
+  const plain = (h: string) => h.replace(/<[^>]+>/g, '');
+  const cents = (v: number) => Math.abs(v * 100 - Math.round(v * 100)) < 1e-6;
+  const items = (f: string, sg: string, n = 500) => Array.from({ length: n }, (_, s) => GEN[f]!(rng(s * 53 + 11), s, sg));
+  it('ticket plans split the tickets sold into whole tickets', () => {
+    for (const [f, sg] of [['orderPlan', 'order-plan'], ['wholeValue', 'name-whole-per-step']] as const) {
+      for (const it of items(f, sg)) {
+        const m = plain(it.prompt).match(/adult to student (\d+) : (\d+)/), T = plain(it.prompt).match(/(\d+) tickets printed|Of (\d+) tickets printed|the (\d+) tickets printed/), p = plain(it.prompt).match(/(\d+)% were sold/);
+        if (!m || !T || !p) continue;
+        const total = Number(T[1] ?? T[2] ?? T[3]), sold = (total * Number(p[1])) / 100;
+        expect(Number.isInteger((sold * Number(m[1])) / (Number(m[1]) + Number(m[2]))), plain(it.prompt)).toBe(true);
+      }
+    }
+  });
+  it('percent then ratio: the start amount is a whole number (no $117.6471 prize)', () => {
+    for (const it of items('percentRatio', 'chain-percent-then-ratio')) {
+      const T = Number(it.board.match(/^(?:\\\$)?([\d.]+)/)![1]);
+      expect(Number.isInteger(T), it.board).toBe(true);
+      expect(cents((it.answer as { v: number }).v)).toBe(true);
+    }
+  });
+  it('transfer, fixAudit: whole joggers and answers in cents', () => {
+    for (const [f, sg] of [['transfer', 'transfer-new-context'], ['fixAudit', 'audit-wrong-whole']] as const) {
+      for (const it of items(f, sg)) {
+        const v = (it.answer as { v: number }).v;
+        if (it.unit === 'joggers') expect(Number.isInteger(v), plain(it.prompt)).toBe(true);
+        else expect(cents(v), plain(it.prompt)).toBe(true);
+      }
+    }
+  });
+  it('rounding rules never meet a half-cent tie', () => {
+    for (const it of items('rounding', 'rounding-policy')) {
+      const m = plain(it.prompt).match(/\$([\d.]+) lamp is (\d+)% off, and ([\d.]+)% sales tax/)!;
+      const Pc = Math.round(Number(m[1]) * 100), d = Number(m[2]), t = Math.round(Number(m[3]) * 100);
+      const sale = Math.floor((2 * Pc * (100 - d) + 100) / 200);
+      expect((Pc * (100 - d)) % 100, it.prompt).not.toBe(50);
+      expect((sale * t) % 10000, it.prompt).not.toBe(5000);
+      expect((Pc * (100 - d) * (10000 + t)) % 1000000, it.prompt).not.toBe(500000);
+    }
+  });
+});
+
+describe('articles read the way the number is spoken (practice sweep, 2026-10-23)', () => {
+  it('no "a $80 jacket", "a 8% tax" or "a 18% tip" in prompts, choices or solutions', () => {
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 120; s++) {
+      const it = GEN[f]!(rng(s * 17 + 3), s, p.id);
+      for (const t of [it.prompt, ...(it.choices ?? []), ...it.solution].map(h => h.replace(/<[^>]+>/g, ''))) expect(t, `${f}: ${t}`).not.toMatch(/(^|[\s(])[Aa] \$?(8|1[18](?!\d))/);
+    }
+  });
+});

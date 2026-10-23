@@ -23,6 +23,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import { MotionGrid, type GridFocus, type GridPic, type MotionGridBlock } from '../../src/lesson/topics/rigid-transformations/MotionGrid';
 import { type V, applyAll, rot } from '../../src/lesson/topics/rigid-transformations/motionMaths';
 import { FAMILY_NAMES, GENERATORS, MC, type MotionItem } from '../../src/lesson/topics/rigid-transformations/items';
+import { explain } from '../../src/lesson/topics/rigid-transformations/explain';
 import { PLAN } from '../../src/lesson/topics/rigid-transformations/plan';
 import { SCRIPT } from '../../src/lesson/topics/rigid-transformations/script';
 
@@ -438,7 +439,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as MotionItem),
   });

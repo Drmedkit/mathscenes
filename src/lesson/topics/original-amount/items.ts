@@ -11,6 +11,9 @@ import {
   type Dir, BP, bp, decimal, decimalsOf, forwardExact, mNum, multStr, multVal, pctNum, receiptTotal, resultPct,
   reverse, rateStr, roundFrac, toCents, usd, usdTex,
 } from './reverseMaths';
+import { ans as mark, endOnChoice } from '../../runtime/explain';
+/** the answer in the lesson's own colour (a), marked for the steps card */
+const AA = (x: string) => mark(x);   // not class "a ans": .ans is the answer row in lesson.css (a flex block)
 
 // ---------- what the page draws for an item ----------
 export interface OrigPicture {
@@ -24,30 +27,45 @@ export interface OrigPicture {
 
 // ---------- contexts ----------
 type Kind = 'off' | 'markup' | 'tax' | 'tip';
-interface Thing { tag: string; a: string; the: string; plural?: boolean }
-const THINGS: readonly Thing[] = [
-  { tag: 'Headphones', a: 'a pair of headphones', the: 'the headphones', plural: true },
-  { tag: 'Sneakers', a: 'a pair of sneakers', the: 'the sneakers', plural: true },
-  { tag: 'Video game', a: 'a video game', the: 'the game' },
-  { tag: 'Hoodie', a: 'a hoodie', the: 'the hoodie' },
-  { tag: 'Skateboard', a: 'a skateboard', the: 'the skateboard' },
-  { tag: 'Backpack', a: 'a backpack', the: 'the backpack' },
-  { tag: 'Jacket', a: 'a jacket', the: 'the jacket' },
-  { tag: 'Board game', a: 'a board game', the: 'the board game' },
-  { tag: 'Soccer ball', a: 'a soccer ball', the: 'the ball' },
-  { tag: 'Desk lamp', a: 'a desk lamp', the: 'the lamp' },
-  { tag: 'Bike helmet', a: 'a bike helmet', the: 'the helmet' },
-  { tag: 'Keyboard', a: 'a keyboard', the: 'the keyboard' },
-  { tag: 'Tent', a: 'a tent', the: 'the tent' },
-  { tag: 'Smartwatch', a: 'a smartwatch', the: 'the watch' },
+/** a thing or a service with the range of real prices it has (dollars, before any change) */
+export interface Thing { tag: string; a: string; the: string; plural?: boolean; lo: number; hi: number }
+export const THINGS: readonly Thing[] = [
+  { tag: 'Headphones', a: 'a pair of headphones', the: 'the headphones', plural: true, lo: 15, hi: 350 },
+  { tag: 'Sneakers', a: 'a pair of sneakers', the: 'the sneakers', plural: true, lo: 30, hi: 220 },
+  { tag: 'Video game', a: 'a video game', the: 'the game', lo: 15, hi: 70 },
+  { tag: 'Hoodie', a: 'a hoodie', the: 'the hoodie', lo: 15, hi: 90 },
+  { tag: 'Skateboard', a: 'a skateboard', the: 'the skateboard', lo: 30, hi: 250 },
+  { tag: 'Backpack', a: 'a backpack', the: 'the backpack', lo: 15, hi: 150 },
+  { tag: 'Jacket', a: 'a jacket', the: 'the jacket', lo: 30, hi: 300 },
+  { tag: 'Board game', a: 'a board game', the: 'the board game', lo: 10, hi: 80 },
+  { tag: 'Soccer ball', a: 'a soccer ball', the: 'the ball', lo: 10, hi: 60 },
+  { tag: 'Desk lamp', a: 'a desk lamp', the: 'the lamp', lo: 15, hi: 150 },
+  { tag: 'Bike helmet', a: 'a bike helmet', the: 'the helmet', lo: 20, hi: 150 },
+  { tag: 'Keyboard', a: 'a keyboard', the: 'the keyboard', lo: 15, hi: 250 },
+  { tag: 'Tent', a: 'a tent', the: 'the tent', lo: 40, hi: 600 },
+  { tag: 'Smartwatch', a: 'a smartwatch', the: 'the watch', lo: 50, hi: 600 },
+  { tag: 'Notebook', a: 'a notebook', the: 'the notebook', lo: 2, hi: 15 },
+  { tag: 'Phone case', a: 'a phone case', the: 'the case', lo: 5, hi: 60 },
+  { tag: 'Water bottle', a: 'a water bottle', the: 'the bottle', lo: 5, hi: 45 },
+  { tag: 'Bike', a: 'a bike', the: 'the bike', lo: 150, hi: 1500 },
+  { tag: 'TV', a: 'a TV', the: 'the TV', lo: 150, hi: 2000 },
+  { tag: 'Laptop', a: 'a laptop', the: 'the laptop', lo: 300, hi: 2500 },
 ];
-const SERVICES: readonly Thing[] = [
-  { tag: 'Dinner', a: 'dinner', the: 'the dinner' },
-  { tag: 'Pizza delivery', a: 'a pizza delivery', the: 'the delivery' },
-  { tag: 'Haircut', a: 'a haircut', the: 'the haircut' },
-  { tag: 'Taxi ride', a: 'a taxi ride', the: 'the ride' },
-  { tag: 'Lunch', a: 'lunch', the: 'the lunch' },
+export const SERVICES: readonly Thing[] = [
+  { tag: 'Dinner', a: 'dinner', the: 'the dinner', lo: 15, hi: 300 },
+  { tag: 'Pizza delivery', a: 'a pizza delivery', the: 'the delivery', lo: 15, hi: 100 },
+  { tag: 'Haircut', a: 'a haircut', the: 'the haircut', lo: 15, hi: 120 },
+  { tag: 'Taxi ride', a: 'a taxi ride', the: 'the ride', lo: 10, hi: 150 },
+  { tag: 'Lunch', a: 'lunch', the: 'the lunch', lo: 8, hi: 60 },
+  { tag: 'Group dinner', a: 'a group dinner', the: 'the group dinner', lo: 80, hi: 900 },
 ];
+/** a thing whose real price range holds this price (dollars); the closest range when none does */
+export function thingFor(R: () => number, list: readonly Thing[], dollars: number): Thing {
+  const fits = list.filter(t => dollars >= t.lo && dollars <= t.hi);
+  if (fits.length) return pick(R, fits);
+  const off = (t: Thing) => Math.max(t.lo / dollars, dollars / t.hi);
+  return list.reduce((a, b) => (off(b) < off(a) ? b : a));
+}
 const NAMES = ['Maya', 'Leo', 'Ava', 'Sam', 'Nora', 'Eli', 'Zoe', 'Omar', 'Lily', 'Jack', 'Rosa', 'Ben', 'Priya', 'Diego', 'Kenji', 'Amara'];
 
 interface Ctx {
@@ -64,15 +82,18 @@ function ctxOf(R: () => number, kind: Kind): Ctx {
 }
 const cap = (s: string) => s[0]!.toUpperCase() + s.slice(1);
 const P = (r: number) => `${pctNum(r)}%`;
+/** "a" or "an" before a number as it is spoken: an 8%, an 11%, an 18%, an 80% (but a 1%, a 110%) */
+const an = (x: number | string) => (/^(8|11(\.\d+)?$|18(\.\d+)?$)/.test(String(x)) ? 'an' : 'a');
 const PT = (r: number) => `${pctNum(r)}\\%`;
 /** the change in words: "20% off", "a 25% markup", "8% sales tax", "a 15% tip" */
-const rateWords = (C: Ctx, r: number) => (C.kind === 'off' ? `${P(r)} off` : C.kind === 'markup' ? `a ${P(r)} markup` : C.kind === 'tax' ? `${P(r)} sales tax` : `a ${P(r)} tip`);
+const rateWords = (C: Ctx, r: number) => (C.kind === 'off' ? `${P(r)} off` : C.kind === 'markup' ? `${an(r)} ${P(r)} markup` : C.kind === 'tax' ? `${P(r)} sales tax` : `${an(r)} ${P(r)} tip`);
 /** the change label on the tape */
 const changeTex = (C: Ctx, r: number) => (C.kind === 'off' ? `${PT(r)}\\ \\text{off}` : C.kind === 'markup' ? `+${PT(r)}` : C.kind === 'tax' ? `+${PT(r)}\\ \\text{tax}` : `+${PT(r)}\\ \\text{tip}`);
 /** the board's short statement of the change: "20% off", "+8% tax" */
 const boardChange = changeTex;
 /** the story: the new amount and the rate, in role colours */
 function story(R: () => number, C: Ctx, newC: number, r: number, cents = false): string {
+  C.thing = thingFor(R, C.kind === 'tip' ? SERVICES : THINGS, newC / (C.dir === 'down' ? 100 - r : 100 + r));
   const name = pick(R, NAMES), N = S(usd(newC, cents)), Rt = B(rateWords(C, r)), T = C.thing;
   if (C.kind === 'off') return pick(R, [
     `${cap(T.the)} ${T.plural ? 'are' : 'is'} ${Rt}. The sale price is ${N}.`,
@@ -161,7 +182,7 @@ function choiceItem(R: () => number, o: Omit<Item, 'input' | 'answer' | 'check' 
   const uniq = opts.filter(c => (seen.has(c.t) ? false : (seen.add(c.t), true)));
   const sh = shuffle(R, uniq);
   return {
-    ...rest, input: 'choice', choices: sh.map(c => c.t), answer: { kind: 'choice', i: sh.findIndex(c => c.ok) },
+    ...rest, input: 'choice', choices: sh.map(c => c.t), answer: { kind: 'choice', i: sh.findIndex(c => c.ok) }, solution: endOnChoice(rest.solution, sh.find(c => c.ok)!.t),
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !sh[r.i]) return { ok: false, say: 'Pick one answer.' };
       const c = sh[r.i]!;
@@ -334,10 +355,10 @@ const tapeUnit: Gen = (R, n) => {
   const opp = roundFrac(N * (C.dir === 'down' ? BP + r * 100 : BP - r * 100), BP);
   return {
     id: `tapeUnit-${n}`, family: 'tapeUnit', input: 'pair',
-    prompt: `${story(R, C, N, r)} On the tape the ${S(C.newWord)} is ${nk} sections of ${g}%. Find one section, then the ${A(C.oldWord)}. ${NOCALC}`,
+    prompt: `${story(R, C, N, r)} On the tape the ${S(C.newWord)} is ${nk} ${nk === 1 ? 'section' : 'sections'} of ${g}%. Find one section, then the ${A(C.oldWord)}. ${NOCALC}`,
     board: `${usdTex(N)} = ${nk} \\times \\square`, picture: pic,
     pairLead: `one ${g}% section $`, pairOp: `&nbsp; ${C.oldWord} $`,
-    solution: [`The ${S(C.newWord)} ${usd(N)} is ${nk} equal sections: ${usd(N)} ÷ ${nk} = ${usd(v)} each.`, `The ${A(C.oldWord)} is ${n0} sections (100%): ${n0} × ${usd(v)} = ${A(usd(O))}.`],
+    solution: [`The ${S(C.newWord)} ${usd(N)} is ${nk} equal ${nk === 1 ? 'section' : 'sections'}: ${usd(N)} ÷ ${nk} = ${mark(usd(v))} each.`, `The ${A(C.oldWord)} is ${n0} sections (100%): ${n0} × ${usd(v)} = ${AA(usd(O))}.`],
     answer: { kind: 'pair', x: v / 100, y: O / 100 },
     check(rp: Response): Verdict {
       if (rp.kind !== 'pair') return { ok: false, say: 'Fill in both boxes.' };
@@ -362,7 +383,7 @@ const reverseG: Gen = (R, n) => {
     id: `reverse-${n}`, family: 'reverse',
     prompt: `${story(R, C, N, r)} What was the ${A(C.oldWord)}? ${NOCALC}`,
     board: `${boardChange(C, r)}\\colon\\ \\ \\$\\,? \\to ${usdTex(N)}`, picture: pic, c: O,
-    solution: [`The ${S(C.newWord)} is ${pctNum(resultPct(r, C.dir))}% of the ${A(C.oldWord)}: ${m} × x = ${usd(N)}.`, `Undo the multiplication: x = ${usd(N)} ÷ ${m} = ${A(usd(O))}.`],
+    solution: [`The ${S(C.newWord)} is ${pctNum(resultPct(r, C.dir))}% of the ${A(C.oldWord)}: ${m} × x = ${usd(N)}.`, `Undo the multiplication: x = ${usd(N)} ÷ ${m} = ${AA(usd(O))}.`],
     wrongs: usualWrongs(C, N, r), right: `Yes: ${usd(N)} ÷ ${m} = ${usd(O)}. Check: ${m} × ${usd(O)} = ${usd(N)}.`,
     hint: `The ${C.newWord} is ${m} times the ${C.oldWord}. Divide ${usd(N)} by ${m}.`,
   });
@@ -378,7 +399,7 @@ const whichCalc: Gen = (R, n) => {
     id: `whichCalc-${n}`, family: 'whichCalc',
     prompt: `${story(R, C, N, r, N % 100 !== 0)} Which calculation gives the ${A(C.oldWord)}? ${NOCALC}`,
     board: `${boardChange(C, r)}\\colon\\ \\ \\$\\,? \\to ${usdTex(N, N % 100 !== 0)}`, picture: pic,
-    solution: [`${$N} is ${pctNum(resultPct(r, C.dir))}% of the ${A(C.oldWord)}: ${m} × x = ${$N}.`, `So x = ${$N} ÷ ${m} = ${A(usd(O))}.`],
+    solution: [`${$N} is ${pctNum(resultPct(r, C.dir))}% of the ${A(C.oldWord)}: ${m} × x = ${$N}.`, `So x = ${$N} ÷ ${m} = ${AA(usd(O))}.`],
     opts: [
       { t: `${$N} ÷ ${m}`, ok: true, say: `Yes: the ${C.newWord} is ${m} times the original, so divide by ${m}.` },
       { t: `${$N} × ${opp}`, ok: false, mc: 'mc.percent.opposite-percent-to-undo-change', say: `That ${C.dir === 'down' ? 'adds' : 'takes off'} ${P(r)} of ${$N}, the new amount. The ${P(r)} was of the original: divide by ${m}.` },
@@ -551,7 +572,7 @@ const addBack: Gen = (R, n) => {
     E2 = roundFrac(M * mNum(r, first === 'down' ? 'up' : 'down'), BP);
     if ((O * mNum(r, first)) % BP === 0 && (M * mNum(r, first === 'down' ? 'up' : 'down')) % BP === 0 && O <= 50000) break;
   }
-  const T = pick(R, THINGS);
+  const T = thingFor(R, THINGS, O / 100);
   const s1 = first === 'down' ? '-' : '+', s2 = first === 'down' ? '+' : '-';
   const words = first === 'down' ? `goes on sale at ${B(`${r}% off`)}. Later the sale price goes up ${B(`${r}%`)}.` : `goes up ${B(`${r}%`)}. Later the new price goes on sale at ${B(`${r}% off`)}.`;
   const g = sectionPct(r);
@@ -583,10 +604,10 @@ const UNDO: { first: Dir; r: number; u: number }[] = [
 ];
 const undoPct: Gen = (R, n) => {
   const U = pick(R, UNDO);
-  const T = pick(R, THINGS);
   // an original where every amount is whole dollars
   const step = U.first === 'down' ? 100 / sectionOr(U.r) : 100 / sectionOr(U.r);
   const O = int(R, 1, Math.max(2, Math.floor(200 / step))) * step * 100;
+  const T = thingFor(R, THINGS, O / 100);
   const M = roundFrac(O * mNum(U.r, U.first), BP);
   const ch = Math.abs(O - M);
   const back = U.first === 'down' ? 'go up' : 'go down';
@@ -609,7 +630,7 @@ const undoPct: Gen = (R, n) => {
       ? `${cap(T.a)} goes from ${A(usd(O))} to ${S(usd(M))}: ${B(`${P(U.r)} off`)}. By what percent must the ${S('sale price')} ${back} to get back to ${usd(O)}? ${NOCALC}`
       : `${cap(T.a)} goes from ${A(usd(O))} up ${B(P(U.r))} to ${S(usd(M))}. By what percent must the ${S('new price')} ${back} to get back to ${usd(O)}? ${NOCALC}`,
     board: `${usdTex(M)} \\xrightarrow{\\ ?\\%} ${usdTex(O)}`, picture: pic, v: U.u,
-    solution: [`The way back is ${usd(ch)}, but the base is now ${S(usd(M))}.`, `${usd(ch)} ÷ ${usd(M)} = ${pctNum(U.u)}%. (${usd(M)} ${U.first === 'down' ? '÷' : '÷'} ${multStr(U.r, U.first)} = ${usd(O)}.)`],
+    solution: [`The way back is ${usd(ch)}, but the base is now ${S(usd(M))}.`, `${usd(ch)} ÷ ${usd(M)} = ${mark(`${pctNum(U.u)}%`)}. (${usd(M)} ${U.first === 'down' ? '÷' : '÷'} ${multStr(U.r, U.first)} = ${usd(O)}.)`],
     wrongs: [{ v: U.r, mc: 'mc.percent.adds-successive-percent-changes', say: `${P(U.r)} of ${usd(M)} is not ${usd(ch)}: the base changed. Compare ${usd(ch)} with ${usd(M)}.` }],
     right: `Yes: ${usd(ch)} is ${pctNum(U.u)}% of ${usd(M)}.`, hint: `Find the change in dollars, then compare it with the new base ${usd(M)}.`,
   });
@@ -620,7 +641,7 @@ const whyBase: Gen = (R, n) => {
   const r = pick(R, [10, 20, 25, 50]);
   const O = int(R, 2, 30) * (r === 25 ? 4 : r === 50 ? 2 : r === 20 ? 5 : 10) * 100 * (r === 10 ? 1 : 1);
   const M = roundFrac(O * mNum(r, first), BP), E2 = roundFrac(M * mNum(r, first === 'down' ? 'up' : 'down'), BP);
-  const T = pick(R, THINGS);
+  const T = thingFor(R, THINGS, O / 100);
   const story1 = first === 'down' ? `${cap(T.a)} at ${A(usd(O))} goes ${B(`${r}% off`)}, then the sale price goes up ${B(`${r}%`)}.` : `${cap(T.a)} at ${A(usd(O))} goes up ${B(`${r}%`)}, then the new price goes ${B(`${r}% off`)}.`;
   return choiceItem(R, {
     id: `whyBase-${n}`, family: 'whyBase',
@@ -642,8 +663,8 @@ const diagnose: Gen = (R, n) => {
   const name = pick(R, NAMES);
   if (variant === 'partWord') {
     // "the $12 discount was 20%": the discount is the r% part, divide by the rate (the grade-6 method)
-    const r = pick(R, [10, 20, 25, 40, 50]), O = int(R, 3, 30) * (100 / sectionPct(r)) * 100, D = O * r / 100;
-    const T = pick(R, THINGS);
+    const r = pick(R, [10, 20, 25, 40]), O = int(R, 3, 30) * (100 / sectionPct(r)) * 100, D = O * r / 100;   // not 50%: D ÷ (1 − 0.5) is right too
+    const T = thingFor(R, THINGS, O / 100);
     return choiceItem(R, {
       id: `diagnose-${n}`, family: 'diagnose',
       prompt: `${name} saved ${B(usd(D))} on ${T.a}. The ${B(usd(D))} discount was ${B(`${r}%`)} of the original price. ${name} writes: “original = ${usd(D)} ÷ ${multStr(r, 'down')} = ${usd(roundFrac(D * BP, mNum(r, 'down')))}.” What is right? ${NOCALC}`,
@@ -678,13 +699,13 @@ const diagnose: Gen = (R, n) => {
 };
 const contextOrig: Gen = (R, n) => {
   const variant = pick(R, ['coupon', 'rebate', 'part', 'story', 'story', 'round'] as const);
-  const name = pick(R, NAMES), T = pick(R, THINGS);
+  const name = pick(R, NAMES);
   if (variant === 'part') {
     const what = pick(R, ['saved', 'saved', 'tax']);
     const r = what === 'saved' ? pick(R, [10, 20, 25, 40, 50, 15]) : pick(R, [5, 10, 4, 8]);
     const unitD = r === 15 || r === 5 ? 20 : r === 4 ? 25 : r === 8 ? 25 : 100 / sectionPct(r);
     const O = int(R, 2, Math.max(3, Math.floor(300 / unitD))) * unitD * 100, D = O * r / 100;
-    const C = ctxOf(R, what === 'saved' ? 'off' : 'tax');
+    const C = ctxOf(R, what === 'saved' ? 'off' : 'tax'), T = thingFor(R, THINGS, O / 100);
     const prompt = what === 'saved' ? `${name} saved ${B(usd(D, D % 100 !== 0))} on ${T.a}. That was ${B(`${r}%`)} of the original price. What was the ${A('original price')}? ${NOCALC}`
       : `The sales tax on ${T.a} was ${B(usd(D, D % 100 !== 0))}, which is ${B(`${r}%`)} of the price before tax. What was the ${A('price before tax')}? ${NOCALC}`;
     return moneyItem({
@@ -715,8 +736,10 @@ const contextOrig: Gen = (R, n) => {
   const C = ctxOf(R, variant === 'coupon' || variant === 'rebate' ? 'off' : pick(R, KINDS));
   const { r, O, N } = friendly(R, C, C.kind === 'off' ? [10, 15, 20, 25, 30, 40] : C.kind === 'markup' ? [10, 20, 25, 50] : C.kind === 'tax' ? [5, 6, 8] : [15, 20, 25], 10, 250);
   const m = multStr(r, C.dir);
-  const prompt = variant === 'coupon' ? `With a ${B(`${r}%-off coupon`)}, ${name} paid ${S(usd(N))} for ${T.a}. What was the price ${A('before the coupon')}? ${NOCALC}`
-    : variant === 'rebate' ? `After a ${B(`${r}% rebate`)}, ${T.the} cost ${name} ${S(usd(N))} in the end. What was the ${A('price before the rebate')}? ${NOCALC}`
+  if (variant === 'coupon' || variant === 'rebate') C.thing = thingFor(R, THINGS, O / 100);   // the price tag and the story name the same thing
+  const T = C.thing;
+  const prompt = variant === 'coupon' ? `With ${an(r)} ${B(`${r}%-off coupon`)}, ${name} paid ${S(usd(N))} for ${T.a}. What was the price ${A('before the coupon')}? ${NOCALC}`
+    : variant === 'rebate' ? `After ${an(r)} ${B(`${r}% rebate`)}, ${T.the} cost ${name} ${S(usd(N))} in the end. What was the ${A('price before the rebate')}? ${NOCALC}`
       : `${story(R, C, N, r)} What was the ${A(C.oldWord)}? ${NOCALC}`;
   return moneyItem({
     id: `contextOrig-${n}`, family: 'contextOrig', prompt,

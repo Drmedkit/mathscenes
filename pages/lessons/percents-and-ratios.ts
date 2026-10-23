@@ -21,6 +21,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import { ChainTape, type ChainBlock, type ChainFocus, type ChainParams } from '../../src/lesson/topics/percents-and-ratios/ChainTape';
 import { CHAIN_FRAME, EX, EX_CARDS, EX_CHAIN, PBOARD, PROVE_CHAIN, PROVE_MAYA, TURN, TURN_CHAIN } from '../../src/lesson/topics/percents-and-ratios/scenes';
 import { FAMILY_NAMES, GENERATORS, MC, type PRItem } from '../../src/lesson/topics/percents-and-ratios/items';
+import { explain } from '../../src/lesson/topics/percents-and-ratios/explain';
 import { PLAN } from '../../src/lesson/topics/percents-and-ratios/plan';
 import LINES from './percents-and-ratios/voice/lines.json';
 
@@ -415,7 +416,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as PRItem),
   });

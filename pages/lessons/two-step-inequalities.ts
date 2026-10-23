@@ -23,6 +23,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import { LINES_FRAME, StepLines, type StepBlock, type StepFocus, type StepParams, type SetSpec } from '../../src/lesson/topics/two-step-inequalities/StepLines';
 import { type Ineq, type Op, OP_TEX, chainPicture, exprTex, flip, q, qNum, solve, tq, dirOf } from '../../src/lesson/topics/two-step-inequalities/ineqMaths';
 import { FAMILY_NAMES, GENERATORS, MC, type IqItem, moveTex } from '../../src/lesson/topics/two-step-inequalities/items';
+import { explain } from '../../src/lesson/topics/two-step-inequalities/explain';
 import { orderPicture, setPicture } from '../../src/lesson/topics/two-step-inequalities/pictures';
 import { PLAN } from '../../src/lesson/topics/two-step-inequalities/plan';
 import { SCRIPT } from '../../src/lesson/topics/two-step-inequalities/script';
@@ -447,7 +448,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as IqItem),
   });

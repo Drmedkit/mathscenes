@@ -147,3 +147,51 @@ describe('scale-calculations: misconceptions are classified', () => {
     expect(both.check({ kind: 'choice', i: both.choices!.indexOf('Wrong: a unit conversion is missing.') }).mc).toBe(MC.stopsAudit);
   });
 });
+
+describe('quality-layer fixes (practice sweep, 2026-10-23)', () => {
+  const gen = (f: string, sg: string, s: number) => (GENERATORS as Record<string, (R: () => number, n: number, sg?: string) => SCItem>)[f]!(rng(s * 37 + 5), s, sg);
+  it('the worked steps end on the answer (room difference, one-unit scale, the fixed plan length)', async () => {
+    const { explain } = await import('../src/lesson/topics/scale-calculations/explain');
+    for (const [f, sg] of [['roomCalc', 'compute-actual-whole'], ['normalize', 'normalize-nonunit-scale'], ['fixRev', 'diagnose-reversed-factor']] as const) {
+      for (let s = 1; s <= 200; s++) {
+        const it = gen(f, sg, s), ex = explain(it);
+        expect(ex, `${f}: ${it.prompt}`).not.toBeNull();
+        expect(ex!.steps.length).toBeGreaterThanOrEqual(2);
+        expect(it.check(ex!.result).ok, `${f}: ${it.prompt}`).toBe(true);
+      }
+    }
+  });
+  it('"an 8 ft wall", "an 18 ft garage": the article as the number is spoken', () => {
+    for (const p of PLAN) for (const f of p.families) for (let s = 1; s <= 80; s++) {
+      const t = gen(f, p.id, s).prompt.replace(/<[^>]+>/g, '');
+      expect(t, t).not.toMatch(/(^|[\s(])[Aa] \$?(8|1[18](?!\d))/);
+    }
+  });
+});
+
+describe('real sizes fit the thing (practice sweep, 2026-10-23)', () => {
+  const M: Record<string, number> = { in: 0.0254, ft: 0.3048, yd: 0.9144, mm: 0.001, cm: 0.01, m: 1 };
+  const gen = (f: string, sg: string, s: number) => (GENERATORS as Record<string, (R: () => number, n: number, sg?: string) => SCItem>)[f]!(rng(s * 59 + 13), s, sg);
+  it('a typed real length is inside the real range of the thing the story names (no 60 cm school bus, 54 ft piano, 9 mm flea)', async () => {
+    const { realSize } = await import('../src/lesson/topics/scale-calculations/items');
+    let checked = 0;
+    for (const [f, sg] of [['toActual', 'compute-actual-whole'], ['toActual', 'compute-actual-nonwhole'], ['unitlessCalc', 'unitless-scale-meaning'], ['convertOut', 'convert-output-unit'], ['rulerRead', 'decimal-to-ruler-mark'], ['reverse', 'reverse-direction']] as const) {
+      for (let s = 1; s <= 300; s++) {
+        const it = gen(f, sg, s), t = it.prompt.replace(/<[^>]+>/g, '');
+        if (!/real|actually|really/.test(t) || /the drawing\?|on the plan\?/.test(t) || it.answer.kind !== 'num' || !M[it.unit ?? '']) continue;
+        const name = (t.match(/real ([a-z][a-z -]*?)(?:,| is|\?)/) ?? t.match(/^An? (?:model )?([a-z][a-z -]*?) (?:plan|is|at)/))?.[1];
+        const rs = name ? realSize(name) : undefined;
+        if (!rs) continue;
+        const m = it.answer.v * M[it.unit!]!;
+        expect(m >= rs[0] && m <= rs[1], `${name} ${it.answer.v} ${it.unit}: ${t}`).toBe(true);
+        checked++;
+      }
+    }
+    expect(checked).toBeGreaterThan(200);
+  });
+  it('"An ant", never "A ant"', () => {
+    for (let s = 1; s <= 400; s++) for (const [f, sg] of [['reverse', 'reverse-direction'], ['toDrawing', 'compute-drawing-from-actual']] as const) {
+      expect(gen(f, sg, s).prompt.replace(/<[^>]+>/g, '')).not.toMatch(/\b[Aa] ant\b/);
+    }
+  });
+});

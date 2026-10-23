@@ -8,6 +8,7 @@ import {
   type Motion, type V, add, angleAt, apply, applyAll, area2, clean, describe, dist, eqV, lineName, orient, pt, ptTex, rot,
   sgn, slideWords, sub,
 } from './motionMaths';
+import { ans as mark, endOnChoice } from '../../runtime/explain';
 
 export const MC = {
   position: 'mc.transformations.matches-parts-by-position-or-letters',
@@ -92,6 +93,12 @@ type Gen = (R: () => number, n: number, sg?: string) => MotionItem;
 
 // ---------- small helpers ----------
 const LETTERS = [['A', 'B', 'C'], ['D', 'E', 'F'], ['P', 'Q', 'R'], ['J', 'K', 'L']] as const;
+/** the name of a turn center: O at the origin, a vertex's own letter on that vertex, else P (C when the figure has a P) */
+function pinName(c: V, L: readonly string[], P: readonly V[]): string {
+  if (eqV(c, ORIGIN)) return 'O';
+  const k = P.findIndex(p => eqV(p, c));
+  return k >= 0 && L[k] ? L[k]! : L.includes('P') ? 'C' : 'P';
+}
 const pr = (s: string) => `${s}′`;
 const A = (s: string | number) => `<b class="a">${s}</b>`;
 const B = (s: string | number) => `<b class="b">${s}</b>`;
@@ -137,7 +144,7 @@ function choiceItem(R: () => number, base: Omit<MotionItem, 'input' | 'choices' 
   const O = shuffle(R, [...opts]);
   if (new Set(O.map(o => o.t)).size !== O.length) throw new Error(`choices not unique: ${O.map(o => o.t).join(' | ')}`);
   return {
-    ...base, input: 'choice', choices: O.map(o => o.t), answer: { kind: 'choice', i: O.findIndex(o => o.ok) },
+    ...base, input: 'choice', choices: O.map(o => o.t), answer: { kind: 'choice', i: O.findIndex(o => o.ok) }, solution: endOnChoice(base.solution, O.find(o => o.ok)!.t),
     check: (r: Response): Verdict => { const o = r.kind === 'choice' ? O[r.i] : undefined; return o ? { ok: o.ok, mc: o.mc, say: o.say } : { ok: false, say: 'Pick one.' }; },
   };
 }
@@ -192,6 +199,10 @@ const motionMarks = (m: Motion, centerName = 'P'): Partial<GridPic> => {
   if (m.kind === 'R') return { center: { p: m.c, name: eqV(m.c, ORIGIN) ? 'O' : centerName } };
   return {};
 };
+/** the marks of a motion on a figure lettered L: a turn center gets its own name (pinName), unnamed on a vertex */
+const marksFor = (m: Motion, L: readonly string[], P: readonly V[]): Partial<GridPic> =>
+  (m.kind === 'R' && P.some(p => eqV(p, m.c)) ? { center: { p: m.c } } : motionMarks(m, m.kind === 'R' ? pinName(m.c, L, P) : 'P'));
+const centerOf = (m: Motion, L: readonly string[], P: readonly V[]) => (m.kind === 'R' ? pinName(m.c, L, P) : 'P');
 const motionTex = (m: Motion, centerName = 'P'): string => {
   if (m.kind === 'T') return T(`translate ${slideWords(m.a, m.b)}`);
   if (m.kind === 'M') return `${T('reflect across ')}${lineTex(m)}`;
@@ -263,7 +274,7 @@ const nameT: Gen = R => retry(R, () => {
       prompt: `Is the move from ${A(L.join(''))} to ${S(L.map(pr).join(''))} a translation? The dashed segments join each point to its image.`,
       board: `${L[0]} \\to ${L[0]}',\\ ${L[1]} \\to ${L[1]}',\\ ${L[2]} \\to ${L[2]}'`,
       picture: { grid: { figs: [pre(P, L), img(Q, L.map(pr))], links: links(Q) } },
-      solution: ['In a translation every point moves the same distance in the same direction.', `Here the dashed segments point in different directions: the figure turned.`, `It is ${describe(m, 'P')}.`],
+      solution: ['In a translation every point moves the same distance in the same direction.', `Here the dashed segments point in different directions: the figure turned.`, `It is ${describe(m, centerOf(m, L, P))}.`],
     }, [
       { t: 'No: the points move in different directions', ok: true, say: 'Right: the dashed segments point different ways, so it is not a slide.' },
       { t: 'Yes: every point moved, so it is a translation', ok: false, mc: MC.anyMove, say: 'Every motion moves points. A translation moves every point the same way: these segments point in different directions.' },
@@ -351,11 +362,12 @@ const nameR: Gen = R => retry(R, () => {
   const m: Motion = { kind: 'R', c, deg };
   const Q = applyAll(m, P);
   if (!inLim([...P, ...Q]) || eqV(c, ORIGIN) && where !== 'origin') return null;
-  const cn = eqV(c, ORIGIN) ? 'O' : 'P';
+  const cn = pinName(c, L, P);
+  const fv = L[P.findIndex(p => !eqV(p, c))]!;   // a corner that moves
   const opts: Opt[] = [{ t: `${turnWords(deg)} about ${cn}`, ok: true, say: `Right: ${turnWords(deg)} about ${cn}.` }];
-  if (deg !== 180) opts.push({ t: `${turnWords(-deg)} about ${cn}`, ok: false, mc: MC.reverse, say: `Follow ${L[0]} to ${pr(L[0])}: it turns ${deg > 0 ? 'counterclockwise' : 'clockwise'}, the other way.` });
-  else opts.push({ t: `90° clockwise about ${cn}`, ok: false, say: `${L[0]} and ${pr(L[0])} are on opposite sides of ${cn}: that is a half turn, 180°.` });
-  if (cn === 'P') opts.push({ t: `${turnWords(deg)} about the origin`, ok: false, mc: MC.wrongCenter, say: `The point that stays put is P, not the origin. The turn is about P.` });
+  if (deg !== 180) opts.push({ t: `${turnWords(-deg)} about ${cn}`, ok: false, mc: MC.reverse, say: `Follow ${fv} to ${pr(fv)}: it turns ${deg > 0 ? 'counterclockwise' : 'clockwise'}, the other way.` });
+  else opts.push({ t: `90° clockwise about ${cn}`, ok: false, say: `${fv} and ${pr(fv)} are on opposite sides of ${cn}: that is a half turn, 180°.` });
+  if (cn !== 'O') opts.push({ t: `${turnWords(deg)} about the origin`, ok: false, mc: MC.wrongCenter, say: `The point that stays put is ${cn}, not the origin. The turn is about ${cn}.` });
   else {
     const v = [0, 1, 2].find(i => !eqV(P[i]!, c))!;
     opts.push({ t: `${turnWords(deg)} about ${L[v]}`, ok: false, mc: MC.wrongCenter, say: `${L[v]} moves, so it cannot be the center. The fixed point is O.` });
@@ -366,7 +378,7 @@ const nameR: Gen = R => retry(R, () => {
     board: `${T('center ')}${cn}${ptTex(c)}`,
     picture: { grid: { figs: [pre(P, L), img(Q, L.map(pr))], center: { p: c, name: cn }, turn: { c, from: P.find(p => !eqV(p, c))!, deg }, ghost: { fig: 0, m } }, hide: ['turn', 'ghost', 'move'] },
     work: `${T(turnWords(deg).replace('counterclockwise', 'ccw').replace('clockwise', 'cw') + ' about ')}${cn}`,
-    solution: [`The center ${cn} stays fixed; every other point keeps its distance to ${cn}.`, `Follow ${L[0]}: it turns ${deg === 180 ? 'to the opposite side of ' + cn + ', 180°' : `a quarter turn ${deg > 0 ? 'counterclockwise' : 'clockwise'}`}.`],
+    solution: [`The center ${cn} stays fixed; every other point keeps its distance to ${cn}.`, `Follow ${fv}: it turns ${deg === 180 ? 'to the opposite side of ' + cn + ', 180°' : `a quarter turn ${deg > 0 ? 'counterclockwise' : 'clockwise'}`}.`],
   }, opts);
 }, 'nameR');
 
@@ -396,10 +408,10 @@ const order: Gen = R => retry(R, () => {
     id: `order-${isRot}-${look}-${P.flat().join('')}`, family: 'order',
     prompt: `Go round ${A(L.join(' → '))} and round ${S(L.map(pr).join(' → '))}. Which single motion maps one onto the other?`,
     board: `${L.join('')} \\to ${L.map(x => x + "'").join('')}`,
-    picture: { grid: { figs: [pre(P, L), img(Q, L.map(pr))], ...motionMarks(m), ghost: { fig: 0, m } }, hide: ['mirror', 'center', 'ghost', 'move'], order: [0, 1] },
+    picture: { grid: { figs: [pre(P, L), img(Q, L.map(pr))], ...marksFor(m, L, P), ghost: { fig: 0, m } }, hide: ['mirror', 'center', 'ghost', 'move'], order: [0, 1] },
     work: isRot ? T('order kept: a turn') : T('order reversed: a flip'),
     solution: [`${L.join(' → ')} goes ${orient(P) > 0 ? 'counterclockwise' : 'clockwise'}; ${L.map(pr).join(' → ')} goes ${orient(Q) > 0 ? 'counterclockwise' : 'clockwise'}.`,
-      isRot ? 'Kept order: a slide or a turn. The figure points a new way, so it is a turn.' : 'Reversed order: only a reflection does that.', `It is ${describe(m, 'P')}.`],
+      isRot ? 'Kept order: a slide or a turn. The figure points a new way, so it is a turn.' : 'Reversed order: only a reflection does that.', `It is ${describe(m, centerOf(m, L, P))}.`],
   }, opts);
 }, 'order');
 
@@ -461,7 +473,7 @@ const slide: Gen = R => retry(R, () => {
       board: `${T('arrow: ')}${T(slideWords(sx * n, sy * n))}`,
       picture: { grid: { figs: [], arrow: { from: fromA, to }, axes: false } },
       work: `\\sqrt{${n}^2 + ${n}^2} \\approx ${len}`,
-      solution: [`Each diagonal of a square is longer than a side: about 1.4 units.`, `${n} diagonals ≈ ${n} × 1.4 ≈ ${len} units.`],
+      solution: [`Each diagonal of a square is longer than a side: about 1.414 units.`, `${n} diagonals ≈ ${n} × 1.414 ≈ ${len} units (to the nearest tenth).`],
     }, [
       { t: `About ${len} units`, ok: true, say: `Right: ${n} square diagonals, each about 1.4 units.` },
       { t: `${n} units: it crosses ${n} squares`, ok: false, mc: MC.diagUnit, say: `A diagonal of a square is longer than its side (about 1.4). ${n} diagonals are about ${len} units.` },
@@ -539,15 +551,15 @@ const turnGrid: Gen = R => retry(R, () => {
   const Q = applyAll(m, P);
   const ask = seg ? 1 : 0, pa = P[ask]!, ans = Q[ask]!;
   if (!inLim([...P, ...Q]) || eqV(pa, c)) return null;
-  const cn = eqV(c, ORIGIN) ? 'O' : 'P';
+  const cn = pinName(c, L, P);
   const wrongs: PWrong[] = [];
   if (deg !== 180) wrongs.push({ v: rot(pa, c, -deg), mc: MC.reverse, say: `That turns ${deg > 0 ? 'clockwise' : 'counterclockwise'}, the other way. Follow the teal arrow.` });
-  if (cn === 'P') wrongs.push({ v: rot(pa, ORIGIN, deg), mc: MC.wrongCenter, say: `That turns about the origin. The pin is at P${pt(c)}: count from P.` });
+  if (cn !== 'O') wrongs.push({ v: rot(pa, ORIGIN, deg), mc: MC.wrongCenter, say: `That turns about the origin. The pin is at ${cn}${pt(c)}: count from ${cn}.` });
   wrongs.push({ v: [pa[1], pa[0]], mc: MC.swap, say: 'Swapping the coordinates is not a turn. Count the steps from the center and turn them.' });
   const off = sub(pa, c);
   return pairItem({
     id: `turnGrid-${where}-${P.flat().join('')}-${deg}`, family: 'turnGrid',
-    prompt: `Turn ${seg ? `segment ${A(L[0] + L[1])}` : `point ${A(L[0])}`} ${B(turnWords(deg))} about ${B(cn === 'O' ? 'the origin O' : `P${pt(c)}`)}. Where does ${S(pr(L[ask]!))} land?`,
+    prompt: `Turn ${seg ? `segment ${A(L[0] + L[1])}` : `point ${A(L[0])}`} ${B(turnWords(deg))} about ${B(cn === 'O' ? 'the origin O' : `${cn}${pt(c)}`)}. Where does ${S(pr(L[ask]!))} land?`,
     board: `${L[ask]}${ptTex(pa)} \\to ${L[ask]}'(?,\\ ?)`,
     pairLead: `${pr(L[ask]!)} = (`, pairOp: ',',
     picture: {
@@ -578,7 +590,7 @@ const flipDiag: Gen = R => retry(R, () => {
     pairLead: `${pr(L[0])} = (`, pairOp: ',',
     picture: { grid: { figs: [pre([p], [L[0]!]), img([ans], [pr(L[0]!)])], mirror: { p: m.kind === 'M' ? m.p : ORIGIN, q: m.kind === 'M' ? m.q : ORIGIN, name }, links: [{ a: p, b: ans }] }, hide: ['f1', 'n1', 'l0'] },
     work: `${L[0]}' = ${ptTex(ans)}`,
-    solution: on ? [`${L[0]} is on the line, so it stays where it is.`] : [`Go from ${L[0]} straight toward the line at a right angle: diagonally, one square corner at a time.`, `Count the diagonal steps to the line, then the same number past it: ${pr(L[0])}${pt(ans)}.`],
+    solution: on ? [`${L[0]}${pt(p)} is on the line ${name}.`, `A point on the mirror stays where it is: ${pr(L[0])}${pt(ans)}.`] : [`Go from ${L[0]} straight toward the line at a right angle: diagonally, one square corner at a time.`, `Count the diagonal steps to the line, then the same number past it: ${pr(L[0])}${pt(ans)}.`],
   }, ans, on ? `Right: ${L[0]} is on the line, so it stays put.` : `Right: straight across ${name}, at a right angle.`, [
     { v: hor, mc: MC.notPerp, say: `That goes straight across sideways. Across a slanted line you go at a right angle to it: diagonally.` },
     { v: ver, mc: MC.notPerp, say: 'That goes straight up or down. Across a slanted line you go at a right angle to it: diagonally.' },
@@ -632,8 +644,8 @@ const whole: Gen = R => retry(R, () => {
   const wrongs: PWrong[] = [];
   if (m.kind !== 'T') wrongs.push({ v: anchor, mc: MC.oneAnchor, say: `That copies the triangle's shape from ${pr(L[0])} without moving ${L[2]} itself. Apply the motion to ${L[2]} too.` });
   else wrongs.push({ v: add(P[2]!, [m.b, m.a]), mc: MC.vertsDiffer, say: `Every corner moves the same way: ${slideWords(m.a, m.b)}.` });
-  const cn = m.kind === 'R' && eqV(m.c, P[0]!) ? L[0]! : 'P';
-  const marks = m.kind === 'R' && eqV(m.c, P[0]!) ? { center: { p: m.c } } : motionMarks(m, 'P');
+  const cn = centerOf(m, L, P);
+  const marks = marksFor(m, L, P);
   return pairItem({
     id: `whole-${k}-${P.flat().join('')}`, family: 'whole',
     prompt: `Apply ${B(describe(m, cn).replace(/^an? /, 'the ') )} to triangle ${A(L.join(''))}. ${S(pr(L[0]) + ' and ' + pr(L[1]))} are drawn. Where does ${S(pr(L[2]))} land?`,
@@ -695,9 +707,9 @@ const keepLen: Gen = R => retry(R, () => {
   if (Math.abs(moved - len) < 1e-6) return null;
   return choiceItem(R, {
     id: `keepLen-${P.flat().join('')}-${JSON.stringify(m)}`, family: 'keepLen',
-    prompt: `${A(L.join(''))} is mapped onto ${S(L.map(pr).join(''))} by ${B(describe(m, 'P'))}. Side ${A(a + b)} is ${len} units long. Which length must also be ${len} units?`,
+    prompt: `${A(L.join(''))} is mapped onto ${S(L.map(pr).join(''))} by ${B(describe(m, centerOf(m, L, P)))}. Side ${A(a + b)} is ${len} units long. Which length must also be ${len} units?`,
     board: `${a}${b} = ${len}`,
-    picture: { grid: { figs: [pre(P, L), img(Q, L.map(pr))], ...motionMarks(m) } },
+    picture: { grid: { figs: [pre(P, L), img(Q, L.map(pr))], ...marksFor(m, L, P) } },
     work: `${a}'${b}' = ${a}${b} = ${len}`,
     solution: [`${a} goes to ${pr(a)} and ${b} goes to ${pr(b)}, so side ${a}${b} goes to side ${pr(a)}${pr(b)}.`, `A rigid motion keeps the distance between any two points: ${pr(a)}${pr(b)} = ${len}.`],
   }, [
@@ -721,16 +733,16 @@ const keepAngle: Gen = R => retry(R, () => {
   const base = {
     id: `keepAngle-${P.flat().join('')}-${v}-${JSON.stringify(m)}`, family: 'keepAngle' as const,
     board: `\\angle ${nm} \\approx ${ang}^\\circ`,
-    picture: { grid: { figs: [pre(P, L), img(Q, L.map(pr))], ...motionMarks(m) }, angles: [{ fig: 0, i: v }, { fig: 1, i: v }] } as Pic,
+    picture: { grid: { figs: [pre(P, L), img(Q, L.map(pr))], ...marksFor(m, L, P) }, angles: [{ fig: 0, i: v }, { fig: 1, i: v }] } as Pic,
     work: `\\angle ${nm.split('').map(x => x + "'").join('')} = ${ang}^\\circ`,
     solution: [`The angle at ${L[v]} goes to the angle at ${pr(L[v]!)}.`, `A rigid motion keeps every angle: ∠${nmP} = ${ang}°, even when it faces another way.`],
   };
-  if (R() < 0.3) return choiceItem(R, { ...base, prompt: `A protractor gives ∠${A(nm)} ≈ ${ang}°. ${A(L.join(''))} is mapped onto ${S(L.map(pr).join(''))} by ${B(describe(m, 'P'))}. Someone redraws the image with the sides of ∠${nmP} twice as long. Compare ∠${S(nmP)} with ∠${A(nm)}.` }, [
+  if (R() < 0.3) return choiceItem(R, { ...base, prompt: `A protractor gives ∠${A(nm)} ≈ ${ang}°. ${A(L.join(''))} is mapped onto ${S(L.map(pr).join(''))} by ${B(describe(m, centerOf(m, L, P)))}. Someone redraws the image with the sides of ∠${nmP} twice as long. Compare ∠${S(nmP)} with ∠${A(nm)}.` }, [
     { t: `The same: ${ang}°`, ok: true, say: 'Right: an angle is the amount of turn between its sides; longer sides do not change it.' },
     { t: 'Bigger: its sides are longer', ok: false, mc: MC.armLength, say: 'Longer sides do not open an angle wider. The turn between the sides is still the same.' },
     { t: 'Smaller: it faces a new way', ok: false, mc: MC.supplement, say: 'Facing a new way does not change the size of the turn between the sides.' },
   ]);
-  return numItem({ ...base, prompt: `A protractor gives ∠${A(nm)} ≈ ${ang}°. ${A(L.join(''))} is mapped onto ${S(L.map(pr).join(''))} by ${B(describe(m, 'P'))}. How big is ∠${S(nmP)}?`, unit: '°' }, ang,
+  return numItem({ ...base, prompt: `A protractor gives ∠${A(nm)} ≈ ${ang}°. ${A(L.join(''))} is mapped onto ${S(L.map(pr).join(''))} by ${B(describe(m, centerOf(m, L, P)))}. How big is ∠${S(nmP)}?`, unit: '°' }, ang,
     `Right: ${ang}°. The angle is kept.`, [
       { v: 180 - ang, mc: MC.supplement, say: `${180 - ang}° is what is left of a straight angle. The image angle faces another way, but its size is still ${ang}°.` },
       ...[0, 1, 2].filter(k => k !== v).map(k => ({ v: Math.round(angleAt(P, k)), mc: MC.unmatched, say: `That is the angle at ${pr(L[k]!)}. The angle at ${L[v]} goes to the angle at ${pr(L[v]!)}.` })),
@@ -779,7 +791,7 @@ const ruleT: Gen = R => retry(R, () => {
       pairLead: 'a =', pairOp: 'b =',
       picture: { grid: { figs: [pre([p], ['P']), img([q], ['P′'])], arrow: { from: p, to: q } }, hide: ['arrow'] },
       work: `a = ${q[0]} - (${p[0]}) = ${a},\\ b = ${b}`,
-      solution: [`a = new x − old x = ${sgn(q[0])} − (${sgn(p[0])}) = ${sgn(a)}.`, `b = new y − old y = ${sgn(q[1])} − (${sgn(p[1])}) = ${sgn(b)}.`, `Rule: (x, y) → (x ${a < 0 ? '−' : '+'} ${Math.abs(a)}, y ${b < 0 ? '−' : '+'} ${Math.abs(b)}).`],
+      solution: [`a = new x − old x = ${sgn(q[0])} − (${sgn(p[0])}) = ${mark(sgn(a))}.`, `b = new y − old y = ${sgn(q[1])} − (${sgn(p[1])}) = ${mark(sgn(b))}.`, `Rule: (x, y) → (x ${a < 0 ? '−' : '+'} ${Math.abs(a)}, y ${b < 0 ? '−' : '+'} ${Math.abs(b)}).`],
     }, [a, b], `Right: every point moves ${slideWords(a, b)}.`, [
       { v: [-a, -b], say: 'That is the way back, from P′ to P. Subtract old from new: new − old.' },
       { v: [b, a], mc: MC.shiftWrong, say: 'a is the change in x (across), b the change in y (up or down).' },
@@ -844,7 +856,7 @@ const ruleLine: Gen = R => retry(R, () => {
     pairLead: 'P′ = (', pairOp: ',',
     picture: { grid: { figs: [pre([p], ['P']), img([ans], ['P′'])], mirror: { p: m.kind === 'M' ? m.p : ORIGIN, q: m.kind === 'M' ? m.q : ORIGIN, name }, links: onL ? [] : [{ a: p, b: ans }] }, hide: ['f1', 'n1', 'l0'] },
     work: vert ? `x' = ${h} ${dd > 0 ? '-' : '+'} ${Math.abs(dd)} = ${ans[0]}` : `y' = ${h} ${dd > 0 ? '-' : '+'} ${Math.abs(dd)} = ${ans[1]}`,
-    solution: onL ? ['P is on the line, so it stays put.'] : [`P is ${Math.abs(dd)} ${Math.abs(dd) === 1 ? 'unit' : 'units'} ${vert ? (dd > 0 ? 'right' : 'left') : (dd > 0 ? 'above' : 'below')} of ${name}.`, `P′ is ${Math.abs(dd)} on the other side: ${vert ? 'x' : 'y'} = ${sgn(h)} ${dd > 0 ? '−' : '+'} ${Math.abs(dd)} = ${sgn(vert ? ans[0] : ans[1])}. The other coordinate stays.`],
+    solution: onL ? [`P${pt(p)} is on the line ${name}.`, `A point on the mirror stays put: P′${pt(ans)}.`] : [`P is ${Math.abs(dd)} ${Math.abs(dd) === 1 ? 'unit' : 'units'} ${vert ? (dd > 0 ? 'right' : 'left') : (dd > 0 ? 'above' : 'below')} of ${name}.`, `P′ is ${Math.abs(dd)} on the other side: ${vert ? 'x' : 'y'} = ${sgn(h)} ${dd > 0 ? '−' : '+'} ${Math.abs(dd)} = ${sgn(vert ? ans[0] : ans[1])}. The other coordinate stays: P′${pt(ans)}.`],
   }, ans, onL ? 'Right: P is on the line, so it stays.' : `Right: P′${pt(ans)}.`, [
     { v: vert ? [-p[0], p[1]] : [p[0], -p[1]], mc: MC.axisRule, say: `That uses the ${vert ? 'y' : 'x'}-axis rule. The mirror is ${name}: count from it, not from the axis.` },
     { v: vert ? [p[0], 2 * h - p[1]] : [2 * h - p[0], p[1]], mc: MC.negNamed, say: `Across the ${vert ? 'vertical' : 'horizontal'} line ${name} only the ${vert ? 'x' : 'y'}-coordinate changes.` },
@@ -919,7 +931,7 @@ const rule90: Gen = R => retry(R, () => {
 
 // 22 predict-measures: unknown image measures from the preimage, without measuring
 const SHAPES = [
-  { thing: 'a kite-shaped sign', sides: ['AB', 'BC', 'CD', 'DA'] },
+  { thing: 'a four-sided sign', sides: ['AB', 'BC', 'CD', 'DA'] },
   { thing: 'a floor-plan piece', sides: ['AB', 'BC', 'CD', 'DA'] },
   { thing: 'a garden-bed outline', sides: ['AB', 'BC', 'CD', 'DA'] },
   { thing: 'a logo tile', sides: ['AB', 'BC', 'CA'] },
@@ -928,7 +940,19 @@ const predict: Gen = R => retry(R, () => {
   const sh = pick(R, SHAPES);
   const motion = pick(R, ['rotated 90° clockwise', 'reflected across a line', 'turned 180°', 'translated 12 in to the right', 'rotated 60° counterclockwise']);
   const lens = pickN(R, [7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24], sh.sides.length);
-  const angB = int(R, 52, 128);
+  let angB = int(R, 52, 128);
+  if (sh.sides.length === 3) {
+    // a triangle is fixed by its three sides: ∠B (between AB and BC) is the one they make, to the nearest degree
+    const [ab, bc, ca] = lens as [number, number, number];
+    if (ca >= ab + bc || ab >= bc + ca || bc >= ab + ca) return null;
+    angB = Math.round((Math.acos((ab * ab + bc * bc - ca * ca) / (2 * ab * bc)) * 180) / Math.PI);
+    if (angB < 40 || angB > 140) return null;
+  } else {
+    // a four-sided figure with these sides and this ∠B must close: the diagonal AC fits triangle ACD
+    const [ab, bc, cd, da] = lens as [number, number, number, number];
+    const ac = Math.sqrt(ab * ab + bc * bc - 2 * ab * bc * Math.cos((angB * Math.PI) / 180));
+    if (ac <= Math.abs(cd - da) + 1 || ac >= cd + da - 1) return null;
+  }
   if (angB === 90) return null;
   const askAngle = R() < 0.35;
   const i = int(R, 0, sh.sides.length - 1);

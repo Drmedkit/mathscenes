@@ -27,6 +27,7 @@ import { DigitTape, type TapeBlock } from '../../src/lesson/topics/irrational-nu
 import { RealSets } from '../../src/lesson/topics/irrational-numbers/RealSets';
 import { Calc } from '../../src/lesson/topics/irrational-numbers/Calc';
 import { FAMILY_NAMES, GENS, MC, type IrItem, type Pic } from '../../src/lesson/topics/irrational-numbers/items';
+import { explain } from '../../src/lesson/topics/irrational-numbers/explain';
 import { PLAN } from '../../src/lesson/topics/irrational-numbers/plan';
 import { LINES } from '../../src/lesson/topics/irrational-numbers/script';
 import { sqrt } from '../../src/lesson/topics/irrational-numbers/realMaths';
@@ -423,7 +424,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as IrItem),
   });

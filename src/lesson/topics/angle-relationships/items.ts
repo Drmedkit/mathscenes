@@ -5,6 +5,7 @@
 // PROBES records, per item, typical wrong responses and the misconception they must get (tests).
 import { type Gen, type Item, type Response, type Verdict, A, B, S, int, pick, shuffle } from '../../runtime/item';
 import { type AMark, type Fan, type Pic, crossing, fanFrom, exprText, norm, picFits } from './angleMaths';
+import { endOnChoice } from '../../runtime/explain';
 
 export type FamilyId = 'rays' | 'names' | 'evidence' | 'adjacent' | 'addParts' | 'armLength' | 'pairName' | 'linearPair'
   | 'vertical' | 'equalPick' | 'allNames' | 'findPair' | 'findVertical' | 'missingPart' | 'lineParts' | 'aroundPoint'
@@ -98,7 +99,7 @@ function choiceItem(R: () => number, base: Base, opts: Opt[], keep = false): Ang
   if (right < 0 || o.filter(x => x.ok).length !== 1) throw new Error(`${base.id}: needs exactly one right option`);
   const says = o.map(x => ({ say: x.say, mc: x.mc }));
   const it: AngleItem = {
-    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right },
+    ...base, input: 'choice', choices: o.map(x => x.t), answer: { kind: 'choice', i: right }, solution: endOnChoice(base.solution, o[right]!.t),
     check: (r: Response): Verdict => {
       if (r.kind !== 'choice' || !says[r.i]) return { ok: false, say: 'Pick one answer.' };
       return { ok: r.i === right, mc: r.i === right ? undefined : says[r.i]!.mc, say: says[r.i]!.say };
@@ -281,6 +282,7 @@ const evidence: Gen = (R, n) => fitted(() => {
   }
   if (v === 'nts') {
     const t = int(R, 7, 14) * 5, drawn = t + pick(R, [-1, 1]) * int(R, 6, 9) * 5;
+    if (drawn < 15 || drawn > 165) return null;   // a "−10°" drawing would be a 350° arc under a 35° label
     const f = fanFrom([a, b], s, [drawn], { O, marks: [mk('t', a, b, { text: dg(t), col: 'second' })] });
     const opts: Opt[] = [
       { t: dg(t), ok: true, say: `Yes: the label says ${t}°. The drawing is not to scale, so it only shows the shape of the idea.` },
@@ -539,6 +541,7 @@ const equalPick: Gen = (R, n) => fitted(() => {
   const [a, b, c, d] = L as [string, string, string, string];
   if (R() < 0.75) {
     const t = int(R, 7, 31) * 5 + pick(R, [0, 2, 3]);
+    if (t === 90) return null;   // every angle at a right crossing is 90°: "m∠2 = 90°" would be true too
     const f = crossing([a, b, c, d], rot(R), t, O);
     f.marks = [mk('m1', a, b, { text: dg(t), col: 'second' }), mk('m2', b, c, { text: '2' }), mk('m3', c, d, { text: '3', alt: dg(t) }), mk('m4', d, a, { text: '4' })];
     const opts: Opt[] = [
@@ -866,6 +869,7 @@ const critique: Gen = (R, n) => fitted(() => {
   const who = WHO[(n * 7) % WHO.length]!;
   const s = rot(R);
   const t = int(R, 7, 29) * 5;
+  if (v === 'wrongReason' && t === 90) return null;   // 180° − 90° = 90°: the wrong rule would give the right angle
   let f: Fan, claim: string, opts: Opt[];
   if (v === 'looksLine' || v === 'supported') {
     f = v === 'supported' ? fanFrom([a, b, c], s, [t, 180 - t], { O, lines: [[a, c]] })
@@ -1004,8 +1008,8 @@ const expr: Gen = (R, n) => fitted(() => {
 // ================= 24 combined-expression-angles =================
 const exprCombined: Gen = (R, n) => fitted(() => {
   const v = pick(R, ['linear', 'linear', 'around', 'right'] as const);
-  const { O, L } = letters(R, 5);
-  const [a, b, c, d, e] = L as [string, string, string, string, string];
+  const { O, L } = letters(R, 6);
+  const [a, b, c, d, e, g] = L as [string, string, string, string, string, string];
   const s = rot(R);
   const askX = R() < 0.5;
   if (v === 'linear') {
@@ -1035,7 +1039,7 @@ const exprCombined: Gen = (R, n) => fitted(() => {
     known.push(left);
     if (known.some(p => p < 45 || p > 150)) return null;
     const all = [...known, x, x];
-    const lets = [a, b, c, d, e, 'F'].slice(0, all.length);
+    const lets = [a, b, c, d, e, g].slice(0, all.length);
     const marks = all.map((p, i) => mk(`p${i}`, lets[i]!, lets[(i + 1) % lets.length]!, i >= known.length ? { text: 'x', alt: dg(x), col: 'link' } : { text: dg(p), col: 'second' }));
     const f = fanFrom(lets, s, all.slice(0, -1), { O, marks });
     const S0 = known.reduce((u, w) => u + w, 0);

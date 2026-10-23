@@ -11,6 +11,7 @@ import {
   type Dec, type Fin, cmpFinFrac, decHtml, decLong, decTex, digitAt, expand, finFrac, finStr, fracFin, isFin, longDivide,
   mixedOf, otherFactors, pctOf, reduce, roundFrac,
 } from './fdpMaths';
+import { ans as mark, endOnChoice } from '../../runtime/explain';
 
 // ---------- what the page draws for an item ----------
 export type FdpPicture =
@@ -123,7 +124,7 @@ function choiceItem(R: () => number, o: Omit<Item, 'input' | 'answer' | 'check' 
   for (const x of opts) if (!uniq.some(u => u.t === x.t)) uniq.push(x);
   const sh = shuffle(R, uniq);
   return {
-    ...rest, input: 'choice', choices: sh.map(c => c.t), answer: { kind: 'choice', i: sh.findIndex(c => c.ok) },
+    ...rest, input: 'choice', choices: sh.map(c => c.t), answer: { kind: 'choice', i: sh.findIndex(c => c.ok) }, solution: endOnChoice(rest.solution, sh.find(c => c.ok)!.t),
     check(r: Response): Verdict {
       if (r.kind !== 'choice' || !sh[r.i]) return { ok: false, say: 'Pick one answer.' };
       const c = sh[r.i]!;
@@ -202,10 +203,11 @@ const drawable = (n: number, d: number) => { const L = longDivide(n, d); return 
 const endSteps = (n: number, d: number): LadderStep[] => (longDivide(n, d).stop === 'zero' ? ['stop', 'zeros'] : ['loop', 'more', 'groups']);
 /** the division as panel lines: "30 ÷ 8 = 3, remainder 6" */
 function divLines(n: number, d: number, max = 6): string[] {
-  const L = longDivide(n, d);
-  const out = L.rows.slice(0, max).map((w, i) => `${i === 0 ? '' : ''}${w.x} ÷ ${d} = ${w.q}, remainder ${w.r}${i === 0 ? ' (the whole part)' : ''}`);
-  out.push(L.stop === 'zero' ? `Remainder 0: the division stops. ${fr(n, d)} = ${decHtml(expand(n, d))}.`
-    : `The remainder ${L.rows[L.at]!.r} came back, so the digits from there repeat: ${fr(n, d)} = ${decHtml(expand(n, d))}.`);
+  const L = longDivide(n, d), w0 = L.rows[0]!, rest = L.rows.slice(1, max);
+  const out = [`${w0.x} ÷ ${d} = ${w0.q}, remainder ${w0.r}: the whole part is ${w0.q}.`];
+  if (rest.length) out.push(`Bring down a 0 each time: ${rest.map(w => `${w.x} ÷ ${d} = ${w.q} r ${w.r}`).join(', ')}.`);
+  out.push(L.stop === 'zero' ? `Remainder 0: the division stops. ${fr(n, d)} = ${mark(decHtml(expand(n, d)))}.`
+    : `The remainder ${L.rows[L.at]!.r} came back, so the digits from there repeat: ${fr(n, d)} = ${mark(decHtml(expand(n, d)))}.`);
   return out;
 }
 
@@ -492,7 +494,7 @@ const ladderStep: Gen = (R, n, sg) => {
       if (r.y >= q || row.x - r.x * q >= q) return { ok: false, say: `A remainder must be less than ${q}. ${q} fits into ${row.x} more times.` };
       return { ok: false, say: `Check: digit × ${q}, then ${row.x} minus that is the remainder.` };
     },
-    solution: [`${row.x} ÷ ${q}: ${q} fits ${row.q} time${row.q === 1 ? '' : 's'} (${row.q} × ${q} = ${row.q * q}).`, `${row.x} − ${row.q * q} = ${row.r}: the remainder.`, `So the next digit of ${fr(p, q)} is ${row.q}.`],
+    solution: [`${row.x} ÷ ${q}: ${q} fits ${mark(row.q)} time${row.q === 1 ? '' : 's'} (${row.q} × ${q} = ${row.q * q}).`, `${row.x} − ${row.q * q} = ${mark(row.r)}: the remainder.`, `So the next digit of ${fr(p, q)} is ${row.q}.`],
     picture: {
       kind: 'ladder', p: ladder(p, q), pre: ['cells', ...rowsOf(p, q, k)], post: [`row${k}` as LadderStep, ...(k === L.at ? (L.stop === 'zero' ? ['stop'] as LadderStep[] : ['loop'] as LadderStep[]) : [])],
       work: [`${row.x} \\div ${q} = ${row.q}\\ \\text{r}\\ ${row.r}`],
@@ -622,7 +624,7 @@ const decToFrac: Gen = (R, n) => {
     board: `${fs(f)} = \\ ?`, p, q, simplest, wrongs,
     right: simplest ? `Yes: ${fs(f)} = ${f.N}/${den.toLocaleString('en-US')} = ${fr(p, q)}.` : `Yes, that is equal to ${fs(f)} = ${fr(f.N, den)}${p !== f.N ? ` (simplest: ${fr(p, q)})` : ''}.`,
     hint: `The last digit is in the ${PLACE[f.k]} place: ${fs(f)} = ${f.N} ${PLACE[f.k]}.`,
-    solution: [`The last digit sits in the ${PLACE[f.k]} place: ${fs(f)} = ${fr(f.N, den.toLocaleString('en-US'))}.`, ...(p !== f.N ? [`Divide top and bottom by ${f.N / p}: ${fr(p, q)}.`] : [])],
+    solution: [`The last digit sits in the ${PLACE[f.k]} place: ${fs(f)} = ${fr(f.N, den.toLocaleString('en-US'))}.`, p !== f.N ? `Divide top and bottom by ${f.N / p}: ${mark(fr(p, q))}.` : `Nothing divides top and bottom: ${mark(fr(p, q))} is in simplest form.`],
     picture: { kind: 'ladder', p: ladder(f.N, den, { ladder: false }), pre: ['cells', 'digits'], post: [], work: [`${fs(f)} = ${FT(f.N, den)}`, ...(p !== f.N ? [`= ${FT(p, q)}`] : [])] },
   });
 };
@@ -660,7 +662,7 @@ const decPct: Gen = (R, n) => {
       ],
       right: `Yes: × 100 moves the point two places right: ${fs(df)} = ${fs(pf)}%.`,
       hint: `Percent means hundredths: multiply by 100 (the point moves two places right).`,
-      solution: [`${fs(df)} × 100 = ${fs(pf)}.`, `So ${fs(df)} = ${fs(pf)}%${pf.N < 10 ** pf.k ? ': less than 1%' : ''}.`],
+      solution: [`${fs(df)} × 100 = ${fs(pf)}.`, `So ${fs(df)} = ${mark(`${fs(pf)}%`)}${pf.N < 10 ** pf.k ? ': less than 1%' : ''}.`],
       picture: { kind: 'ladder', p: ladder(df.N, 10 ** df.k, { ladder: false }), pre: ['cells', 'digits'], post: ['shift'], work: [`${fs(df)} \\times 100`, `= ${fs(pf)}\\%`] },
     });
   }
@@ -675,7 +677,7 @@ const decPct: Gen = (R, n) => {
     ],
     right: `Yes: ÷ 100 moves the point two places left: ${fs(pf)}% = ${fs(df)}.`,
     hint: 'A percent is a number of hundredths: divide by 100.',
-    solution: [`${fs(pf)}% = ${fs(pf)} ÷ 100.`, `= ${fs(df)}.`],
+    solution: [`${fs(pf)}% = ${fs(pf)} ÷ 100.`, `= ${mark(fs(df))}.`],
     picture: { kind: 'ladder', p: ladder(df.N, 10 ** df.k, { ladder: false }), pre: ['cells', 'digits', 'shift'], post: [], unshift: true, work: [`${fs(pf)}\\% = ${fs(pf)} \\div 100`, `= ${fs(df)}`] },
   });
 };
@@ -701,7 +703,7 @@ const pctToFrac: Gen = (R, n) => {
     ],
     right: `Yes: ${fs(pf)}% = ${fs(df)} = ${df.N}/${(10 ** df.k).toLocaleString('en-US')} = ${fr(p, q)}.`,
     hint: `Go in two known steps: percent → decimal (÷ 100), then decimal → fraction (place value), then simplify.`,
-    solution: [`${fs(pf)}% = ${fs(pf)} ÷ 100 = ${fs(df)}.`, `${fs(df)} = ${fr(df.N, (10 ** df.k).toLocaleString('en-US'))}.`, `Simplify: ${fr(p, q)}.`],
+    solution: [`${fs(pf)}% = ${fs(pf)} ÷ 100 = ${fs(df)}.`, `${fs(df)} = ${fr(df.N, (10 ** df.k).toLocaleString('en-US'))}.`, `Simplify: ${mark(fr(p, q))}.`],
     picture: { kind: 'bare', work: [`${fs(pf)}\\% = ${fs(df)}`, `= ${FT(df.N, 10 ** df.k)} = ${FT(p, q)}`] },
   });
 };
@@ -722,7 +724,7 @@ const beyondOne: Gen = (R, n) => {
       ],
       right: `Yes: ${fs(pf)}% = ${fs(f)} = ${w} ${a}/${b}.`,
       hint: `${fs(pf)}% = ${fs(pf)} ÷ 100. The 100% part is ${w} whole${w > 1 ? 's' : ''}.`,
-      solution: [`${fs(pf)}% = ${fs(pf)} ÷ 100 = ${fs(f)}.`, `${fs(f)} = ${w} + ${fs({ N: f.N - w * 10 ** f.k, k: f.k })} = ${mixH(p, q)}.`],
+      solution: [`${fs(pf)}% = ${fs(pf)} ÷ 100 = ${fs(f)}.`, `${fs(f)} = ${w} + ${fs({ N: f.N - w * 10 ** f.k, k: f.k })} = ${mark(mixH(p, q))}.`],
       picture: { kind: 'ladder', p: ladder(f.N, 10 ** f.k, { ladder: false }), pre: ['cells', 'digits', 'shift'], post: [], unshift: true, work: [`${fs(pf)}\\% = ${fs(f)}`, `= ${mixT(p, q)}`] },
     });
   }
@@ -740,7 +742,7 @@ const beyondOne: Gen = (R, n) => {
     board: `${fromDec ? fs(f) : mixT(p, q)} = \\ ?\\,\\%`, unit: '%', f: pf, wrongs,
     right: `Yes: ${fromDec ? fs(f) : mixH(p, q)} = ${fs(pf)}%. More than one whole is more than 100%.`,
     hint: `1 whole = 100%. ${fromDec || a === 0 ? `Multiply ${fs(f)} by 100.` : `Write ${mixH(p, q)} as a decimal first, then × 100.`}`,
-    solution: [...(fromDec || a === 0 ? [] : [`${mixH(p, q)} = ${fs(f)}${a ? ` (${fr(a, b)} = ${fs(fracFin(a, b)!)})` : ''}.`]), `${fs(f)} × 100 = ${fs(pf)}, so it is ${fs(pf)}%.`],
+    solution: [fromDec || a === 0 ? `1 whole = 100%, so multiply by 100: the point moves two places right.` : `${mixH(p, q)} = ${fs(f)}${a ? ` (${fr(a, b)} = ${fs(fracFin(a, b)!)})` : ''}.`, `${fs(f)} × 100 = ${fs(pf)}, so it is ${mark(`${fs(pf)}%`)}.`],
     picture: drawable(p, q) && !fromDec && a > 0 ? { kind: 'ladder', p: ladder(p, q), pre: ['cells'], post: [...rowsOf(p, q), 'stop', 'zeros', 'shift'], work: [`${mixT(p, q)} = ${fs(f)}`, `= ${fs(pf)}\\%`] }
       : { kind: 'ladder', p: ladder(f.N, 10 ** f.k, { ladder: false }), pre: ['cells', 'digits'], post: ['shift'], work: [`${fs(f)} \\times 100`, `= ${fs(pf)}\\%`] },
   });
@@ -762,7 +764,7 @@ const repPct: Gen = (R, n) => {
     return choiceItem(R, {
       id: `repPct-${n}`, family: 'repPct', prompt: `Write <b>${pctH(pc)}</b> as an exact decimal.`,
       board: `${pctT(pc)} = \\ ?`, opts,
-      solution: [`Write it out: ${pctH(pc).replace('%', '')} = ${decLong(pc, 5)}`, `÷ 100: ${decLong(e, 7)}`, `Read the block again: ${decHtml(e)}.`],
+      solution: [`Write it out: ${pctH(pc).replace('%', '')} = ${decLong(pc, 5)}`, `÷ 100: ${decLong(e, 7)}`, `Read the block again: ${mark(decHtml(e))}.`],
       picture: drawable(p, q) ? { kind: 'ladder', p: ladder(p, q, { ladder: false }), pre: ['cells', 'digits', 'more', 'groups', 'shift'], post: [], unshift: true, work: [`${pctT(pc)} = ${decTex(e)}`] } : { kind: 'bare', work: [`${pctT(pc)} = ${decTex(e)}`] },
     });
   }
@@ -775,7 +777,7 @@ const repPct: Gen = (R, n) => {
   return choiceItem(R, {
     id: `repPct-${n}`, family: 'repPct', prompt: `${fr(p, q)} = <b>${decHtml(e)}</b>. Write it as an <b>exact</b> percent.`,
     board: `${FT(p, q)} = ${decTex(e)} = \\ ?\\,\\%`, opts: opts.slice(0, 4),
-    solution: [`Write it out: ${decLong(e, 7)}`, `× 100: ${decLong(pc, 5)}`, `Read the block again from the point: ${pctH(pc)}.`],
+    solution: [`Write it out: ${decLong(e, 7)}`, `× 100: ${decLong(pc, 5)}`, `Read the block again from the point: ${mark(pctH(pc))}.`],
     picture: drawable(p, q) ? { kind: 'ladder', p: ladder(p, q), pre: ['cells', ...rowsOf(p, q), 'loop', 'more', 'groups'], post: ['shift'], work: [`${decTex(e)} \\times 100`, `= ${pctT(pc)}`] } : { kind: 'bare', work: [`${decTex(e)} \\times 100 = ${pctT(pc)}`] },
   });
 };
@@ -784,7 +786,7 @@ const repPct: Gen = (R, n) => {
 const MIX_PCT: [number, number][] = [[1, 3], [2, 3], [1, 6], [5, 6], [1, 8], [3, 8], [5, 8], [7, 8], [1, 12], [5, 12], [1, 9], [2, 9], [1, 7], [1, 16], [3, 16], [4, 9], [7, 12], [1, 15]];
 const mixedPct: Gen = (R, n) => {
   const [p, q] = pick(R, MIX_PCT), [w, a, b] = mixedOf(100 * p, q);
-  const pctMix = `(${w}${fr(a, b)})%`;
+  const mixed = `${w}&#8202;${fr(a, b)}`, pctMix = `(${mixed})%`;
   if (R() < 0.4) {
     // the reverse: (33 1/3)% -> 1/3
     const misread = Number(`${w}.${a}${b}`) / 100;
@@ -797,7 +799,7 @@ const mixedPct: Gen = (R, n) => {
       ],
       right: `Yes: 100 × ${fr(p, q)} = ${w}${fr(a, b)}, so ${pctMix} = ${fr(p, q)}.`,
       hint: `Which fraction of 100 is ${w} ${a}/${b}? Try 100 × ${fr(1, q)}.`,
-      solution: [`100 × ${fr(p, q)} = ${fr(100 * p, q)} = ${w}${fr(a, b)}.`, `So ${w}${fr(a, b)} is ${fr(p, q)} of 100: ${pctMix} = ${fr(p, q)}.`],
+      solution: [`100 × ${fr(p, q)} = ${fr(100 * p, q)} = ${mixed}.`, `So ${mixed} is ${fr(p, q)} of 100: ${pctMix} = ${mark(fr(p, q))}.`],
       picture: { kind: 'bare', work: [`100 \\times ${FT(p, q)} = ${w}${fT(a, b)}`, `\\left(${w}${fT(a, b)}\\right)\\% = ${FT(p, q)}`] },
     });
   }
@@ -809,9 +811,9 @@ const mixedPct: Gen = (R, n) => {
       { test: r => Number.isInteger(r.n) && r.d > 0 && near(val(r), p / q), mc: MC.bothTerms, say: `100 × ${p}/${q} multiplies only the top: ${100 * p}/${q}, not ${100 * p}/${100 * q}. That is ${w} ${a}/${b}.` },
       { test: r => Number.isInteger(r.n) && r.d > 0 && near(val(r), p / (100 * q)), mc: MC.denOnly, say: `100 × ${p}/${q} makes the top 100 times bigger: ${100 * p}/${q} = ${w} ${a}/${b}.` },
     ],
-    right: `Yes: 100 × ${fr(p, q)} = ${fr(100 * p, q)} = ${w}${fr(a, b)}, so ${fr(p, q)} = ${pctMix}.`,
+    right: `Yes: 100 × ${fr(p, q)} = ${fr(100 * p, q)} = ${mixed}, so ${fr(p, q)} = ${pctMix}.`,
     hint: `A percent counts hundredths: multiply ${fr(p, q)} by 100, then write ${fr(100 * p, q)} as a mixed number.`,
-    solution: [`100 × ${fr(p, q)} = ${fr(100 * p, q)}.`, `${fr(100 * p, q)} = ${w}${fr(a, b)} (${q} × ${w} = ${q * w}, ${100 * p - q * w} left over${gcd(100 * p - q * w, q) > 1 ? `, ${fr(100 * p - q * w, q)} = ${fr(a, b)}` : ''}).`, `So ${fr(p, q)} = ${pctMix}${expand(100 * p, q).rep ? ` = ${pctH(pctOf(p, q))}` : ''}.`],
+    solution: [`100 × ${fr(p, q)} = ${fr(100 * p, q)}.`, `${fr(100 * p, q)} = ${mixed} (${q} × ${w} = ${q * w}, ${100 * p - q * w} left over${gcd(100 * p - q * w, q) > 1 ? `, ${fr(100 * p - q * w, q)} = ${fr(a, b)}` : ''}).`, `So ${fr(p, q)} = (${mark(mixed)})%${expand(100 * p, q).rep ? ` = ${pctH(pctOf(p, q))}` : ''}.`],
     picture: { kind: 'bare', work: [`100 \\times ${FT(p, q)} = ${FT(100 * p, q)}`, `= ${w}${fT(a, b)}`] },
   });
 };
@@ -857,7 +859,7 @@ const remainders: Gen = (R, n) => {
       wrongs: [{ f: fin(q, 0), mc: MC.periodIsDen, say: `Remainder 0 means it stops, so a repeat can only use the ${q - 1} others: at most ${q - 1} digits.` }],
       right: `Yes: with ${q - 1} nonzero remainders, one must come back within ${q - 1} steps.`,
       hint: `Remainder 0 means it stops. How many other remainders are there?`,
-      solution: [`Nonzero remainders: 1 to ${q - 1}, that is ${q - 1} of them.`, `After at most ${q - 1} steps one comes back, so the block has at most ${q - 1} digits.`],
+      solution: [`Nonzero remainders: 1 to ${q - 1}, that is ${q - 1} of them.`, `After at most ${q - 1} steps one comes back, so the block has at most ${mark(q - 1)} digits.`],
       picture: { kind: 'bare', work: [`\\text{at most } ${q - 1}\\ \\text{digits}`] },
     });
   }
@@ -871,7 +873,7 @@ const remainders: Gen = (R, n) => {
       wrongs: [{ f: fin(0, 0), mc: MC.alwaysEnds, say: `${fr(p, 7)} never reaches 0. All six nonzero remainders are used, so one of them comes back: ${L.rows[6]!.r}.` }],
       right: `Yes: ${10 * rs[5]!} ÷ 7 = ${L.rows[6]!.q} r ${L.rows[6]!.r}. The remainder ${p} is back, so the 6 digits repeat.`,
       hint: `The next line is ${10 * rs[5]!} ÷ 7.`,
-      solution: [`Next line: ${10 * rs[5]!} ÷ 7 = ${L.rows[6]!.q} r ${L.rows[6]!.r}.`, `All of 1–6 have been used, so a remainder had to come back.`, `${fr(p, 7)} = ${decHtml(expand(p, 7))}.`],
+      solution: [`Next line: ${10 * rs[5]!} ÷ 7 = ${L.rows[6]!.q} r ${mark(L.rows[6]!.r)}.`, `All of 1–6 have been used, so a remainder had to come back.`, `${fr(p, 7)} = ${decHtml(expand(p, 7))}.`],
       picture: { kind: 'bare', work: [`${10 * rs[5]!} \\div 7 = ${L.rows[6]!.q}\\ \\text{r}\\ ${L.rows[6]!.r}`] },
     });
   }
@@ -926,7 +928,7 @@ const roundFinal: Gen = (R, n) => {
           { f: roundFrac(100 * p, q, 1, 'trunc'), mc: MC.truncates, say: `Look at the next digit: ${decLong(pctOf(p, q), 3)} rounds to ${fs(exact1)}%.` }],
         right: `Yes: ${fr(p, q)} = ${pctH(pctOf(p, q))} ≈ ${fs(exact1)}%, rounded once, at the end.`,
         hint: `Keep it exact until the end: ${fr(p, q)} = ${pctH(pctOf(p, q))}, then round to tenths.`,
-        solution: [`Exact: ${fr(p, q)} = ${pctH(pctOf(p, q))} = ${decLong(pctOf(p, q), 3)}%.`, `Round once, to the nearest tenth: ${fs(exact1)}%.`],
+        solution: [`Exact: ${fr(p, q)} = ${pctH(pctOf(p, q))} = ${decLong(pctOf(p, q), 3)}%.`, `Round once, to the nearest tenth: ${mark(`${fs(exact1)}%`)}.`],
         picture: { kind: 'bare', work: [`${FT(p, q)} = ${pctT(pctOf(p, q))}`, `\\approx ${fs(exact1)}\\%`] },
       });
     }
@@ -944,7 +946,7 @@ const roundFinal: Gen = (R, n) => {
     board: `${FT(p, q)} \\approx \\ ?${asPct ? '\\,\\%' : ''}`, f, wrongs,
     right: `Yes: ${asPct ? pctH(exact) : decHtml(exact)} ≈ ${fs(f)}${asPct ? '%' : ''}.`,
     hint: `Write enough digits: ${fr(p, q)} = ${asPct ? pctH(exact) : decHtml(exact)}. Then look at the digit after the ${placeName}s.`,
-    solution: [`Exact: ${fr(p, q)} = ${asPct ? pctH(exact) : decHtml(exact)} = ${decLong(exact, k + 2)}${asPct ? '%' : ''}.`, `The next digit decides: ${fs(f)}${asPct ? '%' : ''}.`],
+    solution: [`Exact: ${fr(p, q)} = ${asPct ? pctH(exact) : decHtml(exact)} = ${decLong(exact, k + 2)}${asPct ? '%' : ''}.`, `The next digit decides: ${mark(`${fs(f)}${asPct ? '%' : ''}`)}.`],
     picture: { kind: 'bare', work: [`${FT(p, q)} = ${asPct ? pctT(exact) : decTex(exact)}`, `\\approx ${fs(f)}${asPct ? '\\%' : ''}`] },
   });
 };
@@ -1010,7 +1012,7 @@ const roundingError: Gen = (R, n) => {
       wrongs: [{ f: fin(100, 0), mc: MC.roundedExact, say: `$33.33 is rounded, not exactly a third: 3 × $33.33 = $99.99, a cent short.` }],
       right: 'Yes: $99.99. The rounded shares lose a cent: $33.33 ≈ 1/3 of $100.',
       hint: '3 × 33 = 99 and 3 × 0.33 = 0.99.',
-      solution: ['3 × $33.33 = $99.99.', `Exactly, each share is $${decHtml(expand(100, 3))}; $33.33 is rounded, so the total is off by 1 cent.`],
+      solution: [`3 × $33.33 = ${mark('$99.99')}.`, `Exactly, each share is $${decHtml(expand(100, 3))}; $33.33 is rounded, so the total is off by 1 cent.`],
       picture: { kind: 'bare', work: [`3 \\times \\$33.33 = \\$99.99`, `\\ne \\$100`] },
     });
   }
@@ -1023,7 +1025,7 @@ const roundingError: Gen = (R, n) => {
         { f: { N: used.N, k: used.k + 1 }, mc: MC.pointOne, say: `Check the point: ${fs(c.r)} × ${A} = ${fs(used)}.` }],
       right: `Yes: ${$(fs(used))}, ${$(String(diff))} ${Number(fs(used)) < exact ? 'less' : 'more'} than the exact ${$(String(exact))}.`,
       hint: `${fs(c.r)} × ${A}: multiply ${c.r.N} × ${A}, then place the point.`,
-      solution: [`${fs(c.r)} × ${A} = ${fs(used)}.`, `Exactly: ${fr(c.p, c.q)} × ${A} = ${exact}. The rounding moved the answer by ${diff}.`],
+      solution: [`${fs(c.r)} × ${A} = ${mark(fs(used))}.`, `Exactly: ${fr(c.p, c.q)} × ${A} = ${exact}. The rounding moved the answer by ${diff}.`],
       picture: { kind: 'bare', work: [`${fs(c.r)} \\times ${A} = ${fs(used)}`, `${FT(c.p, c.q)} \\times ${A} = ${exact}`] },
     });
   }
@@ -1038,7 +1040,7 @@ const roundingError: Gen = (R, n) => {
     ],
     right: `Yes: ${exact} vs ${fs(used)}: off by ${diff}. The small rounding error was multiplied by ${A}.`,
     hint: `Work out both: ${fr(c.p, c.q)} × ${A} and ${fs(c.r)} × ${A}, then subtract.`,
-    solution: [`Exact: ${fr(c.p, c.q)} × ${A} = ${exact}.`, `Rounded: ${fs(c.r)} × ${A} = ${fs(used)}.`, `Off by ${diff}: the rounding error is multiplied by ${A}.`],
+    solution: [`Exact: ${fr(c.p, c.q)} × ${A} = ${exact}.`, `Rounded: ${fs(c.r)} × ${A} = ${fs(used)}.`, `Off by ${mark(diff)}: the rounding error is multiplied by ${A}.`],
     picture: { kind: 'bare', work: [`${FT(c.p, c.q)} \\times ${A} = ${exact}`, `${fs(c.r)} \\times ${A} = ${fs(used)}`] },
   });
 };
@@ -1048,7 +1050,7 @@ const roundEnd: Gen = (R, n) => {
   const v = int(R, 0, 2);
   if (v === 0) {
     const k = pick(R, [3, 6, 7, 9]);
-    let A = int(R, 20, 95); if (A % k === 0) A++;
+    let A = int(R, 20, 95); while ((100 * A) % k === 0) A++;   // the share never comes out exact to the cent ($93 ÷ 6 = $15.50 would)
     const cents = roundFrac(A, k, 2);
     return choiceItem(R, {
       id: `roundEnd-${n}`, family: 'roundEnd', prompt: `A $${A} bill is split equally by ${k} friends. What should each share be written as?`,
@@ -1064,7 +1066,7 @@ const roundEnd: Gen = (R, n) => {
   }
   if (v === 1) {
     const k = pick(R, [3, 6, 7]);
-    let T = int(R, 61, 249); if (T % k === 0) T++;
+    let T = int(R, 61, 249); while (T % (k === 6 ? 3 : k) === 0) T++;   // T/(10k) repeats (6.3 ÷ 6 = 1.05 would stop, on a rounding tie)
     const L = fin(T, 1), piece = roundFrac(T, 10 * k, 1);
     return choiceItem(R, {
       id: `roundEnd-${n}`, family: 'roundEnd', prompt: `A board is measured as <b>${fs(L)} cm</b> (to the nearest 0.1 cm) and cut into ${k} equal pieces. How long is each piece, reported sensibly?`,
@@ -1080,7 +1082,7 @@ const roundEnd: Gen = (R, n) => {
   }
   const [p, q] = pick(R, [[2, 3], [1, 3], [5, 6], [1, 6]] as [number, number][]);
   const m = q * int(R, 1, 3) / gcd(p, q), tot = p * m / q, r2 = roundFrac(p, q, 2), r1 = roundFrac(p, q, 1);
-  const unit = pick(R, ['cup', 'yard', 'pound']);
+  const unit = pick(R, ['cup', 'pound', 'teaspoon']);
   return choiceItem(R, {
     id: `roundEnd-${n}`, family: 'roundEnd', prompt: `A recipe uses exactly <b>${fr(p, q)} ${unit}</b> per batch. How much for <b>${m} batches</b>?`,
     board: `${m} \\times ${FT(p, q)}`,
@@ -1099,8 +1101,9 @@ const SIGNED: [number, number][] = [[8, 5], [3, 8], [5, 4], [1, 16], [5, 8], [7,
 const signed: Gen = (R, n) => {
   const [p, q] = pick(R, SIGNED), f = fracFin(p, q)!, pf = fracFin(100 * p, q)!, [w, a, b] = mixedOf(p, q);
   const neg = (x: Fin): Fin => ({ N: -x.N, k: x.k });
-  const ctx = pick(R, ['', 'The temperature changed by ', 'A stock price changed by ', 'The elevation changed by ']);
   const toPct = R() < 0.5;
+  // a percent needs a whole to be a part of (a stock's value, and a fall of at most 100%); °F and miles stay decimals
+  const ctx = pick(R, toPct ? (p < q ? ['', 'A stock price changed by '] : ['']) : ['', 'The temperature changed by ', 'The elevation changed by ']);
   const shown = w > 0 ? `−${mixH(p, q)}` : `−${fr(p, q)}`;
   const target = toPct ? neg(pf) : neg(f);
   const wrongs: NWrong[] = [{ f: toPct ? pf : f, mc: MC.ignoresMinus, say: `The minus sign stays with the value through every form: ${shown} = ${fh(neg(f))} = ${fh(neg(pf))}%.` }];
@@ -1115,7 +1118,7 @@ const signed: Gen = (R, n) => {
     board: `-${w > 0 ? mixT(p, q) : FT(p, q)} = \\ ?${toPct ? '\\,\\%' : ''}`, f: target, wrongs,
     right: `Yes: ${shown} = ${fh(neg(f))} = ${fh(neg(pf))}%. The sign stays with the whole value.`,
     hint: `Convert ${w > 0 ? mixH(p, q) : fr(p, q)} as if it were positive, then put the minus sign in front of the whole result.`,
-    solution: [`${w > 0 ? mixH(p, q) : fr(p, q)} = ${fh(f)} = ${fh(pf)}%.`, `So ${shown} = ${fh(neg(f))} = ${fh(neg(pf))}%.`],
+    solution: [`${w > 0 ? mixH(p, q) : fr(p, q)} = ${fh(f)} = ${fh(pf)}%.`, `So ${shown} = ${toPct ? `${fh(neg(f))} = ${mark(`${fh(neg(pf))}%`)}` : `${mark(fh(neg(f)))} = ${fh(neg(pf))}%`}.`],
     picture: { kind: 'bare', work: [`-${w > 0 ? mixT(p, q) : FT(p, q)} = ${finStr(neg(f))}`, `= ${finStr(neg(pf))}\\%`] },
   });
 };
@@ -1150,8 +1153,21 @@ const signedCompare: Gen = (R, n) => {
   });
 };
 
-export const GENS: Record<string, Gen> = {
+/** "a 8 ft rope" → "an 8 ft rope", "A $80 jacket" → "An $80 jacket", "a 18% tip" → "an 18% tip": the article as the number is spoken */
+const anFix = (h: string) => h
+  .replace(/(^|[.?!:]\s+|“)A ((?:<b[^>]*>)*\$?(?:8|1[18](?![\d])))/g, '$1An $2')
+  .replace(/(\s|\()a ((?:<b[^>]*>)*\$?(?:8|1[18](?![\d])))/g, '$1an $2');
+/** every generator's text reads its articles right (prompt, choices, worked solution) */
+const withArticles = <G extends (R: () => number, n: number, sg?: string) => Item>(g: G): G => ((R: () => number, n: number, sg?: string) => {
+  const it = g(R, n, sg);
+  it.prompt = anFix(it.prompt);
+  it.solution = it.solution.map(anFix);
+  if (it.choices) it.choices = it.choices.map(anFix);
+  return it;
+}) as G;
+const RAW_GENS: Record<string, Gen> = {
   placeValue, compareDec, terminates, barForm, approx, ladderStep, divide, digitTrap, classify, decToFrac, decPct, pctToFrac,
   beyondOne, repPct, mixedPct, recall, remainders, twoFive, roundFinal, calcDisplay, roundingError, roundEnd, signed, signedCompare,
 };
+export const GENS: Record<string, Gen> = Object.fromEntries(Object.entries(RAW_GENS).map(([k, g]) => [k, withArticles(g)]));
 export { REP, TERM, TRAPS };

@@ -26,6 +26,7 @@ import { FnGraph, type GraphBlock, type GraphFocus } from '../../src/lesson/topi
 import { type BoardRow, boardRow, drawRow, type Run } from '../../src/lesson/topics/functions/board';
 import { MODEL, BOARD_BOX, BX, BW, BOARD_TABLE, BOARD_TABLE_LOW } from '../../src/lesson/topics/functions/layout';
 import { FAMILY_NAMES, GENS, type Pic, type Hi } from '../../src/lesson/topics/functions/items';
+import { explain } from '../../src/lesson/topics/functions/explain';
 import { PLAN } from '../../src/lesson/topics/functions/plan';
 import { SCRIPT, EXAMPLE, TURN, PROVE } from '../../src/lesson/topics/functions/script';
 import { checkFunction, flip } from '../../src/lesson/topics/functions/relation';
@@ -457,7 +458,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it),
   });

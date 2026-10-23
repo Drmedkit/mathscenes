@@ -145,3 +145,28 @@ describe('voice', () => {
     }
   });
 });
+
+describe('quality-layer fixes (practice sweep, 2026-10-23)', () => {
+  const gen = (f: string, sg: string, s: number) => (GENS as Record<string, (R: () => number, n: number, sg?: string) => Item>)[f]!(rng(s * 61 + 17), s, sg) as AngleItem;
+  const plainOf = (h: string) => h.replace(/<[^>]+>/g, '');
+  it('equalPick: never a 90° crossing (every angle there is 90°, so three choices were true)', () => {
+    for (let s = 1; s <= 600; s++) expect(plainOf(gen('equalPick', 'vertical-angles-equal', s).choices!.join(' | '))).not.toMatch(/= 90°/);
+  });
+  it('critique: "vertical angles, so 180° − t°" never lands on the right angle (t = 90)', () => {
+    for (let s = 1; s <= 600; s++) expect(plainOf(gen('critique', 'reject-unsupported', s).prompt)).not.toMatch(/vertical angles, so .*180° − 90°/);
+  });
+  it('evidence "not drawn to scale": the protractor reading is a real angle, not −10°', () => {
+    for (let s = 1; s <= 600; s++) for (const c of gen('evidence', 'diagram-conventions', s).choices!) {
+      const m = plainOf(c).match(/^(-?\d+)°, what a protractor shows/);
+      if (m) expect(Number(m[1]), c).toBeGreaterThanOrEqual(15);
+    }
+  });
+  it('exprCombined around a point: six different ray letters', () => {
+    for (let s = 1; s <= 400; s++) {
+      const it = gen('exprCombined', 'combined-expression-angles', s);
+      const fan = (it.picture as unknown as { fans: { O: string; rays: { p: string }[] }[] }).fans[0]!;
+      const names = [fan.O, ...fan.rays.map(r => r.p)];
+      expect(new Set(names).size, names.join(',')).toBe(names.length);
+    }
+  });
+});

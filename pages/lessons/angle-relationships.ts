@@ -28,6 +28,7 @@ import { drawPic, type Look, markBox, sheet } from '../../src/lesson/topics/angl
 import { type Pic, FIG } from '../../src/lesson/topics/angle-relationships/angleMaths';
 import { EXAMPLE, PROOF, QUESTION, TURN, proofAt } from '../../src/lesson/topics/angle-relationships/figures';
 import { type AngleItem, FAMILY_NAMES, GENS, MC } from '../../src/lesson/topics/angle-relationships/items';
+import { explain } from '../../src/lesson/topics/angle-relationships/explain';
 import { PLAN } from '../../src/lesson/topics/angle-relationships/plan';
 import { LINES } from '../../src/lesson/topics/angle-relationships/script';
 import type { Paint } from '../../src/core/theme';
@@ -427,7 +428,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as AngleItem),
   });

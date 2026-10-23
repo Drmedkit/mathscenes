@@ -85,7 +85,7 @@ describe.each(pairs)('family %s for sub-goal %s', (fam, sg) => {
   });
   it('makes many different problems', () => {
     const distinctN = new Set(items.map(i => i.prompt + i.board + JSON.stringify(i.picture ?? null) + (i.choices ?? []).join())).size;
-    expect(distinctN).toBeGreaterThan(fam === 'contextInputs' ? 9 : fam === 'sketchStory' ? 20 : fam === 'readStory' || fam === 'implicitShows' ? 30 : 60);
+    expect(distinctN).toBeGreaterThan(fam === 'contextInputs' ? 11 : fam === 'sketchStory' ? 20 : fam === 'readStory' || fam === 'implicitShows' ? 30 : 60);
   });
 });
 
@@ -149,6 +149,26 @@ describe('voice', () => {
     for (const [id, l] of Object.entries(LINES)) {
       expect(json[id]!.text, id).toBe(l.say);
       expect(l.say, id).not.toMatch(/[<>²→≤]|\d\/\d|−\d/);
+    }
+  });
+});
+
+describe('quality-layer fixes (practice sweep, 2026-10-23)', () => {
+  const gen = (f: FamilyId, sg: string, s: number) => GENS[f](rng(s * 29 + 3), s, sg);
+  it('pickWitness: the pairs the right choice quotes are in the table or on the graph (shuffle no longer moves them)', () => {
+    for (let s = 1; s <= 400; s++) {
+      const it = gen('pickWitness', 'counterexample-witness', s), pic = it.picture as Pic;
+      const right = it.choices![(it.answer as { i: number }).i]!.replace(/<[^>]+>/g, '');
+      const quoted = [...right.matchAll(/\((−?\d+), (−?\d+)\)/g)].map(m => [Number(m[1]!.replace('−', '-')), Number(m[2]!.replace('−', '-'))]);
+      if (!quoted.length) continue;
+      const pts: number[][] = pic.kind === 'table' ? pic.xs.map((x, i) => [Number(x), Number(pic.ys[i])]) : pic.kind === 'graph' ? pic.points.map(p => [p.x, p.y]) : [];
+      for (const q of quoted) expect(pts.some(p => p[0] === q[0] && p[1] === q[1]), `${right} not in ${JSON.stringify(pts)}`).toBe(true);
+    }
+  });
+  it('readStory: no tab character in the board TeX; contextInputs: no laps (2.5 laps is a real distance)', () => {
+    for (let s = 1; s <= 300; s++) {
+      expect(gen('readStory', 'qualitative-graphs', s).board).not.toMatch(/\t/);
+      expect(gen('contextInputs', 'allowed-inputs', s).prompt).not.toMatch(/laps/);
     }
   });
 });

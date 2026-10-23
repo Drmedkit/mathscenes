@@ -6,6 +6,7 @@
 import { type Item, type Response, type Verdict, A, B, int, pick, shuffle } from '../../runtime/item';
 import { isCents, isWhole, money, near, nf, pc, pctOf, r4, roundDiv, tn, toCents } from './chainMaths';
 import type { ChainParams, CRow } from './ChainTape';
+import { ans as mark, endOnChoice } from '../../runtime/explain';
 
 export type FamilyId = 'labelStep' | 'nameWhole' | 'orderPlan' | 'share' | 'ratioPercent' | 'percentRatio' | 'twoChanges'
   | 'multiplier' | 'chainProduct' | 'rounding' | 'audit' | 'checkShares' | 'undo' | 'estimate' | 'transfer'
@@ -110,6 +111,8 @@ function choose(R: () => number, opts: Opt[], keepOrder = false): { choices: str
   };
 }
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+/** "a" or "an" before a number as it is spoken: an 8%, an 11%, an 18%, an 80% (but a 1%, a 110%) */
+const an = (x: number | string) => (/^(8|11(\.\d+)?$|18(\.\d+)?$)/.test(String(x)) ? 'an' : 'a');
 const PAIRS: readonly [number, number][] = [[1, 2], [2, 1], [1, 3], [3, 1], [2, 3], [3, 2], [3, 4], [4, 3], [3, 5], [5, 3], [2, 5], [5, 2], [4, 5], [5, 4], [1, 4], [7, 2], [2, 7], [5, 7], [7, 5], [3, 7], [4, 1]];
 const TRIPLES: readonly [number, number, number][] = [[1, 2, 3], [2, 3, 5], [1, 1, 2], [3, 4, 5], [1, 2, 5], [2, 3, 4], [1, 3, 4], [2, 2, 3]];
 const BENCH = [10, 20, 25, 50, 5, 30, 40, 75, 15, 60];
@@ -267,23 +270,29 @@ const nameWhole: Gen = (R, n) => {
 const orderPlan: Gen = (R, n) => {
   const kind = pick(R, ['prize', 'paint', 'tickets', 'tax'] as const);
   let prompt = '', board = '', opts: Opt[] = [], sol: string[] = [];
-  const [a, b] = pick(R, PAIRS);
+  let [a, b] = pick(R, PAIRS);
+  /** a ratio whose split of `whole` is whole (tickets) or in cents (money) */
+  const fit = (whole: number, inCents: boolean) => { for (let t = 0; t < 60; t++) { const ok = inCents ? isCents((whole * a) / (a + b)) : isWhole((whole * a) / (a + b)); if (ok) return true; [a, b] = pick(R, PAIRS); } return false; };
   if (kind === 'prize') {
-    const T = pick(R, [500, 800, 1000, 600]), p = pick(R, [10, 20, 25]);
+    let T = pick(R, [500, 800, 1000, 600]), p = pick(R, [10, 20, 25]);
+    if (!fit((T * (100 - p)) / 100, true)) { T = 1000; p = 20; [a, b] = [3, 5]; }
     prompt = `Lena and Omar split the prize ${B(`${a} : ${b}`)}. The prize is what is left of ${A(money(T))} after ${p}% tax is taken out. How much does Lena get? Which plan works?`;
     board = `\\$${tn(T)},\\ ${p}\\%\\ \\text{tax},\\ ${a} : ${b}`;
     opts = [{ t: `First take ${p}% off ${money(T)} to get the prize. Then split the prize ${a} : ${b}.`, ok: true, say: 'Yes. The split needs the prize, and the prize comes from the tax step, so the tax step goes first.' },
       { t: `First split the prize ${a} : ${b}. Then take ${p}% off ${money(T)}.`, mc: MC.mentionOrder, say: 'That follows the order of the sentences. But you can’t split the prize before you know it: it comes from the tax step.' },
       { t: `First find ${p}% of ${money(T)}. Then split that ${p}% ${a} : ${b}.`, mc: MC.lostIntermediate, say: `${p}% of ${money(T)} is the tax. Lena and Omar split what is left, not the tax.` }];
   } else if (kind === 'paint') {
-    const T = pick(R, [240, 400, 480, 320]), p = pick(R, [10, 20, 25]);
+    let T = pick(R, [240, 400, 480, 320]), p = pick(R, [10, 20, 25]);
+    for (let t = 0; t < 60 && !isCents((((T * a) / (a + b)) * p) / 100); t++) { [a, b] = pick(R, PAIRS); T = pick(R, [240, 400, 480, 320]); p = pick(R, [10, 20, 25]); }
+    if (!isCents((((T * a) / (a + b)) * p) / 100)) { T = 400; p = 10; [a, b] = [3, 5]; }
     prompt = `Art spends ${p}% of its share on paint. The club splits its ${A(money(T))} budget, art to music ${B(`${a} : ${b}`)}. How much goes to paint? Which plan works?`;
     board = `${p}\\%,\\ \\$${T},\\ ${a} : ${b}`;
     opts = [{ t: `First split ${money(T)} ${a} : ${b} to get art’s share. Then find ${p}% of art’s share.`, ok: true, say: 'Yes. The percent step needs art’s share, so the ratio step goes first.' },
       { t: `First find ${p}% of art’s share. Then split ${money(T)} ${a} : ${b}.`, mc: MC.mentionOrder, say: 'That is the order of the sentences, but step 1 needs art’s share, which only step 2 gives you.' },
       { t: `First find ${p}% of ${money(T)}. Then that is the paint money.`, mc: MC.wrongWhole, say: `That takes ${p}% of the whole budget. The paint is ${p}% of art’s share.` }];
   } else if (kind === 'tickets') {
-    const T = pick(R, [400, 600, 800, 500]), p = pick(R, [75, 80, 90, 60]);
+    let T = pick(R, [400, 600, 800, 500]), p = pick(R, [75, 80, 90, 60]);
+    if (!fit((T * p) / 100, false)) { T = 400; p = 75; [a, b] = [1, 2]; }
     prompt = `The tickets sold were adult to student ${B(`${a} : ${b}`)}. Of the ${A(T)} tickets printed, ${p}% were sold. How many student tickets were sold? Which plan works?`;
     board = `${a} : ${b},\\ ${T},\\ ${p}\\%`;
     opts = [{ t: `First find ${p}% of ${T} to get the tickets sold. Then split them ${a} : ${b}.`, ok: true, say: 'Yes. The ratio is about the tickets sold, so you need that number first.' },
@@ -373,14 +382,15 @@ const PRCS: readonly PRC[] = [
 const percentRatio: Gen = (R, n, sg) => {
   const c = pick(R, PRCS), calc = c.money && useCalc(R, sg);
   let a = 3, b = 2, s = 5, u = 20, T = 200, k = 50, p = 50;
-  for (let t = 0; t < 400; t++) {
-    [a, b] = pick(R, PAIRS); s = a + b; u = pick(R, c.units);
+  let found = false;
+  for (let t = 0; t < 600 && !found; t++) {
+    [a, b] = pick(R, PAIRS); s = a + b; u = calc ? int(R, 6, 60) : pick(R, c.units);
     p = pick(R, c.keepP ? [75, 80, 60, 90, 40, 25] : calc ? [12, 15, 35, 8] : [20, 25, 10, 40, 50]);
     k = c.keepP ? p : 100 - p;
-    const kept = u * s;
-    T = (kept * 100) / k;
-    if (isWhole(T) && T >= 40 && T <= 2000) break;
+    T = (u * s * 100) / k;
+    found = isWhole(T) && T >= 40 && T <= 2000;
   }
+  if (!found) { [a, b] = [3, 2]; s = 5; u = c.units[0]!; p = c.keepP ? 80 : 20; k = 80; T = (u * s * 100) / k; }
   const kept = u * s, removed = r4(T - kept), parts = [a * u, b * u], ans = parts[c.w]!, rt = `${a} : ${b}`, tot = c.fmt(T);
   const wrongs: Wrong[] = [
     { v: r4((T * [a, b][c.w]!) / s), mc: MC.postChangeRatio, say: `That splits all ${tot}. The ratio is about the ${c.keptName === 'sold' ? 'tickets sold' : c.keptName === 'in clubs' ? 'club members' : 'amount left'}, so find that first.` },
@@ -480,8 +490,8 @@ const twoChanges: Gen = (R, n) => {
 // =========================== 8 percent-multiplier ===========================
 const multiplier: Gen = (R, n) => {
   const kinds = [
-    { w: (p: number) => `${p}% off`, up: false }, { w: (p: number) => `a ${p}% raise`, up: true }, { w: (p: number) => `${p}% sales tax added`, up: true },
-    { w: (p: number) => `a ${p}% decrease`, up: false }, { w: (p: number) => `a ${p}% increase`, up: true }, { w: (p: number) => `a ${p}% markup`, up: true },
+    { w: (p: number) => `${p}% off`, up: false }, { w: (p: number) => `${an(p)} ${p}% raise`, up: true }, { w: (p: number) => `${p}% sales tax added`, up: true },
+    { w: (p: number) => `${an(p)} ${p}% decrease`, up: false }, { w: (p: number) => `${an(p)} ${p}% increase`, up: true }, { w: (p: number) => `${an(p)} ${p}% markup`, up: true },
   ];
   const k = pick(R, kinds);
   const p = k.up ? pick(R, [20, 15, 25, 7, 8, 6, 7.25, 8.5, 5, 150, 120, 40]) : pick(R, [20, 15, 25, 30, 12, 40, 35, 5, 60]);
@@ -548,7 +558,8 @@ const rounding: Gen = (R, n) => {
   let Pc = 2499, d = 35, t = 825, T = roundingTotals(Pc, d, t);
   for (let i = 0; i < 400; i++) {
     const P2 = pick(R, ROUND_P), d2 = pick(R, ROUND_D), t2 = pick(R, ROUND_T), T2 = roundingTotals(P2, d2, t2);
-    if (T2.each !== T2.end && (P2 * (100 - d2)) % 100 !== 0) { Pc = P2; d = d2; t = t2; T = T2; break; }
+    const ties = (P2 * (100 - d2)) % 100 === 50 || (T2.sale * t2) % 10000 === 5000 || (P2 * (100 - d2) * (10000 + t2)) % 1000000 === 500000;
+    if (T2.each !== T2.end && (P2 * (100 - d2)) % 100 !== 0 && !ties) { Pc = P2; d = d2; t = t2; T = T2; break; }
   }
   const each = R() < 0.5, ans = (each ? T.each : T.end) / 100, other = (each ? T.end : T.each) / 100, tp = t / 100;
   const policy = each ? 'The store rounds the sale price to the cent first, then rounds the tax to the cent.' : 'Keep every digit until the end, then round the total to the cent.';
@@ -556,8 +567,8 @@ const rounding: Gen = (R, n) => {
   return {
     id: `rounding-${n}`, family: 'rounding', prompt: `A ${A(money(Pc / 100))} lamp is <b>${d}% off</b>, and <b>${nf(tp)}% sales tax</b> is added to the sale price. <b>${policy}</b> What is the total? (You may use a calculator.)`,
     board: `\\$${tn(Pc / 100, true)}\\ \\xrightarrow{\\;-${d}\\%\\;}\\ \\xrightarrow{\\;+${tn(tp)}\\%\\;}\\ ?`, input: 'num', unit: 'dollars', answer: { kind: 'num', v: ans },
-    solution: each ? [`Sale price: ${money(Pc / 100)} × ${tn(r4(1 - d / 100))} = ${nf(saleX)} → round: ${money(T.sale / 100)}.`, `Tax: ${nf(tp)}% of ${money(T.sale / 100)} = ${nf(r4((T.sale * t) / 1000000))} → round: ${money(Math.round(T.sale * t / 10000) / 100)}.`, `Total: ${money(ans)}.`]
-      : [`Sale price: ${money(Pc / 100)} × ${tn(r4(1 - d / 100))} = ${nf(saleX)} (keep all the digits).`, `Total: ${nf(saleX)} × ${r4(1 + tp / 100)} = ${nf(Math.round(saleX * (1 + tp / 100) * 1e6) / 1e6)} → round once: ${money(ans)}.`],
+    solution: each ? [`Sale price: ${money(Pc / 100)} × ${tn(r4(1 - d / 100))} = ${nf(saleX)} → round: ${money(T.sale / 100)}.`, `Tax: ${nf(tp)}% of ${money(T.sale / 100)} = ${nf(r4((T.sale * t) / 1000000))} → round: ${money(Math.round(T.sale * t / 10000) / 100)}.`, `Total: ${mark(money(ans))}.`]
+      : [`Sale price: ${money(Pc / 100)} × ${tn(r4(1 - d / 100))} = ${nf(saleX)} (keep all the digits).`, `Total: ${nf(saleX)} × ${r4(1 + tp / 100)} = ${nf(Math.round(saleX * (1 + tp / 100) * 1e6) / 1e6)} → round once: ${mark(money(ans))}.`],
     check: numCheck(ans, true, `Yes: ${money(ans)}. ${each ? 'Each billed amount is rounded as you go.' : 'Rounding only once keeps the most exact total.'}`,
       each ? 'Round the sale price to the cent, find the tax on that, round the tax, then add.' : 'Keep every digit of the sale price, multiply, and round only the total.',
       [{ v: other, mc: each ? undefined : MC.roundsEarly, say: each ? 'That keeps every digit. This store rounds the sale price and the tax as it bills them.' : 'You rounded the sale price early. The rule here is: round only the total.' },
@@ -640,7 +651,7 @@ const undo: Gen = (R, n, sg) => {
     return {
       id: `undo-${n}`, family: 'undo', prompt: `Art spent ${A(money(ans))} on paint, which is <b>${p}%</b> of art’s share. The club’s budget was split art to music ${B(`${a} : ${b}`)}. What was the whole budget?`,
       board: `? \\xrightarrow{\\;${a}:${b}\\;} \\text{art} \\xrightarrow{\\;${p}\\%\\;} \\$${tn(ans, true)}`, input: 'num', unit: 'dollars', answer: { kind: 'num', v: T },
-      solution: [`Undo the last step first: ${money(ans)} is ${p}% of art’s share, so art’s share = ${money(ans)} ÷ ${dec(p)} = ${money(part)}.`, `Undo the ratio step: art is ${a} of ${s} parts, so one part = ${money(part)} ÷ ${a} = ${money(r4(part / a))}.`, `Budget: ${s} × ${money(r4(part / a))} = ${money(T)}. Check: ${p}% of ${a}/${s} of ${money(T)} = ${money(ans)} ✓`],
+      solution: [`Undo the last step first: ${money(ans)} is ${p}% of art’s share, so art’s share = ${money(ans)} ÷ ${dec(p)} = ${money(part)}.`, `Undo the ratio step: art is ${a} of ${s} parts, so one part = ${money(part)} ÷ ${a} = ${money(r4(part / a))}.`, `Budget: ${s} × ${money(r4(part / a))} = ${mark(money(T))}. Check: ${p}% of ${a}/${s} of ${money(T)} = ${money(ans)} ✓`],
       check: numCheck(T, true, `Yes: art’s share was ${money(part)}, and ${money(part)} is ${a} of ${s} parts of ${money(T)}.`, 'Undo the percent step first (find art’s share), then rebuild the budget from the ratio.', [
         { v: part, mc: MC.lostIntermediate, say: `${money(part)} is art’s share. The question asks for the whole budget.` },
         { v: music, mc: MC.otherPart, say: `${money(music)} is music’s share. Add art’s share to it, or use ${s} parts.` },
@@ -659,7 +670,7 @@ const undo: Gen = (R, n, sg) => {
   return {
     id: `undo-${n}`, family: 'undo', prompt, board: `? \\xrightarrow{\\times ${tn(m1)}} \\square \\xrightarrow{\\times ${tn(m2)}} \\$${tn(F, true)}`,
     input: 'num', unit: 'dollars', answer: { kind: 'num', v: P },
-    solution: [`Undo the last step first: ${money(F)} ÷ ${tn(m2)} = ${money(vals[1]!)}.`, `Then undo the first: ${money(vals[1]!)} ÷ ${tn(m1)} = ${money(P)}.`, `Check forward: ${money(P)} × ${tn(m1)} × ${tn(m2)} = ${money(F)} ✓`],
+    solution: [`Undo the last step first: ${money(F)} ÷ ${tn(m2)} = ${money(vals[1]!)}.`, `Then undo the first: ${money(vals[1]!)} ÷ ${tn(m1)} = ${mark(money(P))}.`, `Check forward: ${money(P)} × ${tn(m1)} × ${tn(m2)} = ${money(F)} ✓`],
     check: numCheck(P, true, `Yes: ${money(F)} ÷ ${tn(m2)} = ${money(vals[1]!)}, and ${money(vals[1]!)} ÷ ${tn(m1)} = ${money(P)}.`, `Undo each step with its own divide, last step first: ÷ ${tn(m2)}, then ÷ ${tn(m1)}.`, [
       { v: opp, mc: MC.oppositePct, say: `Taking ${ch[1]!.p}% off and adding ${ch[0]!.p}% back uses the wrong wholes. Undo × ${tn(m2)} with ÷ ${tn(m2)}.` },
       { v: kind === 'downup' ? F : r4(F * 100 / (100 + net)), mc: MC.addsPercents, say: kind === 'downup' ? `−${ch[0]!.p}% and +${ch[1]!.p}% don’t cancel: they are percents of different wholes.` : 'That treats the two percents as one change of the start price. Undo them one at a time.' },
@@ -679,7 +690,7 @@ const estimate: Gen = (R, n) => {
     prompt = `A ${A(money(P))} game is <b>${d}% off</b>, then ${t}% sales tax is added. Without working it out exactly, which total makes sense?`;
     board = `\\$${tn(P, true)},\\ -${d}\\%,\\ +${t}\\%`;
     opts = [{ t: money(exact), ok: true, say: `Yes: ${100 - d}% of about ${money(base)} is about ${money(est)}, and the tax adds a little.` },
-      { t: money(big), mc: MC.mulBigger, say: `${d}% off makes the price smaller, and a ${t}% tax can’t make up for it. The total must be under ${money(P)}.` },
+      { t: money(big), mc: MC.mulBigger, say: `${d}% off makes the price smaller, and ${an(t)} ${t}% tax can’t make up for it. The total must be under ${money(P)}.` },
       { t: money(small), mc: MC.changeAsFinal, say: `That is about the size of the discount. You pay what is left: about ${money(est)}.` }];
     sol = [`Round: ${money(P)} ≈ ${money(base)}. ${100 - d}% of ${money(base)} = ${money(est)}.`, `Tax adds a little, so the total is a bit over ${money(est)}: ${money(exact)}.`];
   } else {
@@ -714,9 +725,12 @@ const transfer: Gen = (R, n, sg) => {
       ]) };
   }
   if (kind === 'interest') {
-    const [a, b] = pick(R, PAIRS), s = a + b;
-    let P = 1000, r = 5;
-    for (let t = 0; t < 200; t++) { P = pick(R, [500, 800, 1000, 1200, 1500, 2000, 2500]); r = pick(R, calc ? [2.5, 3.5, 4.5] : [2, 3, 4, 5, 6]); if (isCents((P * r / 100) / s)) break; }
+    let [a, b] = pick(R, PAIRS), s = a + b, P = 1000, r = 5, found = false;
+    for (let t = 0; t < 400 && !found; t++) {
+      [a, b] = pick(R, PAIRS); s = a + b; P = pick(R, [500, 800, 1000, 1200, 1500, 2000, 2500]); r = pick(R, calc ? [2.5, 3.5, 4.5] : [2, 3, 4, 5, 6]);
+      found = isCents((P * r / 100) / s);
+    }
+    if (!found) { [a, b] = [3, 2]; s = 5; P = 1000; r = 5; }
     const I = r4(P * r / 100), ans = r4(I * a / s);
     return { id: `transfer-${n}`, family: 'transfer', prompt: `Kim puts ${A(money(P))} in a savings account that pays <b>${nf(r)}% simple interest</b> for one year. She gives the interest to her cousins Ivy and Noah in the ratio ${B(`${a} : ${b}`)}. How much does Ivy get?${calc ? ' (You may use a calculator.)' : ''}`,
       board: `\\text{Ivy} = \\,?`, input: 'num', unit: 'dollars', answer: { kind: 'num', v: ans },
@@ -738,9 +752,12 @@ const transfer: Gen = (R, n, sg) => {
         { v: part, mc: MC.lostIntermediate, say: `${nf(part)} square feet is the vegetable part. Tomatoes fill ${pc(p)} of it.` },
       ]) };
   }
-  const [a, b] = pick(R, PAIRS), s = a + b;
-  let T = 400, p = 20;
-  for (let t = 0; t < 300; t++) { T = pick(R, [200, 300, 400, 500, 600, 800, 250]); p = pick(R, [10, 20, 25, 40]); const kept = T * (100 - p) / 100; if (isWhole(kept / s)) break; }
+  let [a, b] = pick(R, PAIRS), s = a + b, T = 400, p = 20, found = false;
+  for (let t = 0; t < 400 && !found; t++) {
+    [a, b] = pick(R, PAIRS); s = a + b; T = pick(R, [200, 300, 400, 500, 600, 800, 250]); p = pick(R, [10, 20, 25, 40]);
+    found = isWhole(T * (100 - p) / 100 / s);
+  }
+  if (!found) { [a, b] = [3, 2]; s = 5; T = 500; p = 20; }
   const kept = T * (100 - p) / 100, ans = kept * b / s;
   return { id: `transfer-${n}`, family: 'transfer', prompt: `${A(`${T} people`)} signed up for a 5K, but <b>${p}%</b> did not show up. The people who came were walkers to joggers ${B(`${a} : ${b}`)}. How many joggers were there?`,
     board: `\\text{joggers} = \\,?`, input: 'num', unit: 'joggers', answer: { kind: 'num', v: ans },
@@ -785,7 +802,7 @@ const doubleTest: Gen = (R, n) => {
   else if (kind === 'tax') { const t = pick(R, [5, 8, 10, 6]), P = pick(R, [50, 100, 20, 40]); base = P * t / 100; ans = base * k;
     prompt = `Sales tax is ${t}%. On ${A(money(P))}, the tax is ${money(base)}. What is the tax on ${money(P * k)}?`; }
   else { const q = pick(R, [15, 20, 10]), P = pick(R, [40, 60, 20, 30]); base = P * q / 100; ans = base * k;
-    prompt = `Leo tips ${q}% of the bill. On a ${A(money(P))} bill, the tip is ${money(base)}. What is the tip on a ${money(P * k)} bill?`; }
+    prompt = `Leo tips ${q}% of the bill. On ${an(P)} ${A(money(P))} bill, the tip is ${money(base)}. What is the tip on ${an(P * k)} ${money(P * k)} bill?`; }
   const isMoney = unit === 'dollars';
   const wrongs: Wrong[] = fixed
     ? [{ v: kind === 'age' ? base * k : base * k, mc: MC.scalesFixed, say: kind === 'age' ? 'Ages don’t double: the difference stays the same. Add the same number of years.' : 'That fee is fixed: it doesn’t grow with the order.' }]
@@ -799,35 +816,38 @@ const doubleTest: Gen = (R, n) => {
 /** the whole (100%) of the SECOND step, as a number */
 const wholeValue: Gen = (R, n) => {
   const kind = pick(R, ['tax', 'share', 'markup', 'tipPost', 'tickets'] as const);
-  let prompt = '', ans = 0, wrongs: Wrong[] = [], unit = 'dollars', isMoney = true, sol = '';
+  let prompt = '', ans = 0, wrongs: Wrong[] = [], unit = 'dollars', isMoney = true, sol: string[] = [];
   if (kind === 'tax') {
     const P = pick(R, [40, 60, 80, 120, 200, 50]), d = pick(R, [20, 25, 10, 50]), t = pick(R, [6, 8, 5]); ans = P * (100 - d) / 100;
     prompt = `A ${A(money(P))} jacket is <b>${d}% off</b>, then <b>${t}% tax</b> is added to the sale price. What amount is 100% for the tax step?`;
     wrongs = [{ v: P, mc: MC.addsPercents, say: `${money(P)} is 100% for the discount. The tax is on the sale price.` }, { v: P - ans, mc: MC.changeAsWhole, say: 'That is the discount, the amount taken off. The tax is on what is left.' }];
-    sol = `100% for the tax = the sale price: ${money(P)} − ${d}% = ${money(ans)}.`;
+    sol = ['The tax is added to the sale price, so the sale price is 100% for the tax.', `Sale price: ${money(P)} − ${d}% of ${money(P)} = ${mark(money(ans))}.`];
   } else if (kind === 'share') {
     const x = rpNumbers(R, RCS[0]!, false); ans = x.part;
     prompt = `A club splits its ${A(money(x.T))} budget art to music ${B(`${x.a} : ${x.b}`)}, and art spends <b>${x.p}%</b> of its share on paint. What amount is 100% for the paint step?`;
     wrongs = [{ v: x.T, mc: MC.wrongWhole, say: `${money(x.T)} is the whole budget. The ${x.p}% is of art’s share.` }, { v: x.other, mc: MC.otherPart, say: 'That is music’s share. The paint comes out of art’s share.' },
       { v: r4((x.T * x.a) / x.b), mc: MC.otherPart, say: `${x.a} : ${x.b} compares art with music. Art gets ${x.a} of every ${x.a + x.b} parts.` }];
-    sol = `Art’s share: ${money(x.T)} ÷ ${x.a + x.b} × ${x.a} = ${money(x.part)}. That is 100% for the paint step.`;
+    sol = ['The paint is a percent of art’s share, so art’s share is 100% for the paint step.', `Art’s share: ${money(x.T)} ÷ ${x.a + x.b} × ${x.a} = ${mark(money(x.part))}.`];
   } else if (kind === 'markup') {
     const C = pick(R, [40, 60, 80, 100, 120]), m = pick(R, [25, 50, 20, 40]), d = pick(R, [10, 20]); ans = C * (100 + m) / 100;
     prompt = `A store pays ${A(money(C))} for a lamp, marks it up <b>${m}%</b>, then takes <b>${d}% off</b> in a sale. What amount is 100% for the sale step?`;
     wrongs = [{ v: C, mc: MC.addsPercents, say: `${money(C)} is 100% for the markup. The sale works on the marked-up price.` }, { v: ans - C, mc: MC.changeAsWhole, say: 'That is the markup, the amount added. The sale is on the whole new price.' }];
-    sol = `100% for the sale = the marked-up price: ${money(C)} + ${m}% = ${money(ans)}.`;
+    sol = ['The sale takes its percent off the marked-up price, so that price is 100% for the sale.', `Marked-up price: ${money(C)} + ${m}% of ${money(C)} = ${mark(money(ans))}.`];
   } else if (kind === 'tipPost') {
     const Bl = pick(R, [40, 60, 80, 50, 100]), t = pick(R, [5, 10, 8]), q = pick(R, [15, 20]); ans = Bl * (100 + t) / 100;
     prompt = `Dinner is ${A(money(Bl))} before tax. Tax is <b>${t}%</b>, and the tip is <b>${q}% of the bill with tax</b>. What amount is 100% for the tip?`;
     wrongs = [{ v: Bl, mc: MC.wrongWhole, say: 'That is the bill before tax. This tip is on the bill with tax.' }, { v: ans - Bl, mc: MC.changeAsWhole, say: 'That is the tax. The tip is on the whole bill with tax.' }];
-    sol = `Bill with tax: ${money(Bl)} + ${t}% = ${money(ans)}. That is 100% for the tip.`;
+    sol = ['The tip is a percent of the bill with tax, so that bill is 100% for the tip.', `Bill with tax: ${money(Bl)} + ${t}% of ${money(Bl)} = ${mark(money(ans))}.`];
   } else {
-    const T = pick(R, [400, 500, 600, 800, 300]), p = pick(R, [75, 80, 60, 90]), [a, b] = pick(R, PAIRS); ans = T * p / 100; unit = 'tickets'; isMoney = false;
+    let T = pick(R, [400, 500, 600, 800, 300]), p = pick(R, [75, 80, 60, 90]), [a, b] = pick(R, PAIRS);
+    for (let t = 0; t < 60 && !isWhole((T * p) / 100 / (a + b)); t++) { T = pick(R, [400, 500, 600, 800, 300]); p = pick(R, [75, 80, 60, 90]); [a, b] = pick(R, PAIRS); }
+    if (!isWhole((T * p) / 100 / (a + b))) { T = 400; p = 75; [a, b] = [1, 2]; }
+    ans = T * p / 100; unit = 'tickets'; isMoney = false;
     prompt = `Of ${A(`${T} tickets`)} printed, <b>${p}%</b> were sold. The tickets sold were adult to student ${B(`${a} : ${b}`)}. How many tickets are the whole for the ratio step?`;
     wrongs = [{ v: T, mc: MC.postChangeRatio, say: `The ratio is about the tickets sold, not all ${T} printed.` }, { v: T - ans, mc: MC.changeAsWhole, say: 'Those are the unsold tickets. The ratio is about the sold ones.' }];
-    sol = `Tickets sold: ${p}% of ${T} = ${nf(ans)}. The ratio step splits those.`;
+    sol = ['The ratio describes the tickets sold, not all those printed.', `Tickets sold: ${p}% of ${T} = ${mark(nf(ans))}. The ratio step splits those.`];
   }
-  return { id: `wholeValue-${n}`, family: 'wholeValue', prompt, board: '100\\% = \\,?', input: 'num', unit, answer: { kind: 'num', v: ans }, solution: [sol],
+  return { id: `wholeValue-${n}`, family: 'wholeValue', prompt, board: '100\\% = \\,?', input: 'num', unit, answer: { kind: 'num', v: ans }, solution: sol,
     check: numCheck(ans, isMoney, `Yes: ${isMoney ? money(ans) : nf(ans)} is the whole for that step.`, 'Which amount does the step work on? It may be the result of the step before.', wrongs) };
 };
 
@@ -898,7 +918,7 @@ const shareFromPart: Gen = (R, n) => {
   else wrongs.push({ v: s * u, mc: MC.otherPart, say: `That is the total. ${who[1]} gets ${b} of the ${s} parts.` });
   return { id: `shareFromPart-${n}`, family: 'shareFromPart', prompt: `${who[0]} and ${who[1]} share some money in the ratio ${B(`${a} : ${b}`)}. ${who[0]} gets ${A(money(X))}. ${askTotal ? 'How much money was shared in all?' : `How much does ${who[1]} get?`}`,
     board: `${a} : ${b} = ${X} : \\,?`, input: 'num', unit: 'dollars', answer: { kind: 'num', v: ans },
-    solution: [`${who[0]}’s ${a} parts are ${money(X)}, so one part = ${money(X)} ÷ ${a} = ${money(u)}.`, askTotal ? `All ${s} parts: ${s} × ${money(u)} = ${money(ans)}.` : `${who[1]}: ${b} × ${money(u)} = ${money(ans)}.`],
+    solution: [`${who[0]}’s ${a === 1 ? '1 part is' : `${a} parts are`} ${money(X)}, so one part = ${money(X)} ÷ ${a} = ${money(u)}.`, askTotal ? `All ${s} parts: ${s} × ${money(u)} = ${money(ans)}.` : `${who[1]}: ${b} × ${money(u)} = ${money(ans)}.`],
     check: numCheck(ans, true, `Yes: one part is ${money(u)}.`, `Find one part first: ${money(X)} ÷ ${a}.`, wrongs) };
 };
 /** what fraction of the total is one share? */
@@ -942,7 +962,7 @@ const rateThenPercent: Gen = (R, n) => {
   let prompt = '', ans = 0, mid = 0, rate = 0, q = 0, p = 0, board = '', wrongs: Wrong[] = [], sol: string[] = [];
   if (kind === 'fabric') {
     rate = pick(R, [4, 6, 8, 12, 15]); q = pick(R, [5, 10, 12, 15, 20]); p = pick(R, [10, 20, 25, 30]); mid = rate * q; ans = mid * (100 - p) / 100;
-    prompt = `Fabric costs ${A(`${money(rate)} per yard`)}. Lena buys ${q} yards and uses a <b>${p}% off</b> coupon on the whole order. What does she pay?`;
+    prompt = `Fabric costs ${A(`${money(rate)} per yard`)}. Lena buys ${q} yards and uses ${an(p)} <b>${p}% off</b> coupon on the whole order. What does she pay?`;
     wrongs = [{ v: mid * p / 100, mc: MC.changeAsFinal, say: `${money(mid * p / 100)} is the amount saved. She pays the other ${100 - p}%.` }, { v: mid, mc: MC.lostIntermediate, say: `${money(mid)} is before the coupon.` }];
     sol = [`Rate step: ${q} × ${money(rate)} = ${money(mid)}.`, `Percent step: ${100 - p}% of ${money(mid)} = ${money(ans)}.`];
   } else if (kind === 'pay') {
@@ -952,7 +972,7 @@ const rateThenPercent: Gen = (R, n) => {
     sol = [`Rate step: ${q} × ${money(rate)} = ${money(mid)}.`, `Percent step: ${p}% of ${money(mid)} = ${money(ans)}.`];
   } else {
     rate = pick(R, [2, 3, 4, 5]); q = pick(R, [10, 20, 30, 40]); p = pick(R, [5, 8, 10]); mid = rate * q; ans = r4(mid * (100 + p) / 100);
-    prompt = `Apples cost ${A(`${money(rate)} per pound`)}. A café buys ${q} pounds, and a <b>${p}% delivery charge</b> is added to the price. What is the total?`;
+    prompt = `Apples cost ${A(`${money(rate)} per pound`)}. A café buys ${q} pounds, and ${an(p)} <b>${p}% delivery charge</b> is added to the price. What is the total?`;
     wrongs = [{ v: mid * p / 100, mc: MC.changeAsFinal, say: 'That is the delivery charge alone. Add it to the price.' }, { v: mid, mc: MC.lostIntermediate, say: `${money(mid)} is before the ${p}% charge.` }, { v: r4(rate * (100 + p) / 100), mc: MC.lostIntermediate, say: 'That is one pound with the charge. Multiply for every pound first.' }];
     sol = [`Rate step: ${q} × ${money(rate)} = ${money(mid)}.`, `Percent step: ${money(mid)} × ${tn(r4(1 + p / 100))} = ${money(ans)}.`];
   }
@@ -969,7 +989,7 @@ const percentThenRate: Gen = (R, n) => {
     let d = 480, p = 25, m = 15;
     for (let t = 0; t < 200; t++) { d = pick(R, [240, 300, 360, 400, 480, 600]); p = pick(R, [20, 25, 50, 40, 10]); m = pick(R, [10, 12, 15, 20, 30]); if (isWhole(d * p / 100 / m)) break; }
     const part = d * p / 100, ans = part / m;
-    return { id: `percentThenRate-${n}`, family: 'percentThenRate', prompt: `A truck drives a ${A(`${d}-mile`)} trip. <b>${p}%</b> of it is on dirt roads, where the truck uses <b>1 gallon every ${m} miles</b>. How many gallons does it use on dirt roads?`,
+    return { id: `percentThenRate-${n}`, family: 'percentThenRate', prompt: `A truck drives ${an(d)} ${A(`${d}-mile`)} trip. <b>${p}%</b> of it is on dirt roads, where the truck uses <b>1 gallon every ${m} miles</b>. How many gallons does it use on dirt roads?`,
       board: `${d} \\xrightarrow{\\;${p}\\%\\;} \\text{dirt} \\xrightarrow{\\;\\div ${m}\\;} \\,?`, input: 'num', unit: 'gallons', answer: { kind: 'num', v: ans },
       solution: [`Percent step: ${p}% of ${d} miles = ${nf(part)} miles of dirt road.`, `Rate step: ${nf(part)} ÷ ${m} = ${nf(ans)} gallons.`],
       check: numCheck(ans, false, `Yes: ${nf(part)} miles of dirt road, ${nf(ans)} gallons.`, 'Find the dirt-road miles first, then use the rate on those miles.', [
@@ -1015,7 +1035,7 @@ const percentRatioGrow: Gen = (R, n) => {
 };
 
 // ----- successive-percents -----
-const describe = (net: number) => (Math.abs(net) < 1e-9 ? 'no change' : net > 0 ? `a ${nf(net)}% increase` : `a ${nf(-net)}% decrease`);
+const describe = (net: number) => (Math.abs(net) < 1e-9 ? 'no change' : net > 0 ? `${an(nf(net))} ${nf(net)}% increase` : `${an(nf(-net))} ${nf(-net)}% decrease`);
 /** the overall percent change of two changes */
 const netChange: Gen = (R, n) => {
   const pairs: [number, number][] = [[-20, 20], [-10, 10], [-50, 50], [-25, 20], [-20, 25], [10, -10], [20, -20], [10, 20], [-20, 10], [50, -50], [25, -20], [20, 50], [-30, 10], [40, -25]];
@@ -1040,7 +1060,7 @@ const threeStep: Gen = (R, n) => {
     share = T * a / (a + b); mid = r4(share * (100 + t) / 100); ans = r4(mid * (100 + q) / 100);
     if (isCents(mid) && isCents(ans)) break;
   }
-  return { id: `threeStep-${n}`, family: 'threeStep', prompt: `Mia and Leo split a ${A(money(T))} dinner bill by what they ate, Mia to Leo ${B(`${a} : ${b}`)}. Mia adds <b>${t}% tax</b> to her share, then a <b>${q}% tip</b> on her share with tax. What does Mia pay?`,
+  return { id: `threeStep-${n}`, family: 'threeStep', prompt: `Mia and Leo split ${an(T)} ${A(money(T))} dinner bill by what they ate, Mia to Leo ${B(`${a} : ${b}`)}. Mia adds <b>${t}% tax</b> to her share, then a <b>${q}% tip</b> on her share with tax. What does Mia pay?`,
     board: `\\$${T} \\xrightarrow{${a}:${b}} \\xrightarrow{+${t}\\%} \\xrightarrow{+${q}\\%} \\,?`, input: 'num', unit: 'dollars', answer: { kind: 'num', v: ans },
     solution: [`Ratio step: Mia’s share = ${money(T)} ÷ ${a + b} × ${a} = ${money(share)}.`, `Tax: ${money(share)} × ${tn(r4(1 + t / 100))} = ${money(mid)}.`, `Tip on that: ${money(mid)} × ${tn(r4(1 + q / 100))} = ${money(ans)}.`],
     check: numCheck(ans, true, `Yes: ${money(share)} → ${money(mid)} → ${money(ans)}.`, 'Three steps: Mia’s share, then tax on it, then the tip on her share with tax.', [
@@ -1056,9 +1076,9 @@ const multiplierToPercent: Gen = (R, n) => {
   const m = pick(R, [0.85, 0.7, 1.15, 1.06, 0.95, 1.25, 0.6, 1.4, 0.92, 1.08, 0.75, 1.3, 0.8, 1.2]);
   const ch = r4(Math.abs(m - 1) * 100), up = m > 1, keep = r4(m * 100);
   const opts: Opt[] = [
-    { t: up ? `a ${nf(ch)}% increase` : `a ${nf(ch)}% decrease`, ok: true, say: `Yes: × ${m} keeps ${nf(keep)}% of the amount, ${up ? 'which is ' + nf(ch) + '% more' : nf(ch) + '% less'} than 100%.` },
-    { t: up ? `a ${nf(keep)}% increase` : `a ${nf(keep)}% decrease`, mc: MC.percentOfAsChange, say: `× ${m} gives ${nf(keep)}% OF the amount. The change is the difference from 100%: ${nf(ch)}%.` },
-    { t: up ? `a ${nf(ch)}% decrease` : `a ${nf(ch)}% increase`, mc: MC.wrongDir, say: `${m} is ${up ? 'more' : 'less'} than 1, so the amount gets ${up ? 'bigger' : 'smaller'}.` },
+    { t: up ? `${an(nf(ch))} ${nf(ch)}% increase` : `${an(nf(ch))} ${nf(ch)}% decrease`, ok: true, say: `Yes: × ${m} keeps ${nf(keep)}% of the amount, ${up ? 'which is ' + nf(ch) + '% more' : nf(ch) + '% less'} than 100%.` },
+    { t: up ? `${an(nf(keep))} ${nf(keep)}% increase` : `${an(nf(keep))} ${nf(keep)}% decrease`, mc: MC.percentOfAsChange, say: `× ${m} gives ${nf(keep)}% OF the amount. The change is the difference from 100%: ${nf(ch)}%.` },
+    { t: up ? `${an(nf(ch))} ${nf(ch)}% decrease` : `${an(nf(ch))} ${nf(ch)}% increase`, mc: MC.wrongDir, say: `${m} is ${up ? 'more' : 'less'} than 1, so the amount gets ${up ? 'bigger' : 'smaller'}.` },
   ];
   return { id: `multiplierToPercent-${n}`, family: 'multiplierToPercent', prompt: `A price is multiplied by <b>${m}</b>. What percent change is that?`, board: `\\text{new} = \\text{old} \\times ${m}`,
     input: 'choice', ...choose(R, opts), solution: [`× ${m} = ${nf(keep)}% of the old amount.`, `${nf(keep)}% − 100% = ${up ? '+' : '−'}${nf(ch)}%: ${up ? 'an increase' : 'a decrease'} of ${nf(ch)}%.`] };
@@ -1074,14 +1094,15 @@ const roundingTip: Gen = (R, n) => {
   let Bc = 4637, t = 825, q = 18, T = tipTotals(Bc, t, q);
   for (let i = 0; i < 400; i++) {
     const B2 = pick(R, [2345, 3786, 4637, 5219, 6158, 2893, 7442, 3367, 4875, 5531]), t2 = pick(R, [725, 825, 650, 875, 625]), q2 = pick(R, [15, 18, 20, 22]), T2 = tipTotals(B2, t2, q2);
-    if (T2.each !== T2.end) { Bc = B2; t = t2; q = q2; T = T2; break; }
+    const ties = (B2 * t2) % 10000 === 5000 || ((B2 + roundDiv(B2 * t2, 10000)) * q2) % 100 === 50 || (B2 * (10000 + t2) * (100 + q2)) % 1000000 === 500000;
+    if (T2.each !== T2.end && !ties) { Bc = B2; t = t2; q = q2; T = T2; break; }
   }
   const each = R() < 0.5, ans = (each ? T.each : T.end) / 100, other = (each ? T.end : T.each) / 100;
   const rule = each ? 'Round the tax to the cent, then round the tip to the cent, then add.' : 'Keep every digit, and round only the final total to the cent.';
   return { id: `roundingTip-${n}`, family: 'roundingTip', prompt: `Dinner costs ${A(money(Bc / 100))}. Sales tax is <b>${nf(t / 100)}%</b>, and the tip is <b>${q}% of the bill with tax</b>. <b>${rule}</b> What is the total? (You may use a calculator.)`,
     board: `\\$${tn(Bc / 100, true)} \\xrightarrow{+${tn(t / 100)}\\%} \\xrightarrow{+${q}\\%} \\,?`, input: 'num', unit: 'dollars', answer: { kind: 'num', v: ans },
-    solution: each ? [`Tax: ${nf(t / 100)}% of ${money(Bc / 100)} → ${money(T.tax / 100)}.`, `Tip: ${q}% of ${money((Bc + T.tax) / 100)} → ${money(T.tip / 100)}.`, `Total: ${money(ans)}.`]
-      : [`${money(Bc / 100)} × ${r4(1 + t / 10000)} × ${tn(r4(1 + q / 100))} = ${nf(Math.round(Bc * (1 + t / 10000) * (1 + q / 100) * 1e4) / 1e6)}.`, `Round once: ${money(ans)}.`],
+    solution: each ? [`Tax: ${nf(t / 100)}% of ${money(Bc / 100)} → ${money(T.tax / 100)}.`, `Tip: ${q}% of ${money((Bc + T.tax) / 100)} → ${money(T.tip / 100)}.`, `Total: ${mark(money(ans))}.`]
+      : [`${money(Bc / 100)} × ${r4(1 + t / 10000)} × ${tn(r4(1 + q / 100))} = ${nf(Math.round(Bc * (1 + t / 10000) * (1 + q / 100) * 1e4) / 1e6)}.`, `Round once: ${mark(money(ans))}.`],
     check: numCheck(ans, true, `Yes: ${money(ans)}.`, each ? 'Round the tax first, find the tip on the rounded bill, round it, then add.' : 'Multiply with every digit, then round the total once.', [
       { v: other, mc: each ? undefined : MC.roundsEarly, say: each ? 'That rounds only at the end. This rule rounds the tax and the tip as you go.' : 'You rounded along the way. This rule keeps every digit until the total.' },
     ]) };
@@ -1093,19 +1114,22 @@ const fixAudit: Gen = (R, n) => {
   const kind = pick(R, ['tax', 'share', 'tip'] as const);
   let prompt = '', ans = 0, shown = 0, sol: string[] = [];
   if (kind === 'tax') {
-    const P = pick(R, [40, 60, 80, 120, 200, 50]), d = pick(R, [25, 20, 50, 10]), t = pick(R, [5, 10, 8]), S = P * (100 - d) / 100;
+    let P = pick(R, [40, 60, 80, 120, 200, 50]), d = pick(R, [25, 20, 50, 10]), t = pick(R, [5, 10, 8]);
+    for (let k = 0; k < 60 && !isCents(pctOf(t, P * (100 - d) / 100)); k++) { P = pick(R, [40, 60, 80, 120, 200, 50]); d = pick(R, [25, 20, 50, 10]); t = pick(R, [5, 10, 8]); }
+    if (!isCents(pctOf(t, P * (100 - d) / 100))) { P = 80; d = 25; t = 5; }
+    const S = P * (100 - d) / 100;
     shown = S + pctOf(t, P); ans = r4(S + pctOf(t, S));
     prompt = `A ${A(money(P))} coat is ${d}% off, then ${t}% tax is added to the sale price. Sam writes: “Sale price ${money(S)}. Tax: ${t}% of ${money(P)} = ${money(pctOf(t, P))}. Total ${money(shown)}.” His arithmetic is right. What should the total be?`;
-    sol = [`The tax is on the sale price: ${t}% of ${money(S)} = ${money(pctOf(t, S))}.`, `Total: ${money(S)} + ${money(pctOf(t, S))} = ${money(ans)}.`];
+    sol = [`The tax is on the sale price: ${t}% of ${money(S)} = ${money(pctOf(t, S))}.`, `Total: ${money(S)} + ${money(pctOf(t, S))} = ${mark(money(ans))}.`];
   } else if (kind === 'share') {
     const x = rpNumbers(R, RCS[0]!, false); shown = pctOf(x.p, x.T); ans = x.ans;
     prompt = `Budget ${A(money(x.T))}, art to music ${B(`${x.a} : ${x.b}`)}. Art spends ${x.p}% of its share on paint. Sam writes: “Paint: ${x.p}% of ${money(x.T)} = ${money(shown)}.” His arithmetic is right. How much should the paint money be?`;
-    sol = [`Art’s share first: ${money(x.T)} ÷ ${x.a + x.b} × ${x.a} = ${money(x.part)}.`, `Paint: ${x.p}% of ${money(x.part)} = ${money(ans)}.`];
+    sol = [`Art’s share first: ${money(x.T)} ÷ ${x.a + x.b} × ${x.a} = ${money(x.part)}.`, `Paint: ${x.p}% of ${money(x.part)} = ${mark(money(ans))}.`];
   } else {
     const Bl = pick(R, [40, 60, 80, 100, 50]), t = pick(R, [5, 10, 8]), q = pick(R, [15, 20]), X = Bl * t / 100;
     shown = pctOf(q, Bl + X); ans = pctOf(q, Bl);
     prompt = `Dinner is ${A(money(Bl))} before tax, plus ${t}% tax. The tip is ${q}% of the bill <b>before</b> tax. Sam writes: “Tip: ${q}% of ${money(Bl + X)} = ${money(shown)}.” His arithmetic is right. What should the tip be?`;
-    sol = [`The tip is on the bill before tax: ${q}% of ${money(Bl)} = ${money(ans)}.`];
+    sol = [`Sam took ${q}% of ${money(Bl + X)}, the bill with tax. The story says before tax: ${money(Bl)}.`, `The tip: ${q}% of ${money(Bl)} = ${mark(money(ans))}.`];
   }
   return { id: `fixAudit-${n}`, family: 'fixAudit', prompt, board: '\\text{fix it}', input: 'num', unit: 'dollars', answer: { kind: 'num', v: ans }, solution: sol,
     check: numCheck(ans, true, `Yes: ${money(ans)}. Sam’s mistake was the whole, not the arithmetic.`, 'Find the step that uses the wrong whole and redo it with the whole the story names.', [
@@ -1193,8 +1217,27 @@ const transferThree: Gen = (R, n) => {
     ]) };
 };
 
-export const GENERATORS: Record<FamilyId, Gen> = {
+const RAW: Record<FamilyId, Gen> = {
   labelStep, nameWhole, orderPlan, share, ratioPercent, percentRatio, twoChanges, multiplier, chainProduct, rounding, audit, checkShares, undo, estimate, transfer,
   findFixed, doubleTest, wholeValue, firstStep, planThree, shareFromPart, shareFraction, ratioPercentRest, rateThenPercent, percentThenRate, percentRatioGrow,
   netChange, threeStep, multiplierToPercent, roundingTip, fixAudit, checkPercent, undoPercentRatio, direction, transferThree,
 };
+/** a choice item's worked solution ends on the right choice (the steps card names it: docs/lessons/QUALITY_LAYER.md) */
+const endsOnChoice = (g: Gen): Gen => (R, n, sg) => {
+  const it = g(R, n, sg);
+  if (it.input === 'choice' && it.answer.kind === 'choice') it.solution = endOnChoice(it.solution, it.choices![it.answer.i]!);
+  return it;
+};
+/** "a 8 ft rope" → "an 8 ft rope", "A $80 jacket" → "An $80 jacket", "a 18% tip" → "an 18% tip": the article as the number is spoken */
+const anFix = (h: string) => h
+  .replace(/(^|[.?!:]\s+|“)A ((?:<b[^>]*>)*\$?(?:8|1[18](?![\d])))/g, '$1An $2')
+  .replace(/(\s|\()a ((?:<b[^>]*>)*\$?(?:8|1[18](?![\d])))/g, '$1an $2');
+/** every generator's text reads its articles right (prompt, choices, worked solution) */
+const withArticles = <G extends (R: () => number, n: number, sg?: string) => Item>(g: G): G => ((R: () => number, n: number, sg?: string) => {
+  const it = g(R, n, sg);
+  it.prompt = anFix(it.prompt);
+  it.solution = it.solution.map(anFix);
+  if (it.choices) it.choices = it.choices.map(anFix);
+  return it;
+}) as G;
+export const GENERATORS = Object.fromEntries(Object.entries(RAW).map(([k, g]) => [k, withArticles(endsOnChoice(g))])) as Record<FamilyId, Gen>;

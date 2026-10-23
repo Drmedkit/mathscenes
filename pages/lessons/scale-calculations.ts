@@ -24,6 +24,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import { ScaleLines, type LinesBlock, type LinesFocus, LINE_STEPS } from '../../src/lesson/topics/scale-calculations/ScaleLines';
 import { BEDROOM, LF, SHED, WALL } from '../../src/lesson/topics/scale-calculations/lessonPics';
 import { FAMILY_NAMES, GENERATORS, MC, type SCItem } from '../../src/lesson/topics/scale-calculations/items';
+import { explain } from '../../src/lesson/topics/scale-calculations/explain';
 import { PLAN } from '../../src/lesson/topics/scale-calculations/plan';
 import { SCRIPT } from '../../src/lesson/topics/scale-calculations/script';
 
@@ -377,7 +378,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENERATORS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed),
     show: it => showItem(it as SCItem),
   });

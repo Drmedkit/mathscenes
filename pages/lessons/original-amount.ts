@@ -28,6 +28,7 @@ import { startPractice } from '../../src/lesson/runtime/practice';
 import type { Item } from '../../src/lesson/runtime/item';
 import { BaseTape, type BaseTapeBlock, type BaseTapeFocus, type BaseTapeParams } from '../../src/lesson/topics/original-amount/BaseTape';
 import { type OrigPicture, FAMILY_NAMES, GENS } from '../../src/lesson/topics/original-amount/items';
+import { explain } from '../../src/lesson/topics/original-amount/explain';
 import { PLAN } from '../../src/lesson/topics/original-amount/plan';
 import { SCRIPT } from '../../src/lesson/topics/original-amount/script';
 import { reverse } from '../../src/lesson/topics/original-amount/reverseMaths';
@@ -491,7 +492,7 @@ function partPractice(): void {
   tr.reset('x.');
   const seed = ctx.qs.get('seed');
   startPractice({
-    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES,
+    topic: SLUG, store: ctx.store, host: ctx.panel, plan: PLAN, gens: GENS, familyNames: FAMILY_NAMES, explain,
     seed: seed === null ? undefined : Number(seed), show: showItem,
   });
 }

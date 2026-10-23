@@ -6,6 +6,7 @@
 import { type Item, type Response, type Verdict, int, pick, shuffle } from '../../runtime/item';
 import type { CGFocus, CGParams } from './CoordGrid';
 import { type Move, type V, angleAt, apply, applyAll, area2, centroid, collinear, dist, fmt, orient, pair, pairTex, ruleText, same, slideWords, tn } from './coordMaths';
+import { endOnChoice } from '../../runtime/explain';
 
 export type FamilyId = 'isSlide' | 'slideVector' | 'moveOne' | 'whichChanges' | 'reflectPlot' | 'fixedPoint' | 'reflectCalc' | 'axisRule'
   | 'matchPrime' | 'primeMeaning' | 'writeRule' | 'ruleMeaning' | 'readRule' | 'translateCalc' | 'signedStep' | 'mixedPoint'
@@ -259,7 +260,7 @@ function pointItem(s: PointSpec): CTItem {
 
 // ---------- choice items ----------
 interface Opt { t: string; ok: boolean; mc?: string; say: string }
-function choices(R: () => number, opts: Opt[]): { choices: string[]; check: (r: Response) => Verdict; answer: Response; wrong: { i: number; mc: string }[] } {
+function choices(R: () => number, opts: Opt[]): { choices: string[]; check: (r: Response) => Verdict; answer: Response; right: string; wrong: { i: number; mc: string }[] } {
   const o = shuffle(R, [...opts]);
   const right = o.findIndex(x => x.ok);
   return {
@@ -269,14 +270,14 @@ function choices(R: () => number, opts: Opt[]): { choices: string[]; check: (r: 
       const x = o[r.i]!;
       return { ok: x.ok, mc: x.mc, say: x.say };
     },
-    answer: { kind: 'choice', i: right },
+    answer: { kind: 'choice', i: right }, right: o[right]!.t,
     wrong: o.map((x, i) => ({ i, mc: x.mc ?? '' })).filter(x => x.mc),
   };
 }
 const uniqueOpts = (opts: Opt[]) => new Set(opts.map(o => o.t)).size === opts.length && opts.filter(o => o.ok).length === 1;
 function choiceItem(R: () => number, base: Omit<CTItem, 'input' | 'choices' | 'answer' | 'check'>, opts: Opt[]): CTItem {
   const ch = choices(R, opts);
-  const it: CTItem = { ...base, input: 'choice', choices: ch.choices, answer: ch.answer, check: ch.check };
+  const it: CTItem = { ...base, solution: endOnChoice(base.solution, ch.right), input: 'choice', choices: ch.choices, answer: ch.answer, check: ch.check };
   for (const w of ch.wrong) probe(it, { kind: 'choice', i: w.i }, w.mc);
   return it;
 }
@@ -875,7 +876,7 @@ const straightImage = (R: () => number, n: number): CTItem => {
       board: `${figLines([...names], pts)} | ${moveTex(m)}`,
       pic: { p: { pre: { pts, names: [...names], open: true }, move: m }, at: ['grid', 'mirror', 'pre', 'd0', 'd2'], solve: ['move', 'arrows', 'img'], solved: { ring: [{ fig: 'img', i: 1, col: 'link' }] } },
       hero: `${names[1]}'=${pairTex(q)}`,
-      solution: solvePoint(names[1], pts[1]!, m).concat(`${pr(names[1])} lies between ${pr(names[0])} and ${pr(names[2])}: the image is a straight segment.`),
+      solution: [solvePoint(names[1], pts[1]!, m)[0]!, `${names[1]}${pair(pts[1]!)} → ${pr(names[1])}${pair(q)}, between ${pr(names[0])} and ${pr(names[2])}: the image is a straight segment.`],
     }, opts);
   }
 };
@@ -1277,6 +1278,7 @@ const rigidOrNot = (R: () => number, n: number): CTItem => {
       const q = apply(m, P);
       if (!inLim([q, ...applyAll(m, pre)])) continue;
       const ruleH = rt(comp('x', m.dx), comp('y', m.dy));
+      if (m.dx === m.dy) continue;   // x + d, y + d: the swapped-coordinate distractor would be the right point too
       const opts: Opt[] = [
         { t: `Yes: P′ = ${pair(q)}; the rule moves every point of the plane`, ok: true, say: 'Right: a transformation moves the whole plane, not just the drawing.' },
         { t: 'No: the rule only moves the triangle', ok: false, mc: MC.pictureOnly, say: `The rule works on ANY point (x, y). P goes to ${pair(q)} too.` },

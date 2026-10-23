@@ -211,3 +211,40 @@ describe('voice', () => {
     }
   });
 });
+
+describe('quality-layer fixes (practice sweep, 2026-10-23)', () => {
+  const plainOf = (h: string) => h.replace(/&#8202;/g, ' ').replace(/<[^>]+>/g, '');
+  it('round-only-at-end: no recipe in yards; a bill share never exact to the cent; a cut board never ends on a tie', () => {
+    for (let s = 1; s <= 600; s++) {
+      const it = make('roundEnd', 'round-only-at-end', s), t = plainOf(it.prompt);
+      expect(t).not.toMatch(/yard/);
+      const bill = t.match(/A \$(\d+) bill is split equally by (\d+) friends/);
+      if (bill) expect((100 * Number(bill[1])) % Number(bill[2]), t).not.toBe(0);
+      const board = t.match(/measured as ([\d.]+) cm .* cut into (\d+) equal/);
+      if (board) { const T = Math.round(Number(board[1]) * 10), k = Number(board[2]); expect(longDivide(T, 10 * k).stop, t).toBe('repeat'); }
+    }
+  });
+  it('signed-forms: a percent only for a share of a value (a stock, never below $0); °F and miles stay decimals', () => {
+    for (let s = 1; s <= 600; s++) {
+      const it = make('signed', 'signed-forms', s), t = plainOf(it.prompt);
+      if (/as a percent/.test(t)) expect(t, t).not.toMatch(/°F|miles/);
+      const m = t.match(/stock price changed by −(?:(\d+) )?(\d+)\/(\d+)/);
+      if (m) expect(Number(m[1] ?? 0) === 0 && Number(m[2]) < Number(m[3]), t).toBe(true);
+    }
+  });
+  it('mixed-number percents read "(8 1/3)%" in plain text, not "(81/3)%"', () => {
+    for (let s = 1; s <= 200; s++) {
+      const it = make('mixedPct', 'mixed-number-percent', s);
+      expect(plainOf(it.prompt), it.prompt).not.toMatch(/\(\d+\d\/\d+\)%/);
+    }
+  });
+  it('the worked division fits the steps card: at most three lines, ending on the decimal', () => {
+    for (const [f, sg] of [['divide', 'fraction-to-terminating-by-division'], ['divide', 'fraction-to-repeating-by-remainders'], ['classify', 'classify-fractions-by-remainder']] as const) {
+      for (let s = 1; s <= 100; s++) {
+        const it = make(f, sg, s);
+        expect(it.solution.length, it.prompt).toBeLessThanOrEqual(f === 'divide' ? 3 : 4);
+        expect(it.solution.some(l => /<b class="s">/.test(l)), it.prompt).toBe(true);
+      }
+    }
+  });
+});
