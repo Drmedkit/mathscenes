@@ -29,7 +29,4 @@ Small things seen in review that did not block shipping. None is a wrong answer 
 - rotations: the digit-to-word rule in `script.ts` had literal backspace bytes instead of `\b`, so 6 lines were voiced
   with digits (t.b-one, t.b-count, t.cb-right, t.cb-center, t.cb-flip, t.cb-none). Fixed, lines.json updated; re-voice
   them with `python tools/lesson-voice.py rotations` when the credits are back (2026-11-03).
-- REMOVE-ME ``, so 6 lines were voiced
-  with digits (t.b-one, t.b-count, t.cb-right, t.cb-center, t.cb-flip, t.cb-none). Fixed, lines.json updated; re-voice
-  them with `python tools/lesson-voice.py rotations` when the credits are back (2026-11-03).
 - The steps card can push the practice panel over its height (up to 255 px in rotations, ~100 px in the pilot).
