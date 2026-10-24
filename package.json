@@ -19,7 +19,8 @@
   "keywords": ["math", "maths", "animation", "explainer", "video", "mathjax", "canvas", "education"],
   "engines": { "node": ">=20.11" },
   "devDependencies": {
-    "puppeteer": "^24.43.1",
+    "@types/node": "^26.6.5",
+    "puppeteer": "^25.16.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.6",
     "vitest": "^3.2.7"
