@@ -257,3 +257,11 @@ A course is useful on its own, so the site gets each course as soon as its wave 
 | 3 | `income-tax` | Budgets, net worth and income tax | 27 | piecewise-functions | us.pfl.budgets-net-worth-and-income-tax |
 | 4 | `investing` | Investing and retirement saving | 23 | exponential-functions, one-variable-data, series, tech-projects | us.pfl.investing-and-retirement-saving |
 | 5 | `economic-indicators` | CPI, inflation, GDP and unemployment | 17 | - | us.pfl.economic-indicators-cpi-inflation-gdp-and-unemployment |
+
+## 7. Progress
+
+- 2026-10-26: plan written; 7-8 line deployed (`tools/lesson-deploy.sh`, https://math-path-3vc.pages.dev); H0 part 1:
+  `pages/lessons/topics-hs.json`, path page with a tab per course, scaffold folds `alsoTopics` (shared sub-goal ids
+  kept once), STATUS.md per course; kit piece 1 **Plane** (`src/lesson/kit/Plane.ts`, `tests/kit-plane.test.ts`, dev
+  page `pages/kit.html?n=0..5&k=1`). Next: proof frame, data plots, simulator, unit circle, space, small blocks; then
+  the Algebra 1 blueprint lesson.
