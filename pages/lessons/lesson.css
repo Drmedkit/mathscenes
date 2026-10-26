@@ -18,6 +18,8 @@ nav#rail button:focus-visible { outline: 2px solid var(--pick); outline-offset: 
 
 main.lesson { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 18px; padding: 6px 24px 28px; align-items: start; }
 @media (max-width: 1150px) { main.lesson { grid-template-columns: 1fr; } }
+/* side by side, the panel stays in view and scrolls on its own when a long step-by-step card opens */
+@media (min-width: 1151px) { main.lesson .panel { position: sticky; top: 12px; max-height: calc(100vh - 96px); overflow-y: auto; } }
 .stage { position: relative; }
 .stage canvas { display: block; width: 100%; border-radius: 14px; background: #181b3a; }
 
