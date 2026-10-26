@@ -384,10 +384,10 @@
   "note": "43 families, 25/25; oracle 0 errors (ownValue many answers, probed); VOICE PENDING"
  },
  "units-and-quantities": {
-  "state": "built",
-  "at": "2026-10-26 13:44",
-  "commit": "d8a8637",
-  "note": "44 families, 23/23; Chain, Ruler, Grid, Thermo (kit candidates)"
+  "state": "live",
+  "at": "2026-10-26 13:58",
+  "commit": "5623d9b",
+  "note": "44 families, 23/23; oracle 0 errors on 27,000; VOICE PENDING"
  },
  "solving-linear-equations": {
   "state": "live",
@@ -409,5 +409,11 @@
   "state": "building",
   "at": "2026-10-26 13:44",
   "commit": "d8a8637"
+ },
+ "piecewise-functions": {
+  "state": "queued",
+  "at": "2026-10-26 13:57",
+  "commit": "5623d9b",
+  "note": "scaffolded"
  }
 }

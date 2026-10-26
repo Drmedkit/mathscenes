@@ -23,7 +23,8 @@
   "courseTitle": "Algebra 1",
   "n": 2,
   "subgoals": 23,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t6-07-solving-linear-equations-and-inequalities-algebra-i",

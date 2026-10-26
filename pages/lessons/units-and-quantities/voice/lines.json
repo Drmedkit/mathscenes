@@ -1,0 +1,119 @@
+{
+  "q.intro": {
+    "text": "A greyhound runs forty-four feet per second. A car drives forty miles per hour. Which one is faster? Pick an answer, and say how sure you are."
+  },
+  "e.intro": {
+    "text": "Four steps. Press each one: the picture moves first, then the units."
+  },
+  "e.step0": {
+    "text": "Forty-four feet per second means forty-four feet in every one second: a speed. The car's forty miles per hour is a speed too, in other units. Write the dog's as a fraction: forty-four feet over one second."
+  },
+  "e.step1": {
+    "text": "One hour is three thousand six hundred seconds, so three thousand six hundred seconds over one hour is just one. Seconds go on top, so they cancel the seconds below. That makes one hundred fifty-eight thousand, four hundred feet per hour."
+  },
+  "e.step2": {
+    "text": "One mile is five thousand, two hundred eighty feet. Feet go on the bottom, so they cancel the feet on top. Divide, and you get thirty miles per hour."
+  },
+  "e.step3": {
+    "text": "Thirty miles per hour is less than forty. The car is faster. In one second the car covers almost fifty-nine feet, the greyhound forty-four."
+  },
+  "e.why": {
+    "text": "Quick check: why is the factor three thousand six hundred seconds over one hour, and not the other way up?"
+  },
+  "e.why.ok": {
+    "text": "Yes. The unit you want to get rid of goes on the opposite side of the factor, so it cancels."
+  },
+  "e.why.flip": {
+    "text": "Both equal one, but the other way leaves feet times hours per second squared, a unit that means nothing. Only one way cancels the seconds."
+  },
+  "e.why.big": {
+    "text": "Numbers don't decide it, units do. The seconds must cancel, so seconds go on top, whatever the numbers."
+  },
+  "t.intro": {
+    "text": "A car drives sixty miles per hour. How many feet does it cover each second? The first two steps are done for you."
+  },
+  "t.pick": {
+    "text": "Now turn hours into seconds. Which factor do you multiply by?"
+  },
+  "t.pick.ok": {
+    "text": "Yes. Hours on top cancel the hours below, and seconds are left on the bottom."
+  },
+  "t.pick.flip": {
+    "text": "That puts seconds on top, and leaves feet times seconds per hour squared. The hours must cancel, so hours go on top."
+  },
+  "t.pick.min": {
+    "text": "That would give feet per minute. You want seconds: one hour is three thousand six hundred seconds."
+  },
+  "t.x": {
+    "text": "Cancel the hours. How many feet per second is that?"
+  },
+  "t.x.empty": {
+    "text": "Type a number first."
+  },
+  "t.x.top": {
+    "text": "That is still per hour: only the top was converted. Divide by three thousand six hundred to cancel the hours."
+  },
+  "t.x.flip": {
+    "text": "That multiplies by three thousand six hundred. The hours cancel only when the seconds are on the bottom, so divide."
+  },
+  "t.x.min": {
+    "text": "That is feet per minute. A minute is sixty seconds."
+  },
+  "t.x.no": {
+    "text": "Divide three hundred sixteen thousand, eight hundred by three thousand six hundred. Tip: cancel two zeros first, and divide three thousand one hundred sixty-eight by thirty-six."
+  },
+  "t.x.ok": {
+    "text": "Yes. Three hundred sixteen thousand, eight hundred divided by three thousand six hundred is eighty-eight feet per second."
+  },
+  "t.check": {
+    "text": "Check it another way. Sixty miles an hour is a mile a minute: five thousand, two hundred eighty feet in sixty seconds. How many feet per second?"
+  },
+  "t.check.no": {
+    "text": "Five thousand, two hundred eighty divided by sixty. Think five hundred twenty-eight divided by six."
+  },
+  "t.check.ok": {
+    "text": "Eighty-eight again, by another route. Watch the car cover eighty-eight feet in one second."
+  },
+  "q.cb.right": {
+    "text": "At the start you picked the car, and you were right. Now you can show why: one unit first, then compare."
+  },
+  "q.cb.numerals": {
+    "text": "At the start you picked the greyhound, because forty-four is more than forty. But those numbers were in different units: forty-four feet per second is only thirty miles per hour."
+  },
+  "q.cb.dims": {
+    "text": "At the start you said you can't tell. You can: both are speeds, so unit factors turn one into the other's unit."
+  },
+  "q.cb.none": {
+    "text": "Same kind of quantity? Then convert to one unit, and compare."
+  },
+  "p.intro": {
+    "text": "Jo converts a twelve foot by ten foot floor into square inches: one hundred twenty square feet, times twelve, is one thousand four hundred forty square inches. Is Jo right?"
+  },
+  "p.test": {
+    "text": "Let's test it. Build the argument, and see where it leads."
+  },
+  "p.build": {
+    "text": "Now prove it. Fill each because with the reason that makes the line true."
+  },
+  "p.no.twelve": {
+    "text": "That holds for lengths. A square foot is twelve inches long in two directions, so its factor is twelve times twelve."
+  },
+  "p.no.label": {
+    "text": "The little two is part of the unit: two lengths multiplied. Squaring the unit squares the factor."
+  },
+  "p.no.other": {
+    "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+  },
+  "p.c1": {
+    "text": "Right. Twelve square inches make one row. A square foot has twelve rows."
+  },
+  "p.c2": {
+    "text": "Right. Twelve rows of twelve: one hundred forty-four square inches in each square foot."
+  },
+  "p.c3": {
+    "text": "Right. One hundred twenty square feet, one hundred forty-four square inches each: seventeen thousand, two hundred eighty square inches."
+  },
+  "p.done": {
+    "text": "That's a proof: three claims, each with its reason, and the grid backs every one. An area unit squares the factor: twelve times twelve, not twelve."
+  }
+}
