@@ -128,7 +128,8 @@
   "subgoals": 24,
   "requires": [
    "solving-linear-equations"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t7-13-absolute-value-functions-and-equations",

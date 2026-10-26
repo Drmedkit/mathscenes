@@ -414,19 +414,30 @@
   "note": "44 families, 21/21; oracle 0 errors on 26,400; VOICE PENDING"
  },
  "piecewise-functions": {
-  "state": "building",
-  "at": "2026-10-26 14:20",
-  "commit": "78da7b3",
-  "note": "scaffolded"
+  "state": "live",
+  "at": "2026-10-26 15:51",
+  "commit": "1febd6b",
+  "note": "49 families, 24/24; oracle 0 errors on 29,400; VOICE PENDING"
  },
  "radicals-exponents": {
-  "state": "building",
-  "at": "2026-10-26 14:31",
-  "commit": "a58911b"
+  "state": "built",
+  "at": "2026-10-26 15:42",
+  "commit": "1febd6b",
+  "note": "58 families, 28/28; ExpLadder, RootTiles (kit candidates)"
  },
  "linear-models": {
   "state": "building",
   "at": "2026-10-26 14:42",
   "commit": "5783187"
+ },
+ "absolute-value": {
+  "state": "building",
+  "at": "2026-10-26 15:07",
+  "commit": "1febd6b"
+ },
+ "exponential-functions": {
+  "state": "building",
+  "at": "2026-10-26 15:42",
+  "commit": "1febd6b"
  }
 }
