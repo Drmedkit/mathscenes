@@ -1,0 +1,113 @@
+{
+ "q.intro": {
+  "text": "Row one of a stadium section has fourteen seats. Every row has three more seats than the row in front of it. How many seats are in row forty? Pick an answer, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one. The picture moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "Check every jump, not just the first. Fourteen to seventeen, seventeen to twenty, and so on: each one is plus three. The same jump every time. That is an arithmetic sequence with common difference d equals three."
+ },
+ "e.step1": {
+  "text": "Count the jumps to row six. Row one is the start, with no jump. Row two is one jump, row three is two, and row six is five jumps. So a six is fourteen plus five times three, which is twenty nine."
+ },
+ "e.step2": {
+  "text": "So row n is n minus one jumps from row one. a n equals fourteen plus three times n minus one. Check n equals one: fourteen plus zero is fourteen. Row forty: fourteen plus three times thirty nine is one hundred thirty one seats."
+ },
+ "e.step3": {
+  "text": "The points n, a n. Each one is one to the right and three up from the one before. They sit on a line with slope three, which is d. But only whole rows are points. There is no row two and a half, so the dashed line is just a guide."
+ },
+ "e.why": {
+  "text": "Quick check: why does row forty take thirty nine jumps, not forty?"
+ },
+ "e.why.ok": {
+  "text": "Yes. Row one is already fourteen, with no jump, so row forty is thirty nine jumps past it."
+ },
+ "e.why.drop": {
+  "text": "Row one has fourteen seats, not three. The fourteen is the start, and the jumps come on top of it. Forty times three forgets the start."
+ },
+ "e.why.zero": {
+  "text": "There is no row zero. The fourteen seats belong to row one, so counting from row zero adds one jump too many."
+ },
+ "t.intro": {
+  "text": "Your turn: a one equals fifty, and a n equals a n minus one, minus four, for n at least two. The first two steps are done for you: the terms, and the jump."
+ },
+ "t.form": {
+  "text": "Fifty, forty six, forty two, thirty eight, and so on, with d equals negative four. Which explicit formula gives the same sequence?"
+ },
+ "t.form.ok": {
+  "text": "Yes. a one is fifty, and then n minus one jumps of negative four. Check n equals one: fifty minus zero is fifty."
+ },
+ "t.form.n": {
+  "text": "Check n equals one: fifty minus four is forty six, but a one is fifty. Term n is only n minus one jumps after a one."
+ },
+ "t.form.rec": {
+  "text": "That is the recursive rule again. It needs the term before. An explicit formula uses only n."
+ },
+ "t.pos": {
+  "text": "Which term equals two? Type its term number n."
+ },
+ "t.pos.ok": {
+  "text": "Yes. Fifty minus four times n minus one equals two, so four times n minus one is forty eight, n minus one is twelve, and n is thirteen. The point thirteen, two is on the graph."
+ },
+ "t.pos.jumps": {
+  "text": "Twelve is the number of jumps, n minus one. Add one: the term number is one more."
+ },
+ "t.pos.other": {
+  "text": "Subtract fifty first: negative four times n minus one is negative forty eight. Then divide by negative four, then add one."
+ },
+ "t.zero": {
+  "text": "Is zero a term of this sequence?"
+ },
+ "t.zero.ok": {
+  "text": "Right. Fifty minus four times n minus one equals zero gives n equals thirteen and a half, and there is no term thirteen and a half. The points jump from two straight to negative two."
+ },
+ "t.zero.no": {
+  "text": "Solve it: four times n minus one is fifty, so n is thirteen and a half. A term number has to be a whole number. Look at the graph: no point sits on zero."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked one hundred thirty one, and you were right. Now you can say why: row forty is thirty nine jumps from row one."
+ },
+ "q.cb.n": {
+  "text": "At the start you picked one hundred thirty four. That counts forty jumps, but row one needs none. Row forty is thirty nine jumps away: one hundred thirty one seats."
+ },
+ "q.cb.drop": {
+  "text": "At the start you picked one hundred twenty. That is forty times three, and forgets the fourteen seats row one starts with. The answer is one hundred thirty one."
+ },
+ "q.cb.none": {
+  "text": "Term n is n minus one jumps after the first term: a n equals a one plus d times n minus one."
+ },
+ "p.intro": {
+  "text": "Kai has two definitions. A of n equals six plus four times n minus one. And a one equals six, a n plus one equals a n plus four, for n at least one. He checks n equals one, two and three: both give six, ten, fourteen. So they are the same sequence, he says. Is his check a proof?"
+ },
+ "p.build": {
+  "text": "Right, three checks are three examples. Now prove it for every n. Fill each because with the reason that makes the line true."
+ },
+ "p.test": {
+  "text": "Three checks are three examples, and the claim is about every n. Build the real argument, and see what it needs."
+ },
+ "p.c1": {
+  "text": "Right. A of one is six plus four times zero, which is six: the same seed as the recursion."
+ },
+ "p.c2": {
+  "text": "Right. A of n plus one, minus A of n, is four n minus four times n minus one, which is four. For every n, not just three of them."
+ },
+ "p.c3": {
+  "text": "Right. Term one agrees. And whenever term n agrees, term n plus one agrees too, because both add four. So it carries on forever."
+ },
+ "p.no.examples": {
+  "text": "That is Kai’s argument again. Agreeing at three values says nothing about n equals one thousand."
+ },
+ "p.no.step1": {
+  "text": "A of n plus one is the formula with n plus one put in for n, not A of n plus one. Work it out: the step is four."
+ },
+ "p.no.first": {
+  "text": "Four n plus two is the same formula rewritten. Its two is the value at n equals zero, which is not a term here. The first term is still six."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof. The same seed, the same step for every n, and so the same terms forever. Kai was right about the sequences. Now it is proved."
+ }
+}

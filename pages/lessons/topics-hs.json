@@ -113,7 +113,8 @@
   "courseTitle": "Algebra 1",
   "n": 9,
   "subgoals": 21,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t7-12-piecewise-and-step-functions",
