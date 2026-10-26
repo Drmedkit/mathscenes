@@ -1,0 +1,149 @@
+{
+ "q.intro": {
+  "text": "The powers of eight sit on a line of exponents: eight to the zero is one, and eight to the first is eight. What could eight to the two thirds be, a power with a fraction as its exponent? Pick one, and say how sure you are."
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one. The ladder moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "Whole steps first: eight to the zero is one, eight to the first is eight, eight squared is sixty four. Each step up the exponent multiplies by eight. Equal steps in the exponent, equal factors in the value."
+ },
+ "e.step1": {
+  "text": "Split one step into three equal hops. Equal hops, equal factors: call each one r. Three of them make the whole step, so r times r times r is eight, and r is two. That is the cube root: eight to the one third is the cube root of eight, which is two."
+ },
+ "e.step2": {
+  "text": "Eight to the two thirds is two of those hops: one times two times two is four. The denominator three is the root, and the numerator two is the power: the cube root of eight, squared, is four."
+ },
+ "e.step3": {
+  "text": "Power first gives the same: the cube root of sixty four is four. Root first keeps the numbers small. Not sixteen thirds, and not seventeen thirds: an exponent counts equal factors. It does not multiply the base, and the ladder does not slide in equal sums."
+ },
+ "e.why": {
+  "text": "Quick check: why is eight to the one third equal to two?"
+ },
+ "e.why.ok": {
+  "text": "Yes. Eight to the one third, cubed, is eight to the first, which is eight. So eight to the one third is the number whose cube is eight."
+ },
+ "e.why.mult": {
+  "text": "An exponent counts factors. It never multiplies the base. And eight thirds, cubed, is about nineteen, not eight."
+ },
+ "e.why.calc": {
+  "text": "A calculator shows a value, not a reason. The reason is the hops: three equal factors make eight, and two times two times two is eight."
+ },
+ "t.intro": {
+  "text": "Your turn: sixteen to the negative three fourths. Now the hops are quarters, and the ladder runs to the left of zero as well. The first step is done for you."
+ },
+ "t.given": {
+  "text": "Four equal hops make one step of times sixteen, and two times two times two times two is sixteen. So each hop is times two, and sixteen to the one fourth is two."
+ },
+ "t.v": {
+  "text": "What is sixteen to the three fourths?"
+ },
+ "t.v.ok": {
+  "text": "Yes: three hops, two times two times two is eight. The fourth root of sixteen, cubed, is eight."
+ },
+ "t.v.mult": {
+  "text": "Sixteen times three fourths is twelve, but an exponent counts factors. Start at one and make three hops of times two."
+ },
+ "t.v.swap": {
+  "text": "Sixty four is sixteen to the three halves: root and power swapped. The denominator four is the root, and the fourth root of sixteen is two. Then the power three."
+ },
+ "t.v.no": {
+  "text": "Start at one and make three hops of times two."
+ },
+ "t.v.empty": {
+  "text": "Type a number first."
+ },
+ "t.n": {
+  "text": "Now go left of zero. Each hop to the left divides by two. What is sixteen to the negative three fourths? Type a fraction."
+ },
+ "t.n.ok": {
+  "text": "Yes: one divided by two, three times, is one eighth. A negative exponent is the reciprocal: one over sixteen to the three fourths, which is one eighth."
+ },
+ "t.n.neg": {
+  "text": "The ladder never goes below zero. Going left divides, so the value shrinks toward zero but stays positive."
+ },
+ "t.n.recip": {
+  "text": "Eight is sixteen to the three fourths, three hops to the right. The minus sign sends you left: divide instead."
+ },
+ "t.n.no": {
+  "text": "From one, make three hops to the left, each one divided by two."
+ },
+ "t.n.empty": {
+  "text": "Type a fraction first."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked four, and you were right. Now you can say why: equal hops, equal factors, and three hops make times eight."
+ },
+ "q.cb.mult": {
+  "text": "At the start you picked sixteen thirds, which is eight times two thirds. An exponent does not multiply the base. It counts equal factors, so eight to the two thirds is two times two, which is four."
+ },
+ "q.cb.slide": {
+  "text": "At the start you picked seventeen thirds, two thirds of the way from one to eight in equal sums. The ladder moves in equal factors: one, two, four, eight."
+ },
+ "q.cb.none": {
+  "text": "A rational exponent counts equal factors. The denominator is a root, the numerator is a power, and a minus sign means the reciprocal."
+ },
+ "p.intro": {
+  "text": "Jay writes the chain on the left and says it proves that negative two equals two. Every step looks like an exponent law. Is Jay right?"
+ },
+ "p.judge.yes": {
+  "text": "Two different numbers cannot be equal: negative two is not two. So some step must be false. Let's find it."
+ },
+ "p.judge.no": {
+  "text": "Right: negative two is not two, so some step is false. Which one?"
+ },
+ "p.step": {
+  "text": "Which step is wrong?"
+ },
+ "p.s1": {
+  "text": "Negative two, cubed, is negative eight. So the cube root of negative eight is negative two: an odd root of a negative number is real. Step one is fine."
+ },
+ "p.s2": {
+  "text": "Two sixths is one third. In lowest terms it is the same exponent, so step two names the same number."
+ },
+ "p.s3": {
+  "text": "Yes, step three. Now prove it: fill in each because."
+ },
+ "p.s4": {
+  "text": "Negative eight, squared, is sixty four. Plain arithmetic. Step four is fine."
+ },
+ "p.s5": {
+  "text": "Two to the sixth is sixty four, and the principal sixth root is the positive one: two. Step five is fine."
+ },
+ "p.build": {
+  "text": "Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Right. Negative two, cubed, is negative eight. The cube root of a negative number is a real, negative number."
+ },
+ "p.c2": {
+  "text": "Right. Exponents are read in lowest terms, so two sixths is one third, and the value stays negative two."
+ },
+ "p.c3": {
+  "text": "Right. Squaring first throws the sign away: negative eight squared is sixty four, the same as eight squared, and the sixth root of sixty four is two."
+ },
+ "p.c4": {
+  "text": "Right. The power of a power law was proved for positive bases only. One counterexample is enough to show it can fail for a negative base."
+ },
+ "p.no.odd": {
+  "text": "Negative two, cubed, is negative eight, so the cube root of negative eight is real: negative two. Only even roots of negative numbers are not real."
+ },
+ "p.no.pm": {
+  "text": "The root sign names one number, the principal root. The sixth root of sixty four is two, not plus or minus two."
+ },
+ "p.no.always": {
+  "text": "If the law held for every base, the chain would prove that negative two equals two. A law that leads to a false result has a condition: here, a positive base."
+ },
+ "p.no.reject": {
+  "text": "Too strong. Negative eight to the one third, times itself, is negative eight to the two thirds, which is four, and that is true. With a negative base, check each step. Do not throw every law away."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That is the proof. Steps one, two, four and five hold, so step three breaks. The power of a power law is guaranteed for a positive base. With a negative base, squaring can throw the sign away."
+ }
+}

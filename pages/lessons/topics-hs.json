@@ -155,7 +155,8 @@
   "courseTitle": "Algebra 1",
   "n": 12,
   "subgoals": 28,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t6-13-exponential-functions-and-growth-decay",

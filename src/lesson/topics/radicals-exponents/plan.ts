@@ -1,0 +1,33 @@
+// plan.ts: practice walks through every sub-goal of secondary-t6-03-radicals-and-rational-exponents, in topic JSON order.
+import type { SubgoalPlan } from '../../runtime/practice';
+
+export const PLAN: readonly SubgoalPlan[] = [
+  { id: 'nth-roots', title: 'Principal nth roots, odd roots of negatives', families: ['rootEval', 'rootReal'] },
+  { id: 'unit-fraction-exponent', title: 'a^(1/n) is the nth root', families: ['unitEval', 'unitForm', 'unitWhy'] },
+  { id: 'rational-exponent-m-over-n', title: 'a^(m/n): root, then power', families: ['mnEval', 'mnForm'] },
+  { id: 'negative-rational-exponent', title: 'Negative exponents: the reciprocal', families: ['negEval', 'negForm'] },
+  { id: 'variable-notation-translation', title: 'Radical form and exponent form', families: ['toExp', 'negForm', 'mnForm'] },
+  { id: 'exp-law-product', title: 'Multiply: add the exponents', families: ['prodExp', 'prodCoef', 'prodNum'] },
+  { id: 'exp-law-quotient', title: 'Divide: subtract the exponents', families: ['quotExp', 'quotNum'] },
+  { id: 'exp-law-power-of-power', title: 'Power of a power: multiply', families: ['powPow', 'powPowNum'] },
+  { id: 'exp-law-power-of-product', title: 'The exponent goes to every factor', families: ['prodPow', 'coefOut'] },
+  { id: 'radical-product-rule', title: 'Multiply radicals (not sums)', families: ['radProd', 'sumVsProd'] },
+  { id: 'radical-quotient-rule', title: 'Divide radicals, check the bottom', families: ['radQuot', 'radQuotForm'] },
+  { id: 'extract-perfect-powers-numeric', title: 'Simplest radical form', families: ['simplifyRoot', 'simplestPick'] },
+  { id: 'extract-variable-powers', title: 'Radicals with variables (x ≥ 0)', families: ['varExtract', 'varPower'] },
+  { id: 'like-radicals', title: 'Add and subtract like radicals', families: ['likeAdd', 'likeWhich'] },
+  { id: 'distribute-radicals', title: 'Distribute a radical', families: ['monoMono', 'monoSum'] },
+  { id: 'radical-binomial-products', title: 'Multiply two binomials', families: ['binProd', 'conjProd'] },
+  { id: 'rationalize-monomial-denominator', title: 'Rationalize a radical denominator', families: ['ratMono', 'ratFactor'] },
+  { id: 'operate-variable-radicals', title: 'Operate on variable radicals', families: ['varLike', 'varMulDiv'] },
+  { id: 'rationalize-binomial-denominator', title: 'Rationalize with the conjugate', families: ['ratBin', 'conjPick'] },
+  { id: 'choose-form-and-calculator', title: 'Choose a form, use a calculator', families: ['calcKeys', 'estimate', 'combineForm'] },
+  { id: 'rational-power-existence', title: 'When is a negative base real?', families: ['negBaseReal', 'minusParen'] },
+  { id: 'domain-linear-radicand', title: 'Domain of an even root', families: ['domLin', 'domKind'] },
+  { id: 'domain-radical-denominator', title: 'A root in the denominator', families: ['domDen', 'allowedInput'] },
+  { id: 'domain-rational-power', title: 'Domain of a rational power', families: ['domPow', 'domPowLin'] },
+  { id: 'even-root-absolute-value', title: 'Even roots and |x|', families: ['absRoot', 'absCheck'] },
+  { id: 'exponent-law-validity', title: 'When the laws hold', families: ['flawStep', 'lawHolds'] },
+  { id: 'preserve-domain-when-rewriting', title: 'Keep the domain when rewriting', families: ['keepDomain', 'samePair'] },
+  { id: 'context-domain', title: 'Domain in a context', families: ['ctxDomain', 'ctxOverlap'] },
+];
