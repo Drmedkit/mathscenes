@@ -48,7 +48,7 @@ export interface PParams { x: PAxis; y: PAxis; items?: readonly PItem[]; /** squ
 export interface PFocus {
   /** glow rings on items (points, texts, curve names) */ ring?: { key: string; col: Paint; k: number }[];
   /** items drawn at low alpha */ dim?: readonly string[];
-  /** a point riding curve `key` at input x, with an (x, y) readout */ trace?: { key: string; x: number; k: number; col?: Paint };
+  /** a point riding curve `key` at input x, with an (x, y) readout */ trace?: { key: string; x: number; k: number; col?: Paint; /** decimals in the readout (default 2) */ digits?: number };
   /** the axis names glow (scale / label questions) */ heads?: number;
 }
 export interface PlaneBlock {
@@ -171,6 +171,8 @@ export function Plane(p: PParams, fr: Frame, th: Theme): PlaneBlock {
   // vertical / horizontal lines (asymptotes) count as curves for label placement
   for (const it of items) if (it.kind === 'vline') polysExtra.push([px(it.x, Y.min), px(it.x, Y.max)]);
   else if (it.kind === 'hline') polysExtra.push([px(X.min, it.y), px(X.max, it.y)]);
+  // segments (run / rise arrows, radii) count too
+  for (const it of items) if (it.kind === 'seg') polysExtra.push([px(it.a[0], it.a[1]), px(it.b[0], it.b[1])]);
   polys.push(...polysExtra);
   const placed: Box[] = yAxisX !== gx0 || xAxisY !== gy1 ? [...xTicks, ...yTicks].map(L => L.b) : [];
   const dotBox = (x: number, y: number): Box => { const [a, b] = px(x, y); return box(a - 14, b - 14, a + 14, b + 14); };
@@ -179,6 +181,13 @@ export function Plane(p: PParams, fr: Frame, th: Theme): PlaneBlock {
     b.x0 >= gx0 + 4 && b.x1 <= gx1 - 4 && b.y0 >= gy0 + 4 && b.y1 <= gy1 - 4 && !hitsLines(b, avoid, 10)
     && !placed.some(o => b.x0 < o.x1 + gap && o.x0 - gap < b.x1 && b.y0 < o.y1 + 6 && o.y0 - 6 < b.y1)
     && !pointBoxes.some(B => b.x0 < B.x1 && B.x0 < b.x1 && b.y0 < B.y1 && B.y0 < b.y1);
+  const texts = new Map<string, Lab>();
+  for (const it of items) if (it.kind === 'text') {
+    const [x, y] = px(it.x, it.y), L = lab(it.text, x, y, it.size ?? 46, it.align ?? 'center');
+    check(L.b.x0 >= gx0 - 2 && L.b.x1 <= gx1 + 2 && L.b.y0 >= gy0 - 2 && L.b.y1 <= gy1 + 2, NAME, `the text "${it.text}" leaves the grid`);
+    texts.set(it.key, L);
+  }
+  for (const L of texts.values()) placed.push(L.b);
   const names = new Map<string, Lab>();
   for (const it of items) if (it.kind === 'point' && it.name) {
     const [x, y] = px(it.x, it.y);
@@ -225,12 +234,6 @@ export function Plane(p: PParams, fr: Frame, th: Theme): PlaneBlock {
     }
     check(L, NAME, `no room for the curve name ${it.name}`);
     placed.push(L!.b); names.set(it.key, L!);
-  }
-  const texts = new Map<string, Lab>();
-  for (const it of items) if (it.kind === 'text') {
-    const [x, y] = px(it.x, it.y), L = lab(it.text, x, y, it.size ?? 46, it.align ?? 'center');
-    check(L.b.x0 >= gx0 - 2 && L.b.x1 <= gx1 + 2 && L.b.y0 >= gy0 - 2 && L.b.y1 <= gy1 + 2, NAME, `the text "${it.text}" leaves the grid`);
-    texts.set(it.key, L);
   }
 
   // ----- drawing helpers -----
@@ -364,7 +367,7 @@ export function Plane(p: PParams, fr: Frame, th: Theme): PlaneBlock {
       if (C && inX(x) && Number.isFinite(y) && inY(y)) {
         const at = px(x, y), cl = f.trace.col ?? 'pick';
         point(c, at, f.trace.k, cl);
-        const t = `(${fx(Math.round(x * 100) / 100) || fmtN(x)}, ${fmtN(Math.round(y * 100) / 100)})`;
+        const q = 10 ** (f.trace.digits ?? 2), t = `(${fmtN(Math.round(x * q) / q)}, ${fmtN(Math.round(y * q) / q)})`;
         const right = at[0] < (gx0 + gx1) / 2;
         const al = right ? 'left' : 'right', dx = right ? 26 : -26;
         const cands = [lab(t, at[0] + dx, at[1] - 46, 44, al), lab(t, at[0] + dx, at[1] + 48, 44, al), lab(t, at[0] - dx, at[1] - 46, 44, right ? 'right' : 'left'), lab(t, at[0] - dx, at[1] + 48, 44, right ? 'right' : 'left')];
