@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63); phase 2: queued 125 (of 125)
+Totals: live 63 (of 63); phase 2: building 3, built 2, live 1, queued 119 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -101,15 +101,15 @@ Totals: live 63 (of 63); phase 2: queued 125 (of 125)
 
 | # | lesson | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
-| 1 | Properties and the real numbers | `number-properties` | HS | 25 | queued |  |
-| 2 | Reasoning with units | `units-and-quantities` | HS | 23 | queued |  |
-| 3 | Solving linear equations and inequalities | `solving-linear-equations` | HS | 21 | queued |  |
-| 4 | Writing equations and inequalities from constraints | `creating-equations` | HS | 18 | queued |  |
-| 5 | Linear functions and slope | `linear-functions-slope` | HS | 31 | queued |  |
+| 1 | Properties and the real numbers | `number-properties` | HS | 25 | built | 43 families, 25/25; SetMap, ClaimTable, AreaSplit (kit candidates) |
+| 2 | Reasoning with units | `units-and-quantities` | HS | 23 | built | 44 families, 23/23; Chain, Ruler, Grid, Thermo (kit candidates) |
+| 3 | Solving linear equations and inequalities | `solving-linear-equations` | HS | 21 | live | 45 families, 21/21; oracle 0 errors on 27,600; VOICE PENDING |
+| 4 | Writing equations and inequalities from constraints | `creating-equations` | HS | 18 | building |  |
+| 5 | Linear functions and slope | `linear-functions-slope` | HS | 31 | building |  |
 | 6 | Linear equations from a context | `linear-models` | HS | 18 | queued |  |
 | 7 | Graphing inequalities in two variables | `linear-inequalities-2d` | HS | 27 | queued |  |
 | 8 | Systems of equations | `linear-systems` | HS | 27 | queued |  |
-| 9 | Arithmetic sequences | `arithmetic-sequences` | HS | 21 | queued |  |
+| 9 | Arithmetic sequences | `arithmetic-sequences` | HS | 21 | building |  |
 | 10 | Piecewise and step functions | `piecewise-functions` | HS | 24 | queued |  |
 | 11 | Absolute value functions and equations | `absolute-value` | HS | 27 | queued |  |
 | 12 | Radicals and rational exponents | `radicals-exponents` | HS | 28 | queued |  |

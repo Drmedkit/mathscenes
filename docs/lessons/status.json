@@ -376,5 +376,38 @@
   "note": "15 sub-goals; VOICE PENDING",
   "at": "2026-10-21 18:02",
   "commit": "463fefb"
+ },
+ "number-properties": {
+  "state": "built",
+  "at": "2026-10-26 13:42",
+  "commit": "d8a8637",
+  "note": "43 families, 25/25; SetMap, ClaimTable, AreaSplit (kit candidates)"
+ },
+ "units-and-quantities": {
+  "state": "built",
+  "at": "2026-10-26 13:44",
+  "commit": "d8a8637",
+  "note": "44 families, 23/23; Chain, Ruler, Grid, Thermo (kit candidates)"
+ },
+ "solving-linear-equations": {
+  "state": "live",
+  "at": "2026-10-26 13:50",
+  "commit": "d8a8637",
+  "note": "45 families, 21/21; oracle 0 errors on 27,600; VOICE PENDING"
+ },
+ "creating-equations": {
+  "state": "building",
+  "at": "2026-10-26 13:37",
+  "commit": "d8a8637"
+ },
+ "linear-functions-slope": {
+  "state": "building",
+  "at": "2026-10-26 13:42",
+  "commit": "d8a8637"
+ },
+ "arithmetic-sequences": {
+  "state": "building",
+  "at": "2026-10-26 13:44",
+  "commit": "d8a8637"
  }
 }

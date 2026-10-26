@@ -33,7 +33,8 @@
   "courseTitle": "Algebra 1",
   "n": 3,
   "subgoals": 21,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t6-06-creating-equations-and-inequalities",

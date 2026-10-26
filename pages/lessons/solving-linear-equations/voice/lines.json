@@ -1,0 +1,104 @@
+{
+ "q.intro": {
+  "text": "Which numbers x make this true: negative five is less than or equal to one minus two x, which is less than three? Pick an answer, and say how sure you are."
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one. The number lines move first, then the notation."
+ },
+ "e.step0": {
+  "text": "The top line holds the values of one minus two x: from negative five up to three. Subtract one from all three parts. The whole band slides one to the left, and nothing passes anything. Negative six is less than or equal to negative two x, which is less than two."
+ },
+ "e.step1": {
+  "text": "Divide all three parts by negative two. The arrows cross: a negative factor mirrors every number through zero. Negative six lands on three, and two lands on negative one, so both symbols turn: three is greater than or equal to x, which is greater than negative one."
+ },
+ "e.step2": {
+  "text": "Read it from the left: negative one is less than x, which is less than or equal to three. An open dot at negative one, because it is left out, and a closed dot at three, because it is included."
+ },
+ "e.step3": {
+  "text": "Test in the original. x equals three: one minus six is negative five, and negative five is less than or equal to negative five. Check: that is the closed end. x equals one: negative one is in between. Check. x equals negative two: five is too big. Cross. The set holds up."
+ },
+ "e.why": {
+  "text": "Quick check: why did both symbols turn around?"
+ },
+ "e.why.ok": {
+  "text": "Yes. Mirroring through zero turns every pair of numbers around, on both sides of the middle part."
+ },
+ "e.why.one": {
+  "text": "Watch the arrows: negative six and two both land on the other side. Every part was divided by negative two, so every symbol turns."
+ },
+ "e.why.any": {
+  "text": "Subtracting one gave negative numbers too, and nothing turned. Only multiplying or dividing by a negative number turns a symbol."
+ },
+ "t.intro": {
+  "text": "Your turn: seven minus two x is less than or equal to three x plus two. The first two steps are done for you: the x terms to the left, then the numbers."
+ },
+ "t.move": {
+  "text": "Negative five x is less than or equal to negative five. What is the next line?"
+ },
+ "t.move.ok": {
+  "text": "Yes. Dividing both sides by negative five turns the symbol: x is greater than or equal to one."
+ },
+ "t.move.keep": {
+  "text": "Look at the line: x less than or equal to one holds zero, but at x equals zero the original says seven is less than or equal to two, which is false. Dividing by negative five must turn the symbol."
+ },
+ "t.move.sign": {
+  "text": "Negative five divided by negative five is positive one. The boundary is one, not negative one."
+ },
+ "t.test": {
+  "text": "Test x equals zero in the original: is seven minus two times zero less than or equal to three times zero plus two?"
+ },
+ "t.test.ok": {
+  "text": "Right: seven is less than or equal to two is false, and zero is not in the set. The test agrees with the set."
+ },
+ "t.test.no": {
+  "text": "Seven minus zero is seven, and zero plus two is two. Is seven less than or equal to two?"
+ },
+ "t.other": {
+  "text": "Another way: collect x on the right instead. Five is less than or equal to five x, so one is less than or equal to x. No negative divisor, no flip, and the same set."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked negative one is less than x, which is at most three, and you were right. Now you can say why: both symbols turn when you divide by a negative."
+ },
+ "q.cb.one": {
+  "text": "At the start you picked x less than negative one. That turns only one symbol. Dividing by negative two mirrors every part, so both turn."
+ },
+ "q.cb.empty": {
+  "text": "At the start you picked: no number works. That comes from dividing by negative two without turning the symbols. Turned, it is negative one is less than x, which is at most three."
+ },
+ "q.cb.none": {
+  "text": "Every step must keep the solution set, and multiplying or dividing by a negative turns every symbol it touches."
+ },
+ "p.intro": {
+  "text": "Jay solves two x plus three is greater than seven, and claims the solution set is x greater than one. He tested x equals zero: false, and not in his set. And x equals five: true, and in his set. Both agree, so Jay says his set is right. Is Jay right?"
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.test": {
+  "text": "Let’s test that. Build the argument, and see where it leads."
+ },
+ "p.c1": {
+  "text": "Right. Two agreeing tests are evidence, not proof. The ray holds infinitely many numbers he never tried."
+ },
+ "p.c2": {
+  "text": "Right. Subtract three from both sides, then divide by positive two. Both steps can be undone, so nothing is lost or gained: exactly x greater than two."
+ },
+ "p.c3": {
+  "text": "Right. Two is in Jay’s set, but two times two plus three is seven, and seven is not more than seven. One counterexample is enough."
+ },
+ "p.no.tests": {
+  "text": "Two tests check two numbers. Jay’s set holds infinitely many. Agreement at two of them proves nothing about the rest."
+ },
+ "p.no.move": {
+  "text": "Move the three and change its sign names a shortcut, not a reason. Say what was done to both sides, and that it can be undone."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof. Tests can only show single numbers, reversible steps give the whole set, and one counterexample breaks a wrong claim. The set is x greater than two."
+ }
+}
