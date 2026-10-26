@@ -1,0 +1,2057 @@
+[
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 1,
+  "slug": "number-properties",
+  "title": "Properties and the real numbers",
+  "topics": [
+   "secondary-t6-01-real-number-properties-and-classification",
+   "secondary.real-number-system-classification-and-closure"
+  ],
+  "subgoals": 25,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 2,
+  "slug": "units-and-quantities",
+  "title": "Reasoning with units",
+  "topics": [
+   "secondary-t6-02-reasoning-with-units-and-quantities"
+  ],
+  "subgoals": 23,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 3,
+  "slug": "solving-linear-equations",
+  "title": "Solving linear equations and inequalities",
+  "topics": [
+   "secondary-t6-07-solving-linear-equations-and-inequalities-algebra-i"
+  ],
+  "subgoals": 21,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 4,
+  "slug": "creating-equations",
+  "title": "Writing equations and inequalities from constraints",
+  "topics": [
+   "secondary-t6-06-creating-equations-and-inequalities"
+  ],
+  "subgoals": 18,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 5,
+  "slug": "linear-functions-slope",
+  "title": "Linear functions and slope",
+  "topics": [
+   "secondary-t6-09-linear-functions-and-slope"
+  ],
+  "subgoals": 31,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 6,
+  "slug": "linear-models",
+  "title": "Linear equations from a context",
+  "topics": [
+   "secondary-t6-32-writing-linear-equations-from-context"
+  ],
+  "subgoals": 18,
+  "band": "HS",
+  "needs": [
+   "linear-functions-slope"
+  ]
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 7,
+  "slug": "linear-inequalities-2d",
+  "title": "Graphing inequalities in two variables",
+  "topics": [
+   "secondary-t6-33-graphing-linear-inequalities-two-variables"
+  ],
+  "subgoals": 27,
+  "band": "HS",
+  "needs": [
+   "creating-equations",
+   "linear-functions-slope",
+   "solving-linear-equations"
+  ]
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 8,
+  "slug": "systems-of-equations",
+  "title": "Systems of equations",
+  "topics": [
+   "secondary-t6-08-solving-systems-of-equations-algebra-i"
+  ],
+  "subgoals": 27,
+  "band": "HS",
+  "needs": [
+   "creating-equations",
+   "linear-functions-slope",
+   "solving-linear-equations"
+  ]
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 9,
+  "slug": "arithmetic-sequences",
+  "title": "Arithmetic sequences",
+  "topics": [
+   "secondary-t6-10-sequences-arithmetic"
+  ],
+  "subgoals": 21,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 10,
+  "slug": "piecewise-functions",
+  "title": "Piecewise and step functions",
+  "topics": [
+   "secondary-t7-12-piecewise-and-step-functions"
+  ],
+  "subgoals": 24,
+  "band": "HS",
+  "needs": [
+   "solving-linear-equations"
+  ]
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 11,
+  "slug": "absolute-value",
+  "title": "Absolute value functions and equations",
+  "topics": [
+   "secondary-t7-13-absolute-value-functions-and-equations"
+  ],
+  "subgoals": 27,
+  "band": "HS",
+  "needs": [
+   "piecewise-functions",
+   "solving-linear-equations"
+  ]
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 12,
+  "slug": "radicals-exponents",
+  "title": "Radicals and rational exponents",
+  "topics": [
+   "secondary-t6-03-radicals-and-rational-exponents"
+  ],
+  "subgoals": 28,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 13,
+  "slug": "exponential-functions",
+  "title": "Exponential growth and decay",
+  "topics": [
+   "secondary-t6-13-exponential-functions-and-growth-decay"
+  ],
+  "subgoals": 26,
+  "band": "HS",
+  "needs": [
+   "units-and-quantities"
+  ]
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 14,
+  "slug": "geometric-sequences",
+  "title": "Geometric sequences",
+  "topics": [
+   "secondary-t6-14-sequences-geometric"
+  ],
+  "subgoals": 23,
+  "band": "HS",
+  "needs": [
+   "arithmetic-sequences"
+  ]
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 15,
+  "slug": "polynomials",
+  "title": "Polynomial expressions",
+  "topics": [
+   "secondary-t6-04-algebraic-expressions-and-polynomials"
+  ],
+  "subgoals": 27,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 16,
+  "slug": "factoring",
+  "title": "Factoring",
+  "topics": [
+   "secondary-t6-05-factoring-polynomials"
+  ],
+  "subgoals": 24,
+  "band": "HS",
+  "needs": [
+   "polynomials"
+  ]
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 17,
+  "slug": "quadratic-functions",
+  "title": "Quadratic functions and their graphs",
+  "topics": [
+   "secondary-t6-11-quadratic-functions-graphing-and-key-features"
+  ],
+  "subgoals": 33,
+  "band": "HS",
+  "needs": [
+   "factoring",
+   "units-and-quantities"
+  ]
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 18,
+  "slug": "completing-the-square",
+  "title": "Solving quadratics: square roots, completing the square, the formula",
+  "topics": [
+   "secondary.solving-quadratic-equations-by-completing-the-square-and-the"
+  ],
+  "subgoals": 16,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "algebra-1",
+  "courseTitle": "Algebra 1",
+  "n": 19,
+  "slug": "function-families",
+  "title": "Linear, quadratic or exponential?",
+  "topics": [
+   "secondary-t6-34-function-families-overview"
+  ],
+  "subgoals": 26,
+  "band": "HS",
+  "needs": [
+   "exponential-functions",
+   "linear-functions-slope",
+   "quadratic-functions"
+  ]
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 1,
+  "slug": "conditional-statements",
+  "title": "If-then statements and logical language",
+  "topics": [
+   "v2.extension.logical-reasoning"
+  ],
+  "subgoals": 13,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 2,
+  "slug": "geometry-foundations",
+  "title": "Definitions, postulates and first proofs",
+  "topics": [
+   "secondary-t6-17-foundations-of-geometry-definitions-postulates-and-reasoning"
+  ],
+  "subgoals": 31,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 3,
+  "slug": "counterexamples-and-proof",
+  "title": "Counterexamples, inference and proof",
+  "topics": [
+   "v2.extension.counterexample-inference-and-proof"
+  ],
+  "subgoals": 15,
+  "band": "HS",
+  "needs": [
+   "conditional-statements",
+   "geometry-foundations"
+  ]
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 4,
+  "slug": "triangle-congruence",
+  "title": "Triangle congruence",
+  "topics": [
+   "secondary-t6-19-triangle-congruence-sss-sas-asa-aas-hl"
+  ],
+  "subgoals": 31,
+  "band": "HS",
+  "needs": [
+   "geometry-foundations"
+  ]
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 5,
+  "slug": "triangle-inequalities",
+  "title": "Isosceles triangles and side-angle order",
+  "topics": [
+   "secondary.triangle-side-angle-relationships-isosceles-theorems-side-an"
+  ],
+  "subgoals": 12,
+  "band": "HS",
+  "needs": [
+   "geometry-foundations",
+   "triangle-congruence"
+  ]
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 6,
+  "slug": "constructions",
+  "title": "Constructions with compass and straightedge",
+  "topics": [
+   "secondary-t6-35-geometric-constructions",
+   "secondary.geometric-constructions"
+  ],
+  "subgoals": 37,
+  "band": "HS",
+  "needs": [
+   "geometry-foundations",
+   "triangle-congruence"
+  ]
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 7,
+  "slug": "triangle-centers",
+  "title": "Midsegments and points of concurrency",
+  "topics": [
+   "secondary-t6-20-properties-of-triangles"
+  ],
+  "subgoals": 35,
+  "band": "HS",
+  "needs": [
+   "constructions",
+   "geometry-foundations",
+   "triangle-congruence"
+  ]
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 8,
+  "slug": "quadrilaterals",
+  "title": "Parallelograms and other quadrilaterals",
+  "topics": [
+   "secondary-t6-21-parallelogram-and-quadrilateral-properties"
+  ],
+  "subgoals": 41,
+  "band": "HS",
+  "needs": [
+   "conditional-statements",
+   "triangle-centers"
+  ]
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 9,
+  "slug": "similarity",
+  "title": "Similar triangles",
+  "topics": [
+   "secondary-t6-22-similarity-criteria-and-applications"
+  ],
+  "subgoals": 25,
+  "band": "HS",
+  "needs": [
+   "triangle-congruence"
+  ]
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 10,
+  "slug": "right-triangle-trig",
+  "title": "Right triangle trigonometry",
+  "topics": [
+   "secondary-t6-23-right-triangle-trigonometry"
+  ],
+  "subgoals": 29,
+  "band": "HS",
+  "needs": [
+   "similarity",
+   "triangle-centers"
+  ]
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 11,
+  "slug": "coordinate-proofs",
+  "title": "Distance, midpoint and coordinate proofs",
+  "topics": [
+   "secondary-t6-24-coordinate-geometry-distance-midpoint-and-slope-proofs"
+  ],
+  "subgoals": 33,
+  "band": "HS",
+  "needs": [
+   "geometry-foundations",
+   "linear-functions-slope",
+   "quadrilaterals"
+  ]
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 12,
+  "slug": "circle-angles",
+  "title": "Arcs and angles in circles",
+  "topics": [
+   "secondary-t6-26-circle-theorems"
+  ],
+  "subgoals": 33,
+  "band": "HS",
+  "needs": [
+   "geometry-foundations",
+   "triangle-centers"
+  ]
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 13,
+  "slug": "chords-tangents",
+  "title": "Tangents, chords and segment lengths",
+  "topics": [
+   "secondary.tangents-chords-and-segment-lengths-in-circles"
+  ],
+  "subgoals": 14,
+  "band": "HS",
+  "needs": [
+   "circle-angles",
+   "constructions",
+   "similarity"
+  ]
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 14,
+  "slug": "arcs-and-sectors",
+  "title": "Arc length, sectors and radians",
+  "topics": [
+   "secondary-t6-27-arc-length-and-sector-area"
+  ],
+  "subgoals": 26,
+  "band": "HS",
+  "needs": [
+   "right-triangle-trig"
+  ]
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 15,
+  "slug": "circle-equations",
+  "title": "Equations of circles",
+  "topics": [
+   "secondary-t6-28-equations-of-circles"
+  ],
+  "subgoals": 23,
+  "band": "HS",
+  "needs": [
+   "circle-angles",
+   "linear-functions-slope"
+  ]
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 16,
+  "slug": "solids",
+  "title": "Surface area and volume of solids",
+  "topics": [
+   "secondary-t6-30-surface-area-and-volume-of-prisms-cylinders-pyramids-cones-spheres",
+   "secondary.scaling-similar-solids-surface-area-by-k-volume-by-k"
+  ],
+  "subgoals": 42,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 17,
+  "slug": "geometric-probability",
+  "title": "Geometric probability",
+  "topics": [
+   "secondary-t6-31-geometric-probability-and-modeling"
+  ],
+  "subgoals": 20,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "geometry",
+  "courseTitle": "Geometry",
+  "n": 18,
+  "slug": "perspective",
+  "title": "Perspective drawing",
+  "topics": [
+   "v2.extension.perspective-geometry"
+  ],
+  "subgoals": 25,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 1,
+  "slug": "one-variable-data",
+  "title": "Summarizing and comparing data",
+  "topics": [
+   "secondary-t6-15-statistics-summarizing-and-interpreting-data-algebra-i"
+  ],
+  "subgoals": 28,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 2,
+  "slug": "linear-regression",
+  "title": "Scatter plots, correlation and the regression line",
+  "topics": [
+   "secondary-t6-16-linear-regression-and-correlation"
+  ],
+  "subgoals": 27,
+  "band": "HS",
+  "needs": [
+   "linear-functions-slope"
+  ]
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 3,
+  "slug": "nonlinear-regression",
+  "title": "Quadratic and exponential regression",
+  "topics": [
+   "secondary-t7-19-regression-models-non-linear"
+  ],
+  "subgoals": 21,
+  "band": "HS",
+  "needs": [
+   "exponential-functions",
+   "linear-regression",
+   "quadratic-functions"
+  ]
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 4,
+  "slug": "counting",
+  "title": "Counting: permutations and combinations",
+  "topics": [
+   "secondary-t7-16-probability-counting-permutations-and-combinations"
+  ],
+  "subgoals": 25,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 5,
+  "slug": "advanced-counting",
+  "title": "Repeated objects and circular arrangements",
+  "topics": [
+   "us.statistics.advanced-counting-repeated-objects-circular-and-pigeonhole"
+  ],
+  "subgoals": 15,
+  "band": "AP/extension",
+  "needs": [
+   "conditional-statements",
+   "counterexamples-and-proof",
+   "counting"
+  ]
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 6,
+  "slug": "conditional-probability",
+  "title": "Conditional probability and independence",
+  "topics": [
+   "secondary-t7-17-probability-conditional-and-independent-events"
+  ],
+  "subgoals": 31,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 7,
+  "slug": "normal-distribution",
+  "title": "The normal distribution",
+  "topics": [
+   "secondary-t7-18-statistical-inference-normal-distribution"
+  ],
+  "subgoals": 30,
+  "band": "HS",
+  "needs": [
+   "one-variable-data"
+  ]
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 8,
+  "slug": "expected-value",
+  "title": "Probability distributions and expected value",
+  "topics": [
+   "secondary-t8-19-expected-value-and-probability-distributions"
+  ],
+  "subgoals": 24,
+  "band": "HS",
+  "needs": [
+   "conditional-probability",
+   "counting",
+   "normal-distribution"
+  ]
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 9,
+  "slug": "probability-decisions",
+  "title": "Using probability to make decisions",
+  "topics": [
+   "secondary-t8-20-using-probability-for-decisions"
+  ],
+  "subgoals": 17,
+  "band": "HS",
+  "needs": [
+   "expected-value"
+  ]
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 10,
+  "slug": "margin-of-error",
+  "title": "Study design and estimating with a margin of error",
+  "topics": [
+   "v2.extension.statistical-investigation",
+   "secondary.study-design-surveys-observational-studies-and-experiments",
+   "v2.extension.judging-and-reporting-a-statistical-investigation"
+  ],
+  "subgoals": 32,
+  "band": "HS",
+  "needs": [
+   "linear-regression",
+   "normal-distribution"
+  ]
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 11,
+  "slug": "simulation-tests",
+  "title": "Testing a claim by simulation",
+  "topics": [
+   "v2.extension.testing-a-claim-and-comparing-treatments-by-simulation"
+  ],
+  "subgoals": 8,
+  "band": "HS",
+  "needs": [
+   "margin-of-error"
+  ]
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 12,
+  "slug": "sampling-distributions",
+  "title": "Sampling distributions and the central limit theorem",
+  "topics": [
+   "us.statistics.sampling-distributions-and-the-central-limit-theorem"
+  ],
+  "subgoals": 13,
+  "band": "AP/extension",
+  "needs": [
+   "expected-value",
+   "margin-of-error",
+   "normal-distribution",
+   "one-variable-data"
+  ]
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 13,
+  "slug": "t-procedures",
+  "title": "t procedures for a mean",
+  "topics": [
+   "us.statistics.t-procedures-for-a-population-mean"
+  ],
+  "subgoals": 15,
+  "band": "AP/extension",
+  "needs": [
+   "margin-of-error",
+   "normal-distribution",
+   "one-variable-data",
+   "sampling-distributions",
+   "simulation-tests"
+  ]
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 14,
+  "slug": "errors-and-power",
+  "title": "Type I and type II errors and power",
+  "topics": [
+   "us.statistics.type-i-and-type-ii-errors-and-power"
+  ],
+  "subgoals": 13,
+  "band": "AP/extension",
+  "needs": [
+   "conditional-probability",
+   "normal-distribution",
+   "sampling-distributions",
+   "simulation-tests"
+  ]
+ },
+ {
+  "course": "statistics",
+  "courseTitle": "Statistics and probability",
+  "n": 15,
+  "slug": "chi-square",
+  "title": "Chi-square tests",
+  "topics": [
+   "us.statistics.chi-square-tests-goodness-of-fit-independence-homogeneity"
+  ],
+  "subgoals": 14,
+  "band": "AP/extension",
+  "needs": [
+   "conditional-probability",
+   "margin-of-error",
+   "simulation-tests"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 1,
+  "slug": "complex-numbers",
+  "title": "Complex numbers",
+  "topics": [
+   "secondary-t7-01-complex-numbers"
+  ],
+  "subgoals": 21,
+  "band": "HS",
+  "needs": [
+   "number-properties",
+   "polynomials",
+   "radicals-exponents"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 2,
+  "slug": "quadratics-complex",
+  "title": "Quadratics with complex solutions",
+  "topics": [
+   "secondary-t7-09-solving-quadratic-equations-with-complex-solutions"
+  ],
+  "subgoals": 14,
+  "band": "HS",
+  "needs": [
+   "complex-numbers",
+   "radicals-exponents"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 3,
+  "slug": "polynomial-identities",
+  "title": "Polynomial operations and identities",
+  "topics": [
+   "secondary-t7-02-polynomial-operations-and-identities"
+  ],
+  "subgoals": 14,
+  "band": "HS",
+  "needs": [
+   "polynomials"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 4,
+  "slug": "polynomial-division",
+  "title": "Polynomial division",
+  "topics": [
+   "secondary-t7-05-polynomial-division-long-and-synthetic"
+  ],
+  "subgoals": 25,
+  "band": "HS",
+  "needs": [
+   "polynomial-identities"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 5,
+  "slug": "higher-degree-factoring",
+  "title": "Factoring higher-degree polynomials",
+  "topics": [
+   "secondary-t7-03-factoring-higher-degree-polynomials"
+  ],
+  "subgoals": 26,
+  "band": "HS",
+  "needs": [
+   "polynomial-identities"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 6,
+  "slug": "polynomial-graphs",
+  "title": "Polynomial functions: graphs and behavior",
+  "topics": [
+   "secondary-t7-04-polynomial-functions-graphing-and-behavior"
+  ],
+  "subgoals": 30,
+  "band": "HS",
+  "needs": [
+   "quadratic-functions"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 7,
+  "slug": "polynomial-theorems",
+  "title": "Remainder and factor theorems, complex zeros",
+  "topics": [
+   "secondary-t8-13-polynomial-theorems-and-complex-zeros"
+  ],
+  "subgoals": 23,
+  "band": "HS",
+  "needs": [
+   "complex-numbers",
+   "polynomial-division",
+   "quadratics-complex"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 8,
+  "slug": "rational-expressions",
+  "title": "Rational expressions and equations",
+  "topics": [
+   "secondary-t7-06-rational-expressions-and-equations",
+   "secondary.rational-equations-and-extraneous-solutions"
+  ],
+  "subgoals": 28,
+  "band": "HS",
+  "needs": [
+   "factoring",
+   "solving-linear-equations"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 9,
+  "slug": "rational-functions",
+  "title": "Rational functions",
+  "topics": [
+   "secondary-t8-10-rational-functions-graphing-and-analysis"
+  ],
+  "subgoals": 24,
+  "band": "HS",
+  "needs": [
+   "polynomial-division",
+   "polynomial-graphs",
+   "rational-expressions"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 10,
+  "slug": "function-transformations",
+  "title": "Transformations of functions",
+  "topics": [
+   "secondary-t7-11-transformations-of-functions-general"
+  ],
+  "subgoals": 22,
+  "band": "HS",
+  "needs": [
+   "polynomials"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 11,
+  "slug": "radical-functions",
+  "title": "Square-root and cube-root functions and equations",
+  "topics": [
+   "secondary-t7-07-radical-equations-and-functions",
+   "secondary.radical-equations-and-extraneous-solutions"
+  ],
+  "subgoals": 27,
+  "band": "HS",
+  "needs": [
+   "function-transformations",
+   "radicals-exponents",
+   "solving-linear-equations"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 12,
+  "slug": "function-analysis",
+  "title": "Key features: local and global claims",
+  "topics": [
+   "secondary-t7-21-function-notation-and-analysis-advanced"
+  ],
+  "subgoals": 25,
+  "band": "HS",
+  "needs": [
+   "absolute-value",
+   "function-families",
+   "function-transformations",
+   "polynomial-graphs",
+   "quadratic-functions",
+   "radical-functions",
+   "rational-expressions"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 13,
+  "slug": "composition",
+  "title": "Combining and composing functions",
+  "topics": [
+   "secondary-t7-10-function-operations-and-composition",
+   "secondary.composite-functions-domain-range-and-behavior"
+  ],
+  "subgoals": 26,
+  "band": "HS",
+  "needs": [
+   "function-analysis",
+   "polynomials",
+   "quadratic-functions",
+   "units-and-quantities"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 14,
+  "slug": "inverse-functions",
+  "title": "Inverse functions",
+  "topics": [
+   "secondary.inverse-functions-and-domain-restrictions"
+  ],
+  "subgoals": 18,
+  "band": "HS",
+  "needs": [
+   "composition",
+   "quadratic-functions",
+   "units-and-quantities"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 15,
+  "slug": "logarithms",
+  "title": "Exponential and logarithmic functions",
+  "topics": [
+   "secondary-t7-08-exponential-and-logarithmic-functions"
+  ],
+  "subgoals": 27,
+  "band": "HS",
+  "needs": [
+   "composition",
+   "exponential-functions",
+   "radicals-exponents"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 16,
+  "slug": "exp-log-equations",
+  "title": "Exponential and logarithmic equations",
+  "topics": [
+   "secondary-t8-12-exponential-and-logarithmic-equations-advanced"
+  ],
+  "subgoals": 28,
+  "band": "HS",
+  "needs": [
+   "composition",
+   "logarithms",
+   "solving-linear-equations"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 17,
+  "slug": "nonlinear-systems",
+  "title": "Systems of nonlinear equations",
+  "topics": [
+   "secondary-t7-14-systems-of-equations-nonlinear"
+  ],
+  "subgoals": 26,
+  "band": "HS",
+  "needs": [
+   "circle-equations",
+   "creating-equations",
+   "linear-inequalities-2d",
+   "quadratic-functions",
+   "systems-of-equations"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 18,
+  "slug": "three-variable-systems",
+  "title": "Systems of three equations",
+  "topics": [
+   "secondary-t7-20-solving-systems-of-three-equations"
+  ],
+  "subgoals": 21,
+  "band": "HS",
+  "needs": [
+   "quadratic-functions",
+   "systems-of-equations"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 19,
+  "slug": "series",
+  "title": "Arithmetic and geometric series",
+  "topics": [
+   "secondary-t7-15-sequences-and-series",
+   "secondary.infinite-geometric-series-and-convergence"
+  ],
+  "subgoals": 29,
+  "band": "HS",
+  "needs": [
+   "arithmetic-sequences",
+   "conditional-statements",
+   "exponential-functions",
+   "geometric-sequences"
+  ]
+ },
+ {
+  "course": "algebra-2",
+  "courseTitle": "Algebra 2",
+  "n": 20,
+  "slug": "binomial-theorem",
+  "title": "The binomial theorem",
+  "topics": [
+   "secondary-t8-18-binomial-theorem-and-pascal-s-triangle"
+  ],
+  "subgoals": 24,
+  "band": "HS",
+  "needs": [
+   "counting",
+   "polynomial-identities"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 1,
+  "slug": "unit-circle",
+  "title": "The unit circle",
+  "topics": [
+   "secondary-t8-01-trigonometric-functions-unit-circle"
+  ],
+  "subgoals": 33,
+  "band": "HS",
+  "needs": [
+   "arcs-and-sectors",
+   "radicals-exponents",
+   "right-triangle-trig",
+   "triangle-centers"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 2,
+  "slug": "trig-graphs",
+  "title": "Graphs of trig functions and periodic models",
+  "topics": [
+   "secondary-t8-02-graphing-trigonometric-functions"
+  ],
+  "subgoals": 32,
+  "band": "HS",
+  "needs": [
+   "function-analysis",
+   "function-transformations",
+   "unit-circle"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 3,
+  "slug": "inverse-trig",
+  "title": "Inverse trig functions",
+  "topics": [
+   "secondary-t8-03-inverse-trigonometric-functions"
+  ],
+  "subgoals": 17,
+  "band": "HS",
+  "needs": [
+   "composition",
+   "unit-circle"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 4,
+  "slug": "trig-identities",
+  "title": "Fundamental trig identities",
+  "topics": [
+   "secondary-t8-04-trigonometric-identities"
+  ],
+  "subgoals": 23,
+  "band": "HS",
+  "needs": [
+   "radicals-exponents",
+   "rational-expressions",
+   "unit-circle"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 5,
+  "slug": "trig-equations",
+  "title": "Solving trig equations",
+  "topics": [
+   "secondary-t8-05-solving-trigonometric-equations"
+  ],
+  "subgoals": 27,
+  "band": "HS",
+  "needs": [
+   "function-analysis",
+   "inverse-trig",
+   "trig-identities",
+   "unit-circle"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 6,
+  "slug": "sum-difference-identities",
+  "title": "Sum, difference, double- and half-angle identities",
+  "topics": [
+   "us.functions.sum-difference-double-angle-and-half-angle-identities",
+   "secondary.sum-difference-and-double-angle-identities"
+  ],
+  "subgoals": 30,
+  "band": "HS",
+  "needs": [
+   "coordinate-proofs",
+   "inverse-trig",
+   "trig-equations",
+   "trig-graphs",
+   "trig-identities",
+   "unit-circle"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 7,
+  "slug": "laws-of-sines-cosines",
+  "title": "Law of sines and law of cosines",
+  "topics": [
+   "secondary-t8-06-law-of-sines-and-law-of-cosines"
+  ],
+  "subgoals": 27,
+  "band": "HS",
+  "needs": [
+   "creating-equations",
+   "right-triangle-trig",
+   "triangle-centers",
+   "triangle-congruence"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 8,
+  "slug": "vectors",
+  "title": "Vectors in the plane and the dot product",
+  "topics": [
+   "secondary-t8-08-vectors-2d",
+   "secondary.dot-product-and-angles-between-vectors-in-2d"
+  ],
+  "subgoals": 32,
+  "band": "HS",
+  "needs": [
+   "inverse-trig",
+   "laws-of-sines-cosines",
+   "unit-circle"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 9,
+  "slug": "polar-complex",
+  "title": "Polar coordinates and complex numbers in trig form",
+  "topics": [
+   "secondary-t8-07-polar-coordinates-and-complex-numbers-in-trig-form"
+  ],
+  "subgoals": 27,
+  "band": "HS",
+  "needs": [
+   "complex-numbers",
+   "inverse-trig",
+   "sum-difference-identities",
+   "unit-circle"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 10,
+  "slug": "polar-graphs",
+  "title": "Polar equations and their graphs",
+  "topics": [
+   "us.functions.polar-equations-and-their-graphs"
+  ],
+  "subgoals": 17,
+  "band": "HS",
+  "needs": [
+   "circle-equations",
+   "polar-complex",
+   "trig-graphs",
+   "trig-identities"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 11,
+  "slug": "parabola-focus",
+  "title": "Circle and parabola as loci",
+  "topics": [
+   "secondary-t8-11-conic-sections"
+  ],
+  "subgoals": 23,
+  "band": "HS",
+  "needs": [
+   "circle-equations"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 12,
+  "slug": "ellipse-hyperbola",
+  "title": "Ellipse and hyperbola",
+  "topics": [
+   "secondary.ellipse-and-hyperbola-locus-standard-form-features-and-deriv"
+  ],
+  "subgoals": 28,
+  "band": "HS",
+  "needs": [
+   "function-analysis",
+   "linear-functions-slope",
+   "parabola-focus",
+   "radical-functions"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 13,
+  "slug": "parametric",
+  "title": "Parametric equations",
+  "topics": [
+   "secondary-t8-17-parametric-equations"
+  ],
+  "subgoals": 30,
+  "band": "HS",
+  "needs": [
+   "circle-equations",
+   "function-analysis",
+   "quadratic-functions",
+   "solving-linear-equations",
+   "trig-identities",
+   "unit-circle"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 14,
+  "slug": "matrices",
+  "title": "Matrices",
+  "topics": [
+   "secondary-t8-09-matrices-operations-and-applications"
+  ],
+  "subgoals": 23,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 15,
+  "slug": "vectors-3d",
+  "title": "Vectors in three dimensions",
+  "topics": [
+   "us.geometry.vectors-in-three-dimensions-dot-and-cross-product"
+  ],
+  "subgoals": 18,
+  "band": "HS",
+  "needs": [
+   "matrices",
+   "vectors"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 16,
+  "slug": "matrix-systems",
+  "title": "Matrix methods for linear systems",
+  "topics": [
+   "secondary.matrix-methods-for-linear-systems"
+  ],
+  "subgoals": 24,
+  "band": "HS",
+  "needs": [
+   "matrices",
+   "systems-of-equations"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 17,
+  "slug": "induction",
+  "title": "Proof by induction",
+  "topics": [
+   "secondary-t8-14-sequences-series-and-mathematical-induction"
+  ],
+  "subgoals": 20,
+  "band": "HS",
+  "needs": [
+   "conditional-statements",
+   "polynomials",
+   "series"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 18,
+  "slug": "de-moivre",
+  "title": "Powers and roots of complex numbers",
+  "topics": [
+   "us.functions.complex-powers-and-roots-de-moivre-theorem"
+  ],
+  "subgoals": 13,
+  "band": "AP/extension",
+  "needs": [
+   "complex-numbers",
+   "induction",
+   "polar-complex",
+   "radicals-exponents",
+   "unit-circle"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 19,
+  "slug": "nonlinear-inequalities",
+  "title": "Logarithmic, radical and trig inequalities",
+  "topics": [
+   "us.algebra.logarithmic-radical-and-trigonometric-inequalities"
+  ],
+  "subgoals": 15,
+  "band": "AP/extension",
+  "needs": [
+   "exp-log-equations",
+   "function-analysis",
+   "logarithms",
+   "polynomial-graphs",
+   "radical-functions",
+   "solving-linear-equations",
+   "trig-equations",
+   "trig-graphs",
+   "unit-circle"
+  ]
+ },
+ {
+  "course": "precalculus",
+  "courseTitle": "Precalculus",
+  "n": 20,
+  "slug": "limits",
+  "title": "Limits",
+  "topics": [
+   "secondary-t8-15-limits-intuitive-and-algebraic"
+  ],
+  "subgoals": 26,
+  "band": "HS",
+  "needs": [
+   "function-analysis",
+   "logarithms",
+   "radicals-exponents",
+   "rational-expressions",
+   "trig-identities",
+   "unit-circle"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 1,
+  "slug": "derivative-idea",
+  "title": "The derivative: rate of change and tangent slope",
+  "topics": [
+   "secondary-t8-16-introduction-to-derivatives-pre-calculus"
+  ],
+  "subgoals": 18,
+  "band": "HS",
+  "needs": [
+   "limits",
+   "linear-functions-slope"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 2,
+  "slug": "derivative-rules",
+  "title": "Differentiation rules",
+  "topics": [
+   "v2.extension.derivative-techniques"
+  ],
+  "subgoals": 22,
+  "band": "HS",
+  "needs": [
+   "composition",
+   "derivative-idea",
+   "limits",
+   "logarithms",
+   "unit-circle"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 3,
+  "slug": "implicit-differentiation",
+  "title": "Implicit, inverse and logarithmic differentiation",
+  "topics": [
+   "us.functions.implicit-inverse-and-logarithmic-differentiation"
+  ],
+  "subgoals": 24,
+  "band": "HS",
+  "needs": [
+   "composition",
+   "derivative-rules",
+   "exp-log-equations",
+   "inverse-trig",
+   "logarithms",
+   "trig-identities"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 4,
+  "slug": "derivative-applications",
+  "title": "Motion, related rates and linearization",
+  "topics": [
+   "us.functions.applications-of-derivatives-motion-related-rates-linearizati"
+  ],
+  "subgoals": 24,
+  "band": "HS",
+  "needs": [
+   "derivative-idea",
+   "derivative-rules",
+   "exp-log-equations",
+   "limits",
+   "similarity",
+   "solids"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 5,
+  "slug": "definite-integral",
+  "title": "The definite integral as accumulation",
+  "topics": [
+   "v2.extension.integral-calculus"
+  ],
+  "subgoals": 17,
+  "band": "HS",
+  "needs": [
+   "derivative-idea",
+   "limits"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 6,
+  "slug": "fundamental-theorem",
+  "title": "Antiderivatives and the fundamental theorem",
+  "topics": [
+   "v2.extension.antiderivatives-and-the-fundamental-theorem-of-calculus"
+  ],
+  "subgoals": 20,
+  "band": "HS",
+  "needs": [
+   "definite-integral",
+   "derivative-rules",
+   "unit-circle"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 7,
+  "slug": "integration-applications",
+  "title": "Area, average value and volume",
+  "topics": [
+   "us.functions.applications-of-integration-area-between-curves-average-valu"
+  ],
+  "subgoals": 27,
+  "band": "HS",
+  "needs": [
+   "composition",
+   "definite-integral",
+   "derivative-idea",
+   "nonlinear-systems",
+   "solids"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 8,
+  "slug": "integration-techniques",
+  "title": "Integration by parts and partial fractions",
+  "topics": [
+   "us.functions.integration-by-parts-and-partial-fractions"
+  ],
+  "subgoals": 16,
+  "band": "AP/extension",
+  "needs": [
+   "definite-integral",
+   "derivative-rules",
+   "factoring",
+   "fundamental-theorem",
+   "implicit-differentiation",
+   "polynomial-division",
+   "rational-expressions",
+   "solving-linear-equations",
+   "systems-of-equations"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 9,
+  "slug": "improper-integrals",
+  "title": "Improper integrals",
+  "topics": [
+   "us.functions.improper-integrals"
+  ],
+  "subgoals": 13,
+  "band": "AP/extension",
+  "needs": [
+   "derivative-applications",
+   "fundamental-theorem",
+   "limits",
+   "logarithms"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 10,
+  "slug": "differential-equations",
+  "title": "Differential equations: growth, decay, cooling",
+  "topics": [
+   "v2.extension.differential-equations"
+  ],
+  "subgoals": 21,
+  "band": "HS",
+  "needs": [
+   "definite-integral",
+   "derivative-rules",
+   "exp-log-equations",
+   "exponential-functions",
+   "units-and-quantities"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 11,
+  "slug": "optimization",
+  "title": "Derivative tests, curve sketching and optimization",
+  "topics": [
+   "v2.extension.derivative-tests-curve-sketching-and-optimization"
+  ],
+  "subgoals": 16,
+  "band": "HS",
+  "needs": [
+   "creating-equations",
+   "derivative-idea",
+   "differential-equations",
+   "limits",
+   "rational-functions",
+   "solids"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 12,
+  "slug": "euler-method",
+  "title": "Euler's method",
+  "topics": [
+   "v2.extension.euler-s-method-approximating-solutions-and-judging-their-acc"
+  ],
+  "subgoals": 10,
+  "band": "HS",
+  "needs": [
+   "differential-equations"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 13,
+  "slug": "parametric-calculus",
+  "title": "Parametric and vector calculus, arc length",
+  "topics": [
+   "us.functions.parametric-and-vector-valued-calculus-and-arc-length"
+  ],
+  "subgoals": 15,
+  "band": "AP/extension",
+  "needs": [
+   "coordinate-proofs",
+   "definite-integral",
+   "derivative-rules",
+   "fundamental-theorem",
+   "limits",
+   "optimization",
+   "parametric",
+   "vectors"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 14,
+  "slug": "polar-calculus",
+  "title": "Calculus in polar coordinates",
+  "topics": [
+   "us.functions.polar-calculus-slope-and-area"
+  ],
+  "subgoals": 13,
+  "band": "AP/extension",
+  "needs": [
+   "arcs-and-sectors",
+   "definite-integral",
+   "derivative-rules",
+   "fundamental-theorem",
+   "parametric-calculus",
+   "polar-complex",
+   "polar-graphs",
+   "sum-difference-identities",
+   "trig-equations"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 15,
+  "slug": "series-tests-1",
+  "title": "Infinite series I: nth-term, integral and comparison tests",
+  "topics": [
+   "us.functions.series-convergence-nth-term-integral-p-series-and-comparison"
+  ],
+  "subgoals": 15,
+  "band": "AP/extension",
+  "needs": [
+   "improper-integrals",
+   "limits",
+   "optimization",
+   "series"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 16,
+  "slug": "series-tests-2",
+  "title": "Infinite series II: alternating series and the ratio test",
+  "topics": [
+   "us.functions.alternating-series-ratio-test-and-absolute-convergence"
+  ],
+  "subgoals": 13,
+  "band": "AP/extension",
+  "needs": [
+   "counting",
+   "limits",
+   "optimization",
+   "series",
+   "series-tests-1"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 17,
+  "slug": "taylor-polynomials",
+  "title": "Taylor polynomials and the error bound",
+  "topics": [
+   "us.functions.taylor-polynomials-and-lagrange-error-bound"
+  ],
+  "subgoals": 13,
+  "band": "AP/extension",
+  "needs": [
+   "counting",
+   "derivative-applications",
+   "derivative-rules",
+   "optimization",
+   "series-tests-2"
+  ]
+ },
+ {
+  "course": "calculus",
+  "courseTitle": "Calculus",
+  "n": 18,
+  "slug": "power-series",
+  "title": "Power series",
+  "topics": [
+   "us.functions.power-series-radius-interval-and-taylor-series"
+  ],
+  "subgoals": 14,
+  "band": "AP/extension",
+  "needs": [
+   "derivative-rules",
+   "function-analysis",
+   "fundamental-theorem",
+   "limits",
+   "series",
+   "series-tests-1",
+   "series-tests-2",
+   "taylor-polynomials"
+  ]
+ },
+ {
+  "course": "discrete",
+  "courseTitle": "Discrete math and reasoning",
+  "n": 1,
+  "slug": "sets",
+  "title": "Sets and Venn diagrams",
+  "topics": [
+   "us.algebra.sets-operations-venn-diagrams-relations-and-set-proofs"
+  ],
+  "subgoals": 24,
+  "band": "HS",
+  "needs": [
+   "counting",
+   "number-properties"
+  ]
+ },
+ {
+  "course": "discrete",
+  "courseTitle": "Discrete math and reasoning",
+  "n": 2,
+  "slug": "propositional-logic",
+  "title": "Truth tables and indirect proof",
+  "topics": [
+   "us.algebra.propositional-logic-truth-tables-equivalence-and-indirect-pr"
+  ],
+  "subgoals": 21,
+  "band": "HS",
+  "needs": [
+   "conditional-statements",
+   "geometry-foundations"
+  ]
+ },
+ {
+  "course": "discrete",
+  "courseTitle": "Discrete math and reasoning",
+  "n": 3,
+  "slug": "number-theory",
+  "title": "Number bases, the Euclidean algorithm and clock arithmetic",
+  "topics": [
+   "us.numbers.number-bases-euclidean-algorithm-and-modular-arithmetic"
+  ],
+  "subgoals": 15,
+  "band": "AP/extension",
+  "needs": [
+   "counterexamples-and-proof"
+  ]
+ },
+ {
+  "course": "discrete",
+  "courseTitle": "Discrete math and reasoning",
+  "n": 4,
+  "slug": "graph-theory",
+  "title": "Networks, paths, circuits and trees",
+  "topics": [
+   "us.algebra.graph-theory-networks-paths-circuits-coloring-and-trees"
+  ],
+  "subgoals": 38,
+  "band": "HS",
+  "needs": [
+   "counting",
+   "probability-decisions"
+  ]
+ },
+ {
+  "course": "discrete",
+  "courseTitle": "Discrete math and reasoning",
+  "n": 5,
+  "slug": "fair-division",
+  "title": "Fair division and apportionment",
+  "topics": [
+   "us.algebra.fair-division-and-apportionment"
+  ],
+  "subgoals": 26,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "discrete",
+  "courseTitle": "Discrete math and reasoning",
+  "n": 6,
+  "slug": "voting",
+  "title": "Voting methods and fairness",
+  "topics": [
+   "us.algebra.election-theory-voting-methods-fairness-criteria-and-weighte"
+  ],
+  "subgoals": 25,
+  "band": "HS",
+  "needs": [
+   "counting"
+  ]
+ },
+ {
+  "course": "discrete",
+  "courseTitle": "Discrete math and reasoning",
+  "n": 7,
+  "slug": "game-theory",
+  "title": "Game theory: payoff matrices",
+  "topics": [
+   "us.statistics.game-theory-payoff-matrices-and-optimal-strategies"
+  ],
+  "subgoals": 17,
+  "band": "HS",
+  "needs": [
+   "expected-value",
+   "probability-decisions",
+   "systems-of-equations"
+  ]
+ },
+ {
+  "course": "discrete",
+  "courseTitle": "Discrete math and reasoning",
+  "n": 8,
+  "slug": "modeling",
+  "title": "Modeling new situations",
+  "topics": [
+   "v2.extension.reasoning-transfer"
+  ],
+  "subgoals": 20,
+  "band": "HS",
+  "needs": []
+ },
+ {
+  "course": "discrete",
+  "courseTitle": "Discrete math and reasoning",
+  "n": 9,
+  "slug": "scheduling",
+  "title": "Scheduling and bin packing",
+  "topics": [
+   "us.algebra.scheduling-and-bin-packing"
+  ],
+  "subgoals": 22,
+  "band": "HS",
+  "needs": [
+   "modeling"
+  ]
+ },
+ {
+  "course": "discrete",
+  "courseTitle": "Discrete math and reasoning",
+  "n": 10,
+  "slug": "tech-projects",
+  "title": "Modeling projects with technology",
+  "topics": [
+   "v2.extension.technology-projects"
+  ],
+  "subgoals": 30,
+  "band": "HS",
+  "needs": [
+   "arithmetic-sequences",
+   "creating-equations",
+   "geometric-sequences"
+  ]
+ },
+ {
+  "course": "money",
+  "courseTitle": "Money",
+  "n": 1,
+  "slug": "budgets-net-worth-7",
+  "title": "Budgets, net worth and responsibility (grade 7-8)",
+  "topics": [
+   "us.pfl.personal-budgets-net-worth-and-financial-responsibility"
+  ],
+  "subgoals": 15,
+  "band": "7-8",
+  "needs": []
+ },
+ {
+  "course": "money",
+  "courseTitle": "Money",
+  "n": 2,
+  "slug": "credit-college-7",
+  "title": "Credit, saving and paying for college (grade 7-8)",
+  "topics": [
+   "us.pfl.credit-saving-and-paying-for-college"
+  ],
+  "subgoals": 15,
+  "band": "7-8",
+  "needs": []
+ },
+ {
+  "course": "money",
+  "courseTitle": "Money",
+  "n": 3,
+  "slug": "income-tax",
+  "title": "Budgets, net worth and income tax",
+  "topics": [
+   "us.pfl.budgets-net-worth-and-income-tax"
+  ],
+  "subgoals": 27,
+  "band": "HS",
+  "needs": [
+   "piecewise-functions"
+  ]
+ },
+ {
+  "course": "money",
+  "courseTitle": "Money",
+  "n": 4,
+  "slug": "investing",
+  "title": "Investing and retirement saving",
+  "topics": [
+   "us.pfl.investing-and-retirement-saving"
+  ],
+  "subgoals": 23,
+  "band": "HS",
+  "needs": [
+   "exponential-functions",
+   "one-variable-data",
+   "series",
+   "tech-projects"
+  ]
+ },
+ {
+  "course": "money",
+  "courseTitle": "Money",
+  "n": 5,
+  "slug": "economic-indicators",
+  "title": "CPI, inflation, GDP and unemployment",
+  "topics": [
+   "us.pfl.economic-indicators-cpi-inflation-gdp-and-unemployment"
+  ],
+  "subgoals": 17,
+  "band": "HS",
+  "needs": []
+ }
+]
