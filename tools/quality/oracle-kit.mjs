@@ -26,8 +26,8 @@ export function texPlain(tex) {
     if (s === before) break;
   }
   return s.replace(/\^\{?\\circ\}?/g, '°').replace(/\\circ/g, '°').replace(/\\%/g, '%').replace(/\\times/g, '×').replace(/\\div/g, '÷')
-    .replace(/\\cdot/g, '·').replace(/\\pi/g, 'π').replace(/\\approx/g, '≈').replace(/\\le(q)?\b/g, '≤').replace(/\\ge(q)?\b/g, '≥')
-    .replace(/\\ne(q)?\b/g, '≠').replace(/\\to\b/g, '→').replace(/\\rightarrow/g, '→').replace(/\\xrightarrow\{([^{}]*)\}/g, '→[$1]')
+    .replace(/\\cdot/g, '·').replace(/\\pi/g, 'π').replace(/\\approx/g, '≈').replace(/\\le(q)?(?![a-zA-Z])/g, '≤').replace(/\\ge(q)?(?![a-zA-Z])/g, '≥')
+    .replace(/\\ne(q)?(?![a-zA-Z])/g, '≠').replace(/\\to\b/g, '→').replace(/\\rightarrow/g, '→').replace(/\\xrightarrow\{([^{}]*)\}/g, '→[$1]')
     .replace(/\\square/g, '□').replace(/\\left|\\right/g, '').replace(/\\[,;:! ]|\\quad|\\qquad|~/g, ' ').replace(/\\\\/g, ' ; ')
     .replace(/&/g, ' ').replace(/[{}]/g, '').replace(/\\[a-zA-Z]+/g, '').replace(/\s+/g, ' ').trim();
 }

@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63); phase 2: building 3, built 1, live 9, queued 112 (of 125)
+Totals: live 63 (of 63); phase 2: building 3, live 10, queued 112 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -111,11 +111,11 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 9, queued 112 (of 12
 | 8 | Systems of equations | `linear-systems` | HS | 27 | queued |  |
 | 9 | Arithmetic sequences | `arithmetic-sequences` | HS | 21 | live | 44 families, 21/21; oracle 0 errors on 26,400; VOICE PENDING |
 | 10 | Piecewise and step functions | `piecewise-functions` | HS | 24 | live | 49 families, 24/24; oracle 0 errors on 29,400; VOICE PENDING |
-| 11 | Absolute value functions and equations | `absolute-value` | HS | 27 | built | 58 families, 27/27 |
+| 11 | Absolute value functions and equations | `absolute-value` | HS | 27 | live | 58 families, 27/27; oracle 0 errors on 34,800; VOICE PENDING |
 | 12 | Radicals and rational exponents | `radicals-exponents` | HS | 28 | live | 58 families, 28/28; oracle 0 errors on 36,000; VOICE PENDING |
 | 13 | Exponential growth and decay | `exponential-functions` | HS | 26 | building |  |
 | 14 | Geometric sequences | `geometric-sequences` | HS | 23 | building |  |
-| 15 | Polynomial expressions | `polynomials` | HS | 27 | queued |  |
+| 15 | Polynomial expressions | `polynomials` | HS | 27 | queued | scaffolded |
 | 16 | Factoring | `factoring` | HS | 24 | queued |  |
 | 17 | Quadratic functions and their graphs | `quadratic-functions` | HS | 33 | queued |  |
 | 18 | Solving quadratics: square roots, completing the square, the formula | `completing-the-square` | HS | 16 | queued |  |

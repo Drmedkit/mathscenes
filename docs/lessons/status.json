@@ -432,10 +432,10 @@
   "note": "35 families, 18/18; oracle 0 errors on 21,600; VOICE PENDING"
  },
  "absolute-value": {
-  "state": "built",
-  "at": "2026-10-26 16:02",
-  "commit": "48940ba",
-  "note": "58 families, 27/27"
+  "state": "live",
+  "at": "2026-10-26 16:30",
+  "commit": "5b8d691",
+  "note": "58 families, 27/27; oracle 0 errors on 34,800; VOICE PENDING"
  },
  "exponential-functions": {
   "state": "building",
@@ -451,5 +451,11 @@
   "state": "building",
   "at": "2026-10-26 16:02",
   "commit": "48940ba"
+ },
+ "polynomials": {
+  "state": "queued",
+  "at": "2026-10-26 16:07",
+  "commit": "5b8d691",
+  "note": "scaffolded"
  }
 }

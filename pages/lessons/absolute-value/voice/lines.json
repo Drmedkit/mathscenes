@@ -1,0 +1,104 @@
+{
+ "q.intro": {
+  "text": "Which numbers x make the absolute value of x minus four equal to three? Pick an answer, and say how sure you are."
+ },
+ "q.cb.right": {
+  "text": "You said x is one or seven, and you were right. Both are three away from four."
+ },
+ "q.cb.one": {
+  "text": "You said only seven. It works, but so does one. One minus four is negative three, and its absolute value is three. The inside can be negative three too."
+ },
+ "q.cb.pm": {
+  "text": "You said three or negative three. Those are values of the inside, x minus four. Then x minus four is three or negative three, so x is seven or one."
+ },
+ "q.cb.none": {
+  "text": "x is one or seven: the two numbers three away from four."
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one. The graph moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "Inside first. The bars change their rule where the inside is zero. x minus four is zero at x equals four. That is the vertex of the graph, the point four, zero."
+ },
+ "e.step1": {
+  "text": "Right of four the inside is positive, so the bars change nothing: x minus four. Left of four it is negative, so the bars take its opposite: four minus x. Two straight pieces make a V."
+ },
+ "e.step2": {
+  "text": "Where is the V at height three? The line y equals three meets it twice, once on each piece. So there are two solutions."
+ },
+ "e.step3": {
+  "text": "Solve each piece. x minus four equals three gives seven. Four minus x equals three gives one. So x is one or seven, both three away from four."
+ },
+ "e.why": {
+  "text": "Quick check: why does four minus x equals three count too?"
+ },
+ "e.why.ok": {
+  "text": "Yes. Left of four the bars are four minus x, so that piece must equal three as well. It is the same as x minus four equals negative three."
+ },
+ "e.why.parts": {
+  "text": "The bars act on the whole inside, not on each part. The absolute value of x minus four is not x plus four."
+ },
+ "e.why.always": {
+  "text": "Not always two. An absolute value equal to zero has one solution, and equal to a negative number, none. Here the V meets the line twice."
+ },
+ "t.intro": {
+  "text": "Your turn. Solve two times the absolute value of x minus two, minus four, equals six. The graph shows the left side."
+ },
+ "t.iso": {
+  "text": "First step: what do you get when the absolute value is alone?"
+ },
+ "t.iso.ok": {
+  "text": "Right. Add four, then divide by two. The absolute value of x minus two is five."
+ },
+ "t.iso.split": {
+  "text": "Not yet. Get the bars alone first. Only then split into two cases."
+ },
+ "t.iso.sub": {
+  "text": "Undo the minus four by adding four. Then divide by two."
+ },
+ "t.sol": {
+  "text": "Now split it into two cases and solve both."
+ },
+ "t.sol.ok": {
+  "text": "Right. x minus two equals five gives seven, and x minus two equals negative five gives negative three. The line y equals six meets the V right there."
+ },
+ "t.sol.pm": {
+  "text": "Five and negative five are values of x minus two. Add two in each case."
+ },
+ "t.sol.other": {
+  "text": "x minus two equals five, or x minus two equals negative five. Solve each one."
+ },
+ "p.intro": {
+  "text": "Jordan solves the absolute value of two x minus three equals negative five by splitting. Two x minus three equals negative five gives negative one, and two x minus three equals five gives four. He says the solutions are negative one and four. Is Jordan right?"
+ },
+ "p.test": {
+  "text": "Test his answers on the graph. Build the argument: tap a reason for each claim."
+ },
+ "p.build": {
+  "text": "Build the argument: tap a reason for each claim."
+ },
+ "p.c1": {
+  "text": "Yes. At negative one the inside is negative five, so that case does not hold there. The absolute value is five, not negative five."
+ },
+ "p.c2": {
+  "text": "Yes. At four the inside is five, so the case where it is negative does not hold. The absolute value is five again."
+ },
+ "p.c3": {
+  "text": "Yes. The V never dips below the x axis, so it never meets the line y equals negative five."
+ },
+ "p.no.algebra": {
+  "text": "Correct algebra inside a case only counts where that case holds. Test the condition."
+ },
+ "p.no.positive": {
+  "text": "You may not drop the minus. Equal to five is a different equation, with different solutions."
+ },
+ "p.no.both": {
+  "text": "No number meets both conditions at once. A candidate only has to meet the condition of its own case."
+ },
+ "p.no.other": {
+  "text": "True, but it does not back up this claim. Try it on another one."
+ },
+ "p.done": {
+  "text": "Jordan is wrong. There is no solution. An absolute value is a distance, and a distance is never negative."
+ }
+}

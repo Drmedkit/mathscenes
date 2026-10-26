@@ -144,7 +144,8 @@
   "requires": [
    "piecewise-functions",
    "solving-linear-equations"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t6-03-radicals-and-rational-exponents",

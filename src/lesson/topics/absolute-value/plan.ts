@@ -1,0 +1,32 @@
+// plan.ts: practice walks through every sub-goal of secondary-t7-13-absolute-value-functions-and-equations, in topic JSON order.
+import type { SubgoalPlan } from '../../runtime/practice';
+
+export const PLAN: readonly SubgoalPlan[] = [
+  { id: 'abs-eval-expressions', title: 'Evaluate absolute value (inside first)', families: ['evalAbs', 'outsideMinus'] },
+  { id: 'distance-x-minus-a', title: '|x − a| as a distance', families: ['distSolve', 'distMeaning'] },
+  { id: 'piecewise-def-abs', title: 'The two-piece definition of |x|', families: ['pieceEval', 'oppositeValue'] },
+  { id: 'breakpoint-x-minus-a', title: 'Breakpoint where the inside is 0', families: ['breakX', 'pieceForm'] },
+  { id: 'graph-parent-abs', title: 'The graph of y = |x|', families: ['parentSlope', 'parentFeature'] },
+  { id: 'graph-horizontal-shift', title: 'Shift sideways: y = |x − h|', families: ['hShiftVertex', 'hShiftPick'] },
+  { id: 'graph-vertical-shift', title: 'Vertex (h, k) and range', families: ['vertexHK', 'rangeK'] },
+  { id: 'graph-vertical-stretch', title: 'Stretch: slopes a and −a', families: ['branchSlope', 'stretchPoint'] },
+  { id: 'graph-reflection-negative-a', title: 'Negative a: opens down', families: ['negPick', 'sameGraph'] },
+  { id: 'piecewise-affine-inner', title: 'Pieces of |mx + b|', families: ['affineCond', 'affineForm'] },
+  { id: 'graph-affine-inner', title: 'Graph y = a|mx + b| + k', families: ['affineVertex', 'affineSlope'] },
+  { id: 'solve-abs-eq-positive', title: 'Solve |mx + b| = c by splitting', families: ['splitSolve', 'splitPick'] },
+  { id: 'solution-count-by-sign', title: 'Two, one or no solutions', families: ['howManySol', 'whichOne'] },
+  { id: 'isolate-first', title: 'Isolate the bars first', families: ['isolateSolve', 'isolateLine', 'isolateCount'] },
+  { id: 'solve-graphically', title: 'Solve on the graph', families: ['graphCount', 'graphSolve'] },
+  { id: 'filter-candidates-by-condition', title: 'Keep or reject a candidate', families: ['keepReject', 'branchCount'] },
+  { id: 'completeness-justification', title: 'Why the cases find every solution', families: ['checkVsCases', 'completeWhy'] },
+  { id: 'model-distance-context', title: 'Exactly c away from a target', families: ['modelEq', 'exactlyAway', 'domainReject'] },
+  { id: 'model-abs-function-context', title: 'An absolute value model in context', families: ['rideRead', 'rateUnits', 'rideDomain'] },
+  { id: 'abs-ineq-less-and', title: '|u| < c: one band (and)', families: ['andSolve', 'andPick'] },
+  { id: 'abs-ineq-greater-or', title: '|u| > c: two rays (or)', families: ['orSolve', 'orPick'] },
+  { id: 'abs-ineq-isolate', title: 'Isolate in an inequality', families: ['isoForm', 'isoSolve'] },
+  { id: 'abs-ineq-special-targets', title: 'Zero and negative targets', families: ['specialSet', 'specialIsolate'] },
+  { id: 'model-tolerance-inequality', title: 'Tolerance: |x − target| ≤ e', families: ['toleranceModel', 'toleranceEnds', 'toleranceReverse'] },
+  { id: 'variable-rhs-cases', title: 'A right side with x (extension)', families: ['varRhsSolve', 'varRhsBranch'] },
+  { id: 'branch-identity', title: 'An identity inside a case (extension)', families: ['identitySet', 'identityCount'] },
+  { id: 'two-abs-interval-table', title: 'Two absolute values (extension)', families: ['twoAbsSum', 'twoAbsEqual'] },
+];
