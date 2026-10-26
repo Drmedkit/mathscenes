@@ -456,19 +456,27 @@
   "note": "46 families, 23/23; oracle 0 errors on 27,600; VOICE PENDING"
  },
  "polynomials": {
-  "state": "building",
-  "at": "2026-10-26 16:45",
-  "commit": "0e940cf",
-  "note": "scaffolded"
+  "state": "built",
+  "at": "2026-10-26 17:47",
+  "commit": "bff73d4",
+  "note": "56 families, 27/27; PAUSED before oracle (uncommitted)"
  },
  "completing-the-square": {
   "state": "building",
-  "at": "2026-10-26 16:54",
-  "commit": "0e940cf"
+  "at": "2026-10-26 17:47",
+  "commit": "bff73d4",
+  "note": "PAUSED 2026-10-26: uncommitted work in the worktree"
  },
  "conditional-statements": {
   "state": "building",
-  "at": "2026-10-26 17:00",
-  "commit": "4940ee2"
+  "at": "2026-10-26 17:47",
+  "commit": "bff73d4",
+  "note": "PAUSED 2026-10-26: uncommitted work in the worktree"
+ },
+ "factoring": {
+  "state": "building",
+  "at": "2026-10-26 17:47",
+  "commit": "bff73d4",
+  "note": "PAUSED 2026-10-26: uncommitted work in the worktree"
  }
 }

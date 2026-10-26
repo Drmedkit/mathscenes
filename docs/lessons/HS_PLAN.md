@@ -267,3 +267,12 @@ A course is useful on its own, so the site gets each course as soon as its wave 
   kept once), STATUS.md per course; kit piece 1 **Plane** (`src/lesson/kit/Plane.ts`, `tests/kit-plane.test.ts`, dev
   page `pages/kit.html?n=0..5&k=1`). Next: proof frame, data plots, simulator, unit circle, space, small blocks; then
   the Algebra 1 blueprint lesson.
+- 2026-10-26 (later): Algebra 1 lessons 1-14 minus factoring/quadratic-functions/function-families: 13 lessons live in the
+  repo (oracle sweep 0 errors each, voice pending): number-properties, units-and-quantities, solving-linear-equations,
+  creating-equations, linear-functions-slope, linear-models, linear-inequalities-2d, linear-systems NOT yet,
+  arithmetic-sequences, piecewise-functions, absolute-value, radicals-exponents, exponential-functions,
+  geometric-sequences. PAUSED by the owner with uncommitted work in the worktree: polynomials (built, oracle not
+  written), completing-the-square (built, final checks were clean), conditional-statements (Geometry 1, mid-build),
+  factoring (just started). Resume: check those four with tsc/vitest/sweep, write the oracles, then linear-systems,
+  quadratic-functions, function-families; then Geometry. Process per lesson: docs/lessons/HS_BRIEF.md.
+
