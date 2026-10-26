@@ -18,9 +18,9 @@ async function vite() {
 export async function loadTs(abs) { return (await vite()).ssrLoadModule(abs.split(path.sep).join('/')); }
 export async function closeLoader() { if (server) { await server.close(); server = null; } }
 
-/** every lesson slug in the topics.json order (live ones) */
+/** every built lesson slug: grades 7-8 in topics.json order, then the high school courses in topics-hs.json order */
 export function lessonSlugs() {
-  const t = JSON.parse(fs.readFileSync(path.join(ROOT, 'pages', 'lessons', 'topics.json'), 'utf8'));
+  const t = ['topics.json', 'topics-hs.json'].flatMap(f => JSON.parse(fs.readFileSync(path.join(ROOT, 'pages', 'lessons', f), 'utf8')));
   return t.filter(x => x.live !== false && fs.existsSync(path.join(TOPICS, x.slug, 'items.ts'))).map(x => x.slug);
 }
 

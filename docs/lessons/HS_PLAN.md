@@ -67,9 +67,11 @@ lines, using the kit → `tools/walk-<slug>.mjs` + `tools/walk-practice.mjs` →
 an independent oracle (a different agent) + explain + placement adapter → `tools/quality/sweep.mjs` 0 errors → ship
 (`tools/lesson-ship.sh`). Voice: lines are written now and voiced from 2026-11-03 (`tools/lesson-voice.py`).
 
-**Who builds:** the lead builds the kit and the first lesson of each course (the blueprint for that course's pictures).
-The other lessons go to builder agents on Opus, at most three at once, one lesson each, never two on the same files;
-oracles also run on Opus (the line rule: no Haiku or Sonnet builds or reviews a lesson). The lead reviews one contact sheet per lesson before it ships.
+**Who builds:** the lead built the kit's first piece and the builder brief (`docs/lessons/HS_BRIEF.md`). Every lesson
+goes to a builder agent on Opus (at most three at once, one lesson each, never two on the same files); the builder
+also writes the builder half of the quality layer (explain, placement adapter). A second Opus agent writes the
+independent oracle. The lead scaffolds, keeps the dev server up, reviews the contact sheets and the sweep of every
+lesson, promotes pictures that recur into the kit, commits, and ships per course.
 
 **Size and cost:** a 7-8 lesson took 400-500k tokens including one fix round; HS lessons are about a quarter bigger,
 so plan on about 0.55M per lesson, or roughly 70M tokens for all 125, plus the kit. At three builders at once that is

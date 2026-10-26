@@ -40,6 +40,8 @@ def write(rel, text):
 
 
 title = html.escape(row["title"])
+home = html.escape(row.get("courseTitle", "Math 7–8"))
+home_hash = f"#{row['course']}" if row.get("course") else ""
 write(f"pages/lessons/{slug}.html", f"""<!doctype html>
 <html lang="en">
 <head>
@@ -51,7 +53,7 @@ write(f"pages/lessons/{slug}.html", f"""<!doctype html>
 </head>
 <body>
   <header class="top">
-    <h1><a class="home" href="./index.html" aria-label="All lessons">Math 7–8</a> · {title}</h1>
+    <h1><a class="home" href="./index.html{home_hash}" aria-label="All lessons">{home}</a> · {title}</h1>
     <nav id="rail" aria-label="Lesson parts"></nav>
     <div id="tools"></div>
   </header>
