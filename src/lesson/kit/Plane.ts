@@ -55,6 +55,7 @@ export interface PlaneBlock {
   readonly kind: 'Plane';
   readonly box: Box;
   readonly grid: Box;
+  /** keys of items whose name found no free spot and is not drawn (the lesson may label them another way) */ readonly dropped: readonly string[];
   /** design pixels of a data point */ px(x: number, y: number): Pt;
   /** data coordinates of a design pixel */ toData(X: number, Y: number): Pt;
   /** a value rounded to a multiple of step (drags) and kept inside the window */ snap(v: number, step: number, axis: 'x' | 'y'): number;
@@ -63,7 +64,8 @@ export interface PlaneBlock {
 }
 
 const NUM = 56, LAB = 46;
-export const fmtN = (v: number): string => { const r = Math.round(v * 1000) / 1000; return (r < 0 ? '−' : '') + String(Math.abs(r)); };
+/** a tick / readout number: a real minus sign, thousands commas from 10,000 up (4-digit years and counts stay plain) */
+export const fmtN = (v: number): string => { const r = Math.round(v * 1000) / 1000, a = Math.abs(r); return (r < 0 ? '−' : '') + (a >= 10000 ? a.toLocaleString('en-US', { maximumFractionDigits: 3 }) : String(a)); };
 
 export function Plane(p: PParams, fr: Frame, th: Theme): PlaneBlock {
   const X = p.x, Y = p.y, items = p.items ?? [];
@@ -188,7 +190,7 @@ export function Plane(p: PParams, fr: Frame, th: Theme): PlaneBlock {
     texts.set(it.key, L);
   }
   for (const L of texts.values()) placed.push(L.b);
-  const names = new Map<string, Lab>();
+  const names = new Map<string, Lab>(), dropped: string[] = [];
   for (const it of items) if (it.kind === 'point' && it.name) {
     const [x, y] = px(it.x, it.y);
     let L: Lab | null = null;
@@ -200,8 +202,9 @@ export function Plane(p: PParams, fr: Frame, th: Theme): PlaneBlock {
         const c = lab(it.name, x + dx, y + dy, 46, al);
         if (fits(c.b, avoid as Pt[][], gap)) { L = c; break search; }
       }
-    check(L, NAME, `no room for the point name ${it.name}`);
-    placed.push(L!.b); names.set(it.key, L!);
+    // no room anywhere: the name is left out (listed in `dropped`) rather than drawn over something
+    if (!L) { dropped.push(it.key); continue; }
+    placed.push(L.b); names.set(it.key, L);
   }
   for (const it of items) if (it.kind === 'curve' && it.name) {
     const pts = (curveRuns.get(it.key) ?? []).flat().filter(([a, b]) => a > gx0 + 20 && a < gx1 - 20 && b > gy0 + 20 && b < gy1 - 20);
@@ -232,8 +235,8 @@ export function Plane(p: PParams, fr: Frame, th: Theme): PlaneBlock {
       }
       if (best) L = best;
     }
-    check(L, NAME, `no room for the curve name ${it.name}`);
-    placed.push(L!.b); names.set(it.key, L!);
+    if (!L) { dropped.push(it.key); continue; }
+    placed.push(L.b); names.set(it.key, L);
   }
 
   // ----- drawing helpers -----
@@ -398,5 +401,5 @@ export function Plane(p: PParams, fr: Frame, th: Theme): PlaneBlock {
     const A = axis === 'x' ? X : Y;
     return Math.min(A.max, Math.max(A.min, Math.round(v / step) * step));
   };
-  return { kind: 'Plane', box: cardBox, grid, px, toData, snap, where, draw };
+  return { kind: 'Plane', box: cardBox, grid, dropped, px, toData, snap, where, draw };
 }
