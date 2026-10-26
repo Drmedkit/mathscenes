@@ -38,6 +38,19 @@ and the kit below. The plan of the whole phase is `docs/lessons/HS_PLAN.md`; you
   unit circle, 3D): build it as a block in YOUR topic folder, in the kit's style (compute + check + layout in a Frame +
   named steps + `where` + draw), and say in your report that it could move to the kit. Do not edit `src/lesson/kit/`.
 
+## What the independent oracles keep finding (check these before you report)
+
+- **A distractor that is secretly right** for special values: slope 1 or −1 (swapped coordinates land on the line),
+  a start equal to the rate, b = 0, a = b, a base equal to the exponent's numerator, symmetric cases. Build every
+  choice list through one helper that drops a wrong choice equivalent to the answer (same number, same line, same set,
+  same function), and add a vitest probe over many seeds.
+- **Unrealistic stories**: a runner at 45 mi/h, water at 14 °F, a battery above 100%, a distance that starts negative,
+  pay called a cost, an "exactly" total no whole numbers can reach.
+- **A picture that disagrees with the question**: a strip that starts at the wrong term, a dropped term that breaks
+  the pattern, a flat tier where the story has a rate.
+- **Board / plain text**: keep the board TeX unambiguous; in HTML wrap multi-term exponents and radicands in brackets
+  so the plain-text reading keeps the grouping.
+
 ## Also yours this time: the quality layer's builder half
 
 After the lesson works, write `src/lesson/topics/<slug>/explain.ts` (worked steps per family, see
