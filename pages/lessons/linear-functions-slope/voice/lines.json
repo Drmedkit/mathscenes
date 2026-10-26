@@ -1,0 +1,125 @@
+{
+ "q.intro": {
+  "text": "A line passes through the point A, negative two, seven, and the point B, four, negative two. What is its slope? Pick an answer, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps, one line, three ways to write it. Press each step: the graph moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "Go from A to B. The run is four minus negative two, which is six. The rise is negative two minus seven, which is negative nine. B minus A on top and on the bottom: the slope is negative nine over six, which is negative three halves."
+ },
+ "e.step1": {
+  "text": "Now take any point P, x, y, on the line. From A to P the slope is negative three halves too: a line has one slope everywhere. Multiply both sides by x plus two, and you get y minus seven equals negative three halves times x plus two. That is point-slope form: a point and the slope, in one equation."
+ },
+ "e.step2": {
+  "text": "Get y alone. Negative three halves multiplies both terms in the bracket: y minus seven equals negative three halves x, minus three. Add seven: y equals negative three halves x, plus four. That is slope-intercept form, and the four is the y-intercept: the line crosses at zero, four."
+ },
+ "e.step3": {
+  "text": "For standard form, clear the fraction: multiply by two, then put x and y on one side. Three x plus two y equals eight. Set y to zero and you get the zero, x equals eight thirds. Check B: three times four, plus two times negative two, is eight. It checks."
+ },
+ "e.why": {
+  "text": "Quick check: why could any point P of the line go into the slope formula with A?"
+ },
+ "e.why.ok": {
+  "text": "Yes. That one fact gives point-slope form: the slope from a known point to every other point of the line is m."
+ },
+ "e.why.first": {
+  "text": "Try it with B: y plus two equals negative three halves times x minus four. Get y alone, and it is y equals negative three halves x plus four again. Any point of the line works, and the equations look different but name one line."
+ },
+ "e.why.slots": {
+  "text": "x and y stay letters: they stand for every point of the line. The numbers of A go in the slots x one and y one."
+ },
+ "t.intro": {
+  "text": "Your turn: the line through C, negative one, five, and D, three, negative three. The slope is done for you: run four, rise negative eight, so the slope is negative two."
+ },
+ "t.ps": {
+  "text": "Write the line in point-slope form, using C."
+ },
+ "t.ps.ok": {
+  "text": "Yes: y minus five equals negative two times x plus one. The numbers of C go in with flipped signs, because point-slope form subtracts them."
+ },
+ "t.ps.sign": {
+  "text": "Point-slope form subtracts the point: y minus five, and x minus negative one, which is x plus one. Your signs are flipped the other way."
+ },
+ "t.ps.mix": {
+  "text": "That mixes the y of C with the x of D. Keep one point together: C is negative one, five."
+ },
+ "t.b": {
+  "text": "Now get y alone: y equals negative two x plus b. What is b?"
+ },
+ "t.b.empty": {
+  "text": "Type a number first."
+ },
+ "t.b.ok": {
+  "text": "Yes: y minus five equals negative two x minus two, so y equals negative two x plus three. The line crosses the y-axis at zero, three."
+ },
+ "t.b.first": {
+  "text": "Five is the output of C, at x equals negative one, not at zero. Distribute the negative two, then add five."
+ },
+ "t.b.part": {
+  "text": "Negative two multiplies both terms in the bracket: negative two times one is negative two, not one."
+ },
+ "t.b.sign": {
+  "text": "Moving the minus five across the equals sign makes it plus five: y equals negative two x, minus two, plus five."
+ },
+ "t.b.no": {
+  "text": "Distribute negative two to x and to one, then add five to both sides."
+ },
+ "t.std": {
+  "text": "Last one: which is the standard form, A x plus B y equals C?"
+ },
+ "t.std.ok": {
+  "text": "Yes: two x plus y equals three. Set y to zero, and the zero is x equals three halves. Check D: two times three, plus negative three, is three. It checks."
+ },
+ "t.std.sign": {
+  "text": "Moving negative two x across the equals sign makes it plus two x."
+ },
+ "t.std.alone": {
+  "text": "That is slope-intercept form. Standard form has x and y together on one side."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked negative three halves, and you were right. Now you know why the order matters: B minus A, top and bottom."
+ },
+ "q.cb.inv": {
+  "text": "At the start you picked negative two thirds. That puts the run on top. Slope is rise over run: the change in y first."
+ },
+ "q.cb.order": {
+  "text": "At the start you picked three halves. That subtracts in opposite orders on top and bottom, which flips the sign. The line falls, so its slope is negative."
+ },
+ "q.cb.none": {
+  "text": "Slope: the same order on top and bottom. Then one point and the slope give every form of the line."
+ },
+ "p.intro": {
+  "text": "Riley finds the slope of the line through P, two, five, and Q, two, negative one: negative one minus five, divided by two minus two, is zero. Slope zero, so it is a flat line, and a function. Is Riley right?"
+ },
+ "p.test": {
+  "text": "Let’s test it. Build the argument, and see where it leads."
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Right. The run is zero, and no number times zero gives negative six: the slope is undefined, not zero."
+ },
+ "p.c2": {
+  "text": "Right. A flat line has a rise of zero over a real run: zero divided by four is zero. The points of Riley do not lie on a flat line."
+ },
+ "p.c3": {
+  "text": "Right. Every point has x equal to two: the line is x equals two, a vertical line. One input with two outputs: not a function."
+ },
+ "p.no.k0": {
+  "text": "Six divided by zero is not zero. If it were, zero times zero would be six. Dividing by zero has no answer."
+ },
+ "p.no.none": {
+  "text": "No slope mixes up two different things. Slope zero is a flat line, and an undefined slope is a vertical line."
+ },
+ "p.no.const": {
+  "text": "A rule like y equals five is a function: every input gets the one output five. That is not the problem here."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof: three claims, each with its reason, and the graph backs every one. Zero slope is flat and a function. Undefined slope is vertical, and not a function."
+ }
+}

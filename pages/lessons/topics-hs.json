@@ -59,7 +59,8 @@
   "courseTitle": "Algebra 1",
   "n": 5,
   "subgoals": 31,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t6-32-writing-linear-equations-from-context",

@@ -1,0 +1,37 @@
+// plan.ts: practice walks through every sub-goal of secondary-t6-09-linear-functions-and-slope, in topic JSON order.
+// Each sub-goal names the families that practise it; a generator gets the sub-goal id and uses that sub-goal's cases.
+import type { SubgoalPlan } from '../../runtime/practice';
+
+export const PLAN: readonly SubgoalPlan[] = [
+  { id: 'linear-constant-rate', title: 'Linear means equal changes', families: ['tableLinear', 'changeTable'] },
+  { id: 'slope-ratio-of-changes', title: 'Slope: change over change', families: ['changeTable', 'graphSlope'] },
+  { id: 'slope-two-points', title: 'Slope from two points', families: ['twoPointSlope', 'graphSlope'] },
+  { id: 'slope-scaled-graph', title: 'Slope on scaled axes', families: ['scaledSlope', 'steeperScaled'] },
+  { id: 'zero-vs-undefined-slope', title: 'Zero vs undefined slope', families: ['flatOrSteep', 'hvLine'] },
+  { id: 'function-notation-evaluate', title: 'Function notation f(x)', families: ['evalF', 'readNotation'] },
+  { id: 'y-intercept-input-zero', title: 'The y-intercept (0, b)', families: ['yIntercept', 'evalF'] },
+  { id: 'read-m-b-from-equation', title: 'Read m and b', families: ['readMB', 'matchGraph'] },
+  { id: 'zero-identify', title: 'Spot the zero', families: ['zeroGraph', 'zeroCount'] },
+  { id: 'zero-by-solving', title: 'Solve for the zero', families: ['solveZero', 'zeroCount'] },
+  { id: 'inequality-bounds', title: 'Bounds and endpoints', families: ['phraseToIneq'] },
+  { id: 'domain-input-set', title: 'The domain', families: ['domainGraph'] },
+  { id: 'domain-context-restriction', title: 'Domain in a context', families: ['contextDomain'] },
+  { id: 'range-linear-function', title: 'The range', families: ['rangeInterval', 'hvLine'] },
+  { id: 'feature-discrimination', title: 'Which feature is asked?', families: ['mixedFeature'] },
+  { id: 'build-from-m-and-b', title: 'Build from m and b', families: ['buildMB', 'matchGraph'] },
+  { id: 'build-from-slope-and-point', title: 'Build from a slope and a point', families: ['bFromPoint', 'writePS'] },
+  { id: 'build-from-two-points', title: 'Build from two points', families: ['eqTwoPoints', 'twoPointsStory'] },
+  { id: 'build-from-table', title: 'Build from a table', families: ['tableRule', 'tableCheck'] },
+  { id: 'build-from-scaled-graph', title: 'Build from a scaled graph', families: ['graphRule', 'exactPoints'] },
+  { id: 'build-from-verbal', title: 'Build from words', families: ['storyEq', 'storyValue'] },
+  { id: 'point-slope-form', title: 'Point-slope form', families: ['readPS', 'writePS'] },
+  { id: 'standard-form', title: 'Standard form', families: ['stdSlope', 'stdIntercepts'] },
+  { id: 'convert-among-forms', title: 'Switch between forms', families: ['toSlopeInt', 'siToStd'] },
+  { id: 'graph-from-forms', title: 'Graph from any form', families: ['stepFrom', 'hvLine'] },
+  { id: 'transform-linear-parent', title: 'Transform f(x) = x', families: ['transformPoint', 'transformWords'] },
+  { id: 'uniqueness-sufficiency', title: 'Enough to pin one line?', families: ['enoughInfo', 'sameLineForms'] },
+  { id: 'interpret-slope-units', title: 'Slope as a rate with units', families: ['slopeSentence', 'twoPointsStory'] },
+  { id: 'interpret-y-intercept', title: 'The y-intercept in context', families: ['bMeaning', 'storyValue'] },
+  { id: 'interpret-zero', title: 'The zero in context', families: ['zeroWhen'] },
+  { id: 'intercept-meaningfulness', title: 'Real feature or not?', families: ['isZero', 'firstWhole'] },
+];

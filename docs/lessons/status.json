@@ -402,10 +402,10 @@
   "note": "39 families, 18/18; oracle 0 errors on 23,400; VOICE PENDING"
  },
  "linear-functions-slope": {
-  "state": "built",
-  "at": "2026-10-26 14:42",
-  "commit": "5783187",
-  "note": "47 families, 31/31; TableCard, NumberLine (kit candidates)"
+  "state": "live",
+  "at": "2026-10-26 15:01",
+  "commit": "f778abb",
+  "note": "47 families, 31/31; oracle 0 errors on 34,200; VOICE PENDING"
  },
  "arithmetic-sequences": {
   "state": "live",
