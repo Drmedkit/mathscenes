@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63); phase 2: building 3, built 2, live 1, queued 119 (of 125)
+Totals: live 63 (of 63); phase 2: building 3, built 1, live 2, queued 119 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -101,7 +101,7 @@ Totals: live 63 (of 63); phase 2: building 3, built 2, live 1, queued 119 (of 12
 
 | # | lesson | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
-| 1 | Properties and the real numbers | `number-properties` | HS | 25 | built | 43 families, 25/25; SetMap, ClaimTable, AreaSplit (kit candidates) |
+| 1 | Properties and the real numbers | `number-properties` | HS | 25 | live | 43 families, 25/25; oracle 0 errors (ownValue many answers, probed); VOICE PENDING |
 | 2 | Reasoning with units | `units-and-quantities` | HS | 23 | built | 44 families, 23/23; Chain, Ruler, Grid, Thermo (kit candidates) |
 | 3 | Solving linear equations and inequalities | `solving-linear-equations` | HS | 21 | live | 45 families, 21/21; oracle 0 errors on 27,600; VOICE PENDING |
 | 4 | Writing equations and inequalities from constraints | `creating-equations` | HS | 18 | building |  |

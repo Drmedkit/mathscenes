@@ -1,0 +1,30 @@
+// plan.ts: practice walks through every sub-goal of secondary-t6-01-real-number-properties-and-classification + secondary.real-number-system-classification-and-closure, in topic JSON order.
+import type { SubgoalPlan } from '../../runtime/practice';
+
+export const PLAN: readonly SubgoalPlan[] = [
+  { id: 'commutative', title: 'Commutative: order can change (for + and ×)', families: ['commName', 'commSwap'] },
+  { id: 'associative', title: 'Associative: grouping can change', families: ['commName', 'assocPair'] },
+  { id: 'identity', title: 'Identity: + 0 and × 1', families: ['identityPick', 'identityFill'] },
+  { id: 'additive-inverse', title: 'Opposites add to 0', families: ['opposite', 'toZero'] },
+  { id: 'multiplicative-inverse', title: 'Reciprocals multiply to 1 (not 0)', families: ['reciprocal', 'recipNum', 'zeroRecip'] },
+  { id: 'distributive', title: 'Distributive, both directions', families: ['distArea', 'distForm'] },
+  { id: 'strategic-regroup', title: 'Reorder and regroup to compute fast', families: ['smartGroup', 'chainProduct'] },
+  { id: 'inverse-cancellation', title: 'Cancel inverse pairs (only real ones)', families: ['cancelChain', 'cancelWhich'] },
+  { id: 'justify-steps', title: 'Name the property behind each step', families: ['nameStep', 'whichStep'] },
+  { id: 'counterexample-logic', title: 'One counterexample beats many examples', families: ['oneCounter', 'proved'] },
+  { id: 'equivalence-meaning', title: 'Equivalent means equal for every value', families: ['equivQ', 'differAt'] },
+  { id: 'identity-substitution-test', title: 'Test a rewrite with values that expose it', families: ['separating', 'ownValue'] },
+  { id: 'power-root-overgeneralization', title: 'Squares and roots do not split over +', families: ['powerEval', 'separating', 'ownValue'] },
+  { id: 'us-set-names', title: 'Counting, whole, integer, rational', families: ['setRule', 'countMembers'] },
+  { id: 'nested-subsets', title: 'The sets sit inside each other', families: ['allSets', 'subsetTrue'] },
+  { id: 'exact-vs-display', title: 'An exact number vs its display', families: ['display', 'approx'] },
+  { id: 'real-partition', title: 'Real = rational or irrational, never both', families: ['placeIt', 'partitionTrue'] },
+  { id: 'closure', title: 'Closed: every answer stays in the set', families: ['closedFinite', 'closedNamed'] },
+  { id: 'classify-rational-forms', title: 'Classify disguised rational numbers', families: ['allSets', 'countMembers'] },
+  { id: 'classify-radicals', title: 'Classify square roots by their value', families: ['placeIt', 'countMembers', 'allSets'] },
+  { id: 'closure-counterexample', title: 'Build a closure counterexample', families: ['counterPick', 'counterType'] },
+  { id: 'admissibility-check', title: 'Does the counterexample meet the claim?', families: ['admissible', 'counterPick'] },
+  { id: 'irrational-closure-counterexample', title: 'Irrational inputs, rational results', families: ['counterPick', 'irrValue'] },
+  { id: 'rational-closure-proof', title: 'Why rational + rational is rational', families: ['sumForm', 'whyRational'] },
+  { id: 'rational-irrational-proof', title: 'Why rational + irrational is irrational', families: ['contradiction', 'isIrrational'] },
+];

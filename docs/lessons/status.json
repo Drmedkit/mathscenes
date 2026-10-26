@@ -378,10 +378,10 @@
   "commit": "463fefb"
  },
  "number-properties": {
-  "state": "built",
-  "at": "2026-10-26 13:42",
-  "commit": "d8a8637",
-  "note": "43 families, 25/25; SetMap, ClaimTable, AreaSplit (kit candidates)"
+  "state": "live",
+  "at": "2026-10-26 13:57",
+  "commit": "39dd28d",
+  "note": "43 families, 25/25; oracle 0 errors (ownValue many answers, probed); VOICE PENDING"
  },
  "units-and-quantities": {
   "state": "built",
