@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63)
+Totals: live 63 (of 63); phase 2: queued 125 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -94,4 +94,171 @@ Totals: live 63 (of 63)
 | 10 | Linear functions and slope-intercept form | `linear-functions` | 8 | 24 | live | 24 sub-goals, 40 voice lines; VOICE PENDING |
 | 11 | Scatter plots and bivariate data | `scatter-plots` | 8 | 22 | live | 22 sub-goals, 42 voice lines; VOICE PENDING |
 | 12 | Two-way tables, relative frequencies and segmented bar graphs | `two-way-tables` | 8 | 15 | live | 15 sub-goals; VOICE PENDING |
+
+# Phase 2: high school and AP (docs/lessons/HS_PLAN.md)
+
+## Algebra 1
+
+| # | lesson | slug | grade | sub-goals | state | note |
+|---|---|---|---|---|---|---|
+| 1 | Properties and the real numbers | `number-properties` | HS | 25 | queued |  |
+| 2 | Reasoning with units | `units-and-quantities` | HS | 23 | queued |  |
+| 3 | Solving linear equations and inequalities | `solving-linear-equations` | HS | 21 | queued |  |
+| 4 | Writing equations and inequalities from constraints | `creating-equations` | HS | 18 | queued |  |
+| 5 | Linear functions and slope | `linear-functions-slope` | HS | 31 | queued |  |
+| 6 | Linear equations from a context | `linear-models` | HS | 18 | queued |  |
+| 7 | Graphing inequalities in two variables | `linear-inequalities-2d` | HS | 27 | queued |  |
+| 8 | Systems of equations | `linear-systems` | HS | 27 | queued |  |
+| 9 | Arithmetic sequences | `arithmetic-sequences` | HS | 21 | queued |  |
+| 10 | Piecewise and step functions | `piecewise-functions` | HS | 24 | queued |  |
+| 11 | Absolute value functions and equations | `absolute-value` | HS | 27 | queued |  |
+| 12 | Radicals and rational exponents | `radicals-exponents` | HS | 28 | queued |  |
+| 13 | Exponential growth and decay | `exponential-functions` | HS | 26 | queued |  |
+| 14 | Geometric sequences | `geometric-sequences` | HS | 23 | queued |  |
+| 15 | Polynomial expressions | `polynomials` | HS | 27 | queued |  |
+| 16 | Factoring | `factoring` | HS | 24 | queued |  |
+| 17 | Quadratic functions and their graphs | `quadratic-functions` | HS | 33 | queued |  |
+| 18 | Solving quadratics: square roots, completing the square, the formula | `completing-the-square` | HS | 16 | queued |  |
+| 19 | Linear, quadratic or exponential? | `function-families` | HS | 26 | queued |  |
+
+## Geometry
+
+| # | lesson | slug | grade | sub-goals | state | note |
+|---|---|---|---|---|---|---|
+| 1 | If-then statements and logical language | `conditional-statements` | HS | 13 | queued |  |
+| 2 | Definitions, postulates and first proofs | `geometry-foundations` | HS | 31 | queued |  |
+| 3 | Counterexamples, inference and proof | `counterexamples-and-proof` | HS | 15 | queued |  |
+| 4 | Triangle congruence | `triangle-congruence` | HS | 31 | queued |  |
+| 5 | Isosceles triangles and side-angle order | `triangle-inequalities` | HS | 12 | queued |  |
+| 6 | Constructions with compass and straightedge | `constructions` | HS | 34 | queued |  |
+| 7 | Midsegments and points of concurrency | `triangle-centers` | HS | 35 | queued |  |
+| 8 | Parallelograms and other quadrilaterals | `quadrilaterals` | HS | 41 | queued |  |
+| 9 | Similar triangles | `similarity` | HS | 25 | queued |  |
+| 10 | Right triangle trigonometry | `right-triangle-trig` | HS | 29 | queued |  |
+| 11 | Distance, midpoint and coordinate proofs | `coordinate-proofs` | HS | 33 | queued |  |
+| 12 | Arcs and angles in circles | `circle-angles` | HS | 33 | queued |  |
+| 13 | Tangents, chords and segment lengths | `chords-tangents` | HS | 14 | queued |  |
+| 14 | Arc length, sectors and radians | `arcs-and-sectors` | HS | 26 | queued |  |
+| 15 | Equations of circles | `circle-equations` | HS | 23 | queued |  |
+| 16 | Surface area and volume of solids | `solids` | HS | 42 | queued |  |
+| 17 | Geometric probability | `geometric-probability` | HS | 20 | queued |  |
+| 18 | Perspective drawing | `perspective` | HS | 25 | queued |  |
+
+## Statistics and probability
+
+| # | lesson | slug | grade | sub-goals | state | note |
+|---|---|---|---|---|---|---|
+| 1 | Summarizing and comparing data | `one-variable-data` | HS | 28 | queued |  |
+| 2 | Scatter plots, correlation and the regression line | `linear-regression` | HS | 27 | queued |  |
+| 3 | Quadratic and exponential regression | `nonlinear-regression` | HS | 21 | queued |  |
+| 4 | Counting: permutations and combinations | `counting` | HS | 25 | queued |  |
+| 5 | Repeated objects and circular arrangements | `advanced-counting` | AP | 15 | queued |  |
+| 6 | Conditional probability and independence | `conditional-probability` | HS | 31 | queued |  |
+| 7 | The normal distribution | `normal-distribution` | HS | 30 | queued |  |
+| 8 | Probability distributions and expected value | `expected-value` | HS | 24 | queued |  |
+| 9 | Using probability to make decisions | `probability-decisions` | HS | 17 | queued |  |
+| 10 | Study design and estimating with a margin of error | `margin-of-error` | HS | 32 | queued |  |
+| 11 | Testing a claim by simulation | `simulation-tests` | HS | 8 | queued |  |
+| 12 | Sampling distributions and the central limit theorem | `sampling-distributions` | AP | 13 | queued |  |
+| 13 | t procedures for a mean | `t-procedures` | AP | 15 | queued |  |
+| 14 | Type I and type II errors and power | `errors-and-power` | AP | 13 | queued |  |
+| 15 | Chi-square tests | `chi-square` | AP | 14 | queued |  |
+
+## Algebra 2
+
+| # | lesson | slug | grade | sub-goals | state | note |
+|---|---|---|---|---|---|---|
+| 1 | Complex numbers | `complex-numbers` | HS | 21 | queued |  |
+| 2 | Quadratics with complex solutions | `quadratics-complex` | HS | 14 | queued |  |
+| 3 | Polynomial operations and identities | `polynomial-identities` | HS | 14 | queued |  |
+| 4 | Polynomial division | `polynomial-division` | HS | 25 | queued |  |
+| 5 | Factoring higher-degree polynomials | `higher-degree-factoring` | HS | 26 | queued |  |
+| 6 | Polynomial functions: graphs and behavior | `polynomial-graphs` | HS | 30 | queued |  |
+| 7 | Remainder and factor theorems, complex zeros | `polynomial-theorems` | HS | 23 | queued |  |
+| 8 | Rational expressions and equations | `rational-expressions` | HS | 28 | queued |  |
+| 9 | Rational functions | `rational-functions` | HS | 24 | queued |  |
+| 10 | Transformations of functions | `function-transformations` | HS | 22 | queued |  |
+| 11 | Square-root and cube-root functions and equations | `radical-functions` | HS | 27 | queued |  |
+| 12 | Key features: local and global claims | `function-analysis` | HS | 25 | queued |  |
+| 13 | Combining and composing functions | `composition` | HS | 25 | queued |  |
+| 14 | Inverse functions | `inverse-functions` | HS | 18 | queued |  |
+| 15 | Exponential and logarithmic functions | `logarithms` | HS | 27 | queued |  |
+| 16 | Exponential and logarithmic equations | `exp-log-equations` | HS | 28 | queued |  |
+| 17 | Systems of nonlinear equations | `nonlinear-systems` | HS | 26 | queued |  |
+| 18 | Systems of three equations | `three-variable-systems` | HS | 21 | queued |  |
+| 19 | Arithmetic and geometric series | `series` | HS | 29 | queued |  |
+| 20 | The binomial theorem | `binomial-theorem` | HS | 24 | queued |  |
+
+## Precalculus
+
+| # | lesson | slug | grade | sub-goals | state | note |
+|---|---|---|---|---|---|---|
+| 1 | The unit circle | `unit-circle` | HS | 33 | queued |  |
+| 2 | Graphs of trig functions and periodic models | `trig-graphs` | HS | 32 | queued |  |
+| 3 | Inverse trig functions | `inverse-trig` | HS | 17 | queued |  |
+| 4 | Fundamental trig identities | `trig-identities` | HS | 23 | queued |  |
+| 5 | Solving trig equations | `trig-equations` | HS | 27 | queued |  |
+| 6 | Sum, difference, double- and half-angle identities | `sum-difference-identities` | HS | 28 | queued |  |
+| 7 | Law of sines and law of cosines | `laws-of-sines-cosines` | HS | 27 | queued |  |
+| 8 | Vectors in the plane and the dot product | `vectors` | HS | 32 | queued |  |
+| 9 | Polar coordinates and complex numbers in trig form | `polar-complex` | HS | 27 | queued |  |
+| 10 | Polar equations and their graphs | `polar-graphs` | HS | 17 | queued |  |
+| 11 | Circle and parabola as loci | `parabola-focus` | HS | 23 | queued |  |
+| 12 | Ellipse and hyperbola | `ellipse-hyperbola` | HS | 28 | queued |  |
+| 13 | Parametric equations | `parametric` | HS | 30 | queued |  |
+| 14 | Matrices | `matrices` | HS | 23 | queued |  |
+| 15 | Vectors in three dimensions | `vectors-3d` | HS | 18 | queued |  |
+| 16 | Matrix methods for linear systems | `matrix-systems` | HS | 24 | queued |  |
+| 17 | Proof by induction | `induction` | HS | 20 | queued |  |
+| 18 | Powers and roots of complex numbers | `de-moivre` | AP | 13 | queued |  |
+| 19 | Logarithmic, radical and trig inequalities | `nonlinear-inequalities` | AP | 15 | queued |  |
+| 20 | Limits | `limits` | HS | 26 | queued |  |
+
+## Calculus
+
+| # | lesson | slug | grade | sub-goals | state | note |
+|---|---|---|---|---|---|---|
+| 1 | The derivative: rate of change and tangent slope | `derivative-idea` | HS | 18 | queued |  |
+| 2 | Differentiation rules | `derivative-rules` | HS | 22 | queued |  |
+| 3 | Implicit, inverse and logarithmic differentiation | `implicit-differentiation` | HS | 24 | queued |  |
+| 4 | Motion, related rates and linearization | `derivative-applications` | HS | 24 | queued |  |
+| 5 | The definite integral as accumulation | `definite-integral` | HS | 17 | queued |  |
+| 6 | Antiderivatives and the fundamental theorem | `fundamental-theorem` | HS | 20 | queued |  |
+| 7 | Area, average value and volume | `integration-applications` | HS | 27 | queued |  |
+| 8 | Integration by parts and partial fractions | `integration-techniques` | AP | 16 | queued |  |
+| 9 | Improper integrals | `improper-integrals` | AP | 13 | queued |  |
+| 10 | Differential equations: growth, decay, cooling | `differential-equations` | HS | 21 | queued |  |
+| 11 | Derivative tests, curve sketching and optimization | `optimization` | HS | 16 | queued |  |
+| 12 | Euler's method | `euler-method` | HS | 10 | queued |  |
+| 13 | Parametric and vector calculus, arc length | `parametric-calculus` | AP | 15 | queued |  |
+| 14 | Calculus in polar coordinates | `polar-calculus` | AP | 13 | queued |  |
+| 15 | Infinite series I: nth-term, integral and comparison tests | `series-tests-1` | AP | 15 | queued |  |
+| 16 | Infinite series II: alternating series and the ratio test | `series-tests-2` | AP | 13 | queued |  |
+| 17 | Taylor polynomials and the error bound | `taylor-polynomials` | AP | 13 | queued |  |
+| 18 | Power series | `power-series` | AP | 14 | queued |  |
+
+## Discrete math and reasoning
+
+| # | lesson | slug | grade | sub-goals | state | note |
+|---|---|---|---|---|---|---|
+| 1 | Sets and Venn diagrams | `sets` | HS | 24 | queued |  |
+| 2 | Truth tables and indirect proof | `propositional-logic` | HS | 21 | queued |  |
+| 3 | Number bases, the Euclidean algorithm and clock arithmetic | `number-theory` | AP | 15 | queued |  |
+| 4 | Networks, paths, circuits and trees | `graph-theory` | HS | 38 | queued |  |
+| 5 | Fair division and apportionment | `fair-division` | HS | 26 | queued |  |
+| 6 | Voting methods and fairness | `voting` | HS | 25 | queued |  |
+| 7 | Game theory: payoff matrices | `game-theory` | HS | 17 | queued |  |
+| 8 | Modeling new situations | `modeling` | HS | 20 | queued |  |
+| 9 | Scheduling and bin packing | `scheduling` | HS | 22 | queued |  |
+| 10 | Modeling projects with technology | `tech-projects` | HS | 30 | queued |  |
+
+## Money
+
+| # | lesson | slug | grade | sub-goals | state | note |
+|---|---|---|---|---|---|---|
+| 1 | Budgets, net worth and responsibility (grade 7-8) | `budgets-net-worth-7` | 7-8 | 15 | queued |  |
+| 2 | Credit, saving and paying for college (grade 7-8) | `credit-college-7` | 7-8 | 15 | queued |  |
+| 3 | Budgets, net worth and income tax | `income-tax` | HS | 27 | queued |  |
+| 4 | Investing and retirement saving | `investing` | HS | 23 | queued |  |
+| 5 | CPI, inflation, GDP and unemployment | `economic-indicators` | HS | 17 | queued |  |
 

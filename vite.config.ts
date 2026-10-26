@@ -3,7 +3,7 @@
 // files (src/core/mathjax.ts, DYNAMIC) must resolve to the SAME module instance as the font class, so both MathJax
 // packages are excluded from dependency optimisation. In `vite build` Rollup bundles them (dynamic files -> chunks).
 // Lesson pages are found by name (pages/lessons/*.html); their narration (pages/lessons/<slug>/voice/*.mp3) is not
-// imported by code, so it is copied into dist after the bundle (with topics.json, which the path page fetches).
+// imported by code, so it is copied into dist after the bundle (with topics.json and topics-hs.json, which the path page fetches).
 import { defineConfig, type Plugin } from 'vitest/config';
 import { resolve } from 'node:path';
 import { cpSync, existsSync, readdirSync } from 'node:fs';
@@ -21,8 +21,8 @@ const copyVoice: Plugin = {
       const v = resolve(lessonsDir, d.name, 'voice');
       if (d.isDirectory() && existsSync(v)) cpSync(v, resolve(outDir, 'lessons', d.name, 'voice'), { recursive: true });
     }
-    // the course path page fetches topics.json at run time
-    cpSync(resolve(lessonsDir, 'topics.json'), resolve(outDir, 'lessons', 'topics.json'));
+    // the course path page fetches topics.json and topics-hs.json at run time
+    for (const f of ['topics.json', 'topics-hs.json']) cpSync(resolve(lessonsDir, f), resolve(outDir, 'lessons', f));
   },
 };
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <link rel="icon" href="data:,">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Math 7–8 Path</title>
+  <title>Math Path</title>
   <link rel="stylesheet" href="./lesson.css">
   <style>
     main.path { max-width: 860px; margin: 0 auto; padding: 8px 24px 48px; display: grid; gap: 14px; }
@@ -16,6 +16,10 @@
     a.topic h3, div.topic h3 { margin: 0 0 4px; font-size: 19px; }
     h2.wave { margin: 22px 0 2px; font-size: 15px; color: var(--dim); font-weight: 600; letter-spacing: .3px; }
     #list { display: grid; gap: 10px; }
+    nav.courses { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0 0 6px; }
+    nav.courses a { color: var(--dim); text-decoration: none; font-size: 15px; padding: 4px 0; border-bottom: 2px solid transparent; }
+    nav.courses a:hover { color: var(--text); }
+    nav.courses a.on { color: var(--text); border-bottom-color: var(--a); }
     a.topic p, div.topic p { margin: 0; color: var(--dim); font-size: 15px; }
     a.topic .st, div.topic .st { font-size: 14px; color: var(--faint); white-space: nowrap; }
     a.topic .st.go { color: var(--s); }
@@ -26,35 +30,55 @@
 <body>
   <header class="top"><h1>Math 7–8</h1></header>
   <main class="path">
+    <nav class="courses" id="tabs"></nav>
     <p class="lead">The first two years of secondary school, in the order the ideas build on each other. Every lesson: a question, a worked example, your turn, a proof, and practice that walks through every part of the topic.</p>
     <div id="list"></div>
   </main>
   <script type="module">
-    // the course path: pages/lessons/topics.json in prerequisite order, grouped in waves; a live topic links to its
-    // page, with this browser's progress
-    const topics = await fetch('./topics.json').then(r => r.json());
+    // the course path: one tab per course. Math 7-8 = pages/lessons/topics.json in prerequisite order, grouped in waves;
+    // the high school and AP courses = pages/lessons/topics-hs.json (docs/lessons/HS_PLAN.md). A live lesson links to its
+    // page, with this browser's progress; the open tab is kept in the URL hash.
+    const [topics, hs] = await Promise.all(['./topics.json', './topics-hs.json'].map(u => fetch(u).then(r => r.json())));
     const waves = { 0: 'Fractions lead-in (grade 5)', 1: 'Wave 1', 2: 'Wave 2', 3: 'Wave 3', 4: 'Wave 4' };
+    const courses = [{ id: 'math-7-8', title: 'Math 7–8', lead: document.querySelector('.lead').textContent,
+      groups: [...new Set(topics.map(t => t.wave))].map(w => [waves[w] ?? `Wave ${w}`, topics.filter(x => x.wave === w)]) }];
+    for (const c of [...new Set(hs.map(t => t.course))]) {
+      const rows = hs.filter(t => t.course === c), live = rows.filter(t => t.live).length;
+      courses.push({ id: c, title: rows[0].courseTitle, groups: [[null, rows]],
+        lead: `${rows.length} lessons in the order the ideas build on each other${live ? `, ${live} ready` : '; the lessons appear here as they are finished'}.` });
+    }
     const read = s => { try { return JSON.parse(localStorage.getItem(`mathscenes.lesson.${s}.progress`) || 'null'); } catch { return null; } };
     const parts = ['The question', 'Worked example', 'Your turn', 'Prove it', 'Practice'];
-    const list = document.getElementById('list');
-    let n = 0;
-    for (const w of [...new Set(topics.map(t => t.wave))]) {
-      const h = document.createElement('h2'); h.className = 'wave'; h.textContent = waves[w] ?? `Wave ${w}`; list.append(h);
-      for (const t of topics.filter(x => x.wave === w)) {
-        n++;
-        const exists = !!t.live;   // set by tools/lesson-status.py when a topic is reviewed and committed
-        const a = document.createElement(exists ? 'a' : 'div');
-        a.className = 'topic' + (exists ? '' : ' missing');
-        if (exists) a.href = `./${t.slug}.html`;
-        a.innerHTML = `<span class="n">${n}</span><div><h3></h3><p></p></div><span class="st"></span>`;
-        a.querySelector('h3').textContent = t.title;
-        a.querySelector('p').textContent = `Grade ${t.grade}${t.subgoals ? ` · ${t.subgoals} parts` : ''}`;
-        const p = read(t.slug), st = a.querySelector('.st');
-        st.textContent = !exists ? 'Coming soon' : p ? `Up to: ${parts[p.reached] ?? parts[0]}` : 'Start';
-        if (exists && !p) st.classList.add('go');
-        list.append(a);
+    const list = document.getElementById('list'), tabs = document.getElementById('tabs'), lead = document.querySelector('.lead'), h1 = document.querySelector('h1');
+    for (const c of courses) {
+      const b = document.createElement('a'); b.href = `#${c.id}`; b.textContent = c.title; b.dataset.id = c.id; tabs.append(b);
+    }
+    function show() {
+      const c = courses.find(x => `#${x.id}` === location.hash) ?? courses[0];
+      tabs.querySelectorAll('a').forEach(a => a.classList.toggle('on', a.dataset.id === c.id));
+      h1.textContent = c.title; lead.textContent = c.lead; document.title = `${c.title} Path`;
+      list.replaceChildren();
+      let n = 0;
+      for (const [name, rows] of c.groups) {
+        if (name) { const h = document.createElement('h2'); h.className = 'wave'; h.textContent = name; list.append(h); }
+        for (const t of rows) {
+          n++;
+          const exists = !!t.live;   // set by tools/lesson-status.py when a lesson is reviewed and committed
+          const a = document.createElement(exists ? 'a' : 'div');
+          a.className = 'topic' + (exists ? '' : ' missing');
+          if (exists) a.href = `./${t.slug}.html`;
+          a.innerHTML = `<span class="n">${n}</span><div><h3></h3><p></p></div><span class="st"></span>`;
+          a.querySelector('h3').textContent = t.title;
+          a.querySelector('p').textContent = `${/^\d/.test(t.grade) ? `Grade ${t.grade}` : t.grade === 'AP' ? 'AP' : 'High school'}${t.subgoals ? ` · ${t.subgoals} parts` : ''}`;
+          const p = read(t.slug), st = a.querySelector('.st');
+          st.textContent = !exists ? 'Coming soon' : p ? `Up to: ${parts[p.reached] ?? parts[0]}` : 'Start';
+          if (exists && !p) st.classList.add('go');
+          list.append(a);
+        }
       }
     }
+    addEventListener('hashchange', show);
+    show();
   </script>
 </body>
 </html>

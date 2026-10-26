@@ -101,7 +101,7 @@
   "course": "algebra-1",
   "courseTitle": "Algebra 1",
   "n": 8,
-  "slug": "systems-of-equations",
+  "slug": "linear-systems",
   "title": "Systems of equations",
   "topics": [
    "secondary-t6-08-solving-systems-of-equations-algebra-i"
@@ -358,7 +358,7 @@
    "secondary-t6-35-geometric-constructions",
    "secondary.geometric-constructions"
   ],
-  "subgoals": 37,
+  "subgoals": 34,
   "band": "HS",
   "needs": [
    "geometry-foundations",
@@ -998,7 +998,7 @@
    "secondary-t7-10-function-operations-and-composition",
    "secondary.composite-functions-domain-range-and-behavior"
   ],
-  "subgoals": 26,
+  "subgoals": 25,
   "band": "HS",
   "needs": [
    "function-analysis",
@@ -1074,7 +1074,7 @@
    "creating-equations",
    "linear-inequalities-2d",
    "quadratic-functions",
-   "systems-of-equations"
+   "linear-systems"
   ]
  },
  {
@@ -1090,7 +1090,7 @@
   "band": "HS",
   "needs": [
    "quadratic-functions",
-   "systems-of-equations"
+   "linear-systems"
   ]
  },
  {
@@ -1224,7 +1224,7 @@
    "us.functions.sum-difference-double-angle-and-half-angle-identities",
    "secondary.sum-difference-and-double-angle-identities"
   ],
-  "subgoals": 30,
+  "subgoals": 28,
   "band": "HS",
   "needs": [
    "coordinate-proofs",
@@ -1402,7 +1402,7 @@
   "band": "HS",
   "needs": [
    "matrices",
-   "systems-of-equations"
+   "linear-systems"
   ]
  },
  {
@@ -1631,7 +1631,7 @@
    "polynomial-division",
    "rational-expressions",
    "solving-linear-equations",
-   "systems-of-equations"
+   "linear-systems"
   ]
  },
  {
@@ -1934,7 +1934,7 @@
   "needs": [
    "expected-value",
    "probability-decisions",
-   "systems-of-equations"
+   "linear-systems"
   ]
  },
  {

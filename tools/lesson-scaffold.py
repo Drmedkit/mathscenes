@@ -1,6 +1,9 @@
 """lesson-scaffold.py: the mechanical files of a new topic, so the builder starts on the maths, not on boilerplate.
 
-    python tools/lesson-scaffold.py <slug>          (the slug must be a row of pages/lessons/topics.json)
+    python tools/lesson-scaffold.py <slug>          (the slug must be a row of pages/lessons/topics.json or topics-hs.json)
+
+A high school lesson can fold in more topics (`alsoTopics` in topics-hs.json): their sub-goals follow the main
+topic's in the plan (a sub-goal id two topics share is kept once), and their misconceptions are listed too.
 
 Writes (never overwrites an existing file):
   pages/lessons/<slug>.html                        the page shell (header, rail, canvas, panel, voice switch)
@@ -16,12 +19,14 @@ ESS = ROOT.parent / "math-curriculum-essentials"
 if len(sys.argv) < 2:
     raise SystemExit(__doc__)
 slug = sys.argv[1]
-row = next((t for t in json.loads((ROOT / "pages/lessons/topics.json").read_text(encoding="utf-8")) if t["slug"] == slug), None)
+rows = [t for f in ("topics.json", "topics-hs.json") for t in json.loads((ROOT / "pages/lessons" / f).read_text(encoding="utf-8"))]
+row = next((t for t in rows if t["slug"] == slug), None)
 if not row:
-    raise SystemExit(f"{slug}: not in pages/lessons/topics.json")
-topic = json.loads((ESS / "topics" / f"{row['id']}.json").read_text(encoding="utf-8"))
+    raise SystemExit(f"{slug}: not in pages/lessons/topics.json or topics-hs.json")
+ids = [row["id"], *row.get("alsoTopics", [])]
+topic = {"subgoals": list({s["id"]: s for i in ids for s in json.loads((ESS / "topics" / f"{i}.json").read_text(encoding="utf-8"))["subgoals"]}.values())}
 mcs = [m for m in json.loads((ESS / "misconceptions.json").read_text(encoding="utf-8"))["misconceptions"]
-       if any(str(u).startswith(row["id"]) for u in (m.get("used_by") or []))]
+       if any(str(u).startswith(i) for i in ids for u in (m.get("used_by") or []))]
 
 
 def write(rel, text):
@@ -60,7 +65,7 @@ write(f"pages/lessons/{slug}.html", f"""<!doctype html>
 """)
 
 sg = "\n".join(f"  {{ id: '{s['id']}', title: {json.dumps(s['title'][:60])}, families: [] }},   // TODO families" for s in topic["subgoals"])
-write(f"src/lesson/topics/{slug}/plan.ts", f"""// plan.ts: practice walks through every sub-goal of {row['id']}, in topic JSON order.
+write(f"src/lesson/topics/{slug}/plan.ts", f"""// plan.ts: practice walks through every sub-goal of {' + '.join(ids)}, in topic JSON order.
 // Give each sub-goal a short kid-friendly title and the families that practise it (every sub-goal needs >= 1).
 import type {{ SubgoalPlan }} from '../../runtime/practice';
 
@@ -76,7 +81,7 @@ import {{ rng }} from '../src/lesson/runtime/item';
 import {{ GENERATORS }} from '../src/lesson/topics/{slug}/items';
 import {{ PLAN }} from '../src/lesson/topics/{slug}/plan';
 
-const TOPIC = JSON.parse(fs.readFileSync('../math-curriculum-essentials/topics/{row['id']}.json', 'utf8'));
+const TOPIC = {{ subgoals: [...new Map({json.dumps(ids)}.flatMap(i => JSON.parse(fs.readFileSync(`../math-curriculum-essentials/topics/${{i}}.json`, 'utf8')).subgoals).map((s: {{ id: string }}) => [s.id, s] as const)).values()] }};
 const CATALOG = new Set<string>(JSON.parse(fs.readFileSync('../math-curriculum-essentials/misconceptions.json', 'utf8')).misconceptions.map((m: {{ id: string }}) => m.id));
 const GEN = GENERATORS as Record<string, (R: () => number, n: number, sg?: string) => import('../src/lesson/runtime/item').Item>;
 
@@ -109,7 +114,7 @@ describe('{slug}: families', () => {{
 
 write(f"pages/lessons/{slug}/voice/lines.json", "{}\n")
 
-print(f"\n{row['id']}  ({len(topic['subgoals'])} sub-goals, {len(mcs)} misconceptions)")
+print(f"\n{' + '.join(ids)}  ({len(topic['subgoals'])} sub-goals, {len(mcs)} misconceptions)")
 for s in topic["subgoals"]:
     print(f"  - {s['id']}: {s['title']}")
 print("misconceptions:")

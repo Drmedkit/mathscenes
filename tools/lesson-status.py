@@ -1,4 +1,5 @@
-"""lesson-status.py: docs/lessons/STATUS.md from pages/lessons/topics.json (the ordered topic list) and
+"""lesson-status.py: docs/lessons/STATUS.md from pages/lessons/topics.json (the ordered 7-8 topic list),
+pages/lessons/topics-hs.json (the high school and AP lessons, by course; docs/lessons/HS_PLAN.md) and
 docs/lessons/status.json ({slug: {"state": ..., "note": ..., "commit": ...}}).
 
     python tools/lesson-status.py [slug state [note]]
@@ -10,6 +11,7 @@ reading STATUS.md: the next topics to build are the first "queued" ones of the l
 import json, sys, pathlib, datetime, subprocess
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 topics = json.loads((ROOT / "pages/lessons/topics.json").read_text(encoding="utf-8"))
+hs = json.loads((ROOT / "pages/lessons/topics-hs.json").read_text(encoding="utf-8"))
 sp = ROOT / "docs/lessons/status.json"
 status = json.loads(sp.read_text(encoding="utf-8")) if sp.exists() else {}
 if len(sys.argv) >= 3:
@@ -22,10 +24,11 @@ if len(sys.argv) >= 3:
     except Exception: pass
     sp.write_text(json.dumps(status, indent=1, ensure_ascii=False), encoding="utf-8")
 # the path page shows a topic as a link once it is live
-for t in topics:
+for t in topics + hs:
     if status.get(t["slug"], {}).get("state") == "live": t["live"] = True
     else: t.pop("live", None)
 (ROOT / "pages/lessons/topics.json").write_text(json.dumps(topics, indent=1, ensure_ascii=False), encoding="utf-8")
+(ROOT / "pages/lessons/topics-hs.json").write_text(json.dumps(hs, indent=1, ensure_ascii=False), encoding="utf-8")
 names = {0: "Lead-in (grade 5 fractions)", 1: "Wave 1", 2: "Wave 2", 3: "Wave 3", 4: "Wave 4"}
 counts = {}
 lines = ["# Lesson line: build status", "",
@@ -40,7 +43,18 @@ for w in sorted({t["wave"] for t in topics}):
         st = s.get("state", "queued"); counts[st] = counts.get(st, 0) + 1
         lines.append(f"| {i} | {t['title']} | `{t['slug']}` | {t['grade']} | {t.get('subgoals', '')} | {st} | {s.get('note', '')} |")
     lines.append("")
-lines.insert(7, "Totals: " + ", ".join(f"{k} {v}" for k, v in sorted(counts.items())) + f" (of {len(topics)})")
+hs_counts = {}
+lines += ["# Phase 2: high school and AP (docs/lessons/HS_PLAN.md)", ""]
+for c in dict.fromkeys(t["course"] for t in hs):
+    rows = [t for t in hs if t["course"] == c]
+    lines += [f"## {rows[0]['courseTitle']}", "", "| # | lesson | slug | grade | sub-goals | state | note |", "|---|---|---|---|---|---|---|"]
+    for t in rows:
+        s = status.get(t["slug"], {})
+        st = s.get("state", "queued"); hs_counts[st] = hs_counts.get(st, 0) + 1
+        lines.append(f"| {t['n']} | {t['title']} | `{t['slug']}` | {t['grade']} | {t.get('subgoals', '')} | {st} | {s.get('note', '')} |")
+    lines.append("")
+lines.insert(7, "Totals: " + ", ".join(f"{k} {v}" for k, v in sorted(counts.items())) + f" (of {len(topics)}); phase 2: "
+             + ", ".join(f"{k} {v}" for k, v in sorted(hs_counts.items())) + f" (of {len(hs)})")
 lines.insert(8, "")
 (ROOT / "docs/lessons/STATUS.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 print("STATUS.md:", ", ".join(f"{k} {v}" for k, v in sorted(counts.items())))

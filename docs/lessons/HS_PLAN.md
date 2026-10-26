@@ -6,7 +6,7 @@ Written 2026-10-26, after the 7-8 line went online (Cloudflare Pages project `ma
 
 ## 1. Scope
 
-**136 open topics** (118 HS, 16 AP/extension, the 2 grade 7-8 money topics) with **2,872 sub-goals**.
+**136 open topics** (118 HS, 16 AP/extension, the 2 grade 7-8 money topics) with **2,866 different sub-goals**.
 Eleven small topics are folded into the lesson that teaches the same idea (for example "composite functions: domain
 and range" into "combining and composing functions", "study design" and "judging and reporting" into "estimating with a
 margin of error"), so the line gets **125 lessons**. Every topic id is in exactly one lesson; the first id of a lesson
@@ -24,10 +24,10 @@ sort over every `required` link between open topics).
 | course | lessons | sub-goals | of which AP | what it rests on |
 |---|---|---|---|---|
 | Algebra 1 | 19 | 465 | 0 | grades 7-8 |
-| Geometry | 18 | 485 | 0 | grades 7-8; coordinate proofs and circle equations use Algebra 1 slope |
+| Geometry | 18 | 482 | 0 | grades 7-8; coordinate proofs and circle equations use Algebra 1 slope |
 | Statistics and probability | 15 | 313 | 5 | Algebra 1 (regression), Geometry logic (advanced counting) |
-| Algebra 2 | 20 | 478 | 0 | Algebra 1; circle equations; counting (binomial theorem) |
-| Precalculus | 20 | 485 | 2 | Algebra 2, right-triangle trig, arcs and sectors |
+| Algebra 2 | 20 | 477 | 0 | Algebra 1; circle equations; counting (binomial theorem) |
+| Precalculus | 20 | 483 | 2 | Algebra 2, right-triangle trig, arcs and sectors |
 | Calculus | 18 | 311 | 8 | Precalculus (limits, trig, logs) |
 | Discrete math and reasoning | 10 | 238 | 1 | counting, logic, expected value |
 | Money | 5 | 97 | 0 | piecewise functions, exponential growth, series |
@@ -69,7 +69,7 @@ an independent oracle (a different agent) + explain + placement adapter → `too
 
 **Who builds:** the lead builds the kit and the first lesson of each course (the blueprint for that course's pictures).
 The other lessons go to builder agents on Opus, at most three at once, one lesson each, never two on the same files;
-oracles go to Haiku. The lead reviews one contact sheet per lesson before it ships.
+oracles also run on Opus (the line rule: no Haiku or Sonnet builds or reviews a lesson). The lead reviews one contact sheet per lesson before it ships.
 
 **Size and cost:** a 7-8 lesson took 400-500k tokens including one fix round; HS lessons are about a quarter bigger,
 so plan on about 0.55M per lesson, or roughly 70M tokens for all 125, plus the kit. At three builders at once that is
@@ -104,7 +104,7 @@ A course is useful on its own, so the site gets each course as soon as its wave 
 | 5 | `linear-functions-slope` | Linear functions and slope | 31 | - | secondary-t6-09-linear-functions-and-slope |
 | 6 | `linear-models` | Linear equations from a context | 18 | linear-functions-slope | secondary-t6-32-writing-linear-equations-from-context |
 | 7 | `linear-inequalities-2d` | Graphing inequalities in two variables | 27 | creating-equations, linear-functions-slope, solving-linear-equations | secondary-t6-33-graphing-linear-inequalities-two-variables |
-| 8 | `systems-of-equations` | Systems of equations | 27 | creating-equations, linear-functions-slope, solving-linear-equations | secondary-t6-08-solving-systems-of-equations-algebra-i |
+| 8 | `linear-systems` | Systems of equations | 27 | creating-equations, linear-functions-slope, solving-linear-equations | secondary-t6-08-solving-systems-of-equations-algebra-i |
 | 9 | `arithmetic-sequences` | Arithmetic sequences | 21 | - | secondary-t6-10-sequences-arithmetic |
 | 10 | `piecewise-functions` | Piecewise and step functions | 24 | solving-linear-equations | secondary-t7-12-piecewise-and-step-functions |
 | 11 | `absolute-value` | Absolute value functions and equations | 27 | piecewise-functions, solving-linear-equations | secondary-t7-13-absolute-value-functions-and-equations |
@@ -117,7 +117,7 @@ A course is useful on its own, so the site gets each course as soon as its wave 
 | 18 | `completing-the-square` | Solving quadratics: square roots, completing the square, the formula | 16 | - | secondary.solving-quadratic-equations-by-completing-the-square-and-the |
 | 19 | `function-families` | Linear, quadratic or exponential? | 26 | exponential-functions, linear-functions-slope, quadratic-functions | secondary-t6-34-function-families-overview |
 
-### Geometry (`geometry`): 18 lessons, 485 sub-goals
+### Geometry (`geometry`): 18 lessons, 482 sub-goals
 
 | # | slug | lesson | sub-goals | needs (earlier lessons) | topic ids |
 |---|---|---|---|---|---|
@@ -126,7 +126,7 @@ A course is useful on its own, so the site gets each course as soon as its wave 
 | 3 | `counterexamples-and-proof` | Counterexamples, inference and proof | 15 | conditional-statements, geometry-foundations | v2.extension.counterexample-inference-and-proof |
 | 4 | `triangle-congruence` | Triangle congruence | 31 | geometry-foundations | secondary-t6-19-triangle-congruence-sss-sas-asa-aas-hl |
 | 5 | `triangle-inequalities` | Isosceles triangles and side-angle order | 12 | geometry-foundations, triangle-congruence | secondary.triangle-side-angle-relationships-isosceles-theorems-side-an |
-| 6 | `constructions` | Constructions with compass and straightedge | 37 | geometry-foundations, triangle-congruence | secondary-t6-35-geometric-constructions<br>secondary.geometric-constructions |
+| 6 | `constructions` | Constructions with compass and straightedge | 34 | geometry-foundations, triangle-congruence | secondary-t6-35-geometric-constructions<br>secondary.geometric-constructions |
 | 7 | `triangle-centers` | Midsegments and points of concurrency | 35 | constructions, geometry-foundations, triangle-congruence | secondary-t6-20-properties-of-triangles |
 | 8 | `quadrilaterals` | Parallelograms and other quadrilaterals | 41 | conditional-statements, triangle-centers | secondary-t6-21-parallelogram-and-quadrilateral-properties |
 | 9 | `similarity` | Similar triangles | 25 | triangle-congruence | secondary-t6-22-similarity-criteria-and-applications |
@@ -160,7 +160,7 @@ A course is useful on its own, so the site gets each course as soon as its wave 
 | 14 | `errors-and-power` | Type I and type II errors and power (AP) | 13 | conditional-probability, normal-distribution, sampling-distributions, simulation-tests | us.statistics.type-i-and-type-ii-errors-and-power |
 | 15 | `chi-square` | Chi-square tests (AP) | 14 | conditional-probability, margin-of-error, simulation-tests | us.statistics.chi-square-tests-goodness-of-fit-independence-homogeneity |
 
-### Algebra 2 (`algebra-2`): 20 lessons, 478 sub-goals
+### Algebra 2 (`algebra-2`): 20 lessons, 477 sub-goals
 
 | # | slug | lesson | sub-goals | needs (earlier lessons) | topic ids |
 |---|---|---|---|---|---|
@@ -176,16 +176,16 @@ A course is useful on its own, so the site gets each course as soon as its wave 
 | 10 | `function-transformations` | Transformations of functions | 22 | polynomials | secondary-t7-11-transformations-of-functions-general |
 | 11 | `radical-functions` | Square-root and cube-root functions and equations | 27 | function-transformations, radicals-exponents, solving-linear-equations | secondary-t7-07-radical-equations-and-functions<br>secondary.radical-equations-and-extraneous-solutions |
 | 12 | `function-analysis` | Key features: local and global claims | 25 | absolute-value, function-families, function-transformations, polynomial-graphs, quadratic-functions, radical-functions, rational-expressions | secondary-t7-21-function-notation-and-analysis-advanced |
-| 13 | `composition` | Combining and composing functions | 26 | function-analysis, polynomials, quadratic-functions, units-and-quantities | secondary-t7-10-function-operations-and-composition<br>secondary.composite-functions-domain-range-and-behavior |
+| 13 | `composition` | Combining and composing functions | 25 | function-analysis, polynomials, quadratic-functions, units-and-quantities | secondary-t7-10-function-operations-and-composition<br>secondary.composite-functions-domain-range-and-behavior |
 | 14 | `inverse-functions` | Inverse functions | 18 | composition, quadratic-functions, units-and-quantities | secondary.inverse-functions-and-domain-restrictions |
 | 15 | `logarithms` | Exponential and logarithmic functions | 27 | composition, exponential-functions, radicals-exponents | secondary-t7-08-exponential-and-logarithmic-functions |
 | 16 | `exp-log-equations` | Exponential and logarithmic equations | 28 | composition, logarithms, solving-linear-equations | secondary-t8-12-exponential-and-logarithmic-equations-advanced |
-| 17 | `nonlinear-systems` | Systems of nonlinear equations | 26 | circle-equations, creating-equations, linear-inequalities-2d, quadratic-functions, systems-of-equations | secondary-t7-14-systems-of-equations-nonlinear |
-| 18 | `three-variable-systems` | Systems of three equations | 21 | quadratic-functions, systems-of-equations | secondary-t7-20-solving-systems-of-three-equations |
+| 17 | `nonlinear-systems` | Systems of nonlinear equations | 26 | circle-equations, creating-equations, linear-inequalities-2d, quadratic-functions, linear-systems | secondary-t7-14-systems-of-equations-nonlinear |
+| 18 | `three-variable-systems` | Systems of three equations | 21 | quadratic-functions, linear-systems | secondary-t7-20-solving-systems-of-three-equations |
 | 19 | `series` | Arithmetic and geometric series | 29 | arithmetic-sequences, conditional-statements, exponential-functions, geometric-sequences | secondary-t7-15-sequences-and-series<br>secondary.infinite-geometric-series-and-convergence |
 | 20 | `binomial-theorem` | The binomial theorem | 24 | counting, polynomial-identities | secondary-t8-18-binomial-theorem-and-pascal-s-triangle |
 
-### Precalculus (`precalculus`): 20 lessons, 485 sub-goals
+### Precalculus (`precalculus`): 20 lessons, 483 sub-goals
 
 | # | slug | lesson | sub-goals | needs (earlier lessons) | topic ids |
 |---|---|---|---|---|---|
@@ -194,7 +194,7 @@ A course is useful on its own, so the site gets each course as soon as its wave 
 | 3 | `inverse-trig` | Inverse trig functions | 17 | composition, unit-circle | secondary-t8-03-inverse-trigonometric-functions |
 | 4 | `trig-identities` | Fundamental trig identities | 23 | radicals-exponents, rational-expressions, unit-circle | secondary-t8-04-trigonometric-identities |
 | 5 | `trig-equations` | Solving trig equations | 27 | function-analysis, inverse-trig, trig-identities, unit-circle | secondary-t8-05-solving-trigonometric-equations |
-| 6 | `sum-difference-identities` | Sum, difference, double- and half-angle identities | 30 | coordinate-proofs, inverse-trig, trig-equations, trig-graphs, trig-identities, unit-circle | us.functions.sum-difference-double-angle-and-half-angle-identities<br>secondary.sum-difference-and-double-angle-identities |
+| 6 | `sum-difference-identities` | Sum, difference, double- and half-angle identities | 28 | coordinate-proofs, inverse-trig, trig-equations, trig-graphs, trig-identities, unit-circle | us.functions.sum-difference-double-angle-and-half-angle-identities<br>secondary.sum-difference-and-double-angle-identities |
 | 7 | `laws-of-sines-cosines` | Law of sines and law of cosines | 27 | creating-equations, right-triangle-trig, triangle-centers, triangle-congruence | secondary-t8-06-law-of-sines-and-law-of-cosines |
 | 8 | `vectors` | Vectors in the plane and the dot product | 32 | inverse-trig, laws-of-sines-cosines, unit-circle | secondary-t8-08-vectors-2d<br>secondary.dot-product-and-angles-between-vectors-in-2d |
 | 9 | `polar-complex` | Polar coordinates and complex numbers in trig form | 27 | complex-numbers, inverse-trig, sum-difference-identities, unit-circle | secondary-t8-07-polar-coordinates-and-complex-numbers-in-trig-form |
@@ -204,7 +204,7 @@ A course is useful on its own, so the site gets each course as soon as its wave 
 | 13 | `parametric` | Parametric equations | 30 | circle-equations, function-analysis, quadratic-functions, solving-linear-equations, trig-identities, unit-circle | secondary-t8-17-parametric-equations |
 | 14 | `matrices` | Matrices | 23 | - | secondary-t8-09-matrices-operations-and-applications |
 | 15 | `vectors-3d` | Vectors in three dimensions | 18 | matrices, vectors | us.geometry.vectors-in-three-dimensions-dot-and-cross-product |
-| 16 | `matrix-systems` | Matrix methods for linear systems | 24 | matrices, systems-of-equations | secondary.matrix-methods-for-linear-systems |
+| 16 | `matrix-systems` | Matrix methods for linear systems | 24 | matrices, linear-systems | secondary.matrix-methods-for-linear-systems |
 | 17 | `induction` | Proof by induction | 20 | conditional-statements, polynomials, series | secondary-t8-14-sequences-series-and-mathematical-induction |
 | 18 | `de-moivre` | Powers and roots of complex numbers (AP) | 13 | complex-numbers, induction, polar-complex, radicals-exponents, unit-circle | us.functions.complex-powers-and-roots-de-moivre-theorem |
 | 19 | `nonlinear-inequalities` | Logarithmic, radical and trig inequalities (AP) | 15 | exp-log-equations, function-analysis, logarithms, polynomial-graphs, radical-functions, solving-linear-equations, trig-equations, trig-graphs, unit-circle | us.algebra.logarithmic-radical-and-trigonometric-inequalities |
@@ -221,7 +221,7 @@ A course is useful on its own, so the site gets each course as soon as its wave 
 | 5 | `definite-integral` | The definite integral as accumulation | 17 | derivative-idea, limits | v2.extension.integral-calculus |
 | 6 | `fundamental-theorem` | Antiderivatives and the fundamental theorem | 20 | definite-integral, derivative-rules, unit-circle | v2.extension.antiderivatives-and-the-fundamental-theorem-of-calculus |
 | 7 | `integration-applications` | Area, average value and volume | 27 | composition, definite-integral, derivative-idea, nonlinear-systems, solids | us.functions.applications-of-integration-area-between-curves-average-valu |
-| 8 | `integration-techniques` | Integration by parts and partial fractions (AP) | 16 | definite-integral, derivative-rules, factoring, fundamental-theorem, implicit-differentiation, polynomial-division, rational-expressions, solving-linear-equations, systems-of-equations | us.functions.integration-by-parts-and-partial-fractions |
+| 8 | `integration-techniques` | Integration by parts and partial fractions (AP) | 16 | definite-integral, derivative-rules, factoring, fundamental-theorem, implicit-differentiation, polynomial-division, rational-expressions, solving-linear-equations, linear-systems | us.functions.integration-by-parts-and-partial-fractions |
 | 9 | `improper-integrals` | Improper integrals (AP) | 13 | derivative-applications, fundamental-theorem, limits, logarithms | us.functions.improper-integrals |
 | 10 | `differential-equations` | Differential equations: growth, decay, cooling | 21 | definite-integral, derivative-rules, exp-log-equations, exponential-functions, units-and-quantities | v2.extension.differential-equations |
 | 11 | `optimization` | Derivative tests, curve sketching and optimization | 16 | creating-equations, derivative-idea, differential-equations, limits, rational-functions, solids | v2.extension.derivative-tests-curve-sketching-and-optimization |
@@ -243,7 +243,7 @@ A course is useful on its own, so the site gets each course as soon as its wave 
 | 4 | `graph-theory` | Networks, paths, circuits and trees | 38 | counting, probability-decisions | us.algebra.graph-theory-networks-paths-circuits-coloring-and-trees |
 | 5 | `fair-division` | Fair division and apportionment | 26 | - | us.algebra.fair-division-and-apportionment |
 | 6 | `voting` | Voting methods and fairness | 25 | counting | us.algebra.election-theory-voting-methods-fairness-criteria-and-weighte |
-| 7 | `game-theory` | Game theory: payoff matrices | 17 | expected-value, probability-decisions, systems-of-equations | us.statistics.game-theory-payoff-matrices-and-optimal-strategies |
+| 7 | `game-theory` | Game theory: payoff matrices | 17 | expected-value, probability-decisions, linear-systems | us.statistics.game-theory-payoff-matrices-and-optimal-strategies |
 | 8 | `modeling` | Modeling new situations | 20 | - | v2.extension.reasoning-transfer |
 | 9 | `scheduling` | Scheduling and bin packing | 22 | modeling | us.algebra.scheduling-and-bin-packing |
 | 10 | `tech-projects` | Modeling projects with technology | 30 | arithmetic-sequences, creating-equations, geometric-sequences | v2.extension.technology-projects |
