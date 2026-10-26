@@ -438,10 +438,10 @@
   "note": "58 families, 27/27; oracle 0 errors on 34,800; VOICE PENDING"
  },
  "exponential-functions": {
-  "state": "built",
-  "at": "2026-10-26 17:00",
-  "commit": "4940ee2",
-  "note": "54 families, 26/26; GrowthTable"
+  "state": "live",
+  "at": "2026-10-26 17:11",
+  "commit": "b301db4",
+  "note": "54 families, 26/26; oracle 0 errors on 33,000; VOICE PENDING"
  },
  "linear-inequalities-2d": {
   "state": "live",

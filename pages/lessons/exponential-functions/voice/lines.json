@@ -1,0 +1,131 @@
+{
+ "q.intro": {
+  "text": "Two accounts both start with one thousand dollars. Account A gets one hundred dollars added every year. Account B earns ten percent interest every year, on its current balance. After three years, which has more? Pick one, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one. The picture moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "Year by year. A adds one hundred dollars: eleven hundred, twelve hundred, thirteen hundred. B adds ten percent of what it has now. Ten percent of one thousand is one hundred, but ten percent of eleven hundred is one hundred ten, and ten percent of twelve hundred ten is one hundred twenty one. After three years, A has thirteen hundred dollars, and B has thirteen hundred thirty one."
+ },
+ "e.step1": {
+  "text": "Compare the changes. B’s differences grow: plus one hundred, plus one hundred ten, plus one hundred twenty one. But divide neighbours, and every ratio is the same: times one point one. Equal differences make a line. Equal ratios make exponential growth."
+ },
+ "e.step2": {
+  "text": "So B of t equals one thousand, times one point one to the power t. One thousand is the value at t equals zero: the initial value a. One point one, which is one plus ten percent, is the factor b. The exponent t counts how many times it acts."
+ },
+ "e.step3": {
+  "text": "On a graph, A is a straight line, and B curves up, slowly at first. After twenty years, A has three thousand dollars, while B has about six thousand seven hundred twenty seven. Multiplying by the same factor always beats adding the same amount, in the end."
+ },
+ "e.why": {
+  "text": "Quick check: why does B gain one hundred ten dollars in year two, not one hundred?"
+ },
+ "e.why.ok": {
+  "text": "Yes. The ten percent is of the balance at that moment, eleven hundred dollars, so the gain grows with the balance."
+ },
+ "e.why.rate": {
+  "text": "The rate stays ten percent every year. What changes is the amount it is taken of: eleven hundred dollars instead of one thousand."
+ },
+ "e.why.add": {
+  "text": "Nothing extra is added per year. Ten percent of the current eleven hundred dollars just happens to be one hundred ten."
+ },
+ "t.intro": {
+  "text": "Your turn, with decay. A car costs twenty four thousand dollars and loses twenty percent of its value every year. Done for you: after year one, it is worth nineteen thousand two hundred."
+ },
+ "t.b": {
+  "text": "Each year the value is multiplied by the same factor. Which one?"
+ },
+ "t.b.ok": {
+  "text": "Yes. Losing twenty percent leaves eighty percent, so b is zero point eight. Twenty four thousand times zero point eight is nineteen thousand two hundred."
+ },
+ "t.b.rate": {
+  "text": "Times zero point two would keep only twenty percent of the value. Twenty percent is what is lost. Eighty percent is what is left."
+ },
+ "t.b.neg": {
+  "text": "A negative factor would make the value negative after one year. Decay uses a factor between zero and one."
+ },
+ "t.b.up": {
+  "text": "Times one point two makes the value grow by twenty percent. This car loses value."
+ },
+ "t.model": {
+  "text": "Which model gives the value V after t years?"
+ },
+ "t.model.ok": {
+  "text": "Yes. Start at twenty four thousand, and multiply by zero point eight once per year."
+ },
+ "t.model.lin": {
+  "text": "That takes off four thousand eight hundred dollars every year. But twenty percent of a smaller value is less than that. The loss shrinks."
+ },
+ "t.model.part": {
+  "text": "The exponent belongs to zero point eight only. Putting it on twenty four thousand too would multiply the price again every year."
+ },
+ "t.v2": {
+  "text": "What is the car worth after two years? Type the dollars."
+ },
+ "t.v2.ok": {
+  "text": "Yes. Nineteen thousand two hundred times zero point eight is fifteen thousand three hundred sixty dollars. Year two loses only three thousand eight hundred forty."
+ },
+ "t.v2.lin": {
+  "text": "Fourteen thousand four hundred takes four thousand eight hundred off twice. In year two the car loses twenty percent of nineteen thousand two hundred, which is three thousand eight hundred forty."
+ },
+ "t.v2.other": {
+  "text": "Multiply by zero point eight twice."
+ },
+ "t.zero": {
+  "text": "In this model, does the car’s value ever reach zero dollars?"
+ },
+ "t.zero.ok": {
+  "text": "Right. Eighty percent of a positive number is still positive. The value gets closer and closer to zero, and never reaches it. The graph has an asymptote at zero."
+ },
+ "t.zero.five": {
+  "text": "Five losses of twenty percent are not one hundred percent, because each twenty percent is of a smaller value. After five years it is still worth about seven thousand eight hundred sixty four dollars."
+ },
+ "t.zero.neg": {
+  "text": "Multiplying a positive value by zero point eight never makes it negative. It only gets smaller."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked B, and you were right: thirteen hundred thirty one against thirteen hundred, because B’s ten percent is of a growing balance."
+ },
+ "q.cb.same": {
+  "text": "At the start you picked the same. That treats ten percent as one hundred dollars every year. But after year one it is ten percent of more than one thousand. B has thirteen hundred thirty one."
+ },
+ "q.cb.a": {
+  "text": "At the start you picked A. A has thirteen hundred after three years, but B has thirteen hundred thirty one. Its ten percent grows with the balance."
+ },
+ "q.cb.none": {
+  "text": "Exponential growth multiplies by the same factor each step: a percent of the current amount, not of the start."
+ },
+ "p.intro": {
+  "text": "Maya looks at f of t equals five times three to the t. She checks f of one over f of zero, f of two over f of one, and f of three over f of two. All three are three. So the ratio is three for every t, she says. Is her check a proof?"
+ },
+ "p.build": {
+  "text": "Right, three checks are three examples. Now prove it for every t. Fill each because with the reason that makes the line true."
+ },
+ "p.test": {
+  "text": "Three checks are three examples, and the claim is about every t, also two and a half, or one thousand. Build the real argument, and see what it needs."
+ },
+ "p.c1": {
+  "text": "Right. f of t plus one means: put t plus one in place of t."
+ },
+ "p.c2": {
+  "text": "Right. Three to the t plus one is three to the t, times three: one more factor of three. So f of t plus one is three times f of t."
+ },
+ "p.c3": {
+  "text": "Right. f of t is never zero, so we may divide by it, and nothing depended on which t it was."
+ },
+ "p.no.examples": {
+  "text": "That is Maya’s argument again. Three values say nothing about t equals one thousand."
+ },
+ "p.no.shift": {
+  "text": "f of t plus one is the formula with t plus one put in for t, not f of t, plus one."
+ },
+ "p.no.sum": {
+  "text": "Three to the t plus one is three to the t times three, not plus three. Try t equals one: nine is not six."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof. For every t, one more step of t multiplies f by three. Maya was right about the ratio. Now it is proved, not just checked."
+ }
+}

@@ -171,7 +171,8 @@
   "subgoals": 26,
   "requires": [
    "units-and-quantities"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t6-14-sequences-geometric",
