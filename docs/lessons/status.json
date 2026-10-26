@@ -426,18 +426,30 @@
   "note": "58 families, 28/28; ExpLadder, RootTiles (kit candidates)"
  },
  "linear-models": {
-  "state": "building",
-  "at": "2026-10-26 14:42",
-  "commit": "5783187"
+  "state": "live",
+  "at": "2026-10-26 16:05",
+  "commit": "48940ba",
+  "note": "35 families, 18/18; oracle 0 errors on 21,600; VOICE PENDING"
  },
  "absolute-value": {
-  "state": "building",
-  "at": "2026-10-26 15:07",
-  "commit": "1febd6b"
+  "state": "built",
+  "at": "2026-10-26 16:02",
+  "commit": "48940ba",
+  "note": "58 families, 27/27"
  },
  "exponential-functions": {
   "state": "building",
   "at": "2026-10-26 15:42",
   "commit": "1febd6b"
+ },
+ "linear-inequalities-2d": {
+  "state": "building",
+  "at": "2026-10-26 15:55",
+  "commit": "056db92"
+ },
+ "geometric-sequences": {
+  "state": "building",
+  "at": "2026-10-26 16:02",
+  "commit": "48940ba"
  }
 }

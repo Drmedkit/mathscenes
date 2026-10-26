@@ -73,7 +73,8 @@
   "subgoals": 18,
   "requires": [
    "linear-functions-slope"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t6-33-graphing-linear-inequalities-two-variables",

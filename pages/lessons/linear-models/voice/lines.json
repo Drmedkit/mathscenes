@@ -1,0 +1,128 @@
+{
+ "q.intro": {
+  "text": "Sam’s arcade card: the receipts say four games cost thirteen dollars in total, card included, and ten games cost twenty-eight dollars. Sam has forty dollars to spend, card included. How many games can Sam play? Pick an answer, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps: name the quantities, find the rate, walk back to the start, then let the story decide the answer."
+ },
+ "e.step0": {
+  "text": "Two quantities change together. The input g is the number of games played: a count, and g equals zero means the card is new. The output C is the total cost in dollars, card included."
+ },
+ "e.step1": {
+  "text": "From the first receipt to the second: six more games, fifteen dollars more. The rate is fifteen divided by six, two dollars and fifty cents per game. Dollars per game: output unit per input unit."
+ },
+ "e.step2": {
+  "text": "Thirteen dollars is not the start: it is after four games. Walk back four games: thirteen minus two and a half times four is three dollars, the card itself. So C equals two point five g, plus three. Units check: dollars per game times games is dollars, plus dollars. And games come whole: the model is dots, not a solid line."
+ },
+ "e.step3": {
+  "text": "Forty dollars to spend is a limit: two point five g, plus three, is at most forty, so g is at most fourteen point eight. Not fourteen point eight games, and not fifteen: fifteen games cost forty dollars and fifty cents. The story decides the direction: fourteen games, for thirty-eight dollars."
+ },
+ "e.why": {
+  "text": "Quick check: why fourteen games, when fourteen point eight is closer to fifteen?"
+ },
+ "e.why.ok": {
+  "text": "Yes. The limit decides: check the neighbor. Fifteen games break the forty dollars, fourteen games fit. Nearest is not the rule."
+ },
+ "e.why.near": {
+  "text": "Rounding to the nearest gives fifteen, and fifteen games cost forty dollars and fifty cents: Sam cannot pay that. The direction comes from the limit."
+ },
+ "e.why.drop": {
+  "text": "Here dropping the decimal lands on fourteen, but only by luck. If Sam needed at least forty dollars worth, dropping would leave him short. The reason is the limit."
+ },
+ "t.intro": {
+  "text": "Your turn. A team runs a car wash. After ten cars their profit is negative eighty dollars, still in the hole. After twenty-five cars it is forty dollars. The rate is done for you: one hundred twenty divided by fifteen, eight dollars per car."
+ },
+ "t.b": {
+  "text": "Walk back to w equals zero. What is the profit before any car?"
+ },
+ "t.b.empty": {
+  "text": "Type a number first."
+ },
+ "t.b.ok": {
+  "text": "Yes: negative eighty, minus eight times ten, is negative one hundred sixty. The team spent one hundred sixty dollars on supplies before the first car. P equals eight w, minus one hundred sixty."
+ },
+ "t.b.first": {
+  "text": "Negative eighty is the profit after ten cars, not at the start. Walk back ten cars, at eight dollars each."
+ },
+ "t.b.sign": {
+  "text": "Walking back undoes the earnings: take eight times ten away, do not add it."
+ },
+ "t.b.no": {
+  "text": "Start from ten cars and negative eighty dollars, and go back ten cars: negative eighty, minus eight times ten."
+ },
+ "t.ineq": {
+  "text": "The team wants a profit of at least two hundred fifty dollars. Which inequality says that?"
+ },
+ "t.ineq.ok": {
+  "text": "Yes: at least means two hundred fifty dollars or more, two hundred fifty included."
+ },
+ "t.ineq.strict": {
+  "text": "At least two hundred fifty includes two hundred fifty itself: use greater than or equal, not greater than."
+ },
+ "t.ineq.rev": {
+  "text": "At least means two hundred fifty or more. Less than or equal would mean two hundred fifty or less."
+ },
+ "t.ineq.eq": {
+  "text": "A goal of at least allows many profits, not exactly one: use an inequality."
+ },
+ "t.w": {
+  "text": "Eight w minus one hundred sixty, at least two hundred fifty, gives w at least fifty-one point two five. How many cars must they wash?"
+ },
+ "t.w.ok": {
+  "text": "Yes: fifty-two cars. Fifty-one cars give two hundred forty-eight dollars, just short. Fifty-two give two hundred fifty-six. Enough rounds up."
+ },
+ "t.w.near": {
+  "text": "Fifty-one point two five rounds to fifty-one, but fifty-one cars give only two hundred forty-eight dollars: short. Enough goes up."
+ },
+ "t.w.frac": {
+  "text": "Nobody washes a quarter of a car: w is a count. Pick the whole number that reaches the goal."
+ },
+ "t.w.no": {
+  "text": "w must be at least fifty-one point two five, and a whole number: the first whole number past it."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked fourteen, and you were right. Now you know why: the model gives fourteen point eight, and the limit rounds down."
+ },
+ "q.cb.near": {
+  "text": "At the start you picked fifteen: the nearest whole number to fourteen point eight. But fifteen games cost forty dollars and fifty cents. A limit sets the direction."
+ },
+ "q.cb.prop": {
+  "text": "At the start you picked twelve: that treats thirteen dollars for four games as three twenty-five per game. The card is paid once. Each game is two fifty."
+ },
+ "q.cb.none": {
+  "text": "Rate from two data points, walk back to the start, and let the story decide which whole number counts."
+ },
+ "p.intro": {
+  "text": "A print shop charges twelve dollars setup plus seventy-five cents per poster. Ava has exactly fifty dollars to spend and says: fifty minus twelve, divided by point seven five, is fifty point six seven, so fifty-one posters cost exactly fifty dollars. Is Ava right?"
+ },
+ "p.test": {
+  "text": "Let’s test it. Build the argument, and see where it leads."
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Right. Put fifty-one back into the model: fifty dollars and twenty-five cents. Ava’s rounding changed the total."
+ },
+ "p.c2": {
+  "text": "Right. The dots jump from forty-nine fifty to fifty twenty-five: the fifty-dollar line passes between them and hits no dot."
+ },
+ "p.c3": {
+  "text": "Right. The exact question has no answer. The question with a limit does: fifty posters."
+ },
+ "p.no.round": {
+  "text": "Rounding changes the input, so it changes the total: fifty-one posters cost fifty dollars and twenty-five cents. Exactly means exactly."
+ },
+ "p.no.eq": {
+  "text": "The equation has a solution, fifty point six seven, but posters are counted: the story only allows whole numbers."
+ },
+ "p.no.drop": {
+  "text": "Fifty posters cost forty-nine fifty, not fifty. Dropping the decimal does not make it exact either."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof: an exact target on a count can have no solution, and rounding does not create one. A limit, at most or at least, always has a whole number answer in the right direction."
+ }
+}
