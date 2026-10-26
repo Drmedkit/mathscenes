@@ -47,7 +47,8 @@
   "courseTitle": "Algebra 1",
   "n": 4,
   "subgoals": 18,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t6-09-linear-functions-and-slope",

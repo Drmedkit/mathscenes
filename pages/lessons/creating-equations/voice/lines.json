@@ -1,0 +1,104 @@
+{
+ "q.intro": {
+  "text": "Your climbing club has sixty dollars for passes: eight dollars per adult, five dollars per student. At least two adults must come, and the van seats at most ten people. Which plan works? Pick one, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps. Each rule in words becomes a rule in symbols, and every plan is checked against it."
+ },
+ "e.step0": {
+  "text": "Name the unknowns as numbers with a unit. a is the number of adult passes, s is the number of student passes. A plan is a pair: a, then s."
+ },
+ "e.step1": {
+  "text": "Money. Eight dollars for each adult pass is eight a dollars, five dollars for each student pass is five s dollars. At most sixty dollars: eight a plus five s is at most sixty. All three plans pass, plan three right at the limit."
+ },
+ "e.step2": {
+  "text": "At least two adults: a is at least two. Plan one has only one adult, so it gets a cross. The van seats at most ten: a plus s is at most ten. Plan one fills it exactly, and that is allowed."
+ },
+ "e.step3": {
+  "text": "The rule nobody said: you can’t buy part of a pass, or a negative number of them. a and s are whole numbers, zero or more. Plan three needs five point six student passes, so it is out. Only plan two passes every rule."
+ },
+ "e.why": {
+  "text": "Quick check: plan one fits the money and the van. Why is it still out?"
+ },
+ "e.why.ok": {
+  "text": "Yes. A plan must pass every rule at once, with the same numbers. One broken rule is enough to rule it out."
+ },
+ "e.why.most": {
+  "text": "Passing most rules is not enough. The club still needs two adults. Every rule has to hold."
+ },
+ "e.why.exact": {
+  "text": "At most sixty dollars allows any total up to sixty. Plan one spends fifty three dollars, so that rule is fine. The problem is the adults."
+ },
+ "t.intro": {
+  "text": "Your turn. A food truck makes t tacos and b burritos. A taco takes two minutes, a burrito three minutes, and there are at most sixty minutes. The owner wants at least twice as many tacos as burritos. The time rule and the unstated rule are done for you."
+ },
+ "t.cmp": {
+  "text": "At least twice as many tacos as burritos. Which rule says that?"
+ },
+ "t.cmp.ok": {
+  "text": "Yes. Twice the burritos is two b, and the tacos are at least that: t is at least two b."
+ },
+ "t.cmp.rev": {
+  "text": "Test it with numbers. Three tacos and five burritos is not twice as many tacos, yet two times three is at least five. The two belongs with the burritos: t is at least two b."
+ },
+ "t.cmp.eq": {
+  "text": "At least allows more than twice as many too. Thirty tacos and five burritos is fine. That is at least, not equals."
+ },
+ "t.judge": {
+  "text": "The cook suggests twelve tacos and ten burritos: the pair twelve, ten. Is it a viable plan?"
+ },
+ "t.judge.ok": {
+  "text": "Right. Two times twelve plus three times ten is fifty four, which fits in sixty minutes. But twelve is not at least twenty. One broken rule, so it is not viable."
+ },
+ "t.judge.one": {
+  "text": "The time fits. But check the second rule with the same numbers: is twelve at least twenty?"
+ },
+ "t.judge.exact": {
+  "text": "Fifty four minutes is fine: at most sixty allows less than sixty. Look at the second rule instead."
+ },
+ "t.other": {
+  "text": "Now twenty, six. Two times twenty plus three times six is fifty eight, at most sixty. And twenty is at least twelve. Whole numbers. Every rule holds, so it is viable."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked plan two, and you were right. Now you can say why: it is the only plan that passes every rule, the unstated one too."
+ },
+ "q.cb.one": {
+  "text": "At the start you picked plan one. It fits the money and the van, but it has one adult, and the club needs two. Every rule must hold."
+ },
+ "q.cb.frac": {
+  "text": "At the start you picked plan three. It spends exactly sixty dollars, but it needs five point six student passes. Using the whole budget is not a rule. Whole passes are."
+ },
+ "q.cb.none": {
+  "text": "Every rule becomes a line in symbols, and a plan is viable only when every line holds."
+ },
+ "p.intro": {
+  "text": "Twenty eight students go on a trip. A van seats twelve, and the school can rent at most two vans. Kai says: twenty eight divided by twelve is about two point three three, so round to two vans. Every problem has an answer. Is Kai right?"
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.test": {
+  "text": "Let’s test that. Build the argument, and see where it leads."
+ },
+ "p.c1": {
+  "text": "Right. Check the whole number in the original rule. Twelve times two is twenty four seats, and twenty four is fewer than twenty eight."
+ },
+ "p.c2": {
+  "text": "Right. Enough seats needs three vans or more, and every one of those breaks the rule of at most two vans."
+ },
+ "p.c3": {
+  "text": "Right. The two allowed sets do not overlap, so the row for both rules stays empty. No viable option is a real answer."
+ },
+ "p.no.round": {
+  "text": "Two point three three is about two, but about does not seat students. Two vans hold twenty four, and four students stay home. A minimum never rounds down."
+ },
+ "p.no.one": {
+  "text": "A set of rules can allow many answers, one, or none at all. Here the rules clash."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof. Two vans are too few, three are too many, so no plan works. The school must change a rule: bigger vans, or a third van."
+ }
+}

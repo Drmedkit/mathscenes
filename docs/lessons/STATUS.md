@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63); phase 2: building 3, live 3, queued 119 (of 125)
+Totals: live 63 (of 63); phase 2: building 3, live 4, queued 118 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -104,13 +104,13 @@ Totals: live 63 (of 63); phase 2: building 3, live 3, queued 119 (of 125)
 | 1 | Properties and the real numbers | `number-properties` | HS | 25 | live | 43 families, 25/25; oracle 0 errors (ownValue many answers, probed); VOICE PENDING |
 | 2 | Reasoning with units | `units-and-quantities` | HS | 23 | live | 44 families, 23/23; oracle 0 errors on 27,000; VOICE PENDING |
 | 3 | Solving linear equations and inequalities | `solving-linear-equations` | HS | 21 | live | 45 families, 21/21; oracle 0 errors on 27,600; VOICE PENDING |
-| 4 | Writing equations and inequalities from constraints | `creating-equations` | HS | 18 | building |  |
+| 4 | Writing equations and inequalities from constraints | `creating-equations` | HS | 18 | live | 39 families, 18/18; oracle 0 errors on 23,400; VOICE PENDING |
 | 5 | Linear functions and slope | `linear-functions-slope` | HS | 31 | building |  |
 | 6 | Linear equations from a context | `linear-models` | HS | 18 | queued |  |
 | 7 | Graphing inequalities in two variables | `linear-inequalities-2d` | HS | 27 | queued |  |
 | 8 | Systems of equations | `linear-systems` | HS | 27 | queued |  |
 | 9 | Arithmetic sequences | `arithmetic-sequences` | HS | 21 | building |  |
-| 10 | Piecewise and step functions | `piecewise-functions` | HS | 24 | queued | scaffolded |
+| 10 | Piecewise and step functions | `piecewise-functions` | HS | 24 | building | scaffolded |
 | 11 | Absolute value functions and equations | `absolute-value` | HS | 27 | queued |  |
 | 12 | Radicals and rational exponents | `radicals-exponents` | HS | 28 | queued |  |
 | 13 | Exponential growth and decay | `exponential-functions` | HS | 26 | queued |  |

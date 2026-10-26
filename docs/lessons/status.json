@@ -396,9 +396,10 @@
   "note": "45 families, 21/21; oracle 0 errors on 27,600; VOICE PENDING"
  },
  "creating-equations": {
-  "state": "building",
-  "at": "2026-10-26 13:37",
-  "commit": "d8a8637"
+  "state": "live",
+  "at": "2026-10-26 14:31",
+  "commit": "78da7b3",
+  "note": "39 families, 18/18; oracle 0 errors on 23,400; VOICE PENDING"
  },
  "linear-functions-slope": {
   "state": "building",
@@ -411,9 +412,9 @@
   "commit": "d8a8637"
  },
  "piecewise-functions": {
-  "state": "queued",
-  "at": "2026-10-26 13:57",
-  "commit": "5623d9b",
+  "state": "building",
+  "at": "2026-10-26 14:20",
+  "commit": "78da7b3",
   "note": "scaffolded"
  }
 }
