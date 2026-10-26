@@ -444,10 +444,10 @@
   "note": "54 families, 26/26; GrowthTable"
  },
  "linear-inequalities-2d": {
-  "state": "built",
-  "at": "2026-10-26 16:54",
-  "commit": "0e940cf",
-  "note": "46 families, 27/27"
+  "state": "live",
+  "at": "2026-10-26 17:06",
+  "commit": "b7a24d5",
+  "note": "46 families, 27/27; oracle 0 errors on 31,800; VOICE PENDING"
  },
  "geometric-sequences": {
   "state": "live",

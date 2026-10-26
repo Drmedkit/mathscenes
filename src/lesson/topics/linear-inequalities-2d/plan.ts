@@ -1,0 +1,32 @@
+// plan.ts: practice walks through every sub-goal of secondary-t6-33-graphing-linear-inequalities-two-variables, in topic JSON order.
+import type { SubgoalPlan } from '../../runtime/practice';
+
+export const PLAN: readonly SubgoalPlan[] = [
+  { id: 'entry-check', title: 'Ready: points, values, signs', families: ['readPoint', 'evalExpr', 'compareTF'] },
+  { id: 'point-membership', title: 'Is a point a solution?', families: ['isSolution', 'whichSolution'] },
+  { id: 'vertical-horizontal-lines', title: 'x = a and y = b as lines', families: ['hvMember', 'hvGraph'] },
+  { id: 'region-discovery', title: 'The solutions fill a half-plane', families: ['regionShape', 'farPoint'] },
+  { id: 'boundary-equation', title: 'The boundary line', families: ['boundaryOf', 'regionShape'] },
+  { id: 'boundary-inclusion', title: 'Is the boundary included?', families: ['inclusionPair', 'lineStyle'] },
+  { id: 'boundary-lines', title: 'Draw the boundary line', families: ['intercepts', 'throughOrigin', 'matchBoundary'] },
+  { id: 'dashed-solid', title: 'Dashed or solid', families: ['lineStyle', 'wrongStyle'] },
+  { id: 'test-point-side', title: 'Pick the side with a test point', families: ['testPointSide'] },
+  { id: 'graph-slope-intercept', title: 'Graph y < mx + b', families: ['siGraph', 'writeGraph'] },
+  { id: 'axis-aligned-inequalities', title: 'Vertical and horizontal boundaries', families: ['axisSide', 'writeGraph'] },
+  { id: 'standard-form-inequalities', title: 'Graph Ax + By < C', families: ['stdSide', 'testPointSide'] },
+  { id: 'isolate-y-reversal', title: 'Get y alone (and turn the sign)', families: ['isolateY', 'bZero'] },
+  { id: 'graph-point-slope', title: 'Point-slope inequalities', families: ['psRead', 'psToSI'] },
+  { id: 'system-meaning', title: 'A system: both at once', families: ['sysPoint'] },
+  { id: 'graph-two-system', title: 'Graph a system of two', families: ['sysRegion', 'sysCorner'] },
+  { id: 'special-intersections', title: 'Strips, lines and empty systems', families: ['specialKind'] },
+  { id: 'multiple-constraints', title: 'Three or more constraints', families: ['multiPoint', 'addConstraint'] },
+  { id: 'justify-boundary', title: 'Why solid, why dashed', families: ['whyIncluded', 'wrongStyle'] },
+  { id: 'justify-test-point', title: 'Why one test point is enough', families: ['oneTestWhy', 'vertCompare'] },
+  { id: 'write-from-graph', title: 'Write the inequality from a graph or table', families: ['writeGraph', 'writeTable'] },
+  { id: 'critique-graphs', title: 'Find the mistake in a graph', families: ['critique', 'critiqueSystem'] },
+  { id: 'interpret-feasible', title: 'Does the plan work?', families: ['viablePlan', 'multiPoint'] },
+  { id: 'formulate-constraints', title: 'Write constraints from a story', families: ['phraseIneq', 'psContext'] },
+  { id: 'discrete-domain', title: 'Whole numbers only', families: ['wholeOnly', 'countBoundary'] },
+  { id: 'feasible-vertices', title: 'Vertices of the region', families: ['vertexPair', 'notVertex'] },
+  { id: 'linear-programming', title: 'Best plan: linear programming', families: ['lpBest', 'lpSpecial'] },
+];

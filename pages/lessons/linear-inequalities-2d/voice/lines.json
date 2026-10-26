@@ -1,0 +1,119 @@
+{
+ "q.intro": {
+  "text": "Which points make y greater than x plus one true? Picture all of them on the plane. Pick an answer, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps from single points to the whole picture. Press each step: the plane moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "Put points in. Zero, three: three is greater than one, true. Three, one: one is greater than four, false. Negative two, zero point five: zero point five is greater than negative one, true. A point between grid lines counts too. Two, three: three is greater than three is false. The two sides are equal."
+ },
+ "e.step1": {
+  "text": "Every point where the sides are equal lies on one line: y equals x plus one, the boundary. The sign is greater than, so equal is not enough: the boundary is drawn dashed, and the point two, three is left out."
+ },
+ "e.step2": {
+  "text": "Now one test point off the line. Zero, zero gives zero is greater than one, false. So the solutions are on the other side: above the line. Shade it."
+ },
+ "e.step3": {
+  "text": "Why above? At x equals three the line is at y equals four, and y greater than three plus one means y greater than four: everything straight up from the line. The same at every x. So the solutions fill a half-plane: every point above, decimals too, with no end."
+ },
+ "e.why": {
+  "text": "Quick check: why does one test point decide the whole side?"
+ },
+ "e.why.ok": {
+  "text": "Yes. To switch from false to true you would have to pass a point where the sides are equal, and those are all on the line. No crossing, no switch."
+ },
+ "e.why.trick": {
+  "text": "It is more than a rule. The sides can only change order where they are equal, and that is only on the line."
+ },
+ "e.why.many": {
+  "text": "More tests would all agree. Two points on one side are joined by a path that never meets the line, so the answer cannot change."
+ },
+ "t.intro": {
+  "text": "Your turn: graph three x minus two y is greater than or equal to six. The x-intercept is done for you: y equals zero gives three x equals six, so the point two, zero."
+ },
+ "t.y": {
+  "text": "Now the y-intercept: put x equal to zero. What is y?"
+ },
+ "t.y.empty": {
+  "text": "Type a number first."
+ },
+ "t.y.ok": {
+  "text": "Yes: negative two y equals six, so y equals negative three. The boundary runs through two, zero and zero, negative three."
+ },
+ "t.y.swap": {
+  "text": "Two is the x-intercept. For the y-intercept, x is zero: negative two y equals six."
+ },
+ "t.y.sign": {
+  "text": "Mind the sign: negative two y equals six, and six divided by negative two is negative three."
+ },
+ "t.y.no": {
+  "text": "Put x equal to zero: negative two y equals six. Divide by negative two."
+ },
+ "t.st": {
+  "text": "Is the boundary solid or dashed?"
+ },
+ "t.st.ok": {
+  "text": "Yes: greater than or equal lets equal in, so the points on the line are solutions: solid."
+ },
+ "t.st.no": {
+  "text": "Greater than or equal means greater than, or equal. On the line the two sides are equal, and that counts: solid."
+ },
+ "t.side": {
+  "text": "Test zero, zero: three times zero minus two times zero is zero, and zero is greater than or equal to six is false. Which side do you shade?"
+ },
+ "t.side.ok": {
+  "text": "Yes: zero, zero is above the line and fails, so shade below. Check four, zero: twelve is greater than or equal to six. It checks. The sign said above, the test point said below: with negative two y, the sign alone does not tell."
+ },
+ "t.side.above": {
+  "text": "Greater than or equal only means above when y is alone with a plus sign. Here it is negative two y. Trust the test point: zero, zero is above and false."
+ },
+ "t.side.origin": {
+  "text": "Zero, zero made it false. A false test point means: shade the other side."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked every point above, not the line, and you were right. Now you know why: the boundary is where the sides are equal, and one test point picks the side."
+ },
+ "q.cb.line": {
+  "text": "At the start you picked only the points on the line. Those are the points where the sides are equal. Greater than asks for a whole side of the plane."
+ },
+ "q.cb.incl": {
+  "text": "At the start you picked above, and the line too. The line is where y equals x plus one exactly, and greater than leaves equal out: dashed."
+ },
+ "q.cb.none": {
+  "text": "Boundary first, dashed or solid from the sign, then one test point picks the side."
+ },
+ "p.intro": {
+  "text": "Jordan graphs the system y is greater than or equal to two x plus one, and y is less than or equal to two x minus three, and shades the strip between the lines. Two inequalities always make a region. Is Jordan right?"
+ },
+ "p.test": {
+  "text": "Let’s test it. Build the argument, and see where it leads."
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Right. Zero, negative one sits in the strip of Jordan, but negative one is greater than or equal to one is false. A shaded point that fails is evidence the strip is wrong."
+ },
+ "p.c2": {
+  "text": "Right. The first one shades above the upper line, the second below the lower line: they point away from each other."
+ },
+ "p.c3": {
+  "text": "Right. Both at once would need two x plus one to be at most y, and y at most two x minus three. So one would be at most negative three: false for every x."
+ },
+ "p.no.always": {
+  "text": "That is the claim of Jordan, not a reason. Parallel boundaries can face away from each other, and then nothing is shared."
+ },
+ "p.no.one": {
+  "text": "A solution of a system must make every inequality true at the same point."
+ },
+ "p.no.example": {
+  "text": "One failing point does not prove that every point fails. That needs a reason that covers all x."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof: a counterexample in the strip, the two half-planes facing away, and an argument for every x. The system has no solution, and nothing should be shaded."
+ }
+}
