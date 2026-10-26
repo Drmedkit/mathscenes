@@ -438,24 +438,37 @@
   "note": "58 families, 27/27; oracle 0 errors on 34,800; VOICE PENDING"
  },
  "exponential-functions": {
-  "state": "building",
-  "at": "2026-10-26 15:42",
-  "commit": "1febd6b"
+  "state": "built",
+  "at": "2026-10-26 17:00",
+  "commit": "4940ee2",
+  "note": "54 families, 26/26; GrowthTable"
  },
  "linear-inequalities-2d": {
-  "state": "building",
-  "at": "2026-10-26 15:55",
-  "commit": "056db92"
+  "state": "built",
+  "at": "2026-10-26 16:54",
+  "commit": "0e940cf",
+  "note": "46 families, 27/27"
  },
  "geometric-sequences": {
-  "state": "building",
-  "at": "2026-10-26 16:02",
-  "commit": "48940ba"
+  "state": "live",
+  "at": "2026-10-26 17:01",
+  "commit": "4940ee2",
+  "note": "46 families, 23/23; oracle 0 errors on 27,600; VOICE PENDING"
  },
  "polynomials": {
-  "state": "queued",
-  "at": "2026-10-26 16:07",
-  "commit": "5b8d691",
+  "state": "building",
+  "at": "2026-10-26 16:45",
+  "commit": "0e940cf",
   "note": "scaffolded"
+ },
+ "completing-the-square": {
+  "state": "building",
+  "at": "2026-10-26 16:54",
+  "commit": "0e940cf"
+ },
+ "conditional-statements": {
+  "state": "building",
+  "at": "2026-10-26 17:00",
+  "commit": "4940ee2"
  }
 }

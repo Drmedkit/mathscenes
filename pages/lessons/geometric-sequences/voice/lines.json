@@ -1,0 +1,113 @@
+{
+ "q.intro": {
+  "text": "A school phone tree. In round one, three people get the call. In every later round, twice as many people get a call as in the round before. How many people get a call in round eight? Pick an answer, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one. The picture moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "Check every hop. Three to six, six to twelve, twelve to twenty four: each one is times two. The differences keep changing, so it is not arithmetic. The same factor every time: a geometric sequence with common ratio r equals two."
+ },
+ "e.step1": {
+  "text": "Count the hops to round six. Round one is the start, with no doubling yet. Round two is one hop, round three is two, and round six is five hops. So a six is three times two to the fifth, which is ninety six."
+ },
+ "e.step2": {
+  "text": "So round n is n minus one hops from round one. a n equals three times two to the n minus one. Check n equals one: three times two to the zero is three. Round eight: three times two to the seventh is three hundred eighty four people."
+ },
+ "e.step3": {
+  "text": "The points n, a n. Each one is twice as high as the one before, so they curve up, not along a line. The open dots add three each round, the arithmetic guess: they fall far behind. Only whole rounds are points. The dashed curve is just a guide."
+ },
+ "e.why": {
+  "text": "Quick check: why is round eight three times two to the seventh, not two to the eighth?"
+ },
+ "e.why.ok": {
+  "text": "Yes. Round one already has its three people, with no doubling, so round eight is seven doublings past it."
+ },
+ "e.why.n": {
+  "text": "Round one is three times two to the zero: no doubling yet. Eight rounds means seven hops between them, so two to the eighth doubles once too often."
+ },
+ "e.why.zero": {
+  "text": "There is no round zero. The three people belong to round one, so counting from round zero adds one doubling too many."
+ },
+ "t.intro": {
+  "text": "Your turn: a one equals ninety six, and a n equals one half times a n minus one, for n at least two. The first two steps are done for you: the terms, and the ratio."
+ },
+ "t.form": {
+  "text": "Ninety six, forty eight, twenty four, twelve, and so on, with r equals one half. Which explicit formula gives the same sequence?"
+ },
+ "t.form.ok": {
+  "text": "Yes. a one is ninety six, and then n minus one halvings. Check n equals one: ninety six times one half to the zero is ninety six."
+ },
+ "t.form.n": {
+  "text": "Check n equals one: ninety six times one half is forty eight, but a one is ninety six. Term n is only n minus one halvings after a one."
+ },
+ "t.form.swap": {
+  "text": "That swaps the start and the factor. Ninety six is where it starts, and one half is what it multiplies by."
+ },
+ "t.pos": {
+  "text": "Which term equals three? Type its term number n."
+ },
+ "t.pos.ok": {
+  "text": "Yes. Ninety six, forty eight, twenty four, twelve, six, three is five halvings, so n minus one is five, and n is six."
+ },
+ "t.pos.hops": {
+  "text": "Five is the number of halvings, n minus one. Add one: the term number is one more."
+ },
+ "t.pos.other": {
+  "text": "Halve from ninety six and count the terms. Which position is three?"
+ },
+ "t.zero": {
+  "text": "Is zero a term of this sequence?"
+ },
+ "t.zero.ok": {
+  "text": "Right. Half of a positive number is still positive. Three, one and a half, three quarters, and so on, get closer and closer to zero, but never reach it."
+ },
+ "t.zero.no": {
+  "text": "It does not drop by forty eight each time. It is halved each time. Half of a positive number is never zero."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked three hundred eighty four, and you were right. Now you can say why: round eight is seven doublings from round one."
+ },
+ "q.cb.n": {
+  "text": "At the start you picked seven hundred sixty eight. That doubles eight times, but round one needs none. Round eight is seven doublings away: three hundred eighty four people."
+ },
+ "q.cb.add": {
+  "text": "At the start you picked twenty four. That adds three people each round, but the rounds double. The answer is three hundred eighty four."
+ },
+ "q.cb.none": {
+  "text": "Term n is n minus one multiplications after the first term: a n equals a one times r to the n minus one."
+ },
+ "p.intro": {
+  "text": "Kai has two definitions. G of n equals twelve times two to the n minus one. And a one equals twelve, a n plus one equals two times a n, for n at least one. He checks n equals one, two and three: both give twelve, twenty four, forty eight. So they are the same sequence, he says. Is his check a proof?"
+ },
+ "p.build": {
+  "text": "Right, three checks are three examples. Now prove it for every n. Fill each because with the reason that makes the line true."
+ },
+ "p.test": {
+  "text": "Three checks are three examples, and the claim is about every n. Build the real argument, and see what it needs."
+ },
+ "p.c1": {
+  "text": "Right. G of one is twelve times two to the zero, which is twelve: the same seed as the recursion."
+ },
+ "p.c2": {
+  "text": "Right. G of n plus one is twelve times two to the n, which is two times G of n. For every n, not just three of them."
+ },
+ "p.c3": {
+  "text": "Right. Term one agrees. And whenever term n agrees, term n plus one agrees too, because both double. So it carries on forever."
+ },
+ "p.no.examples": {
+  "text": "That is Kai’s argument again. Agreeing at three values says nothing about n equals one thousand."
+ },
+ "p.no.step1": {
+  "text": "G of n plus one is the formula with n plus one put in for n, not G of n plus one. Work it out: the step is times two."
+ },
+ "p.no.first": {
+  "text": "Six times two to the n is the same formula rewritten, still for n at least one. Its six is the value at n equals zero, which is not a term here. The first term is still twelve."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof. The same seed, the same factor at every n, and so the same terms forever. Kai was right about the sequences. Now it is proved."
+ }
+}
