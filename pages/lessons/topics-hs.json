@@ -197,7 +197,8 @@
   "courseTitle": "Algebra 1",
   "n": 15,
   "subgoals": 27,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t6-05-factoring-polynomials",

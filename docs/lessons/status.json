@@ -456,27 +456,33 @@
   "note": "46 families, 23/23; oracle 0 errors on 27,600; VOICE PENDING"
  },
  "polynomials": {
-  "state": "built",
-  "at": "2026-10-26 17:47",
-  "commit": "bff73d4",
-  "note": "56 families, 27/27; PAUSED before oracle (uncommitted)"
+  "state": "live",
+  "at": "2026-10-28 09:55",
+  "commit": "99f39f8",
+  "note": "56 families, 27/27; oracle 0 errors on 33,600; VOICE PENDING"
  },
  "completing-the-square": {
-  "state": "building",
-  "at": "2026-10-26 17:47",
-  "commit": "bff73d4",
-  "note": "PAUSED 2026-10-26: uncommitted work in the worktree"
+  "state": "built",
+  "at": "2026-10-28 09:45",
+  "commit": "99f39f8",
+  "note": "16/16; oracle running"
  },
  "conditional-statements": {
   "state": "building",
-  "at": "2026-10-26 17:47",
-  "commit": "bff73d4",
-  "note": "PAUSED 2026-10-26: uncommitted work in the worktree"
+  "at": "2026-10-28 09:45",
+  "commit": "99f39f8",
+  "note": "resumed 2026-10-28"
  },
  "factoring": {
   "state": "building",
-  "at": "2026-10-26 17:47",
-  "commit": "bff73d4",
-  "note": "PAUSED 2026-10-26: uncommitted work in the worktree"
+  "at": "2026-10-28 09:45",
+  "commit": "99f39f8",
+  "note": "resumed 2026-10-28"
+ },
+ "linear-systems": {
+  "state": "building",
+  "note": "resumed 2026-10-28",
+  "at": "2026-10-28 09:45",
+  "commit": "99f39f8"
  }
 }

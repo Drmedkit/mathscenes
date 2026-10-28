@@ -1,0 +1,140 @@
+{
+ "q.intro": {
+  "text": "A square garden is x feet on each side. You make it three feet longer and three feet wider, so it is still a square, x plus three feet on each side."
+ },
+ "q.ask": {
+  "text": "Its new area is x plus three, squared, in square feet. Which polynomial gives the same area, for every x? Pick one, and say how sure you are."
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the box fills first, then the algebra."
+ },
+ "e.s0": {
+  "text": "A square is a quantity times itself. So x plus three, squared, is x plus three times x plus three. Both sides of the box are x plus three."
+ },
+ "e.s1": {
+  "text": "Every term times every term. x times x is x squared. x times three is three x, and three times x is three x again. Three times three is nine. Four partial products: four pieces of the garden."
+ },
+ "e.s2": {
+  "text": "The two three x pieces are like terms, with the same power of x, so they collect: six x. x plus three, squared, is x squared plus six x plus nine. A quadratic trinomial."
+ },
+ "e.s3": {
+  "text": "Check with x equal to two. Five squared is twenty five, and four plus twelve plus nine is twenty five. It checks. But x squared plus nine gives thirteen. It leaves out the two strips."
+ },
+ "e.why": {
+  "text": "Quick check. Where does the six x come from?"
+ },
+ "e.w-ok": {
+  "text": "Yes. Two of the four partial products are three x, and like terms add: six x."
+ },
+ "e.w-fn": {
+  "text": "Squaring a sum is not squaring each term. x plus three, squared, is x plus three times x plus three. The two strips are real area."
+ },
+ "e.w-unlike": {
+  "text": "x and three are unlike terms. They never combine. The six x is two strips of three x, each three feet by x feet."
+ },
+ "t.intro": {
+  "text": "Now a bigger product: x minus two, times x squared plus x plus three. Two terms times three terms: a box with six cells. The first row is done for you."
+ },
+ "t.row": {
+  "text": "Your step: the second row. What is negative two times each term of x squared plus x plus three?"
+ },
+ "t.r-ok": {
+  "text": "Yes. Negative two multiplies every term across the top. Six partial products in all."
+ },
+ "t.r-part": {
+  "text": "Negative two multiplies every term across the top, not only the first one."
+ },
+ "t.r-sign": {
+  "text": "A negative times a positive is negative. Negative two times x squared is negative two x squared."
+ },
+ "t.x2": {
+  "text": "Now collect. The x squared cells sit on one diagonal: x squared, and negative two x squared. What is the coefficient of x squared?"
+ },
+ "t.x2-ok": {
+  "text": "Yes. x squared minus two x squared is negative x squared. The coefficient is negative one."
+ },
+ "t.x2-one": {
+  "text": "There are two x squared cells: x squared from the first row, and negative two x squared from the second. Add both."
+ },
+ "t.x2-sign": {
+  "text": "One plus negative two is negative one, not one."
+ },
+ "t.x2-no": {
+  "text": "Add the coefficients of the two x squared cells: one, and negative two."
+ },
+ "t.x1": {
+  "text": "And the x cells: three x, and negative two x. What is the coefficient of x?"
+ },
+ "t.x1-ok": {
+  "text": "Yes. Three x minus two x is x. So the product is x cubed minus x squared plus x minus six."
+ },
+ "t.x1-no": {
+  "text": "Add the coefficients of the two x cells: three, and negative two."
+ },
+ "t.deg": {
+  "text": "Last one. What is the degree of x cubed minus x squared plus x minus six?"
+ },
+ "t.d-ok": {
+  "text": "Yes. Degree three: a cubic polynomial with four terms. Every term times every term, then collect by power."
+ },
+ "t.d-count": {
+  "text": "Four is the number of terms. The degree is the highest power, x cubed."
+ },
+ "t.d-sum": {
+  "text": "Do not add the exponents. The degree is the largest one."
+ },
+ "t.d-no": {
+  "text": "Find the highest power of x among the terms."
+ },
+ "t.num": {
+  "text": "Type a number first."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked x squared plus six x plus nine, and you were right. Now you can show why: every term times every term."
+ },
+ "t.cb-fn": {
+  "text": "At the start you picked x squared plus nine. That squares each term, and leaves out the cross products: the two strips."
+ },
+ "t.cb-double": {
+  "text": "At the start you picked two x plus six. That doubles, instead of squaring. A square is a product of two equal factors."
+ },
+ "t.cb-none": {
+  "text": "Every term times every term, then collect by power. That is how every polynomial product comes out."
+ },
+ "p.intro": {
+  "text": "Riley subtracts. Five x squared plus three x minus two, minus the quantity two x squared minus four x plus one. Riley gets three x squared minus x minus one. Is Riley right?"
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because, with the reason that makes the line true."
+ },
+ "p.test": {
+  "text": "Let's test it. Build the argument, and see where it leads."
+ },
+ "p.c1": {
+  "text": "Right. At x equal to one, the left side is six minus negative one, which is seven. But Riley's answer is one. One value where they differ is enough."
+ },
+ "p.c2": {
+  "text": "Right. The minus multiplies every term: negative two x squared, plus four x, minus one. Riley flipped only the first sign."
+ },
+ "p.c3": {
+  "text": "Right. Collect by power. Five x squared minus two x squared is three x squared. Three x plus four x is seven x. Negative two minus one is negative three."
+ },
+ "p.no.exc": {
+  "text": "A rewrite has to hold for every x. One value where it fails is a counterexample, not an exception."
+ },
+ "p.no.first": {
+  "text": "That is exactly Riley's slip. The minus is in front of the whole group, so it multiplies every term."
+ },
+ "p.no.ex": {
+  "text": "Matching values never prove a rewrite for every x. And here, the values do not even match."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That's a proof. A counterexample shows Riley's line is wrong, and the opposite of the whole polynomial gives three x squared plus seven x minus three."
+ }
+}

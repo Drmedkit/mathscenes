@@ -1,0 +1,32 @@
+// plan.ts: practice walks through every sub-goal of secondary-t6-04-algebraic-expressions-and-polynomials, in topic JSON order.
+import type { SubgoalPlan } from '../../runtime/practice';
+
+export const PLAN: readonly SubgoalPlan[] = [
+  { id: 'exponent-reading', title: 'Read a power: x³ is x · x · x', families: ['powerRead', 'powerEval'] },
+  { id: 'poly-definition', title: 'What is (and is not) a polynomial', families: ['isPoly', 'notPoly'] },
+  { id: 'signed-terms', title: 'Terms, each with its own sign', families: ['countTerms', 'whichTerms'] },
+  { id: 'coefficients', title: 'Coefficients, also the hidden 1 and 0', families: ['coefOf', 'coefPick'] },
+  { id: 'degree-of-term', title: 'The degree of one term', families: ['termDegree', 'degreeHigh'] },
+  { id: 'degree-of-polynomial', title: 'The degree of a polynomial', families: ['polyDegree', 'degreeCh'] },
+  { id: 'name-by-term-count', title: 'Monomial, binomial, trinomial', families: ['termName'] },
+  { id: 'name-by-degree', title: 'Constant, linear, quadratic, cubic', families: ['degreeName', 'fullName'] },
+  { id: 'standard-form', title: 'Standard form and the leading coefficient', families: ['stdForm', 'leadCoef'] },
+  { id: 'multivariable-degree', title: 'Degree with x and y', families: ['mvDegree', 'mvHigh'] },
+  { id: 'like-terms-powers', title: 'Like terms: same power', families: ['likePick', 'likeCount'] },
+  { id: 'multivariable-like-terms', title: 'Like terms in x and y', families: ['mvLike', 'mvPair'] },
+  { id: 'combine-like-terms-powers', title: 'Collect like terms, then name it', families: ['collect', 'collectCoef', 'collectName'] },
+  { id: 'add-polynomials', title: 'Add two polynomials', families: ['addPoly', 'addVertical'] },
+  { id: 'opposite-of-polynomial', title: 'The opposite of a polynomial', families: ['opposite', 'oppositeCoef'] },
+  { id: 'subtract-polynomials', title: 'Subtract: add the opposite', families: ['subPoly', 'subCoef'] },
+  { id: 'multiply-monomials', title: 'Multiply monomials', families: ['monoMul', 'monoMulPair'] },
+  { id: 'monomial-times-polynomial', title: 'A monomial times a polynomial', families: ['monoPoly', 'monoPolyCoef'] },
+  { id: 'binomial-times-binomial', title: 'Binomial times binomial', families: ['binBin', 'binBinCoef'] },
+  { id: 'square-of-binomial', title: 'The square of a binomial', families: ['squareBin', 'squareMid'] },
+  { id: 'sum-times-difference', title: 'A sum times a difference', families: ['conj', 'conjMatch'] },
+  { id: 'multi-term-products', title: 'Bigger products: every term times every term', families: ['multiTerm', 'multiCoef', 'cellCount'] },
+  { id: 'counterexample-test', title: 'Test a rewrite with a good value', families: ['testValue', 'testVerdict'] },
+  { id: 'locate-invalid-step', title: 'Find the first broken step', families: ['badStep', 'badStepSub'] },
+  { id: 'explain-and-repair', title: 'Name the error and repair it', families: ['nameError', 'repair'] },
+  { id: 'closure', title: 'Sums, differences, products stay polynomials', families: ['closure', 'closureEx'] },
+  { id: 'interpret-in-context', title: 'Polynomials that mean something', families: ['ctxMeaning', 'ctxWrite', 'ctxValue'] },
+];
