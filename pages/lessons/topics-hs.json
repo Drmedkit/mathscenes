@@ -580,7 +580,8 @@
   "courseTitle": "Statistics and probability",
   "n": 6,
   "subgoals": 31,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t7-18-statistical-inference-normal-distribution",

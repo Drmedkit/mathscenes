@@ -1,0 +1,125 @@
+{
+ "q.intro": {
+  "text": "A high school surveyed its two hundred juniors: does each one have a part-time job, and a driver’s license? The counselor picks one of the juniors with a job at random. What is the probability that this junior has a license? Pick one, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps on the same table. Press each one: the picture moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "Each inside cell is an and: forty-eight juniors have a job and a license. The margins are single groups: eighty have a job, a hundred and ten have a license, two hundred in all."
+ },
+ "e.step1": {
+  "text": "Given a job rules out everyone in the no job row. Only the job row is left: its total, eighty, is the new whole. That is what the bar in P of L given J means."
+ },
+ "e.step2": {
+  "text": "Inside the new whole, forty-eight have a license: P of L given J is forty-eight over eighty, which is three fifths. Three out of every five juniors with a job can drive."
+ },
+ "e.step3": {
+  "text": "With probabilities it is the same move: P of L given J equals P of L and J, divided by P of J. That is forty-eight over two hundred, divided by eighty over two hundred. The two hundreds cancel, and forty-eight over eighty is left. Dividing by P of J is making the job row the whole."
+ },
+ "e.why": {
+  "text": "Quick check: why divide by eighty and not by two hundred?"
+ },
+ "e.why.ok": {
+  "text": "Yes. The junior was picked from those with a job, so nobody else is possible: the eighty are the whole."
+ },
+ "e.why.all": {
+  "text": "The two hundred include a hundred and twenty juniors with no job, and none of them can be picked. The condition shrinks the whole."
+ },
+ "e.why.inv": {
+  "text": "The hundred and ten are the juniors with a license. Dividing by them answers the reverse question: of the license holders, how many have a job?"
+ },
+ "t.intro": {
+  "text": "A music teacher surveys a hundred and sixty students: left or right handed, and do they play an instrument? Is playing an instrument independent of being left handed? The first step is done for you."
+ },
+ "t.cond": {
+  "text": "Of the left handed students, what fraction play an instrument? That is P of I given L."
+ },
+ "t.cond.ok": {
+  "text": "Yes: six of the sixteen left handers, six sixteenths, which is three eighths."
+ },
+ "t.cond.all": {
+  "text": "Six over a hundred and sixty divides by every student. Given left handed, only the sixteen left handers count."
+ },
+ "t.cond.inv": {
+  "text": "Six over sixty looks inside the instrument players: that is P of L given I. The condition here is left handed."
+ },
+ "t.cond.no": {
+  "text": "The left handed row is the whole: sixteen students. How many of them play?"
+ },
+ "t.all": {
+  "text": "Now with no condition: of all one hundred and sixty students, what fraction play an instrument? That is P of I."
+ },
+ "t.all.ok": {
+  "text": "Yes: sixty of a hundred and sixty, which is three eighths."
+ },
+ "t.all.left": {
+  "text": "Sixteen over a hundred and sixty is the share who are left handed. Count all the players: the plays column total."
+ },
+ "t.all.joint": {
+  "text": "Six over a hundred and sixty is only the left handed players. All players: the column total, sixty."
+ },
+ "t.all.no": {
+  "text": "Use the plays column total over the grand total."
+ },
+ "t.judge": {
+  "text": "P of I given L is three eighths, and P of I is three eighths. So are the two events independent?"
+ },
+ "t.judge.ok": {
+  "text": "Right: knowing a student is left handed does not change the chance they play. The events are independent."
+ },
+ "t.judge.cell": {
+  "text": "Only six sounds small, but there are only sixteen left handers. Compare shares, not one cell: three eighths and three eighths."
+ },
+ "t.judge.story": {
+  "text": "How it sounds does not decide it. The shares are equal, so the condition changes nothing."
+ },
+ "t.empty": {
+  "text": "Type a fraction first."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked forty-eight over eighty, and you were right: the juniors with a job are the whole."
+ },
+ "q.cb.all": {
+  "text": "At the start you picked forty-eight over two hundred. That divides by every junior. Given a job, only the eighty with a job count: forty-eight over eighty."
+ },
+ "q.cb.inv": {
+  "text": "At the start you picked forty-eight over a hundred and ten. That is the share of license holders who have a job: the reverse question. Here it is forty-eight over eighty."
+ },
+ "q.cb.none": {
+  "text": "Conditioning shrinks the whole to the condition’s row or column, then you count inside it."
+ },
+ "p.intro": {
+  "text": "Roll one die. A: the roll is one or two. B: the roll is six. A and B can never happen together. Sam says: mutually exclusive events have nothing to do with each other, so they are independent. Is Sam right?"
+ },
+ "p.test": {
+  "text": "Let’s test it. Build the argument, and see where it leads."
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Right. No face is in both circles: the overlap is empty."
+ },
+ "p.c2": {
+  "text": "Right. One third times one sixth is one eighteenth, more than zero."
+ },
+ "p.c3": {
+  "text": "Right. And look: given B, A is impossible. P of A given B is zero, but P of A is one third."
+ },
+ "p.no.disj": {
+  "text": "Having no outcomes in common is the strongest link there is: if B happens, A can’t."
+ },
+ "p.no.example": {
+  "text": "One die example doesn’t prove a rule. The reason has to work for every pair of events."
+ },
+ "p.no.unequal": {
+  "text": "Different probabilities don’t decide anything: independent events can have different probabilities too."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof, and it works for any mutually exclusive events with positive probabilities: P of A and B is zero, but P of A times P of B is more than zero. They are dependent. The one exception is an impossible event, with probability zero."
+ }
+}

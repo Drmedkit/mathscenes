@@ -522,18 +522,36 @@
   "note": "57 families, 26/26; oracle 0 errors on 34,200; VOICE PENDING"
  },
  "triangle-congruence": {
-  "state": "building",
-  "at": "2026-10-28 12:19",
-  "commit": "4d2a2d2"
+  "state": "built",
+  "at": "2026-10-28 13:27",
+  "commit": "69e706c",
+  "note": "57 families, 31/31"
  },
  "conditional-probability": {
-  "state": "building",
-  "at": "2026-10-28 12:27",
-  "commit": "eec3d71"
+  "state": "live",
+  "at": "2026-10-28 13:45",
+  "commit": "3dcdb2d",
+  "note": "64 families, 31/31; oracle 0 errors on 39,000; VOICE PENDING"
  },
  "linear-regression": {
+  "state": "built",
+  "at": "2026-10-28 13:29",
+  "commit": "3dcdb2d",
+  "note": "53 families, 27/27; DataCard"
+ },
+ "triangle-inequalities": {
   "state": "building",
-  "at": "2026-10-28 12:29",
-  "commit": "eec3d71"
+  "at": "2026-10-28 13:27",
+  "commit": "69e706c"
+ },
+ "nonlinear-regression": {
+  "state": "building",
+  "at": "2026-10-28 13:29",
+  "commit": "3dcdb2d"
+ },
+ "constructions": {
+  "state": "building",
+  "at": "2026-10-28 13:31",
+  "commit": "3dcdb2d"
  }
 }
