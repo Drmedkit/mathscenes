@@ -1,0 +1,31 @@
+// plan.ts: practice walks through every sub-goal of secondary-t7-16-probability-counting-permutations-and-combinations,
+// in topic JSON order, each with the families that practise it (items.ts).
+import type { SubgoalPlan } from '../../runtime/practice';
+
+export const PLAN: readonly SubgoalPlan[] = [
+  { id: 'enumerate-compound-outcomes', title: 'Lists and trees: every outcome once', families: ['listCount', 'missingOutcome'] },
+  { id: 'swap-test-order', title: 'Does order matter? (swap test)', families: ['swapTest', 'swapList'] },
+  { id: 'reuse-test-repetition', title: 'Can a choice come again? (reuse test)', families: ['reuseTest', 'reuseCount'] },
+  { id: 'represent-unordered-repetition', title: 'Repeats allowed, order not', families: ['scoopList', 'sameCup'] },
+  { id: 'classify-2x2', title: 'Name the kind of count', families: ['classify', 'classifyTests'] },
+  { id: 'product-principle', title: 'The multiplication principle', families: ['menu', 'productMissing'] },
+  { id: 'sum-principle', title: 'The addition principle', families: ['orAnd', 'codeLengths'] },
+  { id: 'ordered-with-repetition', title: 'Ordered with repeats: n^r', families: ['pinCount', 'codeVsNumeral'] },
+  { id: 'ordered-without-repetition', title: 'Ordered, no repeats: falling products', families: ['officers', 'lineUp'] },
+  { id: 'factorial-notation', title: 'Factorials, and 0! = 1', families: ['factorialEval', 'factorialMeaning'] },
+  { id: 'permutation-formula', title: 'P(n, r) = n!/(n − r)!', families: ['permFormula', 'permCancel'] },
+  { id: 'combinations-as-division', title: 'Combinations: divide by r!', families: ['groupsDivide', 'handshakes', 'overcountFactor'] },
+  { id: 'combination-formula', title: 'C(n, r) = n!/(r!(n − r)!)', families: ['combEval', 'combPick'] },
+  { id: 'combination-symmetry', title: 'C(n, r) = C(n, n − r)', families: ['symShortcut', 'symCompare'] },
+  { id: 'multi-group-selections', title: 'Choosing from separate groups', families: ['twoGroups', 'chooseOrder'] },
+  { id: 'restricted-positions-first', title: 'Restricted positions first', families: ['restrictFirst', 'evenDistinct'] },
+  { id: 'complement-counting', title: 'At least one: total minus the opposite', families: ['atLeastOne', 'repeatDigit'] },
+  { id: 'choose-method-mixed', title: 'Choose the method', families: ['mixedCount', 'methodPick'] },
+  { id: 'probability-from-counts', title: 'Probability from matching counts', families: ['probComm', 'probBag', 'probCode'] },
+  { id: 'audit-impossible-choices', title: 'Audit: a forbidden outcome', families: ['auditImpossible', 'repairCount'] },
+  { id: 'audit-double-counting', title: 'Audit: counted twice', families: ['doubleCount', 'teamsHalve'] },
+  { id: 'overlap-repair', title: 'Overlapping cases', families: ['vennCount', 'divisibleOr'] },
+  { id: 'uniform-overcount-check', title: 'When ÷ r! works', families: ['uniformCheck', 'timesCounted'] },
+  { id: 'completeness-check', title: 'Audit: nothing left out', families: ['listComplete', 'skippedCase'] },
+  { id: 'verify-count', title: 'Verify a count', families: ['verifyMethod', 'listVerify'] },
+];

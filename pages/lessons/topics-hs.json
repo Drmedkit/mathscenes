@@ -551,7 +551,8 @@
   "courseTitle": "Statistics and probability",
   "n": 4,
   "subgoals": 25,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "us.statistics.advanced-counting-repeated-objects-circular-and-pigeonhole",
