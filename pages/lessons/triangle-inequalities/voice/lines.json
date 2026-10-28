@@ -1,0 +1,137 @@
+{
+ "q.intro": {
+  "text": "Three straight sticks: nine inches, four inches and five inches. Can you lay them end to end as the three sides of a triangle? Pick one, and say how sure you are."
+ },
+ "q.cb.flat": {
+  "text": "You said yes, a very flat one. The arcs showed it: the two short sticks meet only on the long one. That is a straight line, with no inside: not a triangle."
+ },
+ "q.cb.pair": {
+  "text": "You said yes, because nine plus four beats five, and nine plus five beats four. Those sums contain the long stick, so they always pass. The one check that can fail is the two short sticks against the long one: four plus five is only nine."
+ },
+ "q.cb.no": {
+  "text": "You said no, and the proof agrees: the two shorter sides must add to more than the longest. Four plus five is exactly nine, which only lays them flat along it."
+ },
+ "e.intro": {
+  "text": "To settle the sticks we need two tools about one triangle: equal sides and equal angles, then longer sides and larger angles. The picture moves first, then the line."
+ },
+ "e.step0": {
+  "text": "Read only the marks: A B is congruent to A C, and the reason is: given. Each side faces one angle: A B faces angle C, and A C faces angle B."
+ },
+ "e.step1": {
+  "text": "Compare the triangle with its own mirror image: A stays, and B and C swap. A B matches A C, angle A matches itself, and A C matches A B. Side, included angle, side: triangle A B C is congruent to triangle A C B, by S A S."
+ },
+ "e.step2": {
+  "text": "In that match, angle B corresponds to angle C. So angle B is congruent to angle C. Equal sides face equal angles: the isosceles theorem. Its converse, equal angles face equal sides, is a separate statement with its own proof."
+ },
+ "e.step3": {
+  "text": "Now stretch A C. The angle facing it, angle B, grows, and angle C shrinks. The longer side faces the larger angle, the shorter side the smaller one, and equal sides are the tie."
+ },
+ "e.why": {
+  "text": "Why does comparing triangle A B C with triangle A C B prove that angle B is congruent to angle C?"
+ },
+ "e.why.ok": {
+  "text": "Right: the match is a congruence by S A S, and in it angle B lands on angle C."
+ },
+ "e.why.look": {
+  "text": "A drawing that looks symmetric proves nothing. The congruence does: S A S, then corresponding angles."
+ },
+ "e.why.flip": {
+  "text": "A mirror image is still congruent: a reflection is a rigid motion. That is exactly what the proof uses."
+ },
+ "t.intro": {
+  "text": "Your turn: three triangles, the same two tools."
+ },
+ "t.a": {
+  "text": "In triangle P Q R, P Q is congruent to P R, and angle P is forty degrees. Find the measure of angle Q."
+ },
+ "t.a.ok": {
+  "text": "Right: angles Q and R face the equal sides, so they are equal, and they share one hundred forty degrees: seventy each."
+ },
+ "t.a.base": {
+  "text": "Forty degrees is angle P, the angle between the congruent sides. The equal angles are the two that face them."
+ },
+ "t.a.both": {
+  "text": "One hundred forty degrees is what angles Q and R share together. Each gets half."
+ },
+ "t.a.other": {
+  "text": "Which angles face the congruent sides? Those two are equal, and all three share one hundred eighty degrees."
+ },
+ "t.b": {
+  "text": "In triangle X Y Z, angle X is congruent to angle Y, X Z is eleven centimeters, and X Y is fifteen centimeters. Which other side must be eleven centimeters?"
+ },
+ "t.b.ok": {
+  "text": "Right: angle X faces Y Z, and angle Y faces X Z. Equal angles face equal sides, by the converse."
+ },
+ "t.b.adj": {
+  "text": "X Y runs between the two equal angles; it faces angle Z. The equal sides are the ones facing angles X and Y."
+ },
+ "t.b.none": {
+  "text": "The converse of the isosceles theorem is true, and A S A proves it: equal angles face equal sides."
+ },
+ "t.c": {
+  "text": "In triangle J K M, angle J is forty-eight degrees, and angle K is seventy-five degrees. Order the sides from shortest to longest."
+ },
+ "t.c.ok": {
+  "text": "Right: angle M is fifty-seven degrees, so the angles go J, M, K, and the sides facing them go K M, J K, J M."
+ },
+ "t.c.rev": {
+  "text": "Reversed: the shortest side faces the smallest angle."
+ },
+ "t.c.third": {
+  "text": "Find angle M first: one hundred eighty, minus forty-eight, minus seventy-five, is fifty-seven degrees. It sits between the other two."
+ },
+ "t.done": {
+  "text": "Both tools work in both directions now: equal sides with equal angles, longer sides with larger angles."
+ },
+ "p.intro": {
+  "text": "Back to the sticks. In every triangle, is the longest side shorter than the other two together?"
+ },
+ "p.build": {
+  "text": "Let’s prove it for any triangle A B C. Extend B A past A to a point D, with A D equal to A C. Fill in each because."
+ },
+ "p.build-test": {
+  "text": "Let’s test that with a proof, for any triangle A B C. Extend B A past A to a point D, with A D equal to A C. Fill in each because."
+ },
+ "p.claim1": {
+  "text": "Angle A C D equals angle A D C."
+ },
+ "p.claim2": {
+  "text": "Angle B C D is larger than angle B D C."
+ },
+ "p.claim3": {
+  "text": "B A plus A C is longer than B C."
+ },
+ "p.c1": {
+  "text": "Triangle A C D is isosceles, so its base angles match."
+ },
+ "p.c2": {
+  "text": "Angle B C D holds angle A C D and more, so it beats angle B D C."
+ },
+ "p.c3": {
+  "text": "The larger angle faces the longer side: B D beats B C, and B D is B A plus A C. Proved, for every triangle."
+ },
+ "p.x-look": {
+  "text": "Looks are not a reason: a proof must work for every triangle, not this drawing."
+ },
+ "p.x-ex": {
+  "text": "Examples are evidence. A proof covers every triangle at once."
+ },
+ "p.x-other": {
+  "text": "That reason belongs to a different step. What does this line need?"
+ },
+ "p.flat": {
+  "text": "One case is left: what if C lies on segment A B itself?"
+ },
+ "p.flat.ok": {
+  "text": "Right: then A C plus C B is exactly A B. The three points are collinear: no triangle. That is the sticks: four plus five is nine."
+ },
+ "p.flat.deg": {
+  "text": "Three points on one line have no inside: that is a segment, not a triangle."
+ },
+ "p.flat.never": {
+  "text": "Equality can happen: exactly when C lies on segment A B. Then there is no triangle."
+ },
+ "p.done": {
+  "text": "So three lengths make a triangle exactly when the two shorter add to more than the longest. Equal means flat."
+ }
+}

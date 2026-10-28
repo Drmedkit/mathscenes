@@ -323,7 +323,8 @@
   "requires": [
    "geometry-foundations",
    "triangle-congruence"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t6-35-geometric-constructions",

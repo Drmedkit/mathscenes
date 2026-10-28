@@ -540,10 +540,10 @@
   "note": "53 families, 27/27; oracle 0 errors on 32,400; VOICE PENDING"
  },
  "triangle-inequalities": {
-  "state": "built",
-  "at": "2026-10-28 14:34",
-  "commit": "67eeafa",
-  "note": "32 families, 12/12; RangeStrip"
+  "state": "live",
+  "at": "2026-10-28 14:45",
+  "commit": "b771790",
+  "note": "32 families, 12/12; oracle 0 errors on 19,200; VOICE PENDING"
  },
  "nonlinear-regression": {
   "state": "built",
