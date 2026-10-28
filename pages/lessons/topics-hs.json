@@ -278,7 +278,8 @@
   "courseTitle": "Geometry",
   "n": 2,
   "subgoals": 31,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "v2.extension.counterexample-inference-and-proof",

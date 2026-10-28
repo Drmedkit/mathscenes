@@ -486,10 +486,10 @@
   "commit": "5bc0a34"
  },
  "geometry-foundations": {
-  "state": "built",
-  "at": "2026-10-28 11:26",
-  "commit": "f2654ab",
-  "note": "56 families, 31/31; ProofFrame, proofPanel, GeoFig"
+  "state": "live",
+  "at": "2026-10-28 11:49",
+  "commit": "c5f10a8",
+  "note": "56 families, 31/31; oracle 0 errors (whichIsProof not covered after rework); VOICE PENDING"
  },
  "quadratic-functions": {
   "state": "live",

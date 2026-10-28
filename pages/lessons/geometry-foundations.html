@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Definitions, postulates and first proofs</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    .panel .opts button { line-height: 1.45; }
+    /* the proof frame's panel half: a two-column proof (statements | reasons) and a pool of lines or reasons */
+    table.proof { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 6px 0 4px; font-size: 15px; }
+    table.proof th { text-align: left; font-weight: 600; font-size: 13px; color: var(--faint); padding: 0 8px; }
+    table.proof td { padding: 7px 8px; vertical-align: top; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--faint); }
+    table.proof td.n { width: 22px; border-left: 1px solid var(--line); border-radius: 10px 0 0 10px; color: var(--faint); }
+    table.proof td.st { width: 44%; white-space: nowrap; }
+    table.proof td.rs { border-right: 1px solid var(--line); border-radius: 0 10px 10px 0; }
+    table.proof tr.now td { border-color: var(--pick); color: var(--text); }
+    table.proof tr.ok td, table.proof tr.ok-st td.st { color: var(--text); }
+    table.proof tr.ok td { border-color: #3d5a3a; }
+    table.proof td.rs i { font-style: normal; color: var(--s); }
+    table.proof .empty { display: inline-block; min-width: 90px; border-bottom: 1.5px dashed var(--faint); }
+    .chips.pool button { font-size: 16px; }
+    ol.pf { margin: 6px 0 8px 20px; padding: 0; font-size: 15px; color: var(--dim); }
+    ol.pf li { margin: 2px 0; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html#geometry" aria-label="All lessons">Geometry</a> · Definitions, postulates and first proofs</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The model and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./geometry-foundations.ts"></script>
+</body>
+</html>

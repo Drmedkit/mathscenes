@@ -1,0 +1,110 @@
+{
+ "q.intro": {
+  "text": "Rita draws segment A B and a point M on it, then starts a proof with the line: A M equals M B. Every line of a proof needs a reason. What may she write in the reason column? Pick one, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "A first real proof, in four steps. The picture moves first, then the line and its reason."
+ },
+ "e.step0": {
+  "text": "Given: A, B, C, D lie on a line in that order, and A C equals B D. Prove: A B equals C D. Line one is the given itself, with the reason: given. The drawing may show the order of the points, nothing more."
+ },
+ "e.step1": {
+  "text": "Split each whole. B is between A and C, so A C equals A B plus B C. C is between B and D, so B D equals B C plus C D. Both lines cite the segment addition postulate: a starting statement of the course."
+ },
+ "e.step2": {
+  "text": "A C and B D are equal, and each one equals a sum. Put the sums in their places: A B plus B C equals B C plus C D. The reason is the substitution property of equality."
+ },
+ "e.step3": {
+  "text": "Both sides share B C. Take it away from both: A B equals C D, by the subtraction property of equality. Now the ticks on A B and C D are earned: every line has a reason, and none of them is: it looks that way."
+ },
+ "e.why": {
+  "text": "Quick check: A B and C D looked equal from the start. Why not write A B equals C D in line one?"
+ },
+ "e.why.ok": {
+  "text": "Right: a drawing may show how points lie, not sizes. Only givens, markings and accepted statements count."
+ },
+ "e.why.look": {
+  "text": "An accurate looking drawing can still be off, and the next one may look different. Looks are never a reason."
+ },
+ "e.why.circ": {
+  "text": "That is what we are proving. Writing it first would assume the answer: that is circular."
+ },
+ "t.intro": {
+  "text": "Your turn: the vertical angles, angle one and angle three. Given: angle one and angle two, and angle two and angle three, are linear pairs. Prove: angle one is congruent to angle three. Lines one and two are written for you."
+ },
+ "t.r3": {
+  "text": "Line three puts the two sums in each other’s place. Which reason fits?"
+ },
+ "t.r3.ok": {
+  "text": "Right: both sums equal one hundred eighty degrees, so they equal each other."
+ },
+ "t.r3.circ": {
+  "text": "That is the theorem we are proving. It cannot be a reason inside its own proof."
+ },
+ "t.r3.add": {
+  "text": "Nothing was added to both sides. The two sums were put in each other’s place."
+ },
+ "t.s4": {
+  "text": "Line four uses the subtraction property: take the measure of angle two away from both sides. Which statement is line four?"
+ },
+ "t.s4.ok": {
+  "text": "Right: the measure of angle two leaves both sides."
+ },
+ "t.s4.fig": {
+  "text": "Close, but angle one is the angle itself, a figure. Numbers are equal: the measure of angle one equals the measure of angle three."
+ },
+ "t.s4.side": {
+  "text": "The measure of angle two has to leave both sides, not one."
+ },
+ "t.r5": {
+  "text": "Line five turns equal measures into congruent angles. Which reason?"
+ },
+ "t.r5.ok": {
+  "text": "Right: congruent angles are angles with equal measures. A definition works both ways."
+ },
+ "t.r5.circ": {
+  "text": "Still circular: that theorem is what this proof establishes."
+ },
+ "t.r5.lp": {
+  "text": "The linear pair postulate gives a sum of one hundred eighty degrees, not congruence."
+ },
+ "t.status": {
+  "text": "Every line has a reason. Before this proof, vertical angles are congruent was something you had measured. What is it now?"
+ },
+ "t.status.ok": {
+  "text": "Right: a theorem, the vertical angles theorem. Watch: any crossing, the same proof."
+ },
+ "t.status.conj": {
+  "text": "It was a conjecture while it was only measured. A proof from accepted statements makes it a theorem."
+ },
+ "t.status.post": {
+  "text": "A postulate is accepted without proof. This one now has a proof: a theorem."
+ },
+ "q.cb.look": {
+  "text": "Back to Rita: you picked, it looks that way. A drawing can show where M is on the line, never that A M equals M B."
+ },
+ "q.cb.measure": {
+  "text": "Back to Rita: you picked measuring. A ruler checks one drawing, roughly. A reason has to hold for every figure that meets the givens."
+ },
+ "q.cb.none": {
+  "text": "Back to Rita: you were right. With no given and no marking, nothing licenses A M equals M B. A given like, M is the midpoint, would: then the reason is the definition of midpoint."
+ },
+ "p.intro": {
+  "text": "Kai measured angle three and angle six in five drawings of parallel lines cut by a transversal. Every time they matched. Kai says: alternate interior angles are congruent: proved. Is it proved?"
+ },
+ "p.build": {
+  "text": "Not yet: five drawings are five examples. Build the proof. First tap the lines in an order that works, two are decoys, then pick a reason for each."
+ },
+ "p.build-test": {
+  "text": "Five drawings are five examples, and the next drawing could differ. Build the real proof: first tap the lines in an order that works, two are decoys, then pick a reason for each."
+ },
+ "p.order-done": {
+  "text": "The order works: every line comes after what it uses. Now the reasons, top to bottom."
+ },
+ "p.done": {
+  "text": "Proved: from parallel lines, the corresponding angles postulate and the vertical angles theorem, angle three and angle six are equal for every transversal. That is the alternate interior angles theorem."
+ },
+ "p.wrong": {
+  "text": "Not that one: read the feedback under the proof."
+ }
+}
