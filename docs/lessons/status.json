@@ -480,10 +480,10 @@
   "note": "51 families, 24/24; oracle 0 errors on 30,600; VOICE PENDING"
  },
  "linear-systems": {
-  "state": "building",
-  "note": "resumed 2026-10-28",
-  "at": "2026-10-28 09:45",
-  "commit": "99f39f8"
+  "state": "live",
+  "note": "55 families, 27/27; oracle 0 errors on 36,600; VOICE PENDING",
+  "at": "2026-10-28 10:47",
+  "commit": "5bc0a34"
  },
  "geometry-foundations": {
   "state": "building",
@@ -494,5 +494,10 @@
   "state": "building",
   "at": "2026-10-28 10:26",
   "commit": "dd1547d"
+ },
+ "one-variable-data": {
+  "state": "building",
+  "at": "2026-10-28 10:34",
+  "commit": "5bc0a34"
  }
 }
