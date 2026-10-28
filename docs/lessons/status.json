@@ -498,10 +498,10 @@
   "note": "54 families, 33/33; oracle 0 errors on 35,400; VOICE PENDING"
  },
  "one-variable-data": {
-  "state": "built",
-  "at": "2026-10-28 11:26",
-  "commit": "f2654ab",
-  "note": "49 families, 28/28; DataPlot block"
+  "state": "live",
+  "at": "2026-10-28 12:15",
+  "commit": "b94b411",
+  "note": "49 families, 28/28; oracle 0 errors on 31,200; VOICE PENDING"
  },
  "counting": {
   "state": "building",

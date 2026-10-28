@@ -511,7 +511,8 @@
   "courseTitle": "Statistics and probability",
   "n": 1,
   "subgoals": 28,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t6-16-linear-regression-and-correlation",
