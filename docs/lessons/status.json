@@ -612,10 +612,10 @@
   "note": "34 families, 14/14; oracle 20400/20400; VOICE PENDING"
  },
  "circle-angles": {
-  "state": "built",
-  "at": "2026-10-28 18:52",
-  "commit": "6bbf67a",
-  "note": "46 families, 33/33; CircleFig"
+  "state": "live",
+  "at": "2026-10-28 19:43",
+  "commit": "0f00fec",
+  "note": "46 families, 33/33; CircleFig; oracle 30000/30000; VOICE PENDING"
  },
  "polynomial-division": {
   "state": "live",
@@ -638,5 +638,10 @@
   "state": "building",
   "at": "2026-10-28 18:52",
   "commit": "6bbf67a"
+ },
+ "higher-degree-factoring": {
+  "state": "building",
+  "at": "2026-10-28 19:41",
+  "commit": "0f00fec"
  }
 }

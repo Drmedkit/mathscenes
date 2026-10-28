@@ -432,7 +432,8 @@
   "requires": [
    "geometry-foundations",
    "triangle-centers"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary.tangents-chords-and-segment-lengths-in-circles",
