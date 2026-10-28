@@ -401,7 +401,8 @@
   "requires": [
    "similarity",
    "triangle-centers"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t6-24-coordinate-geometry-distance-midpoint-and-slope-proofs",

@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63); phase 2: building 3, built 1, live 38, queued 83 (of 125)
+Totals: live 63 (of 63); phase 2: building 3, live 39, queued 83 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -134,7 +134,7 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 38, queued 83 (of 12
 | 7 | Midsegments and points of concurrency | `triangle-centers` | HS | 35 | live | 58 families, 35/35; oracle 0 errors on 38,400; VOICE PENDING |
 | 8 | Parallelograms and other quadrilaterals | `quadrilaterals` | HS | 41 | live | 58 families, 41/41; Tree; oracle 35400/35400; VOICE PENDING |
 | 9 | Similar triangles | `similarity` | HS | 25 | live | 54 families, 25/25; oracle 0 errors on 33,600; VOICE PENDING |
-| 10 | Right triangle trigonometry | `right-triangle-trig` | HS | 29 | built | 65 families, 29/29 |
+| 10 | Right triangle trigonometry | `right-triangle-trig` | HS | 29 | live | 65 families, 29/29; oracle 39000/39000; VOICE PENDING |
 | 11 | Distance, midpoint and coordinate proofs | `coordinate-proofs` | HS | 33 | building |  |
 | 12 | Arcs and angles in circles | `circle-angles` | HS | 33 | building |  |
 | 13 | Tangents, chords and segment lengths | `chords-tangents` | HS | 14 | queued |  |

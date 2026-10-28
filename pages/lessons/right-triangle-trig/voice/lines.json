@@ -1,0 +1,134 @@
+{
+ "q.intro": {
+  "text": "A kite string is one hundred feet long, pulled straight, and makes a forty degree angle with the horizontal at your hand. Nobody can reach the kite to measure. How high is it above your hand? Pick one, and say how sure you are."
+ },
+ "q.cb.lin": {
+  "text": "You scaled the height with the angle: forty ninetieths of a hundred feet. But the height does not grow in step with the angle. At sixty degrees it is already eighty six point six feet. The fixed ratio of a forty degree triangle gives sixty four point three feet."
+ },
+ "q.cb.size": {
+  "text": "You said it cannot be known without another length. The angle fixes the shape: every right triangle with a forty degree angle is similar, so its height is always about zero point six four three of its string. That is the sine of forty degrees."
+ },
+ "q.cb.ok": {
+  "text": "You said about sixty four feet, and that is right: the forty degree angle fixes the shape, so the height is the sine of forty degrees, about zero point six four three of the string. About sixty four point three feet."
+ },
+ "e.intro": {
+  "text": "Four steps from the angle to the height. Watch the picture first; the notation follows."
+ },
+ "e.step0": {
+  "text": "Name the sides from the forty degree angle. The string is across from the right angle: the hypotenuse. The height does not touch the forty degree angle: the opposite leg. The line along the ground touches it: the adjacent leg."
+ },
+ "e.step1": {
+  "text": "A thirty foot string at the same forty degrees rises nineteen point two eight feet: opposite over hypotenuse is about zero point six four three. Both triangles have a right angle and a forty degree angle, so they are similar, by angle angle. Dilate the small one from your hand: every side grows by the same factor, so the ratio stays the same. It belongs to the angle: we call it the sine of forty degrees."
+ },
+ "e.step2": {
+  "text": "Sine is opposite over hypotenuse. Here: the sine of forty degrees equals h over one hundred. One unknown, one equation."
+ },
+ "e.step3": {
+  "text": "Multiply both sides by one hundred: h equals one hundred times the sine of forty degrees. In degree mode that is sixty four point two seven eight; round once, at the end: about sixty four point three feet."
+ },
+ "e.why": {
+  "text": "Why may we use the thirty foot triangle’s ratio for the kite?"
+ },
+ "e.why.ok": {
+  "text": "Right: same angles, so similar. One scale factor for every side, and it cancels in the ratio."
+ },
+ "e.why.size": {
+  "text": "The kite triangle is bigger, but every side is bigger by the same factor. The ratio does not change with size."
+ },
+ "e.why.any": {
+  "text": "Not for every angle: a sixty degree triangle has a different shape and a different ratio. It works because both angles are forty degrees."
+ },
+ "tt.intro": {
+  "text": "A ladder leans against a wall at seventy five degrees with the level ground, its foot four feet from the wall. How long is the ladder? First: which ratio links the seventy five degrees, the four feet and the ladder L?"
+ },
+ "tt.a.ok": {
+  "text": "Right: from seventy five degrees, the four feet touches the angle, so it is adjacent, and the ladder is the hypotenuse."
+ },
+ "tt.a.sin": {
+  "text": "The four feet touches the seventy five degree angle, so it is the adjacent leg, not the opposite one."
+ },
+ "tt.a.tan": {
+  "text": "Tangent pairs the two legs: it would bring in the wall height, a second unknown."
+ },
+ "tt.b": {
+  "text": "Now solve: cosine of seventy five degrees equals four over L. How long is the ladder, to the nearest tenth of a foot?"
+ },
+ "tt.b.ok": {
+  "text": "Right: L is four divided by the cosine of seventy five degrees, fifteen point four five, so about fifteen point five feet. Longer than the four foot leg, as a hypotenuse must be."
+ },
+ "tt.b.mul": {
+  "text": "L is in the denominator, so multiplying gives a ladder of about one foot, shorter than a leg. Multiply both sides by L, then divide: L equals four divided by the cosine of seventy five degrees."
+ },
+ "tt.b.rad": {
+  "text": "That is what radian mode gives. Check the calculator: the cosine of sixty degrees should show one half."
+ },
+ "tt.b.other": {
+  "text": "Divide four by the cosine of seventy five degrees, in degree mode, then round once to the nearest tenth."
+ },
+ "tt.c": {
+  "text": "Ladder makers suggest the four to one rule. A sixteen foot ladder with its foot four feet from the wall: what angle does it make with the ground, to the nearest degree?"
+ },
+ "tt.c.ok": {
+  "text": "Right: the cosine of x is four sixteenths, so x is the inverse cosine of one quarter, seventy five point five degrees, about seventy six degrees. The rule puts a ladder near seventy five degrees."
+ },
+ "tt.c.sin": {
+  "text": "That is the angle at the top, against the wall. From the ground angle, the four feet is adjacent, so use the inverse cosine."
+ },
+ "tt.c.ratio": {
+  "text": "Zero point two five is the ratio, not the angle. The inverse key turns the ratio back into an angle."
+ },
+ "tt.c.other": {
+  "text": "The cosine of x is four sixteenths. Use the inverse cosine in degree mode, then round to the nearest degree."
+ },
+ "tt.done": {
+  "text": "A side from an angle: pick the ratio, solve, and check the size. An angle from two sides: the inverse key."
+ },
+ "p.intro": {
+  "text": "In right triangle A B C, with the right angle at C, is the sine of A equal to the cosine of B always, or only for some angles?"
+ },
+ "p.build": {
+  "text": "Build the reason, link by link. Tap the reason that makes each claim true."
+ },
+ "p.build-test": {
+  "text": "Test it: the sine of thirty degrees is one half, and so is the cosine of sixty degrees. It holds for every right triangle. Build the reason, link by link."
+ },
+ "p.claim1": {
+  "text": "Angle A and angle B add to ninety degrees"
+ },
+ "p.claim2": {
+  "text": "the leg a is opposite angle A and adjacent to angle B"
+ },
+ "p.claim3": {
+  "text": "the sine of A is a over c, and the cosine of B is a over c, so the sine of A equals the cosine of ninety degrees minus A"
+ },
+ "p.c1": {
+  "text": "Right: the angles add to one hundred eighty degrees, and C takes ninety."
+ },
+ "p.c2": {
+  "text": "Right: opposite and adjacent depend on where you stand."
+ },
+ "p.c3": {
+  "text": "Right: the same leg over the same hypotenuse. The sine of A equals the cosine of ninety degrees minus A, for every acute angle."
+ },
+ "p.x-all": {
+  "text": "Sine and cosine of the same angle are equal only at forty five degrees. They match when the angles are complementary."
+ },
+ "p.x-pos": {
+  "text": "Position on the page does not name a side. Stand at the angle: the leg it touches is adjacent."
+ },
+ "p.x-other": {
+  "text": "That reason does not make this claim true. Look at what the claim says."
+ },
+ "p.last": {
+  "text": "So which one equals the sine of forty degrees?"
+ },
+ "p.last.ok": {
+  "text": "Right: ninety minus forty is fifty. The kite’s height is also one hundred times the cosine of fifty degrees, using the angle at the kite."
+ },
+ "p.last.same": {
+  "text": "The sine of forty is about zero point six four three, but the cosine of forty is about zero point seven six six. They are equal only at forty five degrees. Use the complement."
+ },
+ "p.last.sin": {
+  "text": "The sine of fifty is the cosine of forty, not the sine. Switch the function and use the complement."
+ }
+}

@@ -600,10 +600,10 @@
   "note": "30 families, 14/14; oracle 18000/18000; VOICE PENDING"
  },
  "right-triangle-trig": {
-  "state": "built",
-  "at": "2026-10-28 17:48",
-  "commit": "8884b73",
-  "note": "65 families, 29/29"
+  "state": "live",
+  "at": "2026-10-28 18:07",
+  "commit": "9e10632",
+  "note": "65 families, 29/29; oracle 39000/39000; VOICE PENDING"
  },
  "polynomial-identities": {
   "state": "live",
