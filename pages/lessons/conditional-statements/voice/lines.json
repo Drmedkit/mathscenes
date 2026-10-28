@@ -1,0 +1,125 @@
+{
+ "q.intro": {
+  "text": "Ms. Reyes promises her class: if you score ninety or more on the final, then you get an A. After the final, three students compare. Who can say she broke her promise? Pick one, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the picture moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "The statement: if n is a multiple of four, then n is even. The hypothesis is the part after if: the amber region. The conclusion is the part after then: the teal region. The domain is the integers one to twelve."
+ },
+ "e.step1": {
+  "text": "Every number goes where it belongs. Four, eight and twelve land in amber, and amber sits inside teal. No number is in amber but outside teal, so the statement is true for this domain."
+ },
+ "e.step2": {
+  "text": "Each number is one of four cases. Eight: p true, q true. Six: p false, q true. Seven: both false. None of them breaks it. Only p true with q false could, and that zone is empty. An if then statement is false in that one case only."
+ },
+ "e.step3": {
+  "text": "Swap the parts: if n is even, then n is a multiple of four. That is the converse. Now teal is the hypothesis, and six is even but not a multiple of four. The converse is false, while the statement is true: they are different statements."
+ },
+ "e.why": {
+  "text": "Quick check: why does seven not break the statement?"
+ },
+ "e.why.ok": {
+  "text": "Yes. The statement only promises something when the hypothesis is true. Seven is outside amber: nothing was promised, so nothing was broken."
+ },
+ "e.why.hyp": {
+  "text": "Seven is not even, but it is not a multiple of four either. The statement only says what happens to multiples of four."
+ },
+ "e.why.conv": {
+  "text": "The converse is false: six breaks it. Seven is fine for a different reason: it is not a multiple of four."
+ },
+ "t.intro": {
+  "text": "Your turn. The domain is the integers zero to nine, and the statement is: if x is greater than six, then x is greater than three. The parts are named and the numbers sorted for you."
+ },
+ "t.neg": {
+  "text": "First, negate the hypothesis, x is greater than six. Which sentence is true exactly when x is greater than six is false?"
+ },
+ "t.neg.ok": {
+  "text": "Yes. Six itself is not greater than six, so the negation includes it: x is at most six. The same way, the negation of x greater than three is x at most three."
+ },
+ "t.neg.opp": {
+  "text": "Check six: x greater than six is false at six, so its negation must be true there. But x less than six is false at six too."
+ },
+ "t.neg.ge": {
+  "text": "x at least six is true at seven, eight and nine, where x greater than six is true too. A statement and its negation are never true together."
+ },
+ "t.contra": {
+  "text": "Now form the contrapositive: swap the two parts and negate both."
+ },
+ "t.contra.ok": {
+  "text": "Yes. Look at the picture: everything outside teal is also outside amber. The contrapositive is true, like the statement: it is the same picture, read from the outside."
+ },
+ "t.contra.inv": {
+  "text": "That one negates without swapping: that is the inverse. The contrapositive also swaps."
+ },
+ "t.contra.conv": {
+  "text": "That one swaps without negating: that is the converse. The contrapositive also negates."
+ },
+ "t.contra.opp": {
+  "text": "Check the boundaries: the negation of x greater than three is x at most three, not x less than three."
+ },
+ "t.inv": {
+  "text": "The inverse negates without swapping: if x is at most six, then x is at most three. Which x shows the inverse is false?"
+ },
+ "t.inv.ok": {
+  "text": "Yes. Five is at most six, so the inverse's hypothesis is true, but five is not at most three. The inverse is false, even though the statement is true."
+ },
+ "t.inv.two": {
+  "text": "Two is at most six and at most three: it agrees with the inverse."
+ },
+ "t.inv.eight": {
+  "text": "Eight is not at most six, so the inverse makes no promise about it."
+ },
+ "t.inv.none": {
+  "text": "The inverse is a different statement, and it can fail. Try a number between three and six."
+ },
+ "q.cb.jo": {
+  "text": "At the start you picked Jo, and you were right: ninety five is in the amber region, and a B is outside teal. That is the one case that breaks an if then promise."
+ },
+ "q.cb.max": {
+  "text": "At the start you picked Max. But Max scored eighty five: the promise says nothing about scores under ninety. Thinking it does is the inverse, and the inverse can be false. Jo broke it."
+ },
+ "q.cb.lee": {
+  "text": "At the start you picked Lee. But Lee is outside amber: the promise made no claim about Lee. Only Jo, in amber and outside teal, breaks it."
+ },
+ "q.cb.none": {
+  "text": "An if then promise breaks only when the hypothesis happens and the conclusion does not: that was Jo."
+ },
+ "p.intro": {
+  "text": "Sam says: every quadrilateral here with four right angles has four equal sides. I checked A and D. A small square marks a right angle; matching tick marks show equal sides. Is Sam right?"
+ },
+ "p.test": {
+  "text": "Let's test it. Build the argument, and see where it leads."
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Right. Every A is B means: if a member is an A, then it is a B."
+ },
+ "p.c2": {
+  "text": "Right. B has a right angle mark in each of its four corners: the hypothesis is true for B."
+ },
+ "p.c3": {
+  "text": "Right. One tick on two sides, two ticks on the other two: the conclusion is false for B."
+ },
+ "p.c4": {
+  "text": "Right. One counterexample settles an every claim, however many examples worked."
+ },
+ "p.no.checked": {
+  "text": "Checked examples never cover every member. Look at the ones Sam did not check."
+ },
+ "p.no.c": {
+  "text": "C has no right angles: the hypothesis is false for C, so C cannot break the claim."
+ },
+ "p.no.none": {
+  "text": "Not all is not none: A and D do have both. The negation is: some do not."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That is a disproof by counterexample: one member with the hypothesis true and the conclusion false. Sam's claim is false, and its negation is true: some quadrilateral here has four right angles but not four equal sides."
+ }
+}

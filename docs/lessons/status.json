@@ -468,10 +468,10 @@
   "note": "41 families, 16/16; oracle 0 errors on 24,600; VOICE PENDING"
  },
  "conditional-statements": {
-  "state": "built",
-  "at": "2026-10-28 10:05",
-  "commit": "d7be53a",
-  "note": "28 families, 13/13; Euler, CaseTable"
+  "state": "live",
+  "at": "2026-10-28 10:15",
+  "commit": "d9477e1",
+  "note": "28 families, 13/13; oracle 0 errors on 16,800; VOICE PENDING"
  },
  "factoring": {
   "state": "building",

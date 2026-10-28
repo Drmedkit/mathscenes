@@ -263,7 +263,8 @@
   "courseTitle": "Geometry",
   "n": 1,
   "subgoals": 13,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t6-17-foundations-of-geometry-definitions-postulates-and-reasoning",
