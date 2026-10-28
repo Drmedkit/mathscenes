@@ -624,10 +624,10 @@
   "note": "52 families, 25/25; LongDiv + SynthTab; oracle 32400/32400; VOICE PENDING"
  },
  "coordinate-proofs": {
-  "state": "built",
-  "at": "2026-10-28 19:08",
-  "commit": "6bbf67a",
-  "note": "61 families, 33/33"
+  "state": "live",
+  "at": "2026-10-28 19:33",
+  "commit": "fb3ea69",
+  "note": "61 families, 33/33; oracle 38400/38400; VOICE PENDING"
  },
  "probability-decisions": {
   "state": "building",

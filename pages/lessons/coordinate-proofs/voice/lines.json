@@ -1,0 +1,122 @@
+{
+ "q.intro": {
+  "text": "Four stakes mark a garden bed. It looks like a square turned on its corner. Is it a square? Pick one, and say how sure you are."
+ },
+ "q.cb.yes": {
+  "text": "You said yes. Its four sides do match, but its diagonals are twelve and ten: a rhombus with no right angle. Looking close is not the same as being equal."
+ },
+ "q.cb.no": {
+  "text": "You said a rhombus, not a square. The numbers back you: four equal sides, but diagonals of twelve and ten, so no right angle."
+ },
+ "q.cb.cant": {
+  "text": "You said you would need to measure the corners. You did not: the coordinates settled it exactly. Equal sides, unequal diagonals: a rhombus, not a square."
+ },
+ "e.intro": {
+  "text": "One triangle, four tools. Every number comes from the coordinates, never from looking."
+ },
+ "e.step0": {
+  "text": "Under A B sits a right triangle: run six, rise two. So A B squared is six squared plus two squared, forty. The same for B C: also forty. Equal squares, so the two sides are congruent."
+ },
+ "e.step1": {
+  "text": "The slope of A B is one third; the slope of B C is negative three. Their product is negative one, so the sides are perpendicular: a right angle at B."
+ },
+ "e.step2": {
+  "text": "The midpoint of A C is halfway in x and halfway in y: M is three, five, the average of the endpoints."
+ },
+ "e.step3": {
+  "text": "M B squared is twenty, and M A squared is twenty too. B is as far from M as A is: B lies on the circle with diameter A C."
+ },
+ "e.why": {
+  "text": "Why is A B squared equal to six squared plus two squared?"
+ },
+ "e.why.ok": {
+  "text": "Right: the run and the rise meet at a right angle, so the Pythagorean theorem gives the slanted side."
+ },
+ "e.why.adds": {
+  "text": "The run and rise are not laid end to end along A B: they meet at a right angle. Square, add, take the root."
+ },
+ "e.why.sq": {
+  "text": "Subtract first, then square: the legs are the differences, six and two."
+ },
+ "t.intro": {
+  "text": "Your turn: P and Q. The run is eight and the rise is negative six."
+ },
+ "t.pq.ask": {
+  "text": "How long is P Q?"
+ },
+ "t.pq.ok": {
+  "text": "Right: P Q squared is sixty-four plus thirty-six, a hundred, so P Q is ten."
+ },
+ "t.pq.adds": {
+  "text": "The run and rise meet at a right angle: square them and add, do not add them."
+ },
+ "t.pq.other": {
+  "text": "Square the run, square the rise, add, then take the square root."
+ },
+ "t.m.ask": {
+  "text": "Now the midpoint M of P Q."
+ },
+ "t.m.ok": {
+  "text": "Right: M is one, negative one, halfway in x and in y."
+ },
+ "t.m.half": {
+  "text": "That is half the difference: how far M is from P. Add the coordinates, then halve."
+ },
+ "t.m.other": {
+  "text": "Average each coordinate: add the two x values and halve, then the two y values."
+ },
+ "t.s.ask": {
+  "text": "Last: the slope of a line perpendicular to P Q. Type it as a fraction."
+ },
+ "t.s.ok": {
+  "text": "Right: P Q has slope negative three fourths, so a perpendicular has slope four thirds: the product is negative one."
+ },
+ "t.s.recip": {
+  "text": "Flip and change the sign: the product of the slopes must be negative one."
+ },
+ "t.s.opp": {
+  "text": "Change the sign and flip: the product of the slopes must be negative one."
+ },
+ "t.s.other": {
+  "text": "First the slope of P Q: rise over run. Then flip it and change the sign."
+ },
+ "t.done": {
+  "text": "That line through M is the perpendicular bisector of P Q. Now: can numbers like these prove a claim about every figure?"
+ },
+ "p.intro": {
+  "text": "Claim: the diagonals of every parallelogram bisect each other. First, place a general parallelogram on the axes."
+ },
+ "p.place.ask": {
+  "text": "Which placement covers every parallelogram, and nothing more?"
+ },
+ "p.place.ok": {
+  "text": "Right: one side on the x-axis, the opposite side the same length and direction. Any parallelogram can be moved there."
+ },
+ "p.place.rect": {
+  "text": "That builds in right angles: it covers rectangles only."
+ },
+ "p.place.sq": {
+  "text": "That is a square: it proves the claim for squares only."
+ },
+ "p.wrong": {
+  "text": "Not that one."
+ },
+ "p.proved": {
+  "text": "Proved for every parallelogram: the letters stand for any one of them."
+ },
+ "p.back": {
+  "text": "Back to the garden bed. Its four sides all have the same squared length. Is it a square?"
+ },
+ "p.back.ask": {
+  "text": "Which check settles it?"
+ },
+ "p.back.ok": {
+  "text": "Right: A C is twelve but B D is ten. A rhombus with unequal diagonals has no right angle: not a square."
+ },
+ "p.back.four": {
+  "text": "Four equal sides make a rhombus. A square also needs a right angle."
+ },
+ "p.back.look": {
+  "text": "It looks close to square, but close is not equal: compute."
+ }
+}

@@ -417,7 +417,8 @@
    "geometry-foundations",
    "linear-functions-slope",
    "quadrilaterals"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t6-26-circle-theorems",
