@@ -1,0 +1,134 @@
+{
+ "q.intro": {
+  "text": "A square deck is twenty three feet on each side. To find its area in her head, Mia cuts each side into twenty feet and three feet."
+ },
+ "q.ask": {
+  "text": "So the area is twenty plus three, squared, in square feet. Which number is it? Pick one, and say how sure you are."
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the square comes apart first, then the algebra."
+ },
+ "e.s0": {
+  "text": "Cut both sides at twenty. Four pieces: a twenty by twenty square, four hundred. Two twenty by three strips, sixty each. And a three by three square, nine. Together, five hundred twenty nine."
+ },
+ "e.s1": {
+  "text": "Now let the pieces be any lengths, a and b. The same four pieces: a squared, a b, b a, and b squared. In algebra, a plus b times a plus b: every term times every term."
+ },
+ "e.s2": {
+  "text": "b a is the same term as a b. The two strips are the same rectangle, turned. They collect: a plus b, squared, is a squared plus two a b plus b squared."
+ },
+ "e.s3": {
+  "text": "A picture needs positive lengths, but the algebra never used that. Try a equal to negative five, and b equal to two. Negative three squared is nine, and twenty five minus twenty plus four is nine. It holds for every real a and b: an identity. a squared plus b squared gives twenty nine. Not an identity."
+ },
+ "e.why": {
+  "text": "Quick check. Where does the two a b come from?"
+ },
+ "e.w-ok": {
+  "text": "Yes. a plus b, times a plus b, has two cross products, a b and b a. And they are like terms."
+ },
+ "e.w-fn": {
+  "text": "Squaring a sum is not squaring each part. With twenty and three, four hundred plus nine is four hundred nine, but the deck is five hundred twenty nine. The two strips are real area."
+ },
+ "e.w-mid": {
+  "text": "The middle term is a product, two times a times b. Each strip is a long and b wide. Two times twenty, plus three, is not the area of anything."
+ },
+ "t.intro": {
+  "text": "Now a minus b, squared, for any a and b, negative ones too. It is a minus b, times a minus b. The box has four cells. The first row is done."
+ },
+ "t.row": {
+  "text": "Your step: the second row. What is negative b times a, and negative b times negative b?"
+ },
+ "t.r-ok": {
+  "text": "Yes. Negative b times a is negative a b. And negative b times negative b is positive b squared. A negative times a negative is positive."
+ },
+ "t.r-spread": {
+  "text": "The minus does not spread to every term. Negative b times negative b is a negative times a negative, so it is positive b squared."
+ },
+ "t.r-sign": {
+  "text": "Negative b times a is negative. Unlike signs give a negative product."
+ },
+ "t.ab": {
+  "text": "Now collect. The two a b cells are negative a b, and negative b a. What is the coefficient of a b?"
+ },
+ "t.ab-ok": {
+  "text": "Yes. Negative a b minus a b is negative two a b. So a minus b, squared, is a squared minus two a b plus b squared."
+ },
+ "t.ab-one": {
+  "text": "There are two a b cells, one in each row. Add both."
+ },
+ "t.ab-sign": {
+  "text": "Both cross cells are negative. Negative one plus negative one is negative two."
+ },
+ "t.ab-no": {
+  "text": "Add the coefficients of the two a b cells: negative one, and negative one."
+ },
+ "t.cmp": {
+  "text": "Is a minus b, squared, the same as a squared minus b squared? At a equal to five and b equal to two, the square is three squared, nine. What is a squared minus b squared there?"
+ },
+ "t.cmp-ok": {
+  "text": "Yes. Twenty five minus four is twenty one, not nine. One counterexample: a squared minus b squared is not the square of a difference."
+ },
+ "t.cmp-sq": {
+  "text": "That is five minus two, squared. Now work out a squared minus b squared: five squared minus two squared."
+ },
+ "t.cmp-no": {
+  "text": "Five squared is twenty five, and two squared is four. Subtract."
+ },
+ "t.num": {
+  "text": "Type a number first."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked five hundred twenty nine, and you were right. Four hundred, plus sixty, plus sixty, plus nine. Those two strips are the two a b."
+ },
+ "t.cb-fn": {
+  "text": "At the start you picked four hundred nine, four hundred plus nine. That squares each part, and drops the two strips. a plus b, squared, is not a squared plus b squared."
+ },
+ "t.cb-mid": {
+  "text": "At the start you picked four hundred fifty two. The middle part is two times twenty times three, a product: two strips of sixty."
+ },
+ "t.cb-none": {
+  "text": "Every special product is just every term times every term, done once and remembered."
+ },
+ "p.intro": {
+  "text": "Dana tries an equation at x equal to two and y equal to one. x squared plus y squared, all squared, equals x squared minus y squared, all squared, plus two x y, squared. She gets twenty five equals nine plus sixteen. It checks, she says, so it is true for every x and y. Is her check a proof?"
+ },
+ "p.build": {
+  "text": "Right. One check is an example. Now prove it. Fill each because, with the reason that makes the line true."
+ },
+ "p.test": {
+  "text": "One check is only an example. It says nothing about other values. Build a real proof, and see."
+ },
+ "p.c1": {
+  "text": "Right. With a equal to x squared and b equal to y squared: x to the fourth, plus two x squared y squared, plus y to the fourth."
+ },
+ "p.c2": {
+  "text": "Right. x squared minus y squared, squared, is x to the fourth minus two x squared y squared plus y to the fourth. And two x y, squared, squares the two too: four x squared y squared."
+ },
+ "p.c3": {
+  "text": "Right. Negative two x squared y squared plus four x squared y squared is two x squared y squared. The right side is the same polynomial."
+ },
+ "p.c4": {
+  "text": "Right. Each side was rewritten on its own, with steps true for every value, to the same standard form."
+ },
+ "p.no.fn": {
+  "text": "Squaring a sum is not squaring each term. The two a b, two x squared y squared, is missing."
+ },
+ "p.no.pow": {
+  "text": "Two x y, squared, is two x y times two x y. The two is squared too: four x squared y squared."
+ },
+ "p.no.ex": {
+  "text": "That is the very thing a check cannot do. One value is an example, not every value."
+ },
+ "p.no.both": {
+  "text": "Starting from the equation assumes what you want to prove. Rewrite each side on its own instead."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That is a proof, for every real x and y. And a bonus: any whole numbers with x bigger than y bigger than zero give a right triangle with whole number sides. x squared minus y squared, two x y, and x squared plus y squared."
+ }
+}

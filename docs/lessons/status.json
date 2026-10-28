@@ -600,19 +600,30 @@
   "note": "30 families, 14/14; oracle 18000/18000; VOICE PENDING"
  },
  "right-triangle-trig": {
-  "state": "building",
-  "at": "2026-10-28 16:45",
-  "commit": "68e51c1"
+  "state": "built",
+  "at": "2026-10-28 17:48",
+  "commit": "8884b73",
+  "note": "65 families, 29/29"
  },
  "polynomial-identities": {
-  "state": "built",
-  "at": "2026-10-28 17:43",
-  "commit": "6bbe8c0",
-  "note": "34 families, 14/14"
+  "state": "live",
+  "at": "2026-10-28 17:52",
+  "commit": "8884b73",
+  "note": "34 families, 14/14; oracle 20400/20400; VOICE PENDING"
  },
  "circle-angles": {
   "state": "building",
   "at": "2026-10-28 17:33",
   "commit": "dd5120e"
+ },
+ "polynomial-division": {
+  "state": "building",
+  "at": "2026-10-28 17:47",
+  "commit": "8884b73"
+ },
+ "coordinate-proofs": {
+  "state": "building",
+  "at": "2026-10-28 17:48",
+  "commit": "8884b73"
  }
 }

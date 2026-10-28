@@ -771,7 +771,8 @@
   "subgoals": 14,
   "requires": [
    "polynomials"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t7-05-polynomial-division-long-and-synthetic",
