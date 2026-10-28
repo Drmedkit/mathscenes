@@ -1,0 +1,131 @@
+{
+ "q.intro": {
+  "text": "Eight used cars of the same model: mileage and price. Three people each drew a line through them. Line A joins the first and the last car. Line B goes exactly through three cars. Line C passes through no car at all. Which line fits the data best? Pick one, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps, one line, and what its numbers mean. Press each step: the graph moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "Take the car with ninety-five thousand miles. Line C predicts twelve point five: twelve thousand five hundred dollars. It actually sold for fourteen thousand. The residual is observed minus predicted: fourteen minus twelve point five, which is plus one point five. Positive: the car sits above the line. It sold for fifteen hundred dollars more than predicted."
+ },
+ "e.step1": {
+  "text": "Every car has a residual: one stick each. Adding them would let the pluses cancel the minuses, so square them and add. Line B hits three cars exactly, but misses the rest badly: sixty-two. Line A joins the first and the last car, and every other car sits above it: nineteen point eight. Line C: eight point six, the smallest. Line C is the least-squares line, rounded: technology finds the line with the smallest possible sum."
+ },
+ "e.step2": {
+  "text": "The slope, negative zero point one two, is thousand dollars per thousand miles: for each additional thousand miles, the predicted price is a hundred and twenty dollars lower, on average. Not every car loses exactly that much. The intercept, twenty-three point nine, is the prediction at zero miles: twenty-three thousand nine hundred dollars. But zero miles is outside the data, which run from twenty to a hundred and ten thousand miles, so it only anchors the line."
+ },
+ "e.step3": {
+  "text": "Technology gives r equals negative zero point nine six. Its sign is the direction: downhill. Its size, close to one, is the strength: the cars stay close to the line. Is a line the right form at all? The residual plot puts each car at its mileage and its residual. No pattern, just scatter around zero. A line is a fair model here."
+ },
+ "e.why": {
+  "text": "Quick check: why does least squares square the residuals, instead of just adding them?"
+ },
+ "e.why.ok": {
+  "text": "Yes. Pluses and minuses cancel: a terrible line can still have residuals that add up to zero. Squares are never negative, so every miss counts."
+ },
+ "e.why.most": {
+  "text": "Hitting cars exactly is not the goal. Line B went through three cars and was the worst line of all."
+ },
+ "e.why.sum": {
+  "text": "Try it: a line can be far too steep and still have residuals that add to zero. A plain sum cannot tell good lines from bad ones."
+ },
+ "t.intro": {
+  "text": "Your turn. Ten students: hours studied, and test score. The first steps are done for you: the pairs are in the two lists, row by row, and the linear regression ran. Its output is on the board."
+ },
+ "t.eq": {
+  "text": "Which equation does the output give, with the coefficients rounded to two decimal places?"
+ },
+ "t.eq.ok": {
+  "text": "Yes. In y equals a plus b x, a is the intercept and b is the slope: y hat equals fifty-three point one eight, plus four point six nine x."
+ },
+ "t.eq.swap": {
+  "text": "Check the form on the screen: y equals a plus b x. a, fifty-three point one eight, is the intercept. b, four point six nine, is what multiplies x."
+ },
+ "t.eq.r": {
+  "text": "Zero point nine four is r, the correlation. The slope is b, four point six nine."
+ },
+ "t.pred": {
+  "text": "In the data, the student who studied eight hours scored eighty-one. What does the line predict for eight hours? Give y hat to the nearest tenth."
+ },
+ "t.pred.ok": {
+  "text": "Yes: fifty-three point one eight, plus four point six nine times eight, is ninety point seven points."
+ },
+ "t.pred.swap": {
+  "text": "That multiplied the intercept by eight. The slope, four point six nine, is what multiplies x."
+ },
+ "t.pred.obs": {
+  "text": "Eighty-one is what this student actually scored. The prediction is the height of the line at x equals eight."
+ },
+ "t.pred.no": {
+  "text": "Put x equals eight into the line: fifty-three point one eight, plus four point six nine x."
+ },
+ "t.res": {
+  "text": "That student scored eighty-one. What is the residual: observed minus predicted?"
+ },
+ "t.res.ok": {
+  "text": "Yes: eighty-one minus ninety point seven is negative nine point seven. Negative: the student is below the line."
+ },
+ "t.res.sign": {
+  "text": "Observed minus predicted: eighty-one minus ninety point seven. The student is below the line, so the residual is negative."
+ },
+ "t.res.no": {
+  "text": "The residual is observed minus predicted: eighty-one minus ninety point seven."
+ },
+ "t.mean": {
+  "text": "What does a residual of negative nine point seven say about this student?"
+ },
+ "t.mean.ok": {
+  "text": "Yes: the student scored nine point seven points less than the line predicts for eight hours of study."
+ },
+ "t.mean.under": {
+  "text": "Under-predicting would put the student above the line. A negative residual is below it: the model predicted too much."
+ },
+ "t.mean.bare": {
+  "text": "The student scored eighty-one. The residual compares that with the prediction: nine point seven points below it."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked line C, and you were right: it has the smallest sum of squared residuals. That is the least-squares criterion."
+ },
+ "q.cb.first": {
+  "text": "At the start you picked line A. Joining the first and last points ignores the rest: here, every other car sat above it."
+ },
+ "q.cb.most": {
+  "text": "At the start you picked line B. Going exactly through three cars left the others far away: its sum of squares was the largest."
+ },
+ "q.cb.none": {
+  "text": "The best line is the one with the smallest sum of squared residuals: the least-squares line."
+ },
+ "p.intro": {
+  "text": "Riley fits a line to the stopping distance of one car on dry pavement, against its speed, and technology gives r equals zero point nine nine. Riley says: r is almost one, so a straight line is the right model for stopping distance. Is Riley right?"
+ },
+ "p.test": {
+  "text": "Let's test it. Build the argument, and see where it leads."
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Right. The residual plot is the test of form: a U shape means the data bend."
+ },
+ "p.c2": {
+  "text": "Right. Curved data leave a straight line too low at the ends and too high in the middle. It misses in a system, not by chance."
+ },
+ "p.c3": {
+  "text": "Right. r measures how closely points follow some straight line. Points on a gentle curve can still give r near one."
+ },
+ "p.no.highR": {
+  "text": "That is exactly Riley's slip. A curve can give r near one: only the residual plot shows whether the form is right."
+ },
+ "p.no.small": {
+  "text": "Small or not, residuals that follow a pattern mean the line is off in a system. At seventy miles per hour it is twenty feet short, and that matters when you brake."
+ },
+ "p.no.pct": {
+  "text": "r is not a percent of right predictions. Almost every prediction here misses a little."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That's a proof. Riley's r is real, but it cannot show the form is right. The residual plot can, and here it says: curve."
+ }
+}

@@ -534,10 +534,10 @@
   "note": "64 families, 31/31; oracle 0 errors on 39,000; VOICE PENDING"
  },
  "linear-regression": {
-  "state": "built",
-  "at": "2026-10-28 13:29",
-  "commit": "3dcdb2d",
-  "note": "53 families, 27/27; DataCard"
+  "state": "live",
+  "at": "2026-10-28 13:49",
+  "commit": "5b81766",
+  "note": "53 families, 27/27; oracle 0 errors on 32,400; VOICE PENDING"
  },
  "triangle-inequalities": {
   "state": "building",

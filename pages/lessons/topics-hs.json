@@ -527,7 +527,8 @@
   "subgoals": 27,
   "requires": [
    "linear-functions-slope"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t7-19-regression-models-non-linear",

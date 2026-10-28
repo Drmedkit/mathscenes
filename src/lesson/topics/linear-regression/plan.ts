@@ -1,0 +1,32 @@
+// plan.ts: practice walks through every sub-goal of secondary-t6-16-linear-regression-and-correlation, in topic JSON order.
+import type { SubgoalPlan } from '../../runtime/practice';
+
+export const PLAN: readonly SubgoalPlan[] = [
+  { id: 'variable-roles', title: 'Which variable is explanatory', families: ['roles', 'rolesAxis'] },
+  { id: 'exact-vs-statistical', title: 'Exact or statistical', families: ['exactStat', 'exactSample'] },
+  { id: 'observed-vs-predicted', title: 'Observed y and predicted ŷ', families: ['yhatRead', 'obsPred'] },
+  { id: 'fit-by-eye', title: 'A line of fit by eye', families: ['eyeEq', 'eyeCritique'] },
+  { id: 'predict-from-model', title: 'Predictions from a model', families: ['predict', 'predictTable'] },
+  { id: 'residual-compute', title: 'Residuals', families: ['residual', 'residGraph'] },
+  { id: 'residual-in-context', title: 'Residuals in context', families: ['residMeaning', 'residCompare'] },
+  { id: 'residual-plot-construct', title: 'The residual plot', families: ['residPoint', 'residZero'] },
+  { id: 'residual-pattern', title: 'Reading residual patterns', families: ['pattern', 'strengthResid'] },
+  { id: 'least-squares-criterion', title: 'The least-squares criterion', families: ['sseCompare', 'sseCompute'] },
+  { id: 'enter-paired-data', title: 'Paired data in a tool', families: ['pairedLists'] },
+  { id: 'technology-lsrl', title: 'The regression line from technology', families: ['readOutput', 'lsrlData'] },
+  { id: 'slope-interpret', title: 'The slope in context', families: ['slopeSentence', 'slopeChange'] },
+  { id: 'intercept-interpret', title: 'The intercept in context', families: ['interceptMeaning', 'whichCoef'] },
+  { id: 'r-obtain', title: 'Getting r', families: ['readR', 'rData', 'rUnits'] },
+  { id: 'r-direction', title: 'The sign of r', families: ['rSign', 'rMismatch'] },
+  { id: 'r-strength', title: 'The size of r', families: ['rStrongest', 'steepTight'] },
+  { id: 'r-linear-only', title: 'What r cannot show', families: ['rZero', 'highRCurve'] },
+  { id: 'interpolation-extrapolation', title: 'Interpolation and extrapolation', families: ['interExtra', 'extraNonsense'] },
+  { id: 'representative-data', title: 'Whom the data represent', families: ['represent', 'bigSample'] },
+  { id: 'population-scope', title: 'Using a model for a new case', families: ['scope', 'scopeWhich'] },
+  { id: 'lurking-variable', title: 'Correlation is not cause', families: ['lurking', 'causeClaim'] },
+  { id: 'experiment-for-cause', title: 'Experiments for cause', families: ['design', 'designLimits'] },
+  { id: 'influential-point', title: 'Influential points', families: ['refit', 'reportNotDelete'] },
+  { id: 'three-check-critique', title: 'Fit, scope and cause', families: ['critique'] },
+  { id: 'r-squared-meaning', title: 'r² (AP extension)', families: ['r2SS', 'r2Sentence', 'rFromR2'] },
+  { id: 'r-squared-limits', title: 'Limits of r² (AP extension)', families: ['r2Compare', 'highRCurve'] },
+];
