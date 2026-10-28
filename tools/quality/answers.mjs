@@ -51,7 +51,9 @@ export function sameAnswer(it, want, r) {
       const i = typeof want === 'number' ? want : (it.choices ?? []).map(plainText).findIndex(c => c.toLowerCase() === String(want).trim().toLowerCase());
       return r.kind === 'choice' && r.i === i;
     }
-    case 'pair': return r.kind === 'pair' && Array.isArray(want) && want.length === 2 && sameValue(want[0], r.x) && sameValue(want[1], r.y);
+    // a pair whose item accepts both orders (two solutions, x = □ or x = □) matches the oracle in either order
+    case 'pair': return r.kind === 'pair' && Array.isArray(want) && want.length === 2 && ((sameValue(want[0], r.x) && sameValue(want[1], r.y))
+      || (sameValue(want[0], r.y) && sameValue(want[1], r.x) && !!it.check?.({ kind: 'pair', x: r.y, y: r.x })?.ok));
     // a whole box may hold a decimal (5.5 typed in the whole box reads as { w: 5.5, n: 0, d: 1 })
     case 'frac': return r.kind === 'frac' ? (Number.isInteger(r.w) ? sameValue(want, [r.w, r.n, r.d]) : sameValue(want, r.w + r.n / r.d)) : r.kind === 'num' && sameValue(want, r.v);
     default: return r.kind === 'num' ? sameValue(want, r.v) : false;
