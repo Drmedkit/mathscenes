@@ -276,3 +276,18 @@ A course is useful on its own, so the site gets each course as soon as its wave 
   factoring (just started). Resume: check those four with tsc/vitest/sweep, write the oracles, then linear-systems,
   quadratic-functions, function-families; then Geometry. Process per lesson: docs/lessons/HS_BRIEF.md.
 
+
+**2026-10-28 PAUSED by owner (token use).** 43 of 125 HS lessons are live and pushed. Two of them are not deployed yet: circle-angles and probability-decisions. Run `bash tools/lesson-deploy.sh` to deploy them.
+
+Uncommitted in the worktree, all stopped mid-work:
+- margin-of-error: built, 63 families; its oracle was stopped and is unfinished.
+- higher-degree-factoring: partial build.
+- chords-tangents: partial build.
+- arcs-and-sectors: partial build.
+
+The proposed cheaper process for the rest:
+- about 25-30 families per lesson;
+- one look-and-fix round;
+- a sampled oracle.
+
+Priority: Geometry, Statistics and Algebra 2 first. Precalculus, Calculus, Discrete and Money only when needed.

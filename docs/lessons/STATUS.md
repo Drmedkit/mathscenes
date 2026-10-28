@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63); phase 2: building 3, live 43, queued 79 (of 125)
+Totals: live 63 (of 63); phase 2: building 3, built 1, live 43, queued 78 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -138,7 +138,7 @@ Totals: live 63 (of 63); phase 2: building 3, live 43, queued 79 (of 125)
 | 11 | Distance, midpoint and coordinate proofs | `coordinate-proofs` | HS | 33 | live | 61 families, 33/33; oracle 38400/38400; VOICE PENDING |
 | 12 | Arcs and angles in circles | `circle-angles` | HS | 33 | live | 46 families, 33/33; CircleFig; oracle 30000/30000; VOICE PENDING |
 | 13 | Tangents, chords and segment lengths | `chords-tangents` | HS | 14 | building |  |
-| 14 | Arc length, sectors and radians | `arcs-and-sectors` | HS | 26 | queued |  |
+| 14 | Arc length, sectors and radians | `arcs-and-sectors` | HS | 26 | building |  |
 | 15 | Equations of circles | `circle-equations` | HS | 23 | queued |  |
 | 16 | Surface area and volume of solids | `solids` | HS | 42 | queued |  |
 | 17 | Geometric probability | `geometric-probability` | HS | 20 | queued |  |
@@ -157,7 +157,7 @@ Totals: live 63 (of 63); phase 2: building 3, live 43, queued 79 (of 125)
 | 7 | The normal distribution | `normal-distribution` | HS | 30 | live | 66 families, 30/30; oracle 0 errors on 39,600; VOICE PENDING |
 | 8 | Probability distributions and expected value | `expected-value` | HS | 24 | live | 54 families, 24/24; oracle 0 errors; VOICE PENDING |
 | 9 | Using probability to make decisions | `probability-decisions` | HS | 17 | live | 36 families, 17/17; DecTree; oracle 21600/21600; VOICE PENDING |
-| 10 | Study design and estimating with a margin of error | `margin-of-error` | HS | 32 | building |  |
+| 10 | Study design and estimating with a margin of error | `margin-of-error` | HS | 32 | built | 63 families, 32/32; SimCard, StudyView |
 | 11 | Testing a claim by simulation | `simulation-tests` | HS | 8 | queued |  |
 | 12 | Sampling distributions and the central limit theorem | `sampling-distributions` | AP | 13 | queued |  |
 | 13 | t procedures for a mean | `t-procedures` | AP | 15 | queued |  |

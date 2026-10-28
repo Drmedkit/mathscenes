@@ -636,9 +636,10 @@
   "note": "36 families, 17/17; DecTree; oracle 21600/21600; VOICE PENDING"
  },
  "margin-of-error": {
-  "state": "building",
-  "at": "2026-10-28 18:52",
-  "commit": "6bbf67a"
+  "state": "built",
+  "at": "2026-10-28 20:06",
+  "commit": "4b6aac3",
+  "note": "63 families, 32/32; SimCard, StudyView"
  },
  "higher-degree-factoring": {
   "state": "building",
@@ -649,5 +650,10 @@
   "state": "building",
   "at": "2026-10-28 19:47",
   "commit": "ad504a3"
+ },
+ "arcs-and-sectors": {
+  "state": "building",
+  "at": "2026-10-28 20:06",
+  "commit": "4b6aac3"
  }
 }
