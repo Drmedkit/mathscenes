@@ -1,0 +1,116 @@
+{
+ "q.intro": {
+  "text": "One patient, one dose, nine blood samples over eight hours. A quadratic and an exponential model both hug the data. The nurse needs the concentration at twelve hours, outside the data. Which model should she use? Pick one, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps: fit, residuals, residual plots, then the prediction. The picture moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "Quad reg and exp reg on the nine samples, recorded with enough digits. Both curves run right through the cloud."
+ },
+ "e.step1": {
+  "text": "At two hours the sample read thirteen point four. The quadratic predicts fourteen point zero one, so its residual is minus zero point six one. The exponential predicts thirteen point four six: residual minus zero point zero six. Residual is observed minus predicted, for a curve just as for a line."
+ },
+ "e.step2": {
+  "text": "Now all nine residuals of each model. The quadratic’s run plus, then four minuses, then three pluses, then minus: a wave, so it misses in a system. The exponential’s jump around zero with no pattern. The exponential has the right form."
+ },
+ "e.step3": {
+  "text": "Extend both to twelve hours. The quadratic bottoms out at seven point six hours and climbs back to nine point five: the drug would come back without a new dose. The exponential keeps losing about twenty-five percent per hour, as a body clears a drug: zero point eight. Report it as an estimate: twelve hours is outside the data."
+ },
+ "e.why": {
+  "text": "Why is zero point eight only an estimate, said with caution?"
+ },
+ "e.why.ok": {
+  "text": "Right. The samples stop at eight hours. At twelve hours we extrapolate: the model is the best guess, not a measurement."
+ },
+ "e.why.pattern": {
+  "text": "Look again: the exponential’s residuals have no pattern. The caution comes from where we use it: outside the data."
+ },
+ "e.why.exact": {
+  "text": "A fit this good inside zero to eight hours still says nothing certain about twelve hours. No data were taken there."
+ },
+ "t.intro": {
+  "text": "A ball thrown upward, filmed in slow motion: height every quarter second. Quad reg has run. Your job: record the model, predict, and report the landing time."
+ },
+ "t.eq": {
+  "text": "Which equation records the quad reg output, coefficients to two decimal places?"
+ },
+ "t.eq.ok": {
+  "text": "Right. The minus fifteen point nine nine is close to the minus sixteen that gravity gives in feet."
+ },
+ "t.eq.rev": {
+  "text": "A, b and c are in the wrong places: a goes with t squared, b with t, and c stands alone."
+ },
+ "t.eq.drop": {
+  "text": "That drops the t squared term, the part that makes the ball come back down."
+ },
+ "t.pred": {
+  "text": "Predict the height at one and a half seconds. Round to the nearest tenth of a foot."
+ },
+ "t.pred.ok": {
+  "text": "Right: about twenty-nine point one feet. The film showed twenty-eight point nine: a residual of minus zero point two."
+ },
+ "t.pred.obs": {
+  "text": "Twenty-eight point nine is what the film showed. The model’s prediction comes from the equation: put one and a half into it."
+ },
+ "t.pred.no": {
+  "text": "Square one and a half first, then multiply by minus fifteen point nine nine, and add the other two terms."
+ },
+ "t.land": {
+  "text": "Solving h equals zero gives about minus zero point one one seconds and about two point six three seconds. What do you report as the landing time?"
+ },
+ "t.land.ok": {
+  "text": "Right: only two point six three seconds. A negative time is before the throw, outside the event the model describes."
+ },
+ "t.land.both": {
+  "text": "The ball is not in the air before time zero. Minus zero point one one solves the equation but not the question."
+ },
+ "t.land.neg": {
+  "text": "A negative time is before the throw. The landing comes after the peak."
+ },
+ "q.cb.quad": {
+  "text": "At the start you picked the quadratic. Its residuals made a wave, and it climbed back up at twelve hours: no drug does that without a new dose."
+ },
+ "q.cb.exp": {
+  "text": "At the start you picked the exponential, and the evidence agreed: no residual pattern, and a body clears a drug by a steady percent."
+ },
+ "q.cb.either": {
+  "text": "At the start you said either would do. Inside the data they agree; at twelve hours one says nine point five and the other zero point eight. Equal fits do not mean equal predictions."
+ },
+ "q.cb.none": {
+  "text": "The exponential was the one: no residual pattern, and the right mechanism."
+ },
+ "p.intro": {
+  "text": "A new app: total sign-ups, in thousands, for its first eight weeks. Jamal fits a quadratic and an exponential; both residuals stay within about zero point two thousand. Jamal says: they fit equally well, so at week twenty-three they will predict about the same. Is Jamal right?"
+ },
+ "p.build": {
+  "text": "Then build the case. Fill each because with a reason."
+ },
+ "p.test": {
+  "text": "Let’s test that. Build the case and see where it leads: fill each because."
+ },
+ "p.c1": {
+  "text": "Yes. A factor every week compounds; the quadratic only adds a slowly growing amount."
+ },
+ "p.c2": {
+  "text": "Yes. The eight points pin the curves down only between weeks one and eight."
+ },
+ "p.c3": {
+  "text": "Yes. Observed residuals describe the observed weeks, nothing more."
+ },
+ "p.done": {
+  "text": "Jamal is wrong: at week twenty-three the models say about one hundred four and seven hundred sixty-eight thousand. Before trusting either, look at the mechanism, and say the claim is an extrapolation."
+ },
+ "p.no.equal": {
+  "text": "That is Jamal’s claim itself. The numbers at week twenty-three show it fails."
+ },
+ "p.no.bound": {
+  "text": "The plus or minus zero point two describes weeks one to eight only. It sets no limit on misses far outside them."
+ },
+ "p.no.r2": {
+  "text": "R squared measures the fit inside the data. It says nothing about which model is right at week twenty-three."
+ },
+ "p.no.other": {
+  "text": "True or not, that reason does not support this step. Try another."
+ }
+}

@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63); phase 2: building 3, built 1, live 29, queued 92 (of 125)
+Totals: live 63 (of 63); phase 2: building 3, live 30, queued 92 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -150,7 +150,7 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 29, queued 92 (of 12
 |---|---|---|---|---|---|---|
 | 1 | Summarizing and comparing data | `one-variable-data` | HS | 28 | live | 49 families, 28/28; oracle 0 errors on 31,200; VOICE PENDING |
 | 2 | Scatter plots, correlation and the regression line | `linear-regression` | HS | 27 | live | 53 families, 27/27; oracle 0 errors on 32,400; VOICE PENDING |
-| 3 | Quadratic and exponential regression | `nonlinear-regression` | HS | 21 | built | 48 families, 21/21 |
+| 3 | Quadratic and exponential regression | `nonlinear-regression` | HS | 21 | live | 48 families, 21/21; oracle 0 errors on 29,400; VOICE PENDING |
 | 4 | Counting: permutations and combinations | `counting` | HS | 25 | live | 52 families, 25/25; oracle 0 errors on 31,200; VOICE PENDING |
 | 5 | Repeated objects and circular arrangements | `advanced-counting` | AP | 15 | queued |  |
 | 6 | Conditional probability and independence | `conditional-probability` | HS | 31 | live | 64 families, 31/31; oracle 0 errors on 39,000; VOICE PENDING |

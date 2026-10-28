@@ -1,0 +1,56 @@
+// script.ts: every line the panel shows in parts 1-4, by voice id. `html` is what the panel shows, `say` is the same
+// line written to be read aloud (no digits or symbols). pages/lessons/nonlinear-regression/voice/lines.json holds the
+// `say` texts (the test keeps the two in step).
+export const LINES: Record<string, { html: string; say: string }> = {
+  // ---------- 1. The question ----------
+  'q.intro': { html: 'One patient, one dose, nine blood samples over 8 hours. A <b>quadratic</b> and an <b>exponential</b> model both hug the data. The nurse needs the concentration at <b>12 hours</b>, outside the data. Which model should she use? Pick one, and say how sure you are.',
+    say: 'One patient, one dose, nine blood samples over eight hours. A quadratic and an exponential model both hug the data. The nurse needs the concentration at twelve hours, outside the data. Which model should she use? Pick one, and say how sure you are.' },
+
+  // ---------- 2. Worked example ----------
+  'e.intro': { html: 'Four steps: fit, residuals, residual plots, then the prediction. The picture moves first, then the notation.', say: 'Four steps: fit, residuals, residual plots, then the prediction. The picture moves first, then the notation.' },
+  'e.step0': { html: 'QuadReg and ExpReg on the nine samples, recorded with enough digits: ŷ = 0.349x² − 5.339x + 23.293 and ŷ = 23.87(0.751)<sup>x</sup>. Both curves run right through the cloud.',
+    say: 'Quad reg and exp reg on the nine samples, recorded with enough digits. Both curves run right through the cloud.' },
+  'e.step1': { html: 'At 2 hours the sample read 13.4 mg/L. The quadratic predicts 14.01, so its residual is 13.4 − 14.01 = <b class="s">−0.61</b>. The exponential predicts 13.46: residual <b class="s">−0.06</b>. Residual = observed minus predicted, for a curve just as for a line.',
+    say: 'At two hours the sample read thirteen point four. The quadratic predicts fourteen point zero one, so its residual is minus zero point six one. The exponential predicts thirteen point four six: residual minus zero point zero six. Residual is observed minus predicted, for a curve just as for a line.' },
+  'e.step2': { html: 'Now all nine residuals of each model. The quadratic’s run + − − − − + + + −: a <b>wave</b>, so it misses in a system. The exponential’s jump around 0 with <b>no pattern</b>. The exponential has the right form.',
+    say: 'Now all nine residuals of each model. The quadratic’s run plus, then four minuses, then three pluses, then minus: a wave, so it misses in a system. The exponential’s jump around zero with no pattern. The exponential has the right form.' },
+  'e.step3': { html: 'Extend both to 12 hours. The quadratic bottoms out at 7.6 hours and climbs back to <b>9.5 mg/L</b>: the drug would come back without a new dose. The exponential keeps losing about 25% per hour, as a body clears a drug: <b class="s">0.8 mg/L</b>. Report it as an estimate: 12 hours is outside the data.',
+    say: 'Extend both to twelve hours. The quadratic bottoms out at seven point six hours and climbs back to nine point five: the drug would come back without a new dose. The exponential keeps losing about twenty-five percent per hour, as a body clears a drug: zero point eight. Report it as an estimate: twelve hours is outside the data.' },
+  'e.why': { html: 'Why is 0.8 mg/L only an estimate, said with caution?', say: 'Why is zero point eight only an estimate, said with caution?' },
+  'e.why.ok': { html: 'Right. The samples stop at 8 hours. At 12 hours we extrapolate: the model is the best guess, not a measurement.', say: 'Right. The samples stop at eight hours. At twelve hours we extrapolate: the model is the best guess, not a measurement.' },
+  'e.why.pattern': { html: 'Look again: the exponential’s residuals have no pattern. The caution comes from where we use it: outside the data.', say: 'Look again: the exponential’s residuals have no pattern. The caution comes from where we use it: outside the data.' },
+  'e.why.exact': { html: 'A fit this good inside 0 to 8 hours still says nothing certain about 12 hours. No data were taken there.', say: 'A fit this good inside zero to eight hours still says nothing certain about twelve hours. No data were taken there.' },
+
+  // ---------- 3. Your turn ----------
+  't.intro': { html: 'A ball thrown upward, filmed in slow motion: height every quarter second. QuadReg has run. Your job: record the model, predict, and report the landing time.', say: 'A ball thrown upward, filmed in slow motion: height every quarter second. Quad reg has run. Your job: record the model, predict, and report the landing time.' },
+  't.eq': { html: 'Which equation records the QuadReg output (coefficients to 2 decimal places)?', say: 'Which equation records the quad reg output, coefficients to two decimal places?' },
+  't.eq.ok': { html: 'Right: h = −15.99t² + 40.22t + 4.71. The −15.99 is close to the −16 that gravity gives in feet.', say: 'Right. The minus fifteen point nine nine is close to the minus sixteen that gravity gives in feet.' },
+  't.eq.rev': { html: 'a, b and c are in the wrong places: a goes with t², b with t, and c stands alone.', say: 'A, b and c are in the wrong places: a goes with t squared, b with t, and c stands alone.' },
+  't.eq.drop': { html: 'That drops the t² term, the part that makes the ball come back down.', say: 'That drops the t squared term, the part that makes the ball come back down.' },
+  't.pred': { html: 'Predict the height at t = 1.5 seconds. Round to the nearest tenth of a foot.', say: 'Predict the height at one and a half seconds. Round to the nearest tenth of a foot.' },
+  't.pred.ok': { html: 'Right: −15.99(1.5)² + 40.22(1.5) + 4.71 ≈ <b class="s">29.1</b> feet. The film showed 28.9: a residual of −0.2 foot.', say: 'Right: about twenty-nine point one feet. The film showed twenty-eight point nine: a residual of minus zero point two.' },
+  't.pred.obs': { html: '28.9 is what the film showed. The model’s prediction comes from the equation: put t = 1.5 into it.', say: 'Twenty-eight point nine is what the film showed. The model’s prediction comes from the equation: put one and a half into it.' },
+  't.pred.no': { html: 'Square 1.5 first: −15.99 × 2.25, then add 40.22 × 1.5 and 4.71.', say: 'Square one and a half first, then multiply by minus fifteen point nine nine, and add the other two terms.' },
+  't.land': { html: 'Solving h = 0 gives t ≈ −0.11 s and t ≈ 2.63 s. What do you report as the landing time?', say: 'Solving h equals zero gives about minus zero point one one seconds and about two point six three seconds. What do you report as the landing time?' },
+  't.land.ok': { html: 'Right: only <b class="s">2.63 s</b>. A negative time is before the throw, outside the event the model describes.', say: 'Right: only two point six three seconds. A negative time is before the throw, outside the event the model describes.' },
+  't.land.both': { html: 'The ball is not in the air before t = 0. −0.11 s solves the equation but not the question.', say: 'The ball is not in the air before time zero. Minus zero point one one solves the equation but not the question.' },
+  't.land.neg': { html: 'A negative time is before the throw. The landing comes after the peak.', say: 'A negative time is before the throw. The landing comes after the peak.' },
+  'q.cb.quad': { html: 'At the start you picked the quadratic. Its residuals made a wave, and it climbed back to 9.5 mg/L at 12 hours: no drug does that without a new dose.', say: 'At the start you picked the quadratic. Its residuals made a wave, and it climbed back up at twelve hours: no drug does that without a new dose.' },
+  'q.cb.exp': { html: 'At the start you picked the exponential, and the evidence agreed: no residual pattern, and a body clears a drug by a steady percent.', say: 'At the start you picked the exponential, and the evidence agreed: no residual pattern, and a body clears a drug by a steady percent.' },
+  'q.cb.either': { html: 'At the start you said either would do. Inside the data they agree; at 12 hours one says 9.5 and the other 0.8. Equal fits do not mean equal predictions.', say: 'At the start you said either would do. Inside the data they agree; at twelve hours one says nine point five and the other zero point eight. Equal fits do not mean equal predictions.' },
+  'q.cb.none': { html: 'The exponential was the one: no residual pattern, and the right mechanism.', say: 'The exponential was the one: no residual pattern, and the right mechanism.' },
+
+  // ---------- 4. Prove it ----------
+  'p.intro': { html: 'A new app: total sign-ups (thousands) for its first 8 weeks. Jamal fits a quadratic and an exponential; both residuals stay within about ±0.2 thousand. Jamal: “They fit equally well, so at week 23 they will predict about the same.” Is Jamal right?',
+    say: 'A new app: total sign-ups, in thousands, for its first eight weeks. Jamal fits a quadratic and an exponential; both residuals stay within about zero point two thousand. Jamal says: they fit equally well, so at week twenty-three they will predict about the same. Is Jamal right?' },
+  'p.build': { html: 'Then build the case. Fill each “because” with a reason.', say: 'Then build the case. Fill each because with a reason.' },
+  'p.test': { html: 'Let’s test that. Build the case and see where it leads: fill each “because”.', say: 'Let’s test that. Build the case and see where it leads: fill each because.' },
+  'p.c1': { html: 'Yes. A factor of 1.307 every week compounds; the quadratic only adds a slowly growing amount.', say: 'Yes. A factor every week compounds; the quadratic only adds a slowly growing amount.' },
+  'p.c2': { html: 'Yes. The 8 points pin the curves down only between weeks 1 and 8.', say: 'Yes. The eight points pin the curves down only between weeks one and eight.' },
+  'p.c3': { html: 'Yes. Observed residuals describe the observed weeks, nothing more.', say: 'Yes. Observed residuals describe the observed weeks, nothing more.' },
+  'p.done': { html: 'Jamal is wrong: at week 23 the models say about 104 and 768 thousand. Before trusting either, look at the mechanism, and say the claim is an extrapolation.', say: 'Jamal is wrong: at week twenty-three the models say about one hundred four and seven hundred sixty-eight thousand. Before trusting either, look at the mechanism, and say the claim is an extrapolation.' },
+  'p.no.equal': { html: 'That is Jamal’s claim itself. The numbers at week 23 show it fails.', say: 'That is Jamal’s claim itself. The numbers at week twenty-three show it fails.' },
+  'p.no.bound': { html: 'The ±0.2 describes weeks 1 to 8 only. It sets no limit on misses far outside them.', say: 'The plus or minus zero point two describes weeks one to eight only. It sets no limit on misses far outside them.' },
+  'p.no.r2': { html: 'R² measures the fit inside the data. It says nothing about which model is right at week 23.', say: 'R squared measures the fit inside the data. It says nothing about which model is right at week twenty-three.' },
+  'p.no.other': { html: 'True or not, that reason does not support this step. Try another.', say: 'True or not, that reason does not support this step. Try another.' },
+};

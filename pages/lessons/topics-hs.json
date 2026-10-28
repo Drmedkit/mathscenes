@@ -546,7 +546,8 @@
    "exponential-functions",
    "linear-regression",
    "quadratic-functions"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t7-16-probability-counting-permutations-and-combinations",

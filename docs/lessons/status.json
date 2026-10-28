@@ -546,10 +546,10 @@
   "note": "32 families, 12/12; oracle 0 errors on 19,200; VOICE PENDING"
  },
  "nonlinear-regression": {
-  "state": "built",
-  "at": "2026-10-28 14:36",
-  "commit": "67eeafa",
-  "note": "48 families, 21/21"
+  "state": "live",
+  "at": "2026-10-28 14:58",
+  "commit": "8e6dc48",
+  "note": "48 families, 21/21; oracle 0 errors on 29,400; VOICE PENDING"
  },
  "constructions": {
   "state": "live",
