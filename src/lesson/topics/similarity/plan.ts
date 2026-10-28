@@ -1,0 +1,30 @@
+// plan.ts: practice walks through every sub-goal of secondary-t6-22-similarity-criteria-and-applications, in topic JSON order.
+import type { SubgoalPlan } from '../../runtime/practice';
+
+export const PLAN: readonly SubgoalPlan[] = [
+  { id: 'congruence-as-scale-factor-1', title: 'Congruence is similarity with k = 1', families: ['k1Classify', 'k1Claim'] },
+  { id: 'aa-criterion', title: 'AA, with the hidden third angle', families: ['aaThird', 'aaMissing'] },
+  { id: 'sss-similarity', title: 'SSS~: one ratio for all three sides', families: ['sssCheck', 'sssRatio'] },
+  { id: 'sas-similarity', title: 'SAS~: the angle between the sides', families: ['sasCheck', 'sasLen'] },
+  { id: 'aa-from-similarity-transformations', title: 'Why the criteria work: dilate, then congruence', families: ['dilateWhy', 'dilateK'] },
+  { id: 'insufficient-vs-not-similar', title: 'Established, not enough, or disproved', families: ['evidence', 'evidenceJudge'] },
+  { id: 'classify-congruent-similar-neither', title: 'Congruent, similar or neither', families: ['classify5', 'critName'] },
+  { id: 'triangle-criteria-scope', title: 'The criteria are for triangles only', families: ['polyScope', 'polyWhy'] },
+  { id: 'correspondence-from-statement', title: 'Read the similarity statement', families: ['corrSide', 'corrRatio'] },
+  { id: 'correspondence-from-angle-marks', title: 'Write the statement from the marks', families: ['stmtMarks', 'altStmt'] },
+  { id: 'directed-scale-factor', title: 'The scale factor has a direction', families: ['kDirected', 'kFromStmt'] },
+  { id: 'missing-length-separated', title: 'Find a missing side', families: ['missSep', 'missStory'] },
+  { id: 'nested-triangles-whole-vs-part', title: 'Nested triangles: whole versus part', families: ['nestPart', 'nestWhole'] },
+  { id: 'altitude-similar-triangles', title: 'The altitude to the hypotenuse', families: ['altStmt', 'altWhich'] },
+  { id: 'geometric-mean-relations', title: 'Geometric means in a right triangle', families: ['gmAlt', 'gmLeg', 'gmDerive'] },
+  { id: 'hourglass-figures', title: 'Hourglass figures', families: ['hourStmt', 'hourLen'] },
+  { id: 'algebraic-side-lengths', title: 'Sides in terms of x', families: ['algNest', 'algSep'] },
+  { id: 'justify-criterion-conditions', title: 'A reason for every condition', families: ['reasonPick', 'lookAlike', 'proofReasonS'] },
+  { id: 'write-similarity-proof', title: 'Write a similarity proof', families: ['proofOrder', 'proofReasonS', 'proofEnd'] },
+  { id: 'deduce-proportion-from-similarity', title: 'The proportion a similarity gives', families: ['deduceProp', 'deduceCross', 'angleK'] },
+  { id: 'pythagorean-proof-by-similarity', title: 'Pythagoras from similar triangles', families: ['pythGap', 'pythReason'] },
+  { id: 'side-splitter-theorem', title: 'The side-splitter theorem', families: ['ssAlgebra', 'ssNum', 'ssForm'] },
+  { id: 'side-splitter-converse', title: 'The converse: ratios give parallel', families: ['convWhich', 'convCheck'] },
+  { id: 'repair-circular-argument', title: 'Circular arguments', families: ['circFind', 'circRepair'] },
+  { id: 'indirect-measurement', title: 'Measure what you cannot reach', families: ['shadow', 'mirror', 'river'] },
+];

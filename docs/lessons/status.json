@@ -558,18 +558,36 @@
   "note": "67 families, 34/34; oracle 0 errors on 52,800; VOICE PENDING"
  },
  "triangle-centers": {
-  "state": "building",
-  "at": "2026-10-28 14:23",
-  "commit": "67eeafa"
+  "state": "built",
+  "at": "2026-10-28 15:38",
+  "commit": "950ea89",
+  "note": "58 families, 35/35"
  },
  "similarity": {
-  "state": "building",
-  "at": "2026-10-28 14:34",
-  "commit": "67eeafa"
+  "state": "live",
+  "at": "2026-10-28 16:02",
+  "commit": "950ea89",
+  "note": "54 families, 25/25; oracle 0 errors on 33,600; VOICE PENDING"
  },
  "normal-distribution": {
+  "state": "built",
+  "at": "2026-10-28 15:46",
+  "commit": "950ea89",
+  "note": "66 families, 30/30; NormalView"
+ },
+ "complex-numbers": {
   "state": "building",
-  "at": "2026-10-28 14:36",
-  "commit": "67eeafa"
+  "at": "2026-10-28 15:35",
+  "commit": "950ea89"
+ },
+ "quadrilaterals": {
+  "state": "building",
+  "at": "2026-10-28 15:38",
+  "commit": "950ea89"
+ },
+ "expected-value": {
+  "state": "building",
+  "at": "2026-10-28 15:46",
+  "commit": "950ea89"
  }
 }

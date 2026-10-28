@@ -1,0 +1,131 @@
+{
+ "q.intro": {
+  "text": "A roof frame: the brace D E runs parallel to the beam B C. A D is four feet, D B is six feet, and the brace D E is five feet. How long is the beam B C? Pick one, and say how sure you are."
+ },
+ "q.cb.part": {
+  "text": "You paired A D with D B, the part below it. But the beam belongs to the big triangle, whose side is the whole of A B, ten feet. Four tenths of B C is five, so B C is twelve and a half feet."
+ },
+ "q.cb.add": {
+  "text": "You added the extra six feet. Similar triangles grow by a factor, not by an amount: A B is ten fourths of A D, so B C is ten fourths of D E, twelve and a half feet."
+ },
+ "q.cb.ok": {
+  "text": "You said twelve and a half feet, and the proof agrees: A D pairs with the whole side A B, and the part to part ratio only holds on the two cut sides."
+ },
+ "e.intro": {
+  "text": "Why must the two triangles have the same shape? Watch the proof, then the dilation that carries one onto the other."
+ },
+ "e.step0": {
+  "text": "Two angle pairs. Both triangles share angle A, by the reflexive property. The brace is parallel to the beam, so angle A D E matches angle A B C: corresponding angles. No side lengths are needed."
+ },
+ "e.step1": {
+  "text": "Two angle pairs are enough for triangles: triangle A D E is similar to triangle A B C, by A A. The order matters: A with A, D with B, E with C."
+ },
+ "e.step2": {
+  "text": "Why A A works: dilate the small triangle from A by k equals ten over four. D lands on B, the parallel brace lands on the beam, and E lands on C."
+ },
+ "e.step3": {
+  "text": "Every side grows by the same factor, ten fourths. So A D over A B equals D E over B C: four tenths equals five over B C, and B C is twelve and a half feet."
+ },
+ "e.why": {
+  "text": "Why does A D pair with A B, which is ten, and not with D B, which is six?"
+ },
+ "e.why.ok": {
+  "text": "Right: A B is the side of the big triangle that matches A D. D B is only part of it."
+ },
+ "e.why.either": {
+  "text": "Not either: A D and D B are both on the line, but only A B is a side of the big triangle."
+ },
+ "e.why.next": {
+  "text": "D B is next to the beam, but it is not a side of either triangle. Match a side of the small triangle with a side of the big one."
+ },
+ "t.intro": {
+  "text": "Your turn: an hourglass. A B is parallel to C D, and A C and B D cross at E. A E is six, E C is nine, and A B is eight. First: which statement is justified?"
+ },
+ "t.a.ok": {
+  "text": "Right: vertical angles at E, and alternate interior angles at A and C. A matches C, B matches D, E matches E: a half turn about E, then a dilation."
+ },
+ "t.a.pos": {
+  "text": "Not by position: the bottom triangle is turned upside down. A matches C through the alternate interior angles, not the vertex below it."
+ },
+ "t.a.none": {
+  "text": "The arrow marks say A B is parallel to C D: that gives alternate interior angles as a second pair."
+ },
+ "t.b": {
+  "text": "What is the scale factor from triangle A B E to triangle C D E?"
+ },
+ "t.b.ok": {
+  "text": "Right: E C over A E, nine over six, which is three halves. New over old."
+ },
+ "t.b.flip": {
+  "text": "That is the factor the other way. From A B E to C D E: a side of C D E over its partner, nine over six."
+ },
+ "t.b.add": {
+  "text": "That is a difference, nine minus six. A scale factor is a ratio: nine over six."
+ },
+ "t.b.other": {
+  "text": "Use the pair you know in both triangles: E C matches A E, so k is nine over six."
+ },
+ "t.c": {
+  "text": "Now find C D."
+ },
+ "t.c.ok": {
+  "text": "Right: C D is three halves of eight, which is twelve."
+ },
+ "t.c.flip": {
+  "text": "That multiplies by two thirds. Triangle C D E is the bigger one: multiply A B by three halves."
+ },
+ "t.c.add": {
+  "text": "That adds three. Similar sides are multiplied by one factor: eight times three halves."
+ },
+ "t.c.other": {
+  "text": "C D matches A B, because A goes with C and B goes with D. Multiply eight by three halves."
+ },
+ "t.done": {
+  "text": "One more idea is hiding in the first figure: the parallel cuts both sides in the same ratio. Time to prove it."
+ },
+ "p.intro": {
+  "text": "Back to the roof frame, with A E four point eight feet and E C seven point two feet. The claim: a segment parallel to one side cuts the other two sides in the same ratio. A D over D B equals A E over E C. Always, or only for these numbers?"
+ },
+ "p.build": {
+  "text": "Build the proof: tap the reason for each line."
+ },
+ "p.build-test": {
+  "text": "Checking numbers shows it here, not always. Build the general proof: tap the reason for each line."
+ },
+ "p.claim1": {
+  "text": "Triangle A D E is similar to triangle A B C, with scale factor k, A B over A D."
+ },
+ "p.claim2": {
+  "text": "A B is k times A D, and A C is k times A E, with the same k."
+ },
+ "p.claim3": {
+  "text": "D B is k minus one times A D, and E C is k minus one times A E."
+ },
+ "p.c1": {
+  "text": "A A: the shared angle and the corresponding angles."
+ },
+ "p.c2": {
+  "text": "One scale factor for every pair of corresponding sides."
+ },
+ "p.c3": {
+  "text": "Whole minus part, on both sides. So A D over D B equals A E over E C, both one over k minus one, for every parallel, not just these numbers."
+ },
+ "p.x-part": {
+  "text": "D B and E C are parts, not sides of either triangle: they are not corresponding sides."
+ },
+ "p.x-look": {
+  "text": "Looking cut at the same place is not a reason: the proof must work for every parallel."
+ },
+ "p.x-other": {
+  "text": "That reason does not fit this line yet."
+ },
+ "p.last": {
+  "text": "Does the side splitter also give A D over D B equals D E over B C?"
+ },
+ "p.last.ok": {
+  "text": "Right: D E and B C are not cut. They pair with whole sides: D E over B C equals A D over A B."
+ },
+ "p.last.no": {
+  "text": "D E and B C are not cut by anything: only the two cut sides have part to part ratios. D E over B C equals A D over A B."
+ }
+}

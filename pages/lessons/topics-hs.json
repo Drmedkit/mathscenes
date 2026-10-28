@@ -384,7 +384,8 @@
   "subgoals": 25,
   "requires": [
    "triangle-congruence"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t6-23-right-triangle-trigonometry",
