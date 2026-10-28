@@ -635,7 +635,8 @@
   "subgoals": 17,
   "requires": [
    "expected-value"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "v2.extension.statistical-investigation",

@@ -630,9 +630,10 @@
   "note": "61 families, 33/33; oracle 38400/38400; VOICE PENDING"
  },
  "probability-decisions": {
-  "state": "building",
-  "at": "2026-10-28 18:46",
-  "commit": "6bbf67a"
+  "state": "live",
+  "at": "2026-10-28 19:59",
+  "commit": "ad504a3",
+  "note": "36 families, 17/17; DecTree; oracle 21600/21600; VOICE PENDING"
  },
  "margin-of-error": {
   "state": "building",
@@ -643,5 +644,10 @@
   "state": "building",
   "at": "2026-10-28 19:41",
   "commit": "0f00fec"
+ },
+ "chords-tangents": {
+  "state": "building",
+  "at": "2026-10-28 19:47",
+  "commit": "ad504a3"
  }
 }

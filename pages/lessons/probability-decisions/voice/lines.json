@@ -1,0 +1,128 @@
+{
+ "q.intro": {
+  "text": "You buy an eight hundred dollar phone. The store offers a two year protection plan for a hundred and twenty dollars. Without it, a break costs a three hundred dollar repair, and about fifteen percent of these phones break within two years. Which choice costs less on average? Pick one, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps on the same phone. Press each one: the picture moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "Lay out the decision. The square is yours: buy or skip. Each circle is chance: the phone breaks, with probability zero point one five, or keeps working. Chance still acts after both choices."
+ },
+ "e.step1": {
+  "text": "Now a net payoff on every leaf, from your side. Buy: you pay a hundred and twenty dollars whatever happens, so minus one twenty twice. Skip: minus three hundred if it breaks, nothing if not. Costs are negative."
+ },
+ "e.step2": {
+  "text": "Weight each payoff by its chance. Buy: the expected value is minus a hundred and twenty. Skip: zero point one five times minus three hundred, plus nothing, is minus forty five. On expected cost, skipping wins by seventy five dollars."
+ },
+ "e.step3": {
+  "text": "But look at the downside. Skipping balances at minus forty five, yet one phone never costs forty five: it costs nothing or three hundred. If a three hundred dollar bill would really hurt, the plan buys certainty. So: skip, unless a three hundred dollar surprise is more than you can absorb."
+ },
+ "e.why": {
+  "text": "Quick check: why is skipping cheaper on average, even though a break costs three hundred dollars?"
+ },
+ "e.why.ok": {
+  "text": "Yes. The three hundred only happens fifteen percent of the time: that is forty five dollars a phone on average, against a hundred and twenty for sure."
+ },
+ "e.why.mode": {
+  "text": "Not quite: nothing is the most likely cost, but the average counts the three hundred dollar breaks too. That is why it is minus forty five, not zero."
+ },
+ "e.why.free": {
+  "text": "Skipping is not free: the phone can still break, and then you pay all three hundred. That branch is in the average."
+ },
+ "t.intro": {
+  "text": "A club plans its fundraiser. Outdoors: two thousand dollars profit if dry, a five hundred dollar loss if it rains, from refunds and spoiled food. The gym: a sure fourteen hundred after rent. The forecast: a twenty percent chance of rain."
+ },
+ "t.gym": {
+  "text": "The gym is done for you: one sure value, so its expected value is fourteen hundred dollars."
+ },
+ "t.ev": {
+  "text": "Find the expected profit outdoors."
+ },
+ "t.ev.ok": {
+  "text": "Yes: zero point eight times two thousand, plus zero point two times minus five hundred, makes fifteen hundred dollars. A bit more than the gym."
+ },
+ "t.ev.plain": {
+  "text": "Seven fifty is the plain average of the two payoffs. Rain is not fifty fifty here: weight by zero point eight and zero point two."
+ },
+ "t.ev.drop": {
+  "text": "Sixteen hundred leaves out the rainy branch. It still happens twenty percent of the time, with a five hundred dollar loss."
+ },
+ "t.ev.sign": {
+  "text": "In the rain the club loses five hundred dollars: that payoff is negative, so it lowers the average."
+ },
+ "t.ev.no": {
+  "text": "Multiply each payoff by its chance, then add: zero point eight for dry, zero point two for rain."
+ },
+ "t.empty": {
+  "text": "Type your answer first."
+ },
+ "t.sens": {
+  "text": "The forecast could be off. The table recomputes the expected profit outdoors for other rain chances. Between which two does the better choice switch to the gym?"
+ },
+ "t.sens.ok": {
+  "text": "Right: at zero point two outdoors wins, at zero point three the gym does. The changeover is at zero point two four."
+ },
+ "t.sens.late": {
+  "text": "At zero point three, outdoors is already down to twelve fifty, below the gym. Look one column earlier."
+ },
+ "t.sens.never": {
+  "text": "Look along the row: at zero point four, outdoors gives a thousand, less than the gym. It does switch."
+ },
+ "t.judge": {
+  "text": "One more fact: the club’s account holds only three hundred dollars. A rainy day would leave it owing money. What do you recommend?"
+ },
+ "t.judge.ok": {
+  "text": "Right: the expected values are close, the rain chance is unsure, and the five hundred dollar downside is more than the club can cover. The gym is the sound call."
+ },
+ "t.judge.ev": {
+  "text": "Higher expected value is not the only reason that counts: the club cannot cover a five hundred dollar loss. A limit like that can rationally change the choice."
+ },
+ "t.judge.half": {
+  "text": "Rain is not fifty fifty: the forecast says twenty percent. The good reason for the gym is the downside, not a coin flip."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked skipping, and on average you were right: minus forty five against minus a hundred and twenty. Now you also know when the plan can still make sense."
+ },
+ "q.cb.prize": {
+  "text": "At the start you picked the plan because it saves three hundred dollars. It does, but only fifteen percent of the time: that is forty five dollars on average, for a hundred and twenty dollar price."
+ },
+ "q.cb.half": {
+  "text": "At the start you said it makes no difference, as if breaking were fifty fifty. With the real fifteen percent, skipping costs forty five dollars on average, the plan a hundred and twenty."
+ },
+ "q.cb.none": {
+  "text": "The average weights each payoff by its chance; the downside tells you what one bad outcome would cost."
+ },
+ "p.intro": {
+  "text": "A two thousand dollar stake in one festival stall nets plus six hundred or minus two hundred, each with probability one half. Theo says: split it, a thousand into each of two stalls in different cities. Two chances to win, so the expected payoff goes up. Is Theo right?"
+ },
+ "p.test": {
+  "text": "Let’s test it. Build the split’s distribution, then its expected value and its standard deviation. Fill each because."
+ },
+ "p.build": {
+  "text": "Now prove what splitting does. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Right. The stalls are independent, so each of the four pairs has probability one fourth; two of the pairs give plus two hundred."
+ },
+ "p.c2": {
+  "text": "Right. Each half has half the expected value, a hundred dollars, so the two together give two hundred: the same as one stall."
+ },
+ "p.c3": {
+  "text": "Right. The extremes now have probability one fourth each, and the middle takes half, so the standard deviation drops from four hundred to about two hundred eighty three."
+ },
+ "p.no.equal": {
+  "text": "Three totals are not equally likely: plus two hundred comes from two of the four pairs."
+ },
+ "p.no.double": {
+  "text": "Two stalls, but each gets half the money: half of each expected value adds back to the same expected value."
+ },
+ "p.no.linked": {
+  "text": "Not if one storm hits both stalls: then they rise and fall together and the spread stays the same. Here they are independent."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "Theo is wrong about the expected value: splitting keeps it at two hundred dollars. What it changes is the risk: the bars move in toward the same balance point, and the standard deviation falls from four hundred to about two hundred eighty three. Same reward, less risk, as long as the stalls are independent."
+ }
+}
