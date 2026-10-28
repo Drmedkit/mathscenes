@@ -6,12 +6,17 @@
 // imported by code, so it is copied into dist after the bundle (with topics.json and topics-hs.json, which the path page fetches).
 import { defineConfig, type Plugin } from 'vitest/config';
 import { resolve } from 'node:path';
-import { cpSync, existsSync, readdirSync } from 'node:fs';
+import { cpSync, existsSync, readdirSync, readFileSync } from 'node:fs';
 
 const root = resolve(import.meta.dirname, 'pages');
 const outDir = resolve(import.meta.dirname, 'dist');
 const lessonsDir = resolve(root, 'lessons');
-const lessons = existsSync(lessonsDir) ? readdirSync(lessonsDir).filter(f => f.endsWith('.html')) : [];
+// only finished lessons go into the build (live in topics.json / topics-hs.json), plus the path and check-in pages;
+// lessons still being built in this worktree stay out
+const liveSlugs = new Set(['index', 'placement', ...['topics.json', 'topics-hs.json']
+  .flatMap(f => (existsSync(resolve(lessonsDir, f)) ? JSON.parse(readFileSync(resolve(lessonsDir, f), 'utf8')) as { slug: string; live?: boolean }[] : []))
+  .filter(t => t.live).map(t => t.slug)]);
+const lessons = existsSync(lessonsDir) ? readdirSync(lessonsDir).filter(f => f.endsWith('.html') && liveSlugs.has(f.replace('.html', ''))) : [];
 
 const copyVoice: Plugin = {
   name: 'lesson-voice',
