@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63); phase 2: building 3, built 1, live 32, queued 89 (of 125)
+Totals: live 63 (of 63); phase 2: building 3, live 33, queued 89 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -131,7 +131,7 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 32, queued 89 (of 12
 | 4 | Triangle congruence | `triangle-congruence` | HS | 31 | live | 57 families, 31/31; oracle 0 errors on 40,800; VOICE PENDING |
 | 5 | Isosceles triangles and side-angle order | `triangle-inequalities` | HS | 12 | live | 32 families, 12/12; oracle 0 errors on 19,200; VOICE PENDING |
 | 6 | Constructions with compass and straightedge | `constructions` | HS | 34 | live | 67 families, 34/34; oracle 0 errors on 52,800; VOICE PENDING |
-| 7 | Midsegments and points of concurrency | `triangle-centers` | HS | 35 | built | 58 families, 35/35 |
+| 7 | Midsegments and points of concurrency | `triangle-centers` | HS | 35 | live | 58 families, 35/35; oracle 0 errors on 38,400; VOICE PENDING |
 | 8 | Parallelograms and other quadrilaterals | `quadrilaterals` | HS | 41 | building |  |
 | 9 | Similar triangles | `similarity` | HS | 25 | live | 54 families, 25/25; oracle 0 errors on 33,600; VOICE PENDING |
 | 10 | Right triangle trigonometry | `right-triangle-trig` | HS | 29 | queued |  |

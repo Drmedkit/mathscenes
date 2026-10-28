@@ -558,10 +558,10 @@
   "note": "67 families, 34/34; oracle 0 errors on 52,800; VOICE PENDING"
  },
  "triangle-centers": {
-  "state": "built",
-  "at": "2026-10-28 15:38",
-  "commit": "950ea89",
-  "note": "58 families, 35/35"
+  "state": "live",
+  "at": "2026-10-28 16:18",
+  "commit": "4734a28",
+  "note": "58 families, 35/35; oracle 0 errors on 38,400; VOICE PENDING"
  },
  "similarity": {
   "state": "live",

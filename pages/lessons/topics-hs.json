@@ -357,7 +357,8 @@
    "constructions",
    "geometry-foundations",
    "triangle-congruence"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t6-21-parallelogram-and-quadrilateral-properties",
