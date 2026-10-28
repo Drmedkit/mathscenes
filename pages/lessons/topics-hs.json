@@ -308,7 +308,8 @@
   "subgoals": 31,
   "requires": [
    "geometry-foundations"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary.triangle-side-angle-relationships-isosceles-theorems-side-an",

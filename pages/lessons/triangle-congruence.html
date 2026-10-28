@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Triangle congruence</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    .panel .opts button { line-height: 1.45; }
+    /* the proof frame's panel half (geometry-foundations/proofPanel.ts): statements | reasons, and a pool */
+    table.proof { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 6px 0 4px; font-size: 15px; }
+    table.proof th { text-align: left; font-weight: 600; font-size: 13px; color: var(--faint); padding: 0 8px; }
+    table.proof td { padding: 7px 8px; vertical-align: top; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--faint); }
+    table.proof td.n { width: 22px; border-left: 1px solid var(--line); border-radius: 10px 0 0 10px; color: var(--faint); }
+    table.proof td.st { width: 46%; }
+    table.proof td.rs { border-right: 1px solid var(--line); border-radius: 0 10px 10px 0; }
+    table.proof tr.now td { border-color: var(--pick); color: var(--text); }
+    table.proof tr.ok td, table.proof tr.ok-st td.st { color: var(--text); }
+    table.proof tr.ok td { border-color: #3d5a3a; }
+    table.proof td.rs i { font-style: normal; color: var(--s); }
+    table.proof .empty { display: inline-block; min-width: 90px; border-bottom: 1.5px dashed var(--faint); }
+    .chips.pool button { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html#geometry" aria-label="All lessons">Geometry</a> · Triangle congruence</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The model and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./triangle-congruence.ts"></script>
+</body>
+</html>

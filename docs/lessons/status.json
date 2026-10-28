@@ -522,10 +522,10 @@
   "note": "57 families, 26/26; oracle 0 errors on 34,200; VOICE PENDING"
  },
  "triangle-congruence": {
-  "state": "built",
-  "at": "2026-10-28 13:27",
-  "commit": "69e706c",
-  "note": "57 families, 31/31"
+  "state": "live",
+  "at": "2026-10-28 13:51",
+  "commit": "b338d46",
+  "note": "57 families, 31/31; oracle 0 errors on 40,800; VOICE PENDING"
  },
  "conditional-probability": {
   "state": "live",

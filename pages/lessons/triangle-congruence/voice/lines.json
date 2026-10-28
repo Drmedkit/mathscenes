@@ -1,0 +1,113 @@
+{
+ "q.intro": {
+  "text": "Nia wants a copy of triangle A B C. She measures three parts: A B is seven inches, B C is five inches, and angle A is forty degrees. Then she builds a triangle with the same three parts. Must her triangle be congruent to triangle A B C? Pick one, and say how sure you are."
+ },
+ "q.cb.yes": {
+  "text": "You said three matching parts always fix the triangle. The swing just showed two different triangles with the same three parts: the angle was not between the two sides."
+ },
+ "q.cb.flip": {
+  "text": "You said it works unless she flips it. Flipping was never the problem: a flipped copy is congruent. The problem is that the same parts fit two different triangles."
+ },
+ "q.cb.not": {
+  "text": "You said not necessarily, and the swing agrees: the same two sides and an angle that is not between them fit two different triangles."
+ },
+ "e.intro": {
+  "text": "Which three parts are enough? Watch one criterion, S A S, from the marks to the proof. The picture moves first, then the line."
+ },
+ "e.step0": {
+  "text": "Read only the marks. One tick: segment A B is congruent to segment D E. One arc: angle B is congruent to angle E. Two ticks: segment B C is congruent to segment E F. Three pairs, each with the reason: given. Nothing else counts, however it looks."
+ },
+ "e.step1": {
+  "text": "Where does the angle sit? Angle B is the corner where A B and B C meet: it is included between them. Side, angle, side in a row: the pattern is S A S."
+ },
+ "e.step2": {
+  "text": "Why is that enough? Flip a copy of triangle A B C over, as in a mirror: a reflection is a rigid motion. Slide B onto E. Turn about E until ray B A lies along ray E D: A lands on D, because A B is congruent to D E. Then the congruent angles put ray B C along ray E F, and the congruent sides put C on F. Every vertex has its own reason."
+ },
+ "e.step3": {
+  "text": "Write the conclusion with matching vertices in matching places: A went to D, B to E, C to F. So triangle A B C is congruent to triangle D E F, by S A S. The motion works for every pair with these marks, not only this drawing."
+ },
+ "e.why": {
+  "text": "Quick check: why must the angle sit between the two sides?"
+ },
+ "e.why.ok": {
+  "text": "Right. The included angle points the second side along the right ray. Its length then fixes the third vertex."
+ },
+ "e.why.order": {
+  "text": "Not quite. The letters are not a mnemonic. Side, angle, side in a row means the angle sits between the two sides. That is what made each vertex land."
+ },
+ "e.why.any": {
+  "text": "Not quite. With an angle that is not between the sides, the second side can swing to two different places. You will see it in Prove it."
+ },
+ "t.intro": {
+  "text": "Your turn. A C and B D cross at E, and E is the midpoint of both. Prove that triangle A E B is congruent to triangle C E D. First put the lines in an order that works. Two of them are decoys. Then give each line its reason."
+ },
+ "t.wrong": {
+  "text": "Not that one yet. Read the note under the proof."
+ },
+ "t.order-done": {
+  "text": "The lines are in a working order. Now the reasons, top to bottom."
+ },
+ "t.next": {
+  "text": "The triangles are congruent. What else do you now know, for free?"
+ },
+ "t.next.ok": {
+  "text": "Right: A B and C D sit in matching places of the congruence. Corresponding parts of congruent triangles are congruent. That is C P C T C."
+ },
+ "t.next.corr": {
+  "text": "Not quite. A B matches the side of the other triangle in the same places: C D, not D E."
+ },
+ "t.next.none": {
+  "text": "Not quite. Once the triangles are congruent, every pair of corresponding parts is congruent, marked or not."
+ },
+ "p.intro": {
+  "text": "Back to Nia. Two sides and an angle that is not between them: S S A. Does it always fix the triangle?"
+ },
+ "p.build": {
+  "text": "Let us build it and see. For each line, pick the reason that makes it true. First line: C lies on the ray from A that makes forty degrees with A B, and on the circle of radius five inches about B."
+ },
+ "p.build-test": {
+  "text": "Test it by building the triangle. For each line, pick the reason that makes it true. First line: C lies on the ray from A that makes forty degrees with A B, and on the circle of radius five inches about B."
+ },
+ "p.c1": {
+  "text": "Right. Next line: there are two places for C."
+ },
+ "p.c2": {
+  "text": "Right. Last line: S S A is not a congruence criterion."
+ },
+ "p.c3": {
+  "text": "Same three parts, two different triangles. S S A is not a criterion."
+ },
+ "p.x-flip": {
+  "text": "Not that one. Facing a different way never stops congruence. Look at the third sides."
+ },
+ "p.x-ex": {
+  "text": "Not that one. One drawing that works proves nothing about every triangle."
+ },
+ "p.x-other": {
+  "text": "True, but it is not the reason for this line. Read the line again."
+ },
+ "p.claim1": {
+  "text": "C lies on the ray from A that makes forty degrees with A B, and on the circle of radius five inches about B."
+ },
+ "p.claim2": {
+  "text": "There are two places for C."
+ },
+ "p.claim3": {
+  "text": "S S A is not a congruence criterion."
+ },
+ "p.hl": {
+  "text": "One change: make the given angle a right angle. A B is four inches, B C is five inches, and angle A is ninety degrees. How many triangles now?"
+ },
+ "p.hl.ok": {
+  "text": "Right. The circle meets the line at two points, mirror images across line A B, and only one of them is on the ray. One triangle. H L is a criterion."
+ },
+ "p.hl.two": {
+  "text": "Look again. The second point is below line A B, on the far side of A, off the ray."
+ },
+ "p.hl.none": {
+  "text": "Look again. The circle does reach the ray, once."
+ },
+ "p.done": {
+  "text": "That is the whole story. S S S, S A S, A S A, A A S and H L fix a triangle. A A A and S S A do not."
+ }
+}
