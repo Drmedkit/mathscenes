@@ -612,18 +612,31 @@
   "note": "34 families, 14/14; oracle 20400/20400; VOICE PENDING"
  },
  "circle-angles": {
-  "state": "building",
-  "at": "2026-10-28 17:33",
-  "commit": "dd5120e"
+  "state": "built",
+  "at": "2026-10-28 18:52",
+  "commit": "6bbf67a",
+  "note": "46 families, 33/33; CircleFig"
  },
  "polynomial-division": {
-  "state": "building",
-  "at": "2026-10-28 17:47",
-  "commit": "8884b73"
+  "state": "live",
+  "at": "2026-10-28 19:18",
+  "commit": "6bbf67a",
+  "note": "52 families, 25/25; LongDiv + SynthTab; oracle 32400/32400; VOICE PENDING"
  },
  "coordinate-proofs": {
+  "state": "built",
+  "at": "2026-10-28 19:08",
+  "commit": "6bbf67a",
+  "note": "61 families, 33/33"
+ },
+ "probability-decisions": {
   "state": "building",
-  "at": "2026-10-28 17:48",
-  "commit": "8884b73"
+  "at": "2026-10-28 18:46",
+  "commit": "6bbf67a"
+ },
+ "margin-of-error": {
+  "state": "building",
+  "at": "2026-10-28 18:52",
+  "commit": "6bbf67a"
  }
 }

@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63); phase 2: building 3, live 39, queued 83 (of 125)
+Totals: live 63 (of 63); phase 2: building 2, built 2, live 40, queued 81 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -135,8 +135,8 @@ Totals: live 63 (of 63); phase 2: building 3, live 39, queued 83 (of 125)
 | 8 | Parallelograms and other quadrilaterals | `quadrilaterals` | HS | 41 | live | 58 families, 41/41; Tree; oracle 35400/35400; VOICE PENDING |
 | 9 | Similar triangles | `similarity` | HS | 25 | live | 54 families, 25/25; oracle 0 errors on 33,600; VOICE PENDING |
 | 10 | Right triangle trigonometry | `right-triangle-trig` | HS | 29 | live | 65 families, 29/29; oracle 39000/39000; VOICE PENDING |
-| 11 | Distance, midpoint and coordinate proofs | `coordinate-proofs` | HS | 33 | building |  |
-| 12 | Arcs and angles in circles | `circle-angles` | HS | 33 | building |  |
+| 11 | Distance, midpoint and coordinate proofs | `coordinate-proofs` | HS | 33 | built | 61 families, 33/33 |
+| 12 | Arcs and angles in circles | `circle-angles` | HS | 33 | built | 46 families, 33/33; CircleFig |
 | 13 | Tangents, chords and segment lengths | `chords-tangents` | HS | 14 | queued |  |
 | 14 | Arc length, sectors and radians | `arcs-and-sectors` | HS | 26 | queued |  |
 | 15 | Equations of circles | `circle-equations` | HS | 23 | queued |  |
@@ -156,8 +156,8 @@ Totals: live 63 (of 63); phase 2: building 3, live 39, queued 83 (of 125)
 | 6 | Conditional probability and independence | `conditional-probability` | HS | 31 | live | 64 families, 31/31; oracle 0 errors on 39,000; VOICE PENDING |
 | 7 | The normal distribution | `normal-distribution` | HS | 30 | live | 66 families, 30/30; oracle 0 errors on 39,600; VOICE PENDING |
 | 8 | Probability distributions and expected value | `expected-value` | HS | 24 | live | 54 families, 24/24; oracle 0 errors; VOICE PENDING |
-| 9 | Using probability to make decisions | `probability-decisions` | HS | 17 | queued |  |
-| 10 | Study design and estimating with a margin of error | `margin-of-error` | HS | 32 | queued |  |
+| 9 | Using probability to make decisions | `probability-decisions` | HS | 17 | building |  |
+| 10 | Study design and estimating with a margin of error | `margin-of-error` | HS | 32 | building |  |
 | 11 | Testing a claim by simulation | `simulation-tests` | HS | 8 | queued |  |
 | 12 | Sampling distributions and the central limit theorem | `sampling-distributions` | AP | 13 | queued |  |
 | 13 | t procedures for a mean | `t-procedures` | AP | 15 | queued |  |
@@ -171,7 +171,7 @@ Totals: live 63 (of 63); phase 2: building 3, live 39, queued 83 (of 125)
 | 1 | Complex numbers | `complex-numbers` | HS | 21 | live | 46 families, 21/21; oracle 0 errors on 28,800; VOICE PENDING |
 | 2 | Quadratics with complex solutions | `quadratics-complex` | HS | 14 | live | 30 families, 14/14; oracle 18000/18000; VOICE PENDING |
 | 3 | Polynomial operations and identities | `polynomial-identities` | HS | 14 | live | 34 families, 14/14; oracle 20400/20400; VOICE PENDING |
-| 4 | Polynomial division | `polynomial-division` | HS | 25 | building |  |
+| 4 | Polynomial division | `polynomial-division` | HS | 25 | live | 52 families, 25/25; LongDiv + SynthTab; oracle 32400/32400; VOICE PENDING |
 | 5 | Factoring higher-degree polynomials | `higher-degree-factoring` | HS | 26 | queued |  |
 | 6 | Polynomial functions: graphs and behavior | `polynomial-graphs` | HS | 30 | queued |  |
 | 7 | Remainder and factor theorems, complex zeros | `polynomial-theorems` | HS | 23 | queued |  |

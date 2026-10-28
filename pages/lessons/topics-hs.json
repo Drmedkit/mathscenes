@@ -786,7 +786,8 @@
   "subgoals": 25,
   "requires": [
    "polynomial-identities"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t7-03-factoring-higher-degree-polynomials",

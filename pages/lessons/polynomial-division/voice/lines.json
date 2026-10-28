@@ -1,0 +1,140 @@
+{
+ "q.intro": {
+  "text": "Forty seven divided by six is seven, with five left over. As one true line: forty seven equals six times seven, plus five."
+ },
+ "q.ask": {
+  "text": "Polynomials divide the same way. What is x squared plus five x plus seven, divided by x plus two? Pick one, and say how sure you are."
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps. Press each one: the layout moves first, then the algebra."
+ },
+ "e.s0": {
+  "text": "Divide the leading terms. x squared divided by x is x. That is the first quotient term, written above the x column."
+ },
+ "e.s1": {
+  "text": "Multiply x by the whole divisor: x times x plus two is x squared plus two x. Subtract it. The x squared terms cancel, and three x plus seven is left."
+ },
+ "e.s2": {
+  "text": "Repeat with three x plus seven. Three x divided by x is three. Then three times x plus two is three x plus six, and three x plus seven, minus three x plus six, is one."
+ },
+ "e.s3": {
+  "text": "One has degree zero, below the degree of the divisor: stop. So x squared plus five x plus seven equals x plus two, times x plus three, plus one. Divided by x plus two, that is x plus three, plus one over x plus two, for x not equal to negative two."
+ },
+ "e.why": {
+  "text": "Quick check. Why does the division stop at one?"
+ },
+ "e.w-ok": {
+  "text": "Yes. A finished remainder has lower degree than the divisor. No term times x plus two can cancel a constant."
+ },
+ "e.w-int": {
+  "text": "Size is the whole number rule. For polynomials the test is degree. One has degree zero, and x plus two has degree one."
+ },
+ "e.w-zero": {
+  "text": "A division does not have to come out even. Once the degree is below the degree of the divisor, what is left is the remainder."
+ },
+ "t.intro": {
+  "text": "Now the shortcut for a divisor like x minus two: synthetic division. The same numbers as long division, without the x s. Divide x cubed minus seven x plus nine by x minus two."
+ },
+ "t.setup": {
+  "text": "Done for you. c is two, in the box. The top row is one, zero, negative seven, nine, with a zero for the missing x squared. Bring down the one. Two times one is two, and zero plus two is two."
+ },
+ "t.next": {
+  "text": "Your step. Multiply the newest bottom entry by two, and add it to negative seven. What goes in the bottom row?"
+ },
+ "t.n-ok": {
+  "text": "Yes. Two times two is four, and negative seven plus four is negative three."
+ },
+ "t.n-sub": {
+  "text": "The tableau adds the product: negative seven plus four."
+ },
+ "t.n-rec": {
+  "text": "Multiply the newest bottom entry, two, not the top entry zero."
+ },
+ "t.n-no": {
+  "text": "Multiply two by the bottom entry two, then add that to negative seven."
+ },
+ "t.last": {
+  "text": "Same move for the last column. Two times negative three, added to nine. What is the last entry?"
+ },
+ "t.l-ok": {
+  "text": "Yes. Two times negative three is negative six, and nine plus negative six is three."
+ },
+ "t.l-sub": {
+  "text": "Add the product, do not subtract it: nine plus negative six."
+ },
+ "t.l-rec": {
+  "text": "Multiply the newest bottom entry, negative three, not the top entry negative seven."
+ },
+ "t.l-no": {
+  "text": "Two times negative three is negative six. Add it to nine."
+ },
+ "t.num": {
+  "text": "Type a number first."
+ },
+ "t.read": {
+  "text": "The bottom row is one, two, negative three, and in its box, three. Which quotient and remainder does it give?"
+ },
+ "t.r-ok": {
+  "text": "Yes. The quotient is one degree lower: x squared plus two x minus three. And the boxed three is the remainder. The same as long division."
+ },
+ "t.r-deg": {
+  "text": "Dividing a cubic by x minus two gives a quadratic. The first entry goes with x squared, not x cubed."
+ },
+ "t.r-rem": {
+  "text": "The last entry is the remainder, fenced off in its box. It is not a coefficient of the quotient."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked x plus three, plus one over x plus two. And you were right: the remainder one is still divided by x plus two."
+ },
+ "t.cb-adds": {
+  "text": "At the start you picked x plus four. That adds the remainder one onto the quotient. The one is left over, so it is still divided by x plus two."
+ },
+ "t.cb-term": {
+  "text": "At the start you picked x plus seven halves. That divides term by term: x squared by x, and seven by two. A sum is divided as a whole, and the layout does exactly that."
+ },
+ "t.cb-none": {
+  "text": "Every division ends the same way. Dividend equals divisor times quotient, plus remainder."
+ },
+ "p.intro": {
+  "text": "Kai says: long division is right because that is the rule. Divide, multiply, subtract, repeat. Is that a reason why it works?"
+ },
+ "p.build": {
+  "text": "Right. Naming the steps is not a reason. Build one: fill each because, with the reason that makes the line true."
+ },
+ "p.test": {
+  "text": "Repeating the rule does not show why it is right. Build a real reason, and see."
+ },
+ "p.c1": {
+  "text": "Right. Before anything is divided, P equals D times zero, plus P."
+ },
+ "p.c2": {
+  "text": "Right. D times Q plus t adds t D to the product, and S minus t D takes the same t D away. The total is still P."
+ },
+ "p.c3": {
+  "text": "Right. t is the leading term of S divided by the leading term of D. So t D and S share a leading term, and it cancels."
+ },
+ "p.c4": {
+  "text": "Right. The degree drops every step, so it reaches a degree below the degree of D. And the line P equals D Q plus R is still true."
+ },
+ "p.no.ex": {
+  "text": "One example that works is not a reason for every polynomial."
+ },
+ "p.no.rule": {
+  "text": "That repeats the rule. The question is why the rule gives a true line."
+ },
+ "p.no.comp": {
+  "text": "Adding t to Q adds t D to the product. Without paying it back, the line is no longer true."
+ },
+ "p.no.zero": {
+  "text": "The residual does not have to reach zero. One was left over in the example."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That is why long division always works. Every step keeps P equals D Q plus S true, and lowers the degree of S. Synthetic division is the same steps, written short."
+ }
+}
