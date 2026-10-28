@@ -570,10 +570,10 @@
   "note": "54 families, 25/25; oracle 0 errors on 33,600; VOICE PENDING"
  },
  "normal-distribution": {
-  "state": "built",
-  "at": "2026-10-28 15:46",
-  "commit": "950ea89",
-  "note": "66 families, 30/30; NormalView"
+  "state": "live",
+  "at": "2026-10-28 16:06",
+  "commit": "883e5a5",
+  "note": "66 families, 30/30; oracle 0 errors on 39,600; VOICE PENDING"
  },
  "complex-numbers": {
   "state": "building",

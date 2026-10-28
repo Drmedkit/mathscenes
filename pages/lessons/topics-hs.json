@@ -600,7 +600,8 @@
   "subgoals": 30,
   "requires": [
    "one-variable-data"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t8-19-expected-value-and-probability-distributions",

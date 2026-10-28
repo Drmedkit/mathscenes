@@ -1,0 +1,36 @@
+// plan.ts: practice walks through every sub-goal of secondary-t7-18-statistical-inference-normal-distribution, in topic
+// JSON order, each with the families that practise it (items.ts).
+import type { SubgoalPlan } from '../../runtime/practice';
+
+export const PLAN: readonly SubgoalPlan[] = [
+  { id: 'density-histogram', title: 'Density histograms: area is the share', families: ['densArea', 'densTotal', 'densUnequal'] },
+  { id: 'density-curve-area', title: 'A density curve: areas, not heights', families: ['curveHeight', 'curveVsBars'] },
+  { id: 'event-notation', title: 'X and P( ) notation', families: ['eventWords', 'eventMeaning'] },
+  { id: 'point-vs-interval', title: 'One exact value has area 0', families: ['pointEq', 'pointRound'] },
+  { id: 'normal-shape', title: 'The normal shape', families: ['shapeFit', 'shapeFacts'] },
+  { id: 'mean-as-location', title: 'The mean moves the curve', families: ['meanMatch', 'meanShift'] },
+  { id: 'sd-as-scale', title: 'The SD sets the width', families: ['sdMatch', 'sdHeight'] },
+  { id: 'sketch-sd-axis', title: 'An axis in SD steps', families: ['axisTick', 'axisParam'] },
+  { id: 'population-percent-interpretation', title: 'A model area as a percent and a count', families: ['popCount', 'popStatement'] },
+  { id: 'empirical-rule', title: '68-95-99.7', families: ['erCentral', 'erCount', 'erBeyond'] },
+  { id: 'benchmark-halves', title: 'Halves by symmetry', families: ['halfPct', 'halfSide'] },
+  { id: 'benchmark-tails-complement', title: 'Tails by complement', families: ['tailPct', 'tailOutside'] },
+  { id: 'benchmark-band-difference', title: 'Bands and sums of pieces', families: ['bandPct', 'bandSum'] },
+  { id: 'z-meaning', title: 'What a z-score means', families: ['zRead', 'zLocate'] },
+  { id: 'z-compute', title: 'Compute z', families: ['zCalc', 'zCalcDec'] },
+  { id: 'z-compare', title: 'Compare with z', families: ['zCompare', 'zMatch'] },
+  { id: 'standardize-event', title: 'Standardize an event', families: ['stdEvent', 'stdBetween'] },
+  { id: 'left-tail-area', title: 'Left-tail areas', families: ['leftTable', 'leftCount', 'leftBounds'] },
+  { id: 'right-tail-complement', title: 'Right tails by complement', families: ['rightSupplied', 'rightTable'] },
+  { id: 'between-area', title: 'Areas between two values', families: ['betweenTable', 'betweenCommand'] },
+  { id: 'outside-area', title: 'Areas outside an interval', families: ['outsideTable', 'outsideSym'] },
+  { id: 'specify-model-from-summaries', title: 'A model from data summaries', families: ['specModel', 'specEstimate'] },
+  { id: 'mixed-event-selection', title: 'Mixed problems: pick the region', families: ['mixedRegion', 'mixedFull', 'mixedData'] },
+  { id: 'inverse-normal', title: 'From a percentile to a value', families: ['invZ', 'invCut', 'invMiddle'] },
+  { id: 'judge-normal-fit', title: 'Is a normal model appropriate?', families: ['fitContext', 'fitBound', 'fitCheck'] },
+  { id: 'z-does-not-normalize', title: 'z-scores keep the shape', families: ['stdShape', 'stdTable'] },
+  { id: 'data-fact-vs-model-estimate', title: 'Data facts versus model estimates', families: ['factModel', 'factDiscrete'] },
+  { id: 'repeated-sample-variation', title: 'Shares vary from sample to sample', families: ['sampSpread', 'sampRead'] },
+  { id: 'model-data-discrepancy', title: 'Why data and model differ', families: ['discExplain', 'discCoin'] },
+  { id: 'precision-vs-model-uncertainty', title: 'Precision versus model uncertainty', families: ['precReport', 'precTableCalc'] },
+];

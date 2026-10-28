@@ -1,0 +1,125 @@
+{
+ "q.intro": {
+  "text": "Heights of US adult women follow a normal model closely: mean sixty-four inches, standard deviation two and a half inches. A clothing brand designs a tall line for women taller than sixty-nine inches, that is five foot nine. About what share of adult women is that? Pick one, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Four steps on the same curve. Press each step: the picture moves first, then the notation."
+ },
+ "e.step0": {
+  "text": "The model is a bell with its peak over the mean, sixty-four inches. Mark the axis in standard deviation steps: sixty-one and a half and sixty-six and a half are one step away, fifty-nine and sixty-nine are two steps away. So sixty-nine inches sits exactly two standard deviations above the mean."
+ },
+ "e.step1": {
+  "text": "For every normal curve, about sixty-eight percent of the area lies within one standard deviation of the mean, about ninety-five percent within two, and about ninety-nine point seven percent within three. Area is the share of women: the total area is one, or a hundred percent."
+ },
+ "e.step2": {
+  "text": "Outside the two standard deviation region: a hundred minus ninety-five, five percent. The curve is symmetric, so that five percent splits into two equal tails. Taller than sixty-nine inches: about two and a half percent of adult women."
+ },
+ "e.step3": {
+  "text": "What about taller than sixty-seven inches? Sixty-seven is not a whole number of standard deviations. Its z-score counts them: sixty-seven minus sixty-four, divided by two point five, is one point two. The table gives the area to the left of one point two: zero point eight eight four nine. Taller is the right side: one minus that is zero point one one five one, about eleven and a half percent of women."
+ },
+ "e.why": {
+  "text": "Quick check: why one minus zero point eight eight four nine, and not zero point eight eight four nine itself?"
+ },
+ "e.why.ok": {
+  "text": "Yes. The table always gives the area to the left of z: the women shorter than sixty-seven inches. The whole area is one, so the right side is one minus it."
+ },
+ "e.why.pct": {
+  "text": "A z-score is a distance in standard deviations, not a percent. One point two says one point two steps above the mean. The share comes from an area."
+ },
+ "e.why.double": {
+  "text": "Nothing is doubled here: there is only one region, to the right of sixty-seven. The table gives the left side, and the right side is one minus it."
+ },
+ "t.intro": {
+  "text": "Adult men: a normal model with mean sixty-nine inches and standard deviation three. The axis in standard deviation steps and the benchmarks are done for you."
+ },
+ "t.band": {
+  "text": "About what percent of adult men are between sixty-six and seventy-five inches?"
+ },
+ "t.band.ok": {
+  "text": "Yes: sixty-six to sixty-nine is one step on the left, thirty-four percent. Sixty-nine to seventy-five is two steps on the right, forty-seven and a half percent. Together, eighty-one and a half percent."
+ },
+ "t.band.c95": {
+  "text": "Ninety-five percent belongs to an interval centered on the mean, two steps each way. This one goes one step left and two steps right: find the two sides and add them."
+ },
+ "t.band.c68": {
+  "text": "Sixty-eight percent belongs to one step each way. On the right this interval reaches two steps: find the two sides and add them."
+ },
+ "t.band.no": {
+  "text": "Split at the mean: sixty-six to sixty-nine is one step, half of sixty-eight percent. Sixty-nine to seventy-five is two steps, half of ninety-five percent. Add them."
+ },
+ "t.z": {
+  "text": "Now seventy-three and a half inches, which is not a whole number of steps. What is its z-score?"
+ },
+ "t.z.ok": {
+  "text": "Yes: seventy-three and a half minus sixty-nine, divided by three, is one point five: one and a half steps above the mean."
+ },
+ "t.z.noScale": {
+  "text": "Four point five is the distance in inches. A z-score counts standard deviations: divide by three."
+ },
+ "t.z.sign": {
+  "text": "Seventy-three and a half is above the mean, so its z-score is positive."
+ },
+ "t.z.no": {
+  "text": "z equals x minus the mean, divided by the standard deviation."
+ },
+ "t.area": {
+  "text": "The table row for one point five zero reads zero point nine three three two. What proportion of adult men are taller than seventy-three and a half inches? Give four decimal places."
+ },
+ "t.area.ok": {
+  "text": "Yes: one minus zero point nine three three two is zero point zero six six eight, about six point seven percent of men. Of four hundred men, the model expects about twenty-seven."
+ },
+ "t.area.left": {
+  "text": "Zero point nine three three two is the area to the left: the men shorter than seventy-three and a half inches. Taller is the right side: one minus that."
+ },
+ "t.area.no": {
+  "text": "The table gives the area to the left of z. Taller is the right side."
+ },
+ "t.empty": {
+  "text": "Type a number first."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked two and a half percent, and you were right: sixty-nine inches is two steps up, and one tail beyond two steps holds half of the five percent outside."
+ },
+ "q.cb.five": {
+  "text": "At the start you picked five percent. That is both tails together. The women taller than sixty-nine inches are only the right tail: two and a half percent."
+ },
+ "q.cb.half": {
+  "text": "At the start you picked forty-seven and a half percent. That is the piece from the mean up to sixty-nine inches, not the tail beyond it, which is two and a half percent."
+ },
+ "q.cb.none": {
+  "text": "Count standard deviations from the mean. Use the benchmarks for whole steps, and z with the table for the rest."
+ },
+ "p.intro": {
+  "text": "Riley says: in any normal model, the band from one to two standard deviations above the mean holds ninety-five minus sixty-eight, twenty-seven percent of the values. Is Riley right?"
+ },
+ "p.test": {
+  "text": "Let us test it. Build the argument, and see where it leads."
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because with the reason that makes the line true."
+ },
+ "p.c1": {
+  "text": "Right. The two step region comes in, then the one step region inside it."
+ },
+ "p.c2": {
+  "text": "Right. Take the inner region away: two bands are left, one on each side."
+ },
+ "p.c3": {
+  "text": "Right. The two bands are mirror images: twenty-seven divided by two, thirteen and a half percent each."
+ },
+ "p.no.centered": {
+  "text": "Each region in the rule is centered at the mean, but the band is not. That is why it takes a subtraction and a halving."
+ },
+ "p.no.onesided": {
+  "text": "The sixty-eight and the ninety-five percent each cover both sides of the mean. A band on one side gets only half of the difference."
+ },
+ "p.no.half": {
+  "text": "Halving ninety-five percent gives the area from the mean to two steps, not a band or a tail."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That is a proof: three claims, each with its reason. The band from one to two steps on one side holds about thirteen and a half percent. Riley counted both sides."
+ }
+}
