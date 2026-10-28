@@ -236,7 +236,8 @@
   "courseTitle": "Algebra 1",
   "n": 18,
   "subgoals": 16,
-  "requires": []
+  "requires": [],
+  "live": true
  },
  {
   "id": "secondary-t6-34-function-families-overview",

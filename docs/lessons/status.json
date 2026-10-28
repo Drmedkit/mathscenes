@@ -462,16 +462,16 @@
   "note": "56 families, 27/27; oracle 0 errors on 33,600; VOICE PENDING"
  },
  "completing-the-square": {
-  "state": "built",
-  "at": "2026-10-28 09:45",
-  "commit": "99f39f8",
-  "note": "16/16; oracle running"
+  "state": "live",
+  "at": "2026-10-28 10:10",
+  "commit": "d7be53a",
+  "note": "41 families, 16/16; oracle 0 errors on 24,600; VOICE PENDING"
  },
  "conditional-statements": {
-  "state": "building",
-  "at": "2026-10-28 09:45",
-  "commit": "99f39f8",
-  "note": "resumed 2026-10-28"
+  "state": "built",
+  "at": "2026-10-28 10:05",
+  "commit": "d7be53a",
+  "note": "28 families, 13/13; Euler, CaseTable"
  },
  "factoring": {
   "state": "building",
@@ -484,5 +484,10 @@
   "note": "resumed 2026-10-28",
   "at": "2026-10-28 09:45",
   "commit": "99f39f8"
+ },
+ "geometry-foundations": {
+  "state": "building",
+  "at": "2026-10-28 10:05",
+  "commit": "d7be53a"
  }
 }

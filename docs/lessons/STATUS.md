@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63); phase 2: building 3, built 1, live 14, queued 107 (of 125)
+Totals: live 63 (of 63); phase 2: building 3, built 1, live 15, queued 106 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -118,15 +118,15 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 14, queued 107 (of 1
 | 15 | Polynomial expressions | `polynomials` | HS | 27 | live | 56 families, 27/27; oracle 0 errors on 33,600; VOICE PENDING |
 | 16 | Factoring | `factoring` | HS | 24 | building | resumed 2026-10-28 |
 | 17 | Quadratic functions and their graphs | `quadratic-functions` | HS | 33 | queued |  |
-| 18 | Solving quadratics: square roots, completing the square, the formula | `completing-the-square` | HS | 16 | built | 16/16; oracle running |
+| 18 | Solving quadratics: square roots, completing the square, the formula | `completing-the-square` | HS | 16 | live | 41 families, 16/16; oracle 0 errors on 24,600; VOICE PENDING |
 | 19 | Linear, quadratic or exponential? | `function-families` | HS | 26 | queued |  |
 
 ## Geometry
 
 | # | lesson | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
-| 1 | If-then statements and logical language | `conditional-statements` | HS | 13 | building | resumed 2026-10-28 |
-| 2 | Definitions, postulates and first proofs | `geometry-foundations` | HS | 31 | queued |  |
+| 1 | If-then statements and logical language | `conditional-statements` | HS | 13 | built | 28 families, 13/13; Euler, CaseTable |
+| 2 | Definitions, postulates and first proofs | `geometry-foundations` | HS | 31 | building |  |
 | 3 | Counterexamples, inference and proof | `counterexamples-and-proof` | HS | 15 | queued |  |
 | 4 | Triangle congruence | `triangle-congruence` | HS | 31 | queued |  |
 | 5 | Isosceles triangles and side-angle order | `triangle-inequalities` | HS | 12 | queued |  |
