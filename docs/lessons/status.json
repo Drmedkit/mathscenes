@@ -474,10 +474,10 @@
   "note": "28 families, 13/13; oracle 0 errors on 16,800; VOICE PENDING"
  },
  "factoring": {
-  "state": "building",
-  "at": "2026-10-28 09:45",
-  "commit": "99f39f8",
-  "note": "resumed 2026-10-28"
+  "state": "live",
+  "at": "2026-10-28 10:34",
+  "commit": "dd1547d",
+  "note": "51 families, 24/24; oracle 0 errors on 30,600; VOICE PENDING"
  },
  "linear-systems": {
   "state": "building",
@@ -489,5 +489,10 @@
   "state": "building",
   "at": "2026-10-28 10:05",
   "commit": "d7be53a"
+ },
+ "quadratic-functions": {
+  "state": "building",
+  "at": "2026-10-28 10:26",
+  "commit": "dd1547d"
  }
 }

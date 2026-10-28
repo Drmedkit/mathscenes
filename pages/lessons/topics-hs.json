@@ -211,7 +211,8 @@
   "subgoals": 24,
   "requires": [
    "polynomials"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t6-11-quadratic-functions-graphing-and-key-features",

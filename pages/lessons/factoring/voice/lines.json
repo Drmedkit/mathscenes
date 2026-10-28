@@ -1,0 +1,116 @@
+{
+ "q.intro": {
+  "text": "A rectangular patio has an area of x squared plus seven x plus twelve square feet. Its sides are x plus a whole number of feet."
+ },
+ "q.ask": {
+  "text": "Which product gives the same area, so that its factors are the sides? Pick one, and say how sure you are."
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Factoring is multiplying backwards. The box is full, and we look for its sides. Four steps."
+ },
+ "e.s0": {
+  "text": "The corners first. x squared is x times x, so both sides start with x. The twelve is the two missing numbers, multiplied."
+ },
+ "e.s1": {
+  "text": "The two middle cells are the missing numbers times x, and together they make seven x. So we need a pair with a product of twelve, and a sum of seven. Only three and four work."
+ },
+ "e.s2": {
+  "text": "The middle cells are three x and four x, so the sides are x plus three, and x plus four. x squared plus seven x plus twelve is x plus three, times x plus four."
+ },
+ "e.s3": {
+  "text": "Expand to check. Every cell matches, so the two forms are equal for every x. The pair two and six also multiplies to twelve, but its cells add to eight x."
+ },
+ "e.why": {
+  "text": "Quick check. Why must the pair add to seven?"
+ },
+ "e.w-ok": {
+  "text": "Yes. The two middle cells are three x and four x, and together they must make the seven x."
+ },
+ "e.w-any": {
+  "text": "A pair that multiplies to twelve gets the corner right. But the middle cells must add to seven x too. Two and six give eight x."
+ },
+ "e.w-swap": {
+  "text": "The other way round. The product is the corner, twelve, and the sum is the middle, seven."
+ },
+ "t.intro": {
+  "text": "Now you. Factor x squared minus two x minus fifteen. The corners are in, and both sides start with x."
+ },
+ "t.pair": {
+  "text": "Your step. Which two numbers have a product of negative fifteen, and a sum of negative two?"
+ },
+ "t.p-ok": {
+  "text": "Yes. Three times negative five is negative fifteen, and three plus negative five is negative two. A negative product means opposite signs, and the larger one takes the sign of the middle."
+ },
+ "t.p-rev": {
+  "text": "Negative three and five multiply to negative fifteen, but they add to positive two. The larger number must take the sign of the middle: negative five."
+ },
+ "t.p-same": {
+  "text": "Two negatives multiply to a positive number. The product here is negative fifteen, so the signs are opposite."
+ },
+ "t.mid": {
+  "text": "Check by expanding. The middle cells are three x and negative five x. What coefficient of x do they make together?"
+ },
+ "t.m-ok": {
+  "text": "Yes. Three x minus five x is negative two x, the middle of the original. So x squared minus two x minus fifteen is x plus three, times x minus five."
+ },
+ "t.m-sign": {
+  "text": "Three plus negative five is negative two, not two. Watch the sign."
+ },
+ "t.m-prod": {
+  "text": "That is the corner. The middle coefficient is the sum of the two middle cells: three, and negative five."
+ },
+ "t.m-no": {
+  "text": "Add the coefficients of the two middle cells: three, and negative five."
+ },
+ "t.num": {
+  "text": "Type a number first."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked x plus three, times x plus four, and you were right. Now you know why: product twelve, sum seven."
+ },
+ "t.cb-sum": {
+  "text": "At the start you picked x plus two, times x plus six. Its corner is twelve, but its middle cells add to eight x, not seven x."
+ },
+ "t.cb-solve": {
+  "text": "At the start you picked x equals negative three or negative four. That solves an equation. Factoring rewrites the area as a product of sides."
+ },
+ "t.cb-none": {
+  "text": "Corners first. Then a pair with the right product and the right sum. Then expand to check."
+ },
+ "p.intro": {
+  "text": "Sam writes: two x squared minus eighteen equals two x plus six, times x minus three. And Sam says: it multiplies back, so it is factored completely. Is Sam right?"
+ },
+ "p.build": {
+  "text": "Now prove it. Fill each because, with the reason that makes the line true."
+ },
+ "p.test": {
+  "text": "Let's test it. Build the argument, and see where it leads."
+ },
+ "p.c1": {
+  "text": "Right. The cells are two x squared, negative six x, six x, and negative eighteen. The two middle cells cancel. Sam's product is correct."
+ },
+ "p.c2": {
+  "text": "Right. Two x plus six is two times x plus three. That factor still has a common factor of two. Correct is not the same as complete."
+ },
+ "p.c3": {
+  "text": "Right. Take the two out first: two times x squared minus nine. And x squared minus nine is x plus three, times x minus three: a difference of squares."
+ },
+ "p.no.prod": {
+  "text": "That is exactly Sam's claim. Multiplying back shows the product is equal, not that every factor is prime."
+ },
+ "p.no.ex": {
+  "text": "One matching value proves nothing. And it says nothing about completeness, either."
+ },
+ "p.no.sq": {
+  "text": "x minus three, squared, has a middle term. A difference of squares is A plus B, times A minus B."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That's a proof. Sam's product is correct, but not complete. Completely factored, two x squared minus eighteen is two, times x plus three, times x minus three."
+ }
+}
