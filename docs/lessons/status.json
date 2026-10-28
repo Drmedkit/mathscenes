@@ -540,18 +540,36 @@
   "note": "53 families, 27/27; oracle 0 errors on 32,400; VOICE PENDING"
  },
  "triangle-inequalities": {
-  "state": "building",
-  "at": "2026-10-28 13:27",
-  "commit": "69e706c"
+  "state": "built",
+  "at": "2026-10-28 14:34",
+  "commit": "67eeafa",
+  "note": "32 families, 12/12; RangeStrip"
  },
  "nonlinear-regression": {
-  "state": "building",
-  "at": "2026-10-28 13:29",
-  "commit": "3dcdb2d"
+  "state": "built",
+  "at": "2026-10-28 14:36",
+  "commit": "67eeafa",
+  "note": "48 families, 21/21"
  },
  "constructions": {
+  "state": "live",
+  "at": "2026-10-28 14:40",
+  "commit": "67eeafa",
+  "note": "67 families, 34/34; oracle 0 errors on 52,800; VOICE PENDING"
+ },
+ "triangle-centers": {
   "state": "building",
-  "at": "2026-10-28 13:31",
-  "commit": "3dcdb2d"
+  "at": "2026-10-28 14:23",
+  "commit": "67eeafa"
+ },
+ "similarity": {
+  "state": "building",
+  "at": "2026-10-28 14:34",
+  "commit": "67eeafa"
+ },
+ "normal-distribution": {
+  "state": "building",
+  "at": "2026-10-28 14:36",
+  "commit": "67eeafa"
  }
 }
