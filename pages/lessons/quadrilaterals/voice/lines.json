@@ -1,0 +1,107 @@
+{
+ "q.intro": {
+  "text": "A framer glues up a picture frame and measures both diagonals: thirty-four inches each. She says: equal diagonals, so the frame is a rectangle. Is she right? Pick one, and say how sure you are."
+ },
+ "q.cb.yes": {
+  "text": "You said equal diagonals make a rectangle. Every rectangle has them, but so does an isosceles trapezoid: the check is necessary, not sufficient. First the frame must be a parallelogram."
+ },
+ "q.cb.para": {
+  "text": "You said: not yet, it must be a parallelogram first. The proof backs you: among parallelograms, congruent diagonals guarantee a rectangle, and the trapezoid shows why the premise matters."
+ },
+ "q.cb.corners": {
+  "text": "You said only the four corners can tell. Measuring corners works, but it is not the only way: a parallelogram with congruent diagonals is already a rectangle, as the proof showed."
+ },
+ "e.intro": {
+  "text": "One parallelogram, three moves. Watch what the diagonals do as the shape changes; the numbers on the right are measured live."
+ },
+ "e.step0": {
+  "text": "The arrowheads make A B C D a parallelogram. Its opposite sides match, and so do its opposite angles; consecutive angles add to one hundred eighty degrees."
+ },
+ "e.step1": {
+  "text": "Draw both diagonals. They meet at E, the midpoint of each: the diagonals bisect each other. They are not the same length."
+ },
+ "e.step2": {
+  "text": "Push the corners to right angles: a rectangle. It is still a parallelogram, so its diagonals still bisect each other, and now they are congruent."
+ },
+ "e.step3": {
+  "text": "Make all four sides equal instead: a rhombus. Its diagonals still bisect each other, are no longer congruent, and cross at a right angle."
+ },
+ "e.why": {
+  "text": "Why do the rectangle's diagonals still bisect each other?"
+ },
+ "e.why.ok": {
+  "text": "Right: every rectangle is a parallelogram, so it inherits every parallelogram property. Properties pass down the family tree."
+ },
+ "e.why.cong": {
+  "text": "Congruent is a different property. Bisecting compares the two halves of the same diagonal; the rectangle has it because it is a parallelogram."
+ },
+ "e.why.look": {
+  "text": "Looks are not a reason. The rectangle has it because every rectangle is a parallelogram."
+ },
+ "t.intro": {
+  "text": "Your turn. A B C D is a rhombus with angle D A B of sixty-four degrees, and both diagonals are drawn."
+ },
+ "t.abc": {
+  "text": "Consecutive angles add to one hundred eighty degrees, so angle A B C is one hundred sixteen degrees. That one is worked for you."
+ },
+ "t.dac.ask": {
+  "text": "Diagonal A C splits angle D A B. What is angle D A C?"
+ },
+ "t.dac.ok": {
+  "text": "Right: the diagonals of a rhombus bisect its vertex angles, so angle D A C is thirty-two degrees."
+ },
+ "t.dac.whole": {
+  "text": "That is the whole angle at A. The diagonal splits it into two equal halves."
+ },
+ "t.dac.other": {
+  "text": "Use the rhombus: its diagonal bisects the angle at A."
+ },
+ "t.dac.cross": {
+  "text": "That angle belongs to the other vertex. Halve the angle at A."
+ },
+ "t.abd.ask": {
+  "text": "Now diagonal B D. What is angle A B D?"
+ },
+ "t.abd.ok": {
+  "text": "Right: B D bisects angle A B C, so angle A B D is fifty-eight degrees. With angle C A B that makes ninety: the diagonals cross at a right angle."
+ },
+ "t.abd.a": {
+  "text": "That is half of the angle at A. B D halves the angle at B."
+ },
+ "t.abd.whole": {
+  "text": "That is the whole angle at B; the diagonal halves it."
+ },
+ "t.abd.other": {
+  "text": "Half of angle A B C: half of one hundred sixteen degrees."
+ },
+ "t.done": {
+  "text": "Classify, then use only the properties the class guarantees. Now prove the test the framer needs."
+ },
+ "p.intro": {
+  "text": "Prove it: a parallelogram with congruent diagonals is a rectangle. First put the lines in an order that works, then give each its reason."
+ },
+ "p.wrong": {
+  "text": "Not that one. Read why, then try again."
+ },
+ "p.proved": {
+  "text": "Proved: congruent diagonals plus the parallelogram premise give a right angle, so a rectangle."
+ },
+ "p.frame": {
+  "text": "Back to the frame. Slide the top in and the bottom out, keeping both diagonals at thirty-four inches: an isosceles trapezoid. Equal diagonals, no rectangle."
+ },
+ "p.next": {
+  "text": "What should the framer add to her check?"
+ },
+ "p.next.ok": {
+  "text": "Right: equal opposite sides make it a parallelogram, and then equal diagonals make it a rectangle."
+ },
+ "p.next.again": {
+  "text": "Measuring again gives the same thirty-four inches: the trapezoid passes that too."
+ },
+ "p.next.look": {
+  "text": "Looking is not a check: the trapezoid can be close to a rectangle."
+ },
+ "p.done": {
+  "text": "Necessary is not sufficient. Every rectangle has equal diagonals, but equal diagonals only prove a rectangle once the shape is a parallelogram."
+ }
+}

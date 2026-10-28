@@ -372,7 +372,8 @@
   "requires": [
    "conditional-statements",
    "triangle-centers"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t6-22-similarity-criteria-and-applications",
