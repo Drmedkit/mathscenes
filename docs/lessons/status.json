@@ -486,18 +486,36 @@
   "commit": "5bc0a34"
  },
  "geometry-foundations": {
-  "state": "building",
-  "at": "2026-10-28 10:05",
-  "commit": "d7be53a"
+  "state": "built",
+  "at": "2026-10-28 11:26",
+  "commit": "f2654ab",
+  "note": "56 families, 31/31; ProofFrame, proofPanel, GeoFig"
  },
  "quadratic-functions": {
-  "state": "building",
-  "at": "2026-10-28 10:26",
-  "commit": "dd1547d"
+  "state": "live",
+  "at": "2026-10-28 11:47",
+  "commit": "f2654ab",
+  "note": "54 families, 33/33; oracle 0 errors on 35,400; VOICE PENDING"
  },
  "one-variable-data": {
+  "state": "built",
+  "at": "2026-10-28 11:26",
+  "commit": "f2654ab",
+  "note": "49 families, 28/28; DataPlot block"
+ },
+ "counting": {
   "state": "building",
-  "at": "2026-10-28 10:34",
-  "commit": "5bc0a34"
+  "at": "2026-10-28 11:26",
+  "commit": "f2654ab"
+ },
+ "counterexamples-and-proof": {
+  "state": "building",
+  "at": "2026-10-28 11:26",
+  "commit": "f2654ab"
+ },
+ "function-families": {
+  "state": "building",
+  "at": "2026-10-28 11:34",
+  "commit": "f2654ab"
  }
 }

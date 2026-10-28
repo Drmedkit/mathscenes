@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quadratic functions and their graphs</title>
+  <link rel="stylesheet" href="./lesson.css">
+  <style>
+    /* a radical in the panel: the sign, then a bar over the radicand */
+    u.rb { text-decoration: none; display: inline-block; line-height: 1.05; border-top: 1.5px solid currentColor; padding: .06em .12em 0 .04em; margin-left: -.02em; white-space: nowrap; }
+    /* a small input-output table inside a prompt */
+    .panel table.tab { border-collapse: collapse; margin: 10px 0 4px; font-variant-numeric: tabular-nums; }
+    .panel table.tab td { padding: 4px 7px; border-bottom: 1px solid var(--line); text-align: center; font-weight: 600; }
+    .panel table.tab td:first-child { text-align: left; }
+    .panel code { font-size: .95em; padding: 1px 5px; border-radius: 5px; background: rgba(255, 255, 255, .08); white-space: nowrap; }
+    .chips button, .claim { line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1><a class="home" href="./index.html#algebra-1" aria-label="All lessons">Algebra 1</a> · Quadratic functions and their graphs</h1>
+    <nav id="rail" aria-label="Lesson parts"></nav>
+    <div id="tools"></div>
+  </header>
+  <main class="lesson">
+    <div class="stage"><canvas id="cv" aria-label="The model and the notation board"></canvas></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <script type="module" src="./quadratic-functions.ts"></script>
+</body>
+</html>

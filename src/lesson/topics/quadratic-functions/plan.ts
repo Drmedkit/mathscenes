@@ -1,0 +1,40 @@
+// plan.ts: practice walks through every sub-goal of secondary-t6-11-quadratic-functions-graphing-and-key-features, in
+// topic JSON order. A family that serves two sub-goals reads the sub-goal id (e.g. axisRead from a graph, or from
+// vertex form).
+import type { SubgoalPlan } from '../../runtime/practice';
+
+export const PLAN: readonly SubgoalPlan[] = [
+  { id: 'table-to-parabola', title: 'Build the parabola from a table', families: ['tableY', 'linVsQuad'] },
+  { id: 'vertex-extremum', title: 'The vertex: maximum or minimum', families: ['vertexRead', 'extremeVal'] },
+  { id: 'axis-of-symmetry', title: 'The axis of symmetry x = h', families: ['axisRead', 'axisTable'] },
+  { id: 'zeros-from-graph', title: 'Zeros on the graph: two, one or none', families: ['zeroCount', 'zerosRead'] },
+  { id: 'mirror-points', title: 'Mirror points and the axis between them', families: ['mirrorPt', 'axisMid'] },
+  { id: 'vertex-form-read', title: 'Vertex form: read the vertex and axis', families: ['vfVertex', 'axisRead'] },
+  { id: 'sign-of-a', title: 'The sign of a: up or down', families: ['openDir', 'extremeVal'] },
+  { id: 'magnitude-of-a', title: 'The size of a: narrow or wide', families: ['offsetY', 'narrowest'] },
+  { id: 'parent-transformations', title: 'Moves of y = x²: shift, stretch, flip', families: ['transformName', 'mapPoint'] },
+  { id: 'horizontal-scale-fbx', title: 'f(bx): a sideways squeeze', families: ['fbxPoint', 'fbxSame'] },
+  { id: 'zero-count-from-vertex', title: 'Count the zeros from the vertex', families: ['countZeros'] },
+  { id: 'zeros-by-square-roots', title: 'Exact zeros by square roots', families: ['sqrtZeros', 'sqrtExact'] },
+  { id: 'factored-form-zeros', title: 'Factored form shows the zeros', families: ['facZeros', 'facRepeat'] },
+  { id: 'factored-form-vertex', title: 'Factored form: axis, then vertex', families: ['facVertex', 'axisMid'] },
+  { id: 'y-intercept-f0', title: 'The y-intercept is f(0)', families: ['yInt', 'cMeaning'] },
+  { id: 'standard-form-axis', title: 'Standard form: x = −b/(2a)', families: ['stdAxis', 'stdPair'] },
+  { id: 'graphing-technology', title: 'Graph it with technology', families: ['techWindow', 'techTrace'] },
+  { id: 'complete-sketch', title: 'A complete sketch', families: ['whichGraph', 'hiddenZero'] },
+  { id: 'domain-range', title: 'Domain and range', families: ['rangeOf'] },
+  { id: 'rising-falling', title: 'Rising and falling, left to right', families: ['riseFall', 'incInterval'] },
+  { id: 'increase-decrease', title: 'Increasing and decreasing at the vertex', families: ['incInterval'] },
+  { id: 'positive-negative-intervals', title: 'Where it is positive or negative', families: ['posNeg'] },
+  { id: 'equivalence-of-forms', title: 'One function, several forms', families: ['expandVF', 'proofOrCheck'] },
+  { id: 'vertex-form-from-point', title: 'Vertex form from the vertex and a point', families: ['findA', 'findACtx'] },
+  { id: 'factored-form-from-zeros', title: 'Factored form from the zeros and a point', families: ['zerosToA', 'zerosToForm'] },
+  { id: 'factor-to-reveal-zeros', title: 'Factor to reveal the zeros', families: ['factorZeros', 'methodPick'] },
+  { id: 'complete-square-to-vertex', title: 'Complete the square to reveal the vertex', families: ['csVertexForm', 'csMin'] },
+  { id: 'choose-form', title: 'Choose the form that shows it', families: ['chooseForm', 'bestFormValue'] },
+  { id: 'justify-zeros', title: 'Why factored form shows the zeros', families: ['zeroProd'] },
+  { id: 'justify-extremum', title: 'Why the vertex is the extreme value', families: ['boundWhy'] },
+  { id: 'justify-symmetry', title: 'Why the graph is symmetric', families: ['symProof', 'mirrorPt'] },
+  { id: 'interpret-context', title: 'Vertex and zeros in context', families: ['projectile', 'penMax'] },
+  { id: 'compare-representations', title: 'Compare two quadratics', families: ['compareMax'] },
+];

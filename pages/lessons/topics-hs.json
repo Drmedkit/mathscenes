@@ -227,7 +227,8 @@
   "requires": [
    "factoring",
    "units-and-quantities"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary.solving-quadratic-equations-by-completing-the-square-and-the",
