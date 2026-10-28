@@ -293,7 +293,8 @@
   "requires": [
    "conditional-statements",
    "geometry-foundations"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t6-19-triangle-congruence-sss-sas-asa-aas-hl",

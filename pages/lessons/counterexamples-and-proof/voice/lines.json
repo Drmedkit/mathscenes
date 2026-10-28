@@ -1,0 +1,107 @@
+{
+ "q.intro": {
+  "text": "Lena tests n squared plus n plus forty one for n equals zero, one, two, three, four and five. Every value is prime. She writes: for every whole number n, n squared plus n plus forty one is prime. Is her claim proved? Pick one, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Claim: the sum of two even integers is even. Four steps. The picture moves first, then the proof."
+ },
+ "e.step0": {
+  "text": "An even number is dots that stand in pairs. Four plus six: two pairs and three pairs make five pairs, so ten is even. That is one example. The claim is about every pair of even integers, and no list of examples covers them all."
+ },
+ "e.step1": {
+  "text": "Name any even integer: a equals two m, with m an integer, m pairs. The other one gets its own letter: b equals two n. Line one, by the definition of an even integer."
+ },
+ "e.step2": {
+  "text": "Put the pairs together: a plus b equals two m plus two n, which is two times, m plus n. Still nothing but pairs: m plus n of them."
+ },
+ "e.step3": {
+  "text": "m plus n is an integer, so a plus b is two times an integer: even. The letters stood for any integers, so this one argument covers every pair of even integers."
+ },
+ "e.why": {
+  "text": "Quick check: why two letters, m and n, and not two m for both?"
+ },
+ "e.why.ok": {
+  "text": "Right. With one letter, a and b would be the same number, and the proof would only cover a number added to itself."
+ },
+ "e.why.one": {
+  "text": "Not quite. One letter forces a and b to be equal: four plus ten could never be written as two m plus two m."
+ },
+ "e.why.int": {
+  "text": "Not quite. m and n can be any integers, negative ones too. The second letter is there so the two numbers can differ."
+ },
+ "t.intro": {
+  "text": "Your turn: the sum of two odd integers is even. Three steps are yours."
+ },
+ "t.rep": {
+  "text": "Line one: name two odd integers that can be any odd integers."
+ },
+ "t.rep.ok": {
+  "text": "Right: m pairs plus one dot, and n pairs plus one dot."
+ },
+ "t.rep.one": {
+  "text": "One letter makes a and b the same number. They must be free to differ."
+ },
+ "t.rep.num": {
+  "text": "Three and five are one example. The proof needs letters that stand for every odd integer."
+ },
+ "t.rep.any": {
+  "text": "With m equal to one half, two m plus one is two: not odd. The letters must be integers."
+ },
+ "t.fac": {
+  "text": "Line two adds them: a plus b equals two m plus two n plus two. Line three: write that as two times something."
+ },
+ "t.fac.ok": {
+  "text": "Right. The two extra dots make one more pair: m plus n plus one pairs."
+ },
+ "t.fac.drop": {
+  "text": "Check by expanding: two times m plus n, plus one, is two m plus two n plus one. One of the two ones went missing."
+ },
+ "t.fac.mult": {
+  "text": "Check by expanding: two times m plus n is two m plus two n. The plus two is gone."
+ },
+ "t.rs": {
+  "text": "Line four: m plus n plus one is an integer. Line five says a plus b is even. Which reason gives line five?"
+ },
+ "t.rs.ok": {
+  "text": "Right: two times an integer is even, by definition. The proof covers every pair of odd integers."
+ },
+ "t.rs.num": {
+  "text": "A check with numbers is an example. The reason has to hold for every integer."
+ },
+ "t.rs.odd": {
+  "text": "Line five is about being even, so it needs the definition of an even integer."
+ },
+ "t.rs.circ": {
+  "text": "That is the claim we are proving: it cannot be its own reason."
+ },
+ "q.cb.notyet": {
+  "text": "Back to Lena: you said not proved. Right, and here is why it matters: at n equals forty the value is sixteen eighty one, which is forty one times forty one, not prime. Forty checks would not have proved it either."
+ },
+ "q.cb.proved": {
+  "text": "Back to Lena: you said proved. But at n equals forty the value is sixteen eighty one, which is forty one times forty one, not prime. Examples that work prove nothing about the ones not checked."
+ },
+ "q.cb.false": {
+  "text": "Back to Lena: you said false because the checks are too few. Too few checks only leave a claim open. It is false, but only because of a counterexample: n equals forty gives sixteen eighty one, which is forty one times forty one."
+ },
+ "q.cb.none": {
+  "text": "Back to Lena: at n equals forty the value is sixteen eighty one, forty one times forty one, not prime. Checks never proved her claim."
+ },
+ "p.intro": {
+  "text": "Mateo claims: an integer n is even if and only if n plus one is odd. His proof: if n equals two k, then n plus one equals two k plus one, which is odd. Has he proved his claim?"
+ },
+ "p.build": {
+  "text": "Right: he proved one direction. The other one needs its own proof: if n plus one is odd, then n is even. Build it."
+ },
+ "p.build-test": {
+  "text": "Not yet: he proved only one direction, if n is even, then n plus one is odd. An if and only if claim has two directions. Build the other one: if n plus one is odd, then n is even."
+ },
+ "p.order-done": {
+  "text": "The lines are in order. Now the reasons."
+ },
+ "p.wrong": {
+  "text": "Not that one."
+ },
+ "p.done": {
+  "text": "Both directions are proved, so the claim is proved: n is even if and only if n plus one is odd. In the picture the two regions are one and the same."
+ }
+}

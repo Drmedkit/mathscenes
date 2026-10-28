@@ -510,18 +510,30 @@
   "note": "52 families, 25/25; oracle 0 errors on 31,200; VOICE PENDING"
  },
  "counterexamples-and-proof": {
-  "state": "building",
-  "at": "2026-10-28 11:26",
-  "commit": "f2654ab"
+  "state": "live",
+  "at": "2026-10-28 12:43",
+  "commit": "eec3d71",
+  "note": "33 families, 15/15; oracle 0 errors on 19,800; VOICE PENDING"
  },
  "function-families": {
-  "state": "building",
-  "at": "2026-10-28 11:34",
-  "commit": "f2654ab"
+  "state": "built",
+  "at": "2026-10-28 12:27",
+  "commit": "eec3d71",
+  "note": "57 families, 26/26; DiffTable"
  },
  "triangle-congruence": {
   "state": "building",
   "at": "2026-10-28 12:19",
   "commit": "4d2a2d2"
+ },
+ "conditional-probability": {
+  "state": "building",
+  "at": "2026-10-28 12:27",
+  "commit": "eec3d71"
+ },
+ "linear-regression": {
+  "state": "building",
+  "at": "2026-10-28 12:29",
+  "commit": "eec3d71"
  }
 }
