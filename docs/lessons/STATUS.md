@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63); phase 2: building 3, live 33, queued 89 (of 125)
+Totals: live 63 (of 63); phase 2: building 3, built 1, live 34, queued 87 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -132,9 +132,9 @@ Totals: live 63 (of 63); phase 2: building 3, live 33, queued 89 (of 125)
 | 5 | Isosceles triangles and side-angle order | `triangle-inequalities` | HS | 12 | live | 32 families, 12/12; oracle 0 errors on 19,200; VOICE PENDING |
 | 6 | Constructions with compass and straightedge | `constructions` | HS | 34 | live | 67 families, 34/34; oracle 0 errors on 52,800; VOICE PENDING |
 | 7 | Midsegments and points of concurrency | `triangle-centers` | HS | 35 | live | 58 families, 35/35; oracle 0 errors on 38,400; VOICE PENDING |
-| 8 | Parallelograms and other quadrilaterals | `quadrilaterals` | HS | 41 | building |  |
+| 8 | Parallelograms and other quadrilaterals | `quadrilaterals` | HS | 41 | built | 58 families, 41/41; Tree |
 | 9 | Similar triangles | `similarity` | HS | 25 | live | 54 families, 25/25; oracle 0 errors on 33,600; VOICE PENDING |
-| 10 | Right triangle trigonometry | `right-triangle-trig` | HS | 29 | queued |  |
+| 10 | Right triangle trigonometry | `right-triangle-trig` | HS | 29 | building |  |
 | 11 | Distance, midpoint and coordinate proofs | `coordinate-proofs` | HS | 33 | queued |  |
 | 12 | Arcs and angles in circles | `circle-angles` | HS | 33 | queued |  |
 | 13 | Tangents, chords and segment lengths | `chords-tangents` | HS | 14 | queued |  |
@@ -168,8 +168,8 @@ Totals: live 63 (of 63); phase 2: building 3, live 33, queued 89 (of 125)
 
 | # | lesson | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
-| 1 | Complex numbers | `complex-numbers` | HS | 21 | building |  |
-| 2 | Quadratics with complex solutions | `quadratics-complex` | HS | 14 | queued |  |
+| 1 | Complex numbers | `complex-numbers` | HS | 21 | live | 46 families, 21/21; oracle 0 errors on 28,800; VOICE PENDING |
+| 2 | Quadratics with complex solutions | `quadratics-complex` | HS | 14 | building |  |
 | 3 | Polynomial operations and identities | `polynomial-identities` | HS | 14 | queued |  |
 | 4 | Polynomial division | `polynomial-division` | HS | 25 | queued |  |
 | 5 | Factoring higher-degree polynomials | `higher-degree-factoring` | HS | 26 | queued |  |

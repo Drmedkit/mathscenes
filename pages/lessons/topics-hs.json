@@ -740,7 +740,8 @@
    "number-properties",
    "polynomials",
    "radicals-exponents"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t7-09-solving-quadratic-equations-with-complex-solutions",

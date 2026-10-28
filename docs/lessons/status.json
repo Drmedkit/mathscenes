@@ -576,18 +576,30 @@
   "note": "66 families, 30/30; oracle 0 errors on 39,600; VOICE PENDING"
  },
  "complex-numbers": {
-  "state": "building",
-  "at": "2026-10-28 15:35",
-  "commit": "950ea89"
+  "state": "live",
+  "at": "2026-10-28 16:50",
+  "commit": "68e51c1",
+  "note": "46 families, 21/21; oracle 0 errors on 28,800; VOICE PENDING"
  },
  "quadrilaterals": {
-  "state": "building",
-  "at": "2026-10-28 15:38",
-  "commit": "950ea89"
+  "state": "built",
+  "at": "2026-10-28 16:45",
+  "commit": "68e51c1",
+  "note": "58 families, 41/41; Tree"
  },
  "expected-value": {
   "state": "building",
   "at": "2026-10-28 15:46",
   "commit": "950ea89"
+ },
+ "quadratics-complex": {
+  "state": "building",
+  "at": "2026-10-28 16:41",
+  "commit": "68e51c1"
+ },
+ "right-triangle-trig": {
+  "state": "building",
+  "at": "2026-10-28 16:45",
+  "commit": "68e51c1"
  }
 }
