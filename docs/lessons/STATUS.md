@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63); phase 2: building 3, built 1, live 34, queued 87 (of 125)
+Totals: live 63 (of 63); phase 2: building 3, built 1, live 35, queued 86 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -155,7 +155,7 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 34, queued 87 (of 12
 | 5 | Repeated objects and circular arrangements | `advanced-counting` | AP | 15 | queued |  |
 | 6 | Conditional probability and independence | `conditional-probability` | HS | 31 | live | 64 families, 31/31; oracle 0 errors on 39,000; VOICE PENDING |
 | 7 | The normal distribution | `normal-distribution` | HS | 30 | live | 66 families, 30/30; oracle 0 errors on 39,600; VOICE PENDING |
-| 8 | Probability distributions and expected value | `expected-value` | HS | 24 | building |  |
+| 8 | Probability distributions and expected value | `expected-value` | HS | 24 | live | 54 families, 24/24; oracle 0 errors; VOICE PENDING |
 | 9 | Using probability to make decisions | `probability-decisions` | HS | 17 | queued |  |
 | 10 | Study design and estimating with a margin of error | `margin-of-error` | HS | 32 | queued |  |
 | 11 | Testing a claim by simulation | `simulation-tests` | HS | 8 | queued |  |
@@ -170,7 +170,7 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 34, queued 87 (of 12
 |---|---|---|---|---|---|---|
 | 1 | Complex numbers | `complex-numbers` | HS | 21 | live | 46 families, 21/21; oracle 0 errors on 28,800; VOICE PENDING |
 | 2 | Quadratics with complex solutions | `quadratics-complex` | HS | 14 | building |  |
-| 3 | Polynomial operations and identities | `polynomial-identities` | HS | 14 | queued |  |
+| 3 | Polynomial operations and identities | `polynomial-identities` | HS | 14 | building |  |
 | 4 | Polynomial division | `polynomial-division` | HS | 25 | queued |  |
 | 5 | Factoring higher-degree polynomials | `higher-degree-factoring` | HS | 26 | queued |  |
 | 6 | Polynomial functions: graphs and behavior | `polynomial-graphs` | HS | 30 | queued |  |

@@ -588,9 +588,10 @@
   "note": "58 families, 41/41; Tree"
  },
  "expected-value": {
-  "state": "building",
-  "at": "2026-10-28 15:46",
-  "commit": "950ea89"
+  "state": "live",
+  "at": "2026-10-28 17:11",
+  "commit": "d921de9",
+  "note": "54 families, 24/24; oracle 0 errors; VOICE PENDING"
  },
  "quadratics-complex": {
   "state": "building",
@@ -601,5 +602,10 @@
   "state": "building",
   "at": "2026-10-28 16:45",
   "commit": "68e51c1"
+ },
+ "polynomial-identities": {
+  "state": "building",
+  "at": "2026-10-28 16:59",
+  "commit": "d921de9"
  }
 }

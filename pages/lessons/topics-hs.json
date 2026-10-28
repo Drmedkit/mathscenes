@@ -617,7 +617,8 @@
    "conditional-probability",
    "counting",
    "normal-distribution"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t8-20-using-probability-for-decisions",
