@@ -1,0 +1,119 @@
+{
+ "q.intro": {
+  "text": "The parabola y equals x squared minus four x plus thirteen never touches the x axis. Its lowest point is two, nine."
+ },
+ "q.ask": {
+  "text": "So how many solutions does x squared minus four x plus thirteen equal zero have, now that you know i? Pick one, and say how sure you are."
+ },
+ "q.sure": {
+  "text": "How sure are you?"
+ },
+ "e.intro": {
+  "text": "Four steps with the quadratic formula. Press each one: the picture moves first, then the algebra."
+ },
+ "e.s0": {
+  "text": "a is one, b is negative four, c is thirteen. b squared minus four a c is sixteen minus fifty two, which is negative thirty six. Negative, so no real number works. That is why the parabola misses the x axis."
+ },
+ "e.s1": {
+  "text": "The formula needs the root of negative thirty six. A root of a negative is i times a real root. The root of negative thirty six is i times six, so six i."
+ },
+ "e.s2": {
+  "text": "x equals four plus or minus six i, over two. Divide both terms by two: x equals two plus or minus three i. Both roots sit on the line where the real part is two, right above the vertex."
+ },
+ "e.s3": {
+  "text": "Check two plus three i. Two plus three i, squared, is four plus twelve i plus nine i squared, which is negative five plus twelve i. Then negative five plus twelve i, minus eight, minus twelve i, plus thirteen, is zero. It works."
+ },
+ "e.why": {
+  "text": "Quick check. Why do both solutions have the real part two?"
+ },
+ "e.w-ok": {
+  "text": "Yes. The plus or minus only touches the root. Negative b over two a, which is two, is in both. The two roots are a conjugate pair."
+ },
+ "e.w-opp": {
+  "text": "The opposite of two plus three i is negative two minus three i. The second root is two minus three i: the same real part, and the opposite imaginary part."
+ },
+ "e.w-cross": {
+  "text": "The parabola never crosses the x axis. But its vertex is at x equals two. The shared real part is the x of the vertex."
+ },
+ "t.intro": {
+  "text": "Your turn: x squared plus six x plus twenty five equals zero. Step one is done. b squared minus four a c is thirty six minus one hundred, which is negative sixty four."
+ },
+ "t.root": {
+  "text": "Step two. Write the root of negative sixty four as a number times i."
+ },
+ "t.num": {
+  "text": "Type a number first."
+ },
+ "t.root-ok": {
+  "text": "Yes. The root of negative sixty four is i times eight, so eight i."
+ },
+ "t.root-neg": {
+  "text": "Negative eight squared is sixty four, not negative sixty four. The root of negative sixty four is i times eight."
+ },
+ "t.root-no": {
+  "text": "The root of negative sixty four is i times the root of sixty four. What is the root of sixty four?"
+ },
+ "t.split": {
+  "text": "Step three. x equals negative six plus or minus eight i, over two. Type it as x equals a plus or minus b i."
+ },
+ "t.pair": {
+  "text": "Fill in both boxes first."
+ },
+ "t.split-ok": {
+  "text": "Yes. Negative six over two is negative three, and eight i over two is four i. So x equals negative three plus or minus four i."
+ },
+ "t.split-b": {
+  "text": "The formula starts with negative b, and b is six. The top is negative six plus or minus eight i, so the real part is negative three."
+ },
+ "t.split-half": {
+  "text": "Divide both terms of the top by two: negative six over two, and eight i over two."
+ },
+ "t.split-no": {
+  "text": "Split the fraction. The real part is negative six over two, the imaginary part is eight over two."
+ },
+ "t.cb-right": {
+  "text": "At the start you picked two non-real solutions, and you were right. No x intercepts means no real solutions, but the formula still gives a pair."
+ },
+ "t.cb-none": {
+  "text": "At the start you picked no solutions. No x intercepts means no real solutions. Over the complex numbers there are two: two plus or minus three i."
+ },
+ "t.cb-one": {
+  "text": "At the start you picked one non-real solution. The plus or minus always gives two: two plus three i, and two minus three i."
+ },
+ "t.cb-skip": {
+  "text": "A negative discriminant: no real solutions, two non-real ones, a conjugate pair."
+ },
+ "p.intro": {
+  "text": "Jordan solved three quadratics. Each time the roots were a conjugate pair, a plus or minus b i. So it is always true, says Jordan. Is that a proof?"
+ },
+ "p.yes": {
+  "text": "Three examples show three cases. Let’s see what a proof for every real a, b, c looks like."
+ },
+ "p.build": {
+  "text": "Right. Examples are not a proof. Build one for every real a, b, c with a negative discriminant. Fill each because."
+ },
+ "p.c1": {
+  "text": "Right. Four a c minus b squared is positive, so its root is real, and the i comes out in front."
+ },
+ "p.c2": {
+  "text": "Right. A fraction with a sum on top splits into two fractions: the real part, and the imaginary part."
+ },
+ "p.c3": {
+  "text": "Right. Both parts are real numbers, so the roots are p plus q i, and p minus q i: mirror images in the real axis."
+ },
+ "p.no.ex": {
+  "text": "That is Jordan’s argument. Examples check only the equations you tried."
+ },
+ "p.no.opp": {
+  "text": "The opposite flips both parts. The two roots share the real part, negative b over two a."
+ },
+ "p.no.conj": {
+  "text": "A conjugate keeps the real part and flips only the imaginary part."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "That’s a proof. It works for every real a, b, c at once. Non-real roots of a real quadratic always come as a conjugate pair. With non-real coefficients, they need not."
+ }
+}

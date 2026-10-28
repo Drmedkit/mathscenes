@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63); phase 2: building 3, built 1, live 36, queued 85 (of 125)
+Totals: live 63 (of 63); phase 2: building 2, built 1, live 37, queued 85 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -169,8 +169,8 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 36, queued 85 (of 12
 | # | lesson | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
 | 1 | Complex numbers | `complex-numbers` | HS | 21 | live | 46 families, 21/21; oracle 0 errors on 28,800; VOICE PENDING |
-| 2 | Quadratics with complex solutions | `quadratics-complex` | HS | 14 | built |  |
-| 3 | Polynomial operations and identities | `polynomial-identities` | HS | 14 | building |  |
+| 2 | Quadratics with complex solutions | `quadratics-complex` | HS | 14 | live | 30 families, 14/14; oracle 18000/18000; VOICE PENDING |
+| 3 | Polynomial operations and identities | `polynomial-identities` | HS | 14 | built | 34 families, 14/14 |
 | 4 | Polynomial division | `polynomial-division` | HS | 25 | queued |  |
 | 5 | Factoring higher-degree polynomials | `higher-degree-factoring` | HS | 26 | queued |  |
 | 6 | Polynomial functions: graphs and behavior | `polynomial-graphs` | HS | 30 | queued |  |

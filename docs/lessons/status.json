@@ -594,9 +594,10 @@
   "note": "54 families, 24/24; oracle 0 errors; VOICE PENDING"
  },
  "quadratics-complex": {
-  "state": "built",
-  "at": "2026-10-28 17:33",
-  "commit": "dd5120e"
+  "state": "live",
+  "at": "2026-10-28 17:47",
+  "commit": "6bbe8c0",
+  "note": "30 families, 14/14; oracle 18000/18000; VOICE PENDING"
  },
  "right-triangle-trig": {
   "state": "building",
@@ -604,9 +605,10 @@
   "commit": "68e51c1"
  },
  "polynomial-identities": {
-  "state": "building",
-  "at": "2026-10-28 16:59",
-  "commit": "d921de9"
+  "state": "built",
+  "at": "2026-10-28 17:43",
+  "commit": "6bbe8c0",
+  "note": "34 families, 14/14"
  },
  "circle-angles": {
   "state": "building",

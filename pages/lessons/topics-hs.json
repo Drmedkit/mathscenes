@@ -757,7 +757,8 @@
   "requires": [
    "complex-numbers",
    "radicals-exponents"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "secondary-t7-02-polynomial-operations-and-identities",
