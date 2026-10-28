@@ -72,7 +72,9 @@ for (const [k, load] of Object.entries(EXPLAIN)) {
         expect(ex!.steps.length, `${p.id}/${f}`).toBeGreaterThanOrEqual(2);
         expect(ex!.steps.length, `${p.id}/${f}`).toBeLessThanOrEqual(5);
         expect(item.check(ex!.result).ok, `${p.id}/${f}: ${JSON.stringify(ex!.result)} for ${item.prompt}`).toBe(true);
-        expect(sameValue(ex!.result, item.answer), `${p.id}/${f}: ${JSON.stringify(ex!.result)} vs ${JSON.stringify(item.answer)}`).toBe(true);
+        // a two-solution pair the item accepts in either order may be written in either order
+        const swapped = (r: typeof item.answer) => (r && (r as { kind: string }).kind === 'pair' ? { ...(r as object), x: (r as { y: unknown }).y, y: (r as { x: unknown }).x } as typeof r : r);
+        expect(sameValue(ex!.result, item.answer) || (item.check(swapped(item.answer)).ok && sameValue(ex!.result, swapped(item.answer))), `${p.id}/${f}: ${JSON.stringify(ex!.result)} vs ${JSON.stringify(item.answer)}`).toBe(true);
       }
     });
   });
