@@ -5,7 +5,7 @@ Scope: the first two years of secondary school (US grades 7-8), in prerequisite 
 States: queued → building → built → reviewed → live (committed with voice). Next up: the first queued topics.
 Models: every topic agent and every shared-piece agent runs on Opus 5.5 (model "opus"); no Haiku or Sonnet builds or reviews a topic.
 
-Totals: live 63 (of 63); phase 2: building 3, built 1, live 23, queued 98 (of 125)
+Totals: live 63 (of 63); phase 2: building 3, live 24, queued 98 (of 125)
 
 ## Lead-in (grade 5 fractions)
 
@@ -119,7 +119,7 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 23, queued 98 (of 12
 | 16 | Factoring | `factoring` | HS | 24 | live | 51 families, 24/24; oracle 0 errors on 30,600; VOICE PENDING |
 | 17 | Quadratic functions and their graphs | `quadratic-functions` | HS | 33 | live | 54 families, 33/33; oracle 0 errors on 35,400; VOICE PENDING |
 | 18 | Solving quadratics: square roots, completing the square, the formula | `completing-the-square` | HS | 16 | live | 41 families, 16/16; oracle 0 errors on 24,600; VOICE PENDING |
-| 19 | Linear, quadratic or exponential? | `function-families` | HS | 26 | built | 57 families, 26/26; DiffTable |
+| 19 | Linear, quadratic or exponential? | `function-families` | HS | 26 | live | 57 families, 26/26; oracle 0 errors on 34,200; VOICE PENDING |
 
 ## Geometry
 

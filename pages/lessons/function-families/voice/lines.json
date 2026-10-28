@@ -1,0 +1,140 @@
+{
+ "q.intro": {
+  "text": "A sensor logs a quantity y once a second: two, four, eight, fourteen, twenty two. Linear, quadratic or exponential? Pick one, and say how sure you are."
+ },
+ "e.intro": {
+  "text": "Three tests, after one check. Press each step. The table changes first, then the notation."
+ },
+ "e.step0": {
+  "text": "First the inputs. Every x step is plus one. Equal steps, so differences and ratios compare equal intervals. Without that, no test means anything."
+ },
+ "e.step1": {
+  "text": "Ratios of neighbours: times two, times two, then times one point seven five, and about times one point five seven. The doubling stops after two steps, so the table is not exponential. A factor has to hold on every step."
+ },
+ "e.step2": {
+  "text": "First differences: plus two, plus four, plus six, plus eight. Not equal, so it is not linear either. But look: they grow by the same amount each time."
+ },
+ "e.step3": {
+  "text": "Second differences: plus two, plus two, plus two. Constant, and not zero. The table is consistent with a quadratic function. In fact, y equals x squared plus x plus two fits every row."
+ },
+ "e.why": {
+  "text": "Quick check: why did the doubling in the first rows not prove exponential?"
+ },
+ "e.why.ok": {
+  "text": "Yes. A family test is about every pair of neighbouring rows. Two equal ratios are a start, not a pattern. The third one breaks it."
+ },
+ "e.why.even": {
+  "text": "Even numbers have nothing to do with it. Fourteen divided by eight is one point seven five, not two. The factor changes."
+ },
+ "e.why.start": {
+  "text": "Exponential tables can start anywhere. The problem is that the ratio does not stay the same."
+ },
+ "t.intro": {
+  "text": "Your turn, with all three tests. A new table: x is zero, two, four, six, eight, and y is three, six, twelve, twenty four, forty eight."
+ },
+ "t.step": {
+  "text": "Check the inputs first. Which is true?"
+ },
+ "t.step.ok": {
+  "text": "Right. Every x step is plus two. Equal steps of any size are fine."
+ },
+ "t.step.one": {
+  "text": "The steps do not have to be plus one. They have to be equal, and these are all plus two."
+ },
+ "t.step.uneq": {
+  "text": "Subtract neighbours. Two minus zero, four minus two, and so on. All plus two: equal."
+ },
+ "t.d1": {
+  "text": "Type the first difference from x equals two to x equals four."
+ },
+ "t.d1.ok": {
+  "text": "Yes. Twelve minus six is six. The first differences are plus three, plus six, plus twelve, plus twenty four. Not equal, so not linear."
+ },
+ "t.d1.ratio": {
+  "text": "That is the ratio, twelve divided by six. A difference subtracts: twelve minus six."
+ },
+ "t.d1.other": {
+  "text": "Subtract the y values: the one at x equals four, minus the one at x equals two."
+ },
+ "t.quad": {
+  "text": "The first differences keep changing. Is the table quadratic, then?"
+ },
+ "t.quad.ok": {
+  "text": "Right. Check before you claim. Second differences: plus three, plus six, plus twelve. Not constant: not quadratic."
+ },
+ "t.quad.no": {
+  "text": "Changing first differences only rule out linear. Exponential tables have them too. The second differences decide: plus three, plus six, plus twelve."
+ },
+ "t.ratio": {
+  "text": "Last test. Type the ratio of neighbours, twelve divided by six."
+ },
+ "t.ratio.ok": {
+  "text": "Yes, times two. And six over three, twenty four over twelve, forty eight over twenty four are times two too. Every ratio is the same."
+ },
+ "t.ratio.diff": {
+  "text": "Six is the difference. The ratio divides: twelve divided by six."
+ },
+ "t.ratio.other": {
+  "text": "Divide the later value by the earlier one: twelve divided by six."
+ },
+ "t.fam": {
+  "text": "So what is the table consistent with?"
+ },
+ "t.fam.ok": {
+  "text": "Right. Exponential, times two for every step of two in x. Per single unit of x, the factor is smaller: it takes two units to double."
+ },
+ "t.fam.unit": {
+  "text": "The x steps are plus two, so times two is the factor per step of two, not per one unit of x."
+ },
+ "t.fam.quad": {
+  "text": "The second differences were plus three, plus six, plus twelve: not constant. The ratios are the test that passes."
+ },
+ "q.cb.right": {
+  "text": "At the start you picked quadratic, and the tests agree: constant second differences of plus two."
+ },
+ "q.cb.exp": {
+  "text": "At the start you picked exponential. The first rows double, but the ratio test fails at fourteen over eight. A test must hold on every step."
+ },
+ "q.cb.lin": {
+  "text": "At the start you picked linear. The first differences are plus two, plus four, plus six, plus eight: not equal. The second differences settle it: quadratic."
+ },
+ "q.cb.none": {
+  "text": "Check equal x steps, then first differences, second differences and ratios. One test, or none, passes on every step."
+ },
+ "p.intro": {
+  "text": "Sam’s table of f of x has first differences plus three, plus three, plus three, plus three. So the rule is linear, proved, says Sam. Is it?"
+ },
+ "p.test": {
+  "text": "Look at g. It agrees with the line on all five rows, and at x equals five it gives forty six, not sixteen. A table is only consistent with a family."
+ },
+ "p.build": {
+  "text": "Right. A table is only consistent with a family. What is always true goes the other way: every linear function gives equal differences. Prove it. Fill each because."
+ },
+ "p.build2": {
+  "text": "Now the direction that is always true: every linear function gives equal differences. Prove it. Fill each because."
+ },
+ "p.c1": {
+  "text": "Right. f of x plus h means: the rule, with x plus h in place of x."
+ },
+ "p.c2": {
+  "text": "Right. m times x plus h is m x plus m h. The m x and the c cancel, leaving m h."
+ },
+ "p.c3": {
+  "text": "Right. m h has no x in it, so it is the same wherever the step starts."
+ },
+ "p.no.examples": {
+  "text": "That is Sam’s argument. Rows are examples. The claim is about every x."
+ },
+ "p.no.shift": {
+  "text": "f of x plus h is the rule with x plus h put in, not f of x, plus h."
+ },
+ "p.no.converse": {
+  "text": "That is the other direction, and g just showed it is false."
+ },
+ "p.no.other": {
+  "text": "True, but it is the reason for a different line. Which reason makes this line true?"
+ },
+ "p.done": {
+  "text": "Proved. A linear function gives the same difference, m h, for every step of size h. A table can only show consistency. The rule guarantees the pattern."
+ }
+}

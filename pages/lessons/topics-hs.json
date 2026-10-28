@@ -255,7 +255,8 @@
    "exponential-functions",
    "linear-functions-slope",
    "quadratic-functions"
-  ]
+  ],
+  "live": true
  },
  {
   "id": "v2.extension.logical-reasoning",

@@ -516,10 +516,10 @@
   "note": "33 families, 15/15; oracle 0 errors on 19,800; VOICE PENDING"
  },
  "function-families": {
-  "state": "built",
-  "at": "2026-10-28 12:27",
-  "commit": "eec3d71",
-  "note": "57 families, 26/26; DiffTable"
+  "state": "live",
+  "at": "2026-10-28 13:02",
+  "commit": "01d00fb",
+  "note": "57 families, 26/26; oracle 0 errors on 34,200; VOICE PENDING"
  },
  "triangle-congruence": {
   "state": "building",

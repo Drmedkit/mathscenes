@@ -1,0 +1,32 @@
+// plan.ts: practice walks through every sub-goal of secondary-t6-34-function-families-overview, in topic JSON order,
+// each with a short title and the families that practise it (items.ts).
+import type { SubgoalPlan } from '../../runtime/practice';
+
+export const PLAN: readonly SubgoalPlan[] = [
+  { id: 'equal-spacing', title: 'Equal x-steps first', families: ['spacingCheck', 'unequalSlope', 'unequalVerdict'] },
+  { id: 'first-differences', title: 'Equal 1st differences: linear', families: ['slopeFromDiff', 'isLinear'] },
+  { id: 'second-differences', title: 'Equal 2nd differences: quadratic', families: ['secondDiffClassify', 'nextValue'] },
+  { id: 'ratio-test', title: 'Equal ratios: exponential', families: ['ratioClassify', 'ratioDirection', 'ratioValue'] },
+  { id: 'explain-signatures', title: 'Why the tests work', families: ['genericStep', 'directionImplication'] },
+  { id: 'factor-to-percent', title: 'Factor to percent', families: ['factorToPercent', 'tableToPercent', 'negativeContrast'] },
+  { id: 'degenerate-cases', title: 'Constant tables and zeros', families: ['constantTable', 'zeroOutput'] },
+  { id: 'mixed-classification', title: 'All three tests, or none', families: ['classifyMixed', 'whichTable'] },
+  { id: 'compare-outputs', title: 'Compare at one input', families: ['compareAt', 'compareTableAt'] },
+  { id: 'avg-rate-nonlinear', title: 'Average rate of a curve', families: ['avgRateFormula', 'avgRateGraph', 'avgRateMeaning'] },
+  { id: 'compare-rate-patterns', title: 'How the rate itself changes', families: ['ratePattern', 'rateRace'] },
+  { id: 'family-graph-signatures', title: 'Line, parabola or exponential graph', families: ['graphFamily', 'graphFeature'] },
+  { id: 'parent-function-gallery', title: 'Name the parent function', families: ['equationFamily', 'graphGallery', 'asymptoteShift'] },
+  { id: 'parent-function-gallery-extended', title: 'Logs, reciprocals, piecewise', families: ['extendedGraph', 'tableCandidates'] },
+  { id: 'compare-linear-pair', title: 'Compare two linear functions', families: ['linearPair', 'rangeFromTable'] },
+  { id: 'cross-representation', title: 'Linear vs nonlinear, mixed forms', families: ['linVsNonlin', 'maxFromTable'] },
+  { id: 'eventual-dominance', title: 'Exponential growth wins in the end', families: ['whoWinsLongRun', 'tableOrder'] },
+  { id: 'crossover-estimate', title: 'The last crossover', families: ['lastCrossoverTable', 'lastCrossoverGraph'] },
+  { id: 'context-linear', title: 'Same amount each step', families: ['contextLinModel', 'contextLinValue'] },
+  { id: 'context-exponential', title: 'Same percent each step', families: ['contextWhichFamily', 'contextExpValue'] },
+  { id: 'context-quadratic-product', title: 'A product of two linear quantities', families: ['productFamily', 'productModel'] },
+  { id: 'context-quadratic-rate', title: 'A rate that changes steadily', families: ['rateChangeFamily', 'savingsTotal'] },
+  { id: 'finite-data-nonunique', title: 'A few points do not decide', families: ['twoModelsAgree', 'enoughData'] },
+  { id: 'noisy-data', title: 'Noisy data and a tolerance', families: ['noisyChoose', 'noisyFormula'] },
+  { id: 'model-domain', title: 'Where the model makes sense', families: ['domainChoice', 'extrapolate'] },
+  { id: 'justify-choice', title: 'Justify the family', families: ['justification', 'insufficientOrNone'] },
+];
