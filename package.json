@@ -41,6 +41,8 @@
   },
   "overrides": {
     "tinypool": "^2.1.2",
-    "basic-ftp": "^6.2.1"
+    "basic-ftp": "^6.2.1",
+    "minimatch": "11.0.1",
+    "glob": "14.0.2"
   }
 }
