@@ -58,15 +58,22 @@ async function serve(port) {
   page.on('requestfailed', r => { if (/\.mp3(\?|$)/.test(r.url())) audio.push({ at: stamp(), file: short(r.url()), failed: r.failure()?.errorText }); });
   await page.exposeFunction('__kidAudio', e => audio.push({ at: stamp(), ...e, file: short(e.file) }));
   await page.evaluateOnNewDocument(() => {
+    // listeners go on at construction, BEFORE the page's own: a player reused for the next line changes its src in
+    // the page's 'ended' handler, so a later listener would name the wrong file
+    const watch = el => {
+      if (el.__kid) return; el.__kid = true;
+      const file = () => el.src || el.currentSrc;
+      el.addEventListener('ended', () => window.__kidAudio({ event: 'ended', file: file(), seconds: Math.round(el.duration * 10) / 10 }));
+      el.addEventListener('error', () => { if (el.getAttribute('src')) window.__kidAudio({ event: 'error', file: file() }); });
+      el.addEventListener('pause', () => { if (!el.ended) window.__kidAudio({ event: 'cut off', file: file(), at_second: Math.round(el.currentTime * 10) / 10 }); });
+    };
+    const A = window.Audio;
+    window.Audio = function (...args) { const el = new A(...args); watch(el); return el; };
+    window.Audio.prototype = A.prototype;
     const play = HTMLMediaElement.prototype.play;
     HTMLMediaElement.prototype.play = function () {
-      const el = this, file = el.currentSrc || el.src;
-      if (!el.__kid) {
-        el.__kid = true;
-        el.addEventListener('ended', () => window.__kidAudio({ event: 'ended', file: el.currentSrc || el.src, seconds: Math.round(el.duration * 10) / 10 }));
-        el.addEventListener('error', () => window.__kidAudio({ event: 'error', file: el.currentSrc || el.src }));
-        el.addEventListener('pause', () => { if (!el.ended) window.__kidAudio({ event: 'cut off', file: el.currentSrc || el.src, at_second: Math.round(el.currentTime * 10) / 10 }); });
-      }
+      const el = this, file = el.src || el.currentSrc;
+      watch(el);
       const p = play.call(this);
       p.then(() => window.__kidAudio({ event: 'playing', file }), e => window.__kidAudio({ event: 'play refused', file, why: String(e) }));
       return p;
