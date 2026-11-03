@@ -65,7 +65,7 @@ Plus three changes to the line itself: the path page groups lessons by course (t
 scaffold (`tools/lesson-scaffold.py`) → builder writes DESIGN.md, the maths module, items, the five parts and the voice
 lines, using the kit → `tools/walk-<slug>.mjs` + `tools/walk-practice.mjs` → builder fixes from the contact sheets →
 an independent oracle (a different agent) + explain + placement adapter → `tools/quality/sweep.mjs` 0 errors → ship
-(`tools/lesson-ship.sh`). Voice: lines are written now and voiced from 2026-11-03 (`tools/lesson-voice.py`).
+(`tools/lesson-ship.sh`). Voice: lines are written now and voiced with `tools/lesson-voice.py`; the 73 silent lessons were voiced on 2026-11-03.
 
 **Who builds:** the lead built the kit's first piece and the builder brief (`docs/lessons/HS_BRIEF.md`). Every lesson
 goes to a builder agent on Opus (at most three at once, one lesson each, never two on the same files); the builder

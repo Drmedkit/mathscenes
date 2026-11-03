@@ -27,18 +27,18 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 43, queued 78 (of 12
 | 6 | Judge sample representativeness and limit conclusions | `judging-samples` | 7 | 6 | live | 6 sub-goals, 12 families |
 | 7 | Make a circle graph (pie chart) with percents | `pie-charts` | 7 | 18 | live | 18 sub-goals, 42 voice lines |
 | 8 | Enlarge and reduce with a scale factor (scaled copies) | `scale-factor` | 7 | 18 | live | 18 sub-goals, 49 voice lines |
-| 9 | Enlarge and reduce shapes informally on grid paper | `enlarge-on-grids` | 7 | 14 | live | 14 sub-goals, 43 voice lines; pilot Opus builder + Haiku QA; VOICE PENDING |
+| 9 | Enlarge and reduce shapes informally on grid paper | `enlarge-on-grids` | 7 | 14 | live | 14 sub-goals, 43 voice lines; pilot Opus builder + Haiku QA |
 | 10 | Relationships between quantities: ratio tables and proportional relationships | `ratio-tables-and-proportions` | 7 | 20 | live | 20 sub-goals, 47 voice lines; one leader runs close to 1.5 |
 | 11 | Percent increase and decrease: find and apply percent change | `percent-change` | 7 | 19 | live | 19 sub-goals, 42 voice lines |
 | 12 | Calculate a discount | `discounts` | 7 | 13 | live | 13 sub-goals, 44 voice lines |
-| 13 | Understand scale: drawings and actual lengths | `scale-basics` | 7 | 15 | live | 15 sub-goals; pilot Opus builder + Haiku QA; VOICE PENDING |
-| 14 | Solve ratio problems with fractions and decimals | `ratio-problems` | 7 | 21 | live | 21 sub-goals, 44 voice lines; pilot Opus builder + Haiku QA; VOICE PENDING |
+| 13 | Understand scale: drawings and actual lengths | `scale-basics` | 7 | 15 | live | 15 sub-goals; pilot Opus builder + Haiku QA |
+| 14 | Solve ratio problems with fractions and decimals | `ratio-problems` | 7 | 21 | live | 21 sub-goals, 44 voice lines; pilot Opus builder + Haiku QA |
 | 15 | Reflect shapes and points across a line | `reflections` | 8 | 23 | live | 23 sub-goals, 46 voice lines |
 | 16 | Rotate: quarter turn and half turn | `rotations` | 8 | 22 | live | 22 sub-goals, 41 voice lines |
 | 17 | Square roots of perfect squares | `perfect-squares` | 8 | 13 | live | 13 sub-goals, 42 voice lines |
 | 18 | Recognize a linear relationship | `linear-patterns` | 8 | 19 | live | 19 sub-goals, 48 voice lines |
-| 19 | Calculate sales tax, totals, and pre-tax prices | `sales-tax` | 7 | 19 | live | 19 sub-goals, 46 voice lines; pilot Opus builder + Haiku QA; VOICE PENDING |
-| 20 | Calculate simple interest | `simple-interest` | 7 | 15 | live | 15 sub-goals, 40 voice lines; practice tapes could be larger; VOICE PENDING |
+| 19 | Calculate sales tax, totals, and pre-tax prices | `sales-tax` | 7 | 19 | live | 19 sub-goals, 46 voice lines; pilot Opus builder + Haiku QA |
+| 20 | Calculate simple interest | `simple-interest` | 7 | 15 | live | 15 sub-goals, 40 voice lines; practice tapes could be larger |
 
 ## Wave 2
 
@@ -47,7 +47,7 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 43, queued 78 (of 12
 | 1 | Expand, combine, and factor linear expressions | `expand-and-factor` | 7 | 22 | live | 22 sub-goals, 44 voice lines |
 | 2 | Two-step equations | `two-step-equations` | 7 | 10 | live | 10 sub-goals, 39 voice lines |
 | 3 | Scale drawings | `scale-drawings` | 7 | 13 | live | 13 sub-goals |
-| 4 | Sampling and comparative inferences | `sampling-and-inference` | 7 | 17 | live | 17 sub-goals, 41 voice lines; panel overflows 93px on longest items; VOICE PENDING |
+| 4 | Sampling and comparative inferences | `sampling-and-inference` | 7 | 17 | live | 17 sub-goals, 41 voice lines; panel overflows 93px on longest items |
 | 5 | Percent applications | `percent-applications` | 7 | 25 | live | 25 sub-goals, 37 voice lines |
 | 6 | Multiply and divide rational numbers | `multiply-divide-rational-numbers` | 7 | 23 | live | 23 sub-goals, 43 voice lines |
 | 7 | One-step inequalities and signed one-step equations | `one-step-inequalities` | 7 | 11 | live | 11 sub-goals, 46 voice lines |
@@ -56,9 +56,9 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 43, queued 78 (of 12
 | 10 | Function concept and identifying functions | `functions` | 8 | 18 | live | 18 sub-goals, 40 voice lines |
 | 11 | Translations, reflections, and rotations | `rigid-transformations` | 8 | 24 | live | 24 sub-goals, 42 voice lines |
 | 12 | Convert fractions, decimals, and percents: extended | `fractions-decimals-percents` | 7 | 23 | live | 23 sub-goals, 45 voice lines |
-| 13 | Combine percents and ratios in one problem | `percents-and-ratios` | 7 | 14 | live | 14 sub-goals; 35 families; several practice items slate-only (polish later); VOICE PENDING |
+| 13 | Combine percents and ratios in one problem | `percents-and-ratios` | 7 | 14 | live | 14 sub-goals; 35 families; several practice items slate-only (polish later) |
 | 14 | Find the original amount after a percent change | `original-amount` | 7 | 7 | live | 7 sub-goals, 47 voice lines |
-| 15 | Scale calculations: drawing lengths and actual lengths | `scale-calculations` | 7 | 16 | live | 16 sub-goals; 34 families after review; VOICE PENDING |
+| 15 | Scale calculations: drawing lengths and actual lengths | `scale-calculations` | 7 | 16 | live | 16 sub-goals; 34 families after review |
 | 16 | Transformations in the coordinate plane: reflect and translate | `coordinate-transformations` | 8 | 21 | live | 21 sub-goals, 46 voice lines |
 
 ## Wave 3
@@ -67,33 +67,33 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 43, queued 78 (of 12
 |---|---|---|---|---|---|---|
 | 1 | Area and circumference of circles | `circles` | 7 | 23 | live | 23 sub-goals, 49 voice lines |
 | 2 | Angle relationships | `angle-relationships` | 7 | 25 | live | 25 sub-goals, 45 voice lines |
-| 3 | Two-step inequalities | `two-step-inequalities` | 7 | 14 | live | 14 sub-goals; VOICE PENDING |
-| 4 | Rational and irrational numbers | `irrational-numbers` | 8 | 21 | live | 21 sub-goals, 44 voice lines; VOICE PENDING |
+| 3 | Two-step inequalities | `two-step-inequalities` | 7 | 14 | live | 14 sub-goals |
+| 4 | Rational and irrational numbers | `irrational-numbers` | 8 | 21 | live | 21 sub-goals, 44 voice lines |
 | 5 | Solving linear equations in one variable | `linear-equations` | 8 | 22 | live | 22 sub-goals, 45 voice lines |
-| 6 | Congruence via transformations | `congruence` | 8 | 18 | live | 18 sub-goals, 41 voice lines; VOICE PENDING |
-| 7 | Scientific notation and order of magnitude | `scientific-notation` | 8 | 15 | live | 15 sub-goals, 45 voice lines; VOICE PENDING |
-| 8 | Choose a fraction, decimal, or percent form to calculate with, and justify it | `choose-the-form` | 7 | 16 | live | 16 sub-goals, 40 voice lines; practice pictures added in review; VOICE PENDING |
-| 9 | Scale factor and area: the area is multiplied by k^2 | `scale-and-area` | 7 | 16 | live | 16 sub-goals; practice pictures added in review; VOICE PENDING |
-| 10 | Pythagorean theorem: introduction and use | `pythagoras-intro` | 8 | 16 | live | 16 sub-goals, 40 voice lines; VOICE PENDING |
-| 11 | Read a map: map key, scale, and estimating distance | `reading-maps` | 7 | 18 | live | 18 sub-goals, 37 voice lines; ruler maps still small (polish later); VOICE PENDING |
-| 12 | Use a map scale (1 in = 1 mi, i.e. 1:63,360; 1:24,000) | `map-scale` | 7 | 18 | live | 18 sub-goals, 42 voice lines; VOICE PENDING |
+| 6 | Congruence via transformations | `congruence` | 8 | 18 | live | 18 sub-goals, 41 voice lines |
+| 7 | Scientific notation and order of magnitude | `scientific-notation` | 8 | 15 | live | 15 sub-goals, 45 voice lines |
+| 8 | Choose a fraction, decimal, or percent form to calculate with, and justify it | `choose-the-form` | 7 | 16 | live | 16 sub-goals, 40 voice lines; practice pictures added in review |
+| 9 | Scale factor and area: the area is multiplied by k^2 | `scale-and-area` | 7 | 16 | live | 16 sub-goals; practice pictures added in review |
+| 10 | Pythagorean theorem: introduction and use | `pythagoras-intro` | 8 | 16 | live | 16 sub-goals, 40 voice lines |
+| 11 | Read a map: map key, scale, and estimating distance | `reading-maps` | 7 | 18 | live | 18 sub-goals, 37 voice lines; ruler maps still small (polish later) |
+| 12 | Use a map scale (1 in = 1 mi, i.e. 1:63,360; 1:24,000) | `map-scale` | 7 | 18 | live | 18 sub-goals, 42 voice lines |
 
 ## Wave 4
 
 | # | topic | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
-| 1 | Area and perimeter of composite figures | `composite-figures` | 7 | 19 | live | 19 sub-goals, 46 voice lines; VOICE PENDING |
-| 2 | Composite area, volume, and surface area | `composite-area-volume` | 7 | 21 | live | 21 sub-goals, 42 voice lines; VOICE PENDING |
-| 3 | Angle relationships with parallel lines and triangles | `parallel-lines-and-triangles` | 8 | 25 | live | 25 sub-goals, 44 voice lines; VOICE PENDING |
-| 4 | Volume of cylinders, cones, and spheres | `cylinders-cones-spheres` | 8 | 25 | live | 25 sub-goals, 43 voice lines; VOICE PENDING |
-| 5 | Multi-step linear equations with rational coefficients | `multi-step-equations` | 8 | 22 | live | 22 sub-goals, 39 voice lines; practice balance small, most items notation slate (polish later); VOICE PENDING |
-| 6 | Dilations and similarity | `dilations-and-similarity` | 8 | 23 | live | 23 sub-goals, 46 voice lines; small label crowding in ratioK (polish later); VOICE PENDING |
-| 7 | Pythagorean theorem | `pythagorean-theorem` | 8 | 22 | live | 22 sub-goals, 42 voice lines; VOICE PENDING |
-| 8 | Proportional and linear relationships: slope, graphs, and equations | `slope-and-lines` | 8 | 27 | live | 27 sub-goals, 44 voice lines; VOICE PENDING |
-| 9 | Systems of linear equations | `systems-of-equations` | 8 | 23 | live | 23 sub-goals, 42 voice lines; VOICE PENDING |
-| 10 | Linear functions and slope-intercept form | `linear-functions` | 8 | 24 | live | 24 sub-goals, 40 voice lines; VOICE PENDING |
-| 11 | Scatter plots and bivariate data | `scatter-plots` | 8 | 22 | live | 22 sub-goals, 42 voice lines; VOICE PENDING |
-| 12 | Two-way tables, relative frequencies and segmented bar graphs | `two-way-tables` | 8 | 15 | live | 15 sub-goals; VOICE PENDING |
+| 1 | Area and perimeter of composite figures | `composite-figures` | 7 | 19 | live | 19 sub-goals, 46 voice lines |
+| 2 | Composite area, volume, and surface area | `composite-area-volume` | 7 | 21 | live | 21 sub-goals, 42 voice lines |
+| 3 | Angle relationships with parallel lines and triangles | `parallel-lines-and-triangles` | 8 | 25 | live | 25 sub-goals, 44 voice lines |
+| 4 | Volume of cylinders, cones, and spheres | `cylinders-cones-spheres` | 8 | 25 | live | 25 sub-goals, 43 voice lines |
+| 5 | Multi-step linear equations with rational coefficients | `multi-step-equations` | 8 | 22 | live | 22 sub-goals, 39 voice lines; practice balance small, most items notation slate (polish later) |
+| 6 | Dilations and similarity | `dilations-and-similarity` | 8 | 23 | live | 23 sub-goals, 46 voice lines; small label crowding in ratioK (polish later) |
+| 7 | Pythagorean theorem | `pythagorean-theorem` | 8 | 22 | live | 22 sub-goals, 42 voice lines |
+| 8 | Proportional and linear relationships: slope, graphs, and equations | `slope-and-lines` | 8 | 27 | live | 27 sub-goals, 44 voice lines |
+| 9 | Systems of linear equations | `systems-of-equations` | 8 | 23 | live | 23 sub-goals, 42 voice lines |
+| 10 | Linear functions and slope-intercept form | `linear-functions` | 8 | 24 | live | 24 sub-goals, 40 voice lines |
+| 11 | Scatter plots and bivariate data | `scatter-plots` | 8 | 22 | live | 22 sub-goals, 42 voice lines |
+| 12 | Two-way tables, relative frequencies and segmented bar graphs | `two-way-tables` | 8 | 15 | live | 15 sub-goals |
 
 # Phase 2: high school and AP (docs/lessons/HS_PLAN.md)
 
@@ -101,42 +101,42 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 43, queued 78 (of 12
 
 | # | lesson | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
-| 1 | Properties and the real numbers | `number-properties` | HS | 25 | live | 43 families, 25/25; oracle 0 errors (ownValue many answers, probed); VOICE PENDING |
-| 2 | Reasoning with units | `units-and-quantities` | HS | 23 | live | 44 families, 23/23; oracle 0 errors on 27,000; VOICE PENDING |
-| 3 | Solving linear equations and inequalities | `solving-linear-equations` | HS | 21 | live | 45 families, 21/21; oracle 0 errors on 27,600; VOICE PENDING |
-| 4 | Writing equations and inequalities from constraints | `creating-equations` | HS | 18 | live | 39 families, 18/18; oracle 0 errors on 23,400; VOICE PENDING |
-| 5 | Linear functions and slope | `linear-functions-slope` | HS | 31 | live | 47 families, 31/31; oracle 0 errors on 34,200; VOICE PENDING |
-| 6 | Linear equations from a context | `linear-models` | HS | 18 | live | 35 families, 18/18; oracle 0 errors on 21,600; VOICE PENDING |
-| 7 | Graphing inequalities in two variables | `linear-inequalities-2d` | HS | 27 | live | 46 families, 27/27; oracle 0 errors on 31,800; VOICE PENDING |
-| 8 | Systems of equations | `linear-systems` | HS | 27 | live | 55 families, 27/27; oracle 0 errors on 36,600; VOICE PENDING |
-| 9 | Arithmetic sequences | `arithmetic-sequences` | HS | 21 | live | 44 families, 21/21; oracle 0 errors on 26,400; VOICE PENDING |
-| 10 | Piecewise and step functions | `piecewise-functions` | HS | 24 | live | 49 families, 24/24; oracle 0 errors on 29,400; VOICE PENDING |
-| 11 | Absolute value functions and equations | `absolute-value` | HS | 27 | live | 58 families, 27/27; oracle 0 errors on 34,800; VOICE PENDING |
-| 12 | Radicals and rational exponents | `radicals-exponents` | HS | 28 | live | 58 families, 28/28; oracle 0 errors on 36,000; VOICE PENDING |
-| 13 | Exponential growth and decay | `exponential-functions` | HS | 26 | live | 54 families, 26/26; oracle 0 errors on 33,000; VOICE PENDING |
-| 14 | Geometric sequences | `geometric-sequences` | HS | 23 | live | 46 families, 23/23; oracle 0 errors on 27,600; VOICE PENDING |
-| 15 | Polynomial expressions | `polynomials` | HS | 27 | live | 56 families, 27/27; oracle 0 errors on 33,600; VOICE PENDING |
-| 16 | Factoring | `factoring` | HS | 24 | live | 51 families, 24/24; oracle 0 errors on 30,600; VOICE PENDING |
-| 17 | Quadratic functions and their graphs | `quadratic-functions` | HS | 33 | live | 54 families, 33/33; oracle 0 errors on 35,400; VOICE PENDING |
-| 18 | Solving quadratics: square roots, completing the square, the formula | `completing-the-square` | HS | 16 | live | 41 families, 16/16; oracle 0 errors on 24,600; VOICE PENDING |
-| 19 | Linear, quadratic or exponential? | `function-families` | HS | 26 | live | 57 families, 26/26; oracle 0 errors on 34,200; VOICE PENDING |
+| 1 | Properties and the real numbers | `number-properties` | HS | 25 | live | 43 families, 25/25; oracle 0 errors (ownValue many answers, probed) |
+| 2 | Reasoning with units | `units-and-quantities` | HS | 23 | live | 44 families, 23/23; oracle 0 errors on 27,000 |
+| 3 | Solving linear equations and inequalities | `solving-linear-equations` | HS | 21 | live | 45 families, 21/21; oracle 0 errors on 27,600 |
+| 4 | Writing equations and inequalities from constraints | `creating-equations` | HS | 18 | live | 39 families, 18/18; oracle 0 errors on 23,400 |
+| 5 | Linear functions and slope | `linear-functions-slope` | HS | 31 | live | 47 families, 31/31; oracle 0 errors on 34,200 |
+| 6 | Linear equations from a context | `linear-models` | HS | 18 | live | 35 families, 18/18; oracle 0 errors on 21,600 |
+| 7 | Graphing inequalities in two variables | `linear-inequalities-2d` | HS | 27 | live | 46 families, 27/27; oracle 0 errors on 31,800 |
+| 8 | Systems of equations | `linear-systems` | HS | 27 | live | 55 families, 27/27; oracle 0 errors on 36,600 |
+| 9 | Arithmetic sequences | `arithmetic-sequences` | HS | 21 | live | 44 families, 21/21; oracle 0 errors on 26,400 |
+| 10 | Piecewise and step functions | `piecewise-functions` | HS | 24 | live | 49 families, 24/24; oracle 0 errors on 29,400 |
+| 11 | Absolute value functions and equations | `absolute-value` | HS | 27 | live | 58 families, 27/27; oracle 0 errors on 34,800 |
+| 12 | Radicals and rational exponents | `radicals-exponents` | HS | 28 | live | 58 families, 28/28; oracle 0 errors on 36,000 |
+| 13 | Exponential growth and decay | `exponential-functions` | HS | 26 | live | 54 families, 26/26; oracle 0 errors on 33,000 |
+| 14 | Geometric sequences | `geometric-sequences` | HS | 23 | live | 46 families, 23/23; oracle 0 errors on 27,600 |
+| 15 | Polynomial expressions | `polynomials` | HS | 27 | live | 56 families, 27/27; oracle 0 errors on 33,600 |
+| 16 | Factoring | `factoring` | HS | 24 | live | 51 families, 24/24; oracle 0 errors on 30,600 |
+| 17 | Quadratic functions and their graphs | `quadratic-functions` | HS | 33 | live | 54 families, 33/33; oracle 0 errors on 35,400 |
+| 18 | Solving quadratics: square roots, completing the square, the formula | `completing-the-square` | HS | 16 | live | 41 families, 16/16; oracle 0 errors on 24,600 |
+| 19 | Linear, quadratic or exponential? | `function-families` | HS | 26 | live | 57 families, 26/26; oracle 0 errors on 34,200 |
 
 ## Geometry
 
 | # | lesson | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
-| 1 | If-then statements and logical language | `conditional-statements` | HS | 13 | live | 28 families, 13/13; oracle 0 errors on 16,800; VOICE PENDING |
-| 2 | Definitions, postulates and first proofs | `geometry-foundations` | HS | 31 | live | 56 families, 31/31; oracle 0 errors (whichIsProof not covered after rework); VOICE PENDING |
-| 3 | Counterexamples, inference and proof | `counterexamples-and-proof` | HS | 15 | live | 33 families, 15/15; oracle 0 errors on 19,800; VOICE PENDING |
-| 4 | Triangle congruence | `triangle-congruence` | HS | 31 | live | 57 families, 31/31; oracle 0 errors on 40,800; VOICE PENDING |
-| 5 | Isosceles triangles and side-angle order | `triangle-inequalities` | HS | 12 | live | 32 families, 12/12; oracle 0 errors on 19,200; VOICE PENDING |
-| 6 | Constructions with compass and straightedge | `constructions` | HS | 34 | live | 67 families, 34/34; oracle 0 errors on 52,800; VOICE PENDING |
-| 7 | Midsegments and points of concurrency | `triangle-centers` | HS | 35 | live | 58 families, 35/35; oracle 0 errors on 38,400; VOICE PENDING |
-| 8 | Parallelograms and other quadrilaterals | `quadrilaterals` | HS | 41 | live | 58 families, 41/41; Tree; oracle 35400/35400; VOICE PENDING |
-| 9 | Similar triangles | `similarity` | HS | 25 | live | 54 families, 25/25; oracle 0 errors on 33,600; VOICE PENDING |
-| 10 | Right triangle trigonometry | `right-triangle-trig` | HS | 29 | live | 65 families, 29/29; oracle 39000/39000; VOICE PENDING |
-| 11 | Distance, midpoint and coordinate proofs | `coordinate-proofs` | HS | 33 | live | 61 families, 33/33; oracle 38400/38400; VOICE PENDING |
-| 12 | Arcs and angles in circles | `circle-angles` | HS | 33 | live | 46 families, 33/33; CircleFig; oracle 30000/30000; VOICE PENDING |
+| 1 | If-then statements and logical language | `conditional-statements` | HS | 13 | live | 28 families, 13/13; oracle 0 errors on 16,800 |
+| 2 | Definitions, postulates and first proofs | `geometry-foundations` | HS | 31 | live | 56 families, 31/31; oracle 0 errors (whichIsProof not covered after rework) |
+| 3 | Counterexamples, inference and proof | `counterexamples-and-proof` | HS | 15 | live | 33 families, 15/15; oracle 0 errors on 19,800 |
+| 4 | Triangle congruence | `triangle-congruence` | HS | 31 | live | 57 families, 31/31; oracle 0 errors on 40,800 |
+| 5 | Isosceles triangles and side-angle order | `triangle-inequalities` | HS | 12 | live | 32 families, 12/12; oracle 0 errors on 19,200 |
+| 6 | Constructions with compass and straightedge | `constructions` | HS | 34 | live | 67 families, 34/34; oracle 0 errors on 52,800 |
+| 7 | Midsegments and points of concurrency | `triangle-centers` | HS | 35 | live | 58 families, 35/35; oracle 0 errors on 38,400 |
+| 8 | Parallelograms and other quadrilaterals | `quadrilaterals` | HS | 41 | live | 58 families, 41/41; Tree; oracle 35400/35400 |
+| 9 | Similar triangles | `similarity` | HS | 25 | live | 54 families, 25/25; oracle 0 errors on 33,600 |
+| 10 | Right triangle trigonometry | `right-triangle-trig` | HS | 29 | live | 65 families, 29/29; oracle 39000/39000 |
+| 11 | Distance, midpoint and coordinate proofs | `coordinate-proofs` | HS | 33 | live | 61 families, 33/33; oracle 38400/38400 |
+| 12 | Arcs and angles in circles | `circle-angles` | HS | 33 | live | 46 families, 33/33; CircleFig; oracle 30000/30000 |
 | 13 | Tangents, chords and segment lengths | `chords-tangents` | HS | 14 | building |  |
 | 14 | Arc length, sectors and radians | `arcs-and-sectors` | HS | 26 | building |  |
 | 15 | Equations of circles | `circle-equations` | HS | 23 | queued |  |
@@ -148,15 +148,15 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 43, queued 78 (of 12
 
 | # | lesson | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
-| 1 | Summarizing and comparing data | `one-variable-data` | HS | 28 | live | 49 families, 28/28; oracle 0 errors on 31,200; VOICE PENDING |
-| 2 | Scatter plots, correlation and the regression line | `linear-regression` | HS | 27 | live | 53 families, 27/27; oracle 0 errors on 32,400; VOICE PENDING |
-| 3 | Quadratic and exponential regression | `nonlinear-regression` | HS | 21 | live | 48 families, 21/21; oracle 0 errors on 29,400; VOICE PENDING |
-| 4 | Counting: permutations and combinations | `counting` | HS | 25 | live | 52 families, 25/25; oracle 0 errors on 31,200; VOICE PENDING |
+| 1 | Summarizing and comparing data | `one-variable-data` | HS | 28 | live | 49 families, 28/28; oracle 0 errors on 31,200 |
+| 2 | Scatter plots, correlation and the regression line | `linear-regression` | HS | 27 | live | 53 families, 27/27; oracle 0 errors on 32,400 |
+| 3 | Quadratic and exponential regression | `nonlinear-regression` | HS | 21 | live | 48 families, 21/21; oracle 0 errors on 29,400 |
+| 4 | Counting: permutations and combinations | `counting` | HS | 25 | live | 52 families, 25/25; oracle 0 errors on 31,200 |
 | 5 | Repeated objects and circular arrangements | `advanced-counting` | AP | 15 | queued |  |
-| 6 | Conditional probability and independence | `conditional-probability` | HS | 31 | live | 64 families, 31/31; oracle 0 errors on 39,000; VOICE PENDING |
-| 7 | The normal distribution | `normal-distribution` | HS | 30 | live | 66 families, 30/30; oracle 0 errors on 39,600; VOICE PENDING |
-| 8 | Probability distributions and expected value | `expected-value` | HS | 24 | live | 54 families, 24/24; oracle 0 errors; VOICE PENDING |
-| 9 | Using probability to make decisions | `probability-decisions` | HS | 17 | live | 36 families, 17/17; DecTree; oracle 21600/21600; VOICE PENDING |
+| 6 | Conditional probability and independence | `conditional-probability` | HS | 31 | live | 64 families, 31/31; oracle 0 errors on 39,000 |
+| 7 | The normal distribution | `normal-distribution` | HS | 30 | live | 66 families, 30/30; oracle 0 errors on 39,600 |
+| 8 | Probability distributions and expected value | `expected-value` | HS | 24 | live | 54 families, 24/24; oracle 0 errors |
+| 9 | Using probability to make decisions | `probability-decisions` | HS | 17 | live | 36 families, 17/17; DecTree; oracle 21600/21600 |
 | 10 | Study design and estimating with a margin of error | `margin-of-error` | HS | 32 | built | 63 families, 32/32; SimCard, StudyView |
 | 11 | Testing a claim by simulation | `simulation-tests` | HS | 8 | queued |  |
 | 12 | Sampling distributions and the central limit theorem | `sampling-distributions` | AP | 13 | queued |  |
@@ -168,10 +168,10 @@ Totals: live 63 (of 63); phase 2: building 3, built 1, live 43, queued 78 (of 12
 
 | # | lesson | slug | grade | sub-goals | state | note |
 |---|---|---|---|---|---|---|
-| 1 | Complex numbers | `complex-numbers` | HS | 21 | live | 46 families, 21/21; oracle 0 errors on 28,800; VOICE PENDING |
-| 2 | Quadratics with complex solutions | `quadratics-complex` | HS | 14 | live | 30 families, 14/14; oracle 18000/18000; VOICE PENDING |
-| 3 | Polynomial operations and identities | `polynomial-identities` | HS | 14 | live | 34 families, 14/14; oracle 20400/20400; VOICE PENDING |
-| 4 | Polynomial division | `polynomial-division` | HS | 25 | live | 52 families, 25/25; LongDiv + SynthTab; oracle 32400/32400; VOICE PENDING |
+| 1 | Complex numbers | `complex-numbers` | HS | 21 | live | 46 families, 21/21; oracle 0 errors on 28,800 |
+| 2 | Quadratics with complex solutions | `quadratics-complex` | HS | 14 | live | 30 families, 14/14; oracle 18000/18000 |
+| 3 | Polynomial operations and identities | `polynomial-identities` | HS | 14 | live | 34 families, 14/14; oracle 20400/20400 |
+| 4 | Polynomial division | `polynomial-division` | HS | 25 | live | 52 families, 25/25; LongDiv + SynthTab; oracle 32400/32400 |
 | 5 | Factoring higher-degree polynomials | `higher-degree-factoring` | HS | 26 | building |  |
 | 6 | Polynomial functions: graphs and behavior | `polynomial-graphs` | HS | 30 | queued |  |
 | 7 | Remainder and factor theorems, complex zeros | `polynomial-theorems` | HS | 23 | queued |  |
