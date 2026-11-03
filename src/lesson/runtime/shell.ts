@@ -37,6 +37,7 @@ export async function runLesson(def: LessonDef): Promise<void> {
   const tools = document.getElementById('tools');
   const store = new LessonStore(def.slug);
   const voice = new Voice(`./${def.slug}/voice`);
+  followNew(panel);
   const progress = store.progress();
   if (qs.has('fresh')) { store.clear(); Object.assign(progress, { part: 0, reached: 0, commit: { pick: null, sure: null } }); }
   if (qs.has('open')) progress.reached = 4;
@@ -83,4 +84,36 @@ function showLog(panel: HTMLElement, store: LessonStore): void {
     h('p', { class: 'dim' }, `${rows.length} answers saved in this browser. Misconceptions seen:`),
     h('ul', {}, ...sum.map(s => h('li', {}, `${s.mc} × ${s.n}`))),
     h('div', { class: 'row' }, copy, btn('Back to the lesson', () => { location.search = ''; })), pre);
+}
+
+/** Keep what the kid must see next in view. On a short screen (a 1366 × 768 laptop) feedback, the next input and the
+ *  "Prove it" button land below the panel's fold and nothing says so. When the panel gains content, the lowest new
+ *  element is scrolled into view (never past its own top); a whole new part starts at the top. TeX glyphs, SVG and
+ *  updates that are already visible move nothing. */
+function followNew(panel: HTMLElement): void {
+  let pending: HTMLElement[] = [], top = false, raf = 0;
+  const skip = (n: Node): boolean => !(n instanceof HTMLElement) || n.closest('mjx-container, svg') !== null || n.tagName.startsWith('MJX-');
+  new MutationObserver(muts => {
+    for (const m of muts) {
+      if (m.target === panel && m.removedNodes.length && m.addedNodes.length) top = true;   // replaceChildren: a new part
+      for (const n of m.addedNodes) if (!skip(n)) pending.push(n as HTMLElement);
+    }
+    if (!raf) raf = requestAnimationFrame(() => {
+      raf = 0;
+      const els = pending.filter(e => e.isConnected && e.offsetParent !== null); pending = [];
+      if (top) { top = false; panel.scrollTop = 0; return; }
+      if (!els.length) return;
+      const shown = els.filter(e => e.getBoundingClientRect().height > 0);
+      if (!shown.length) return;
+      const bottom = (e: HTMLElement) => e.getBoundingClientRect().bottom, topOf = (e: HTMLElement) => e.getBoundingClientRect().top;
+      const low = shown.reduce((a, b) => (bottom(b) > bottom(a) ? b : a)), high = shown.reduce((a, b) => (topOf(b) < topOf(a) ? b : a));
+      const box = panel.getBoundingClientRect(), viewBottom = Math.min(box.bottom, innerHeight);
+      if (bottom(low) <= viewBottom - 4) return;   // already in view
+      // the panel and the page both scroll (the panel's own bottom can sit below a short screen): let the browser
+      // scroll every container. Show the bottom of what is new, unless that pushes the top of what is new away.
+      const room = viewBottom - Math.max(0, box.top);
+      if (bottom(low) - topOf(high) < room - 24) low.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      else high.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
+  }).observe(panel, { childList: true, subtree: true });
 }
